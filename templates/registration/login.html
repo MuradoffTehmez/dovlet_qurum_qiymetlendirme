@@ -1,0 +1,39 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Sistemə Daxil Ol{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h2>Sistemə Daxil Ol</h2>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        İstifadəçi adı və ya şifrə yanlışdır. Zəhmət olmasa, yenidən cəhd edin.
+                    </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">İstifadəçi adı:</label>
+                        <input type="text" name="username" class="form-control" autofocus autocapitalize="none"
+                            autocomplete="username" maxlength="150" required id="id_username">
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_password" class="form-label">Şifrə:</label>
+                        <input type="password" name="password" class="form-control" autocomplete="current-password"
+                            required id="id_password">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Daxil Ol</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
