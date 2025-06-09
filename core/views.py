@@ -71,3 +71,64 @@ def qiymetlendirme_etmek(request, qiymetlendirme_id):
         'suallar': suallar,
     }
     return render(request, 'core/qiymetlendirme_form.html', context)
+
+
+
+# ... digər importların yanına "json" əlavə edin
+import json
+from django.db.models import Avg
+from .models import QiymetlendirmeDovru, Cavab, SualKateqoriyasi # Model importlarına əlavə edin
+
+# ... mövcud view-ların altında yeni funksiyanı yaradın
+
+@login_required
+def hesabat_sehifesi(request):
+    # Hesabatı göstəriləcək istifadəçi
+    ishchi = request.user
+
+    # Aktiv və ya ən son bitmiş qiymətləndirmə dövrünü tapırıq
+    try:
+        # Əvvəlcə aktiv dövrü axtarırıq
+        dovr = QiymetlendirmeDovru.objects.filter(aktivdir=True).latest('bitme_tarixi')
+    except QiymetlendirmeDovru.DoesNotExist:
+        # Aktiv dövr yoxdursa, ən son bitmiş dövrü götürürük
+        dovr = QiymetlendirmeDovru.objects.filter(aktivdir=False).latest('bitme_tarixi')
+
+    # Həmin dövrdə bu işçi haqqında verilmiş bütün cavabları tapırıq
+    cavablar = Cavab.objects.filter(
+        qiymetlendirme__qiymetlendirilen=ishchi,
+        qiymetlendirme__dovr=dovr
+    )
+    
+    if not cavablar.exists():
+        messages.warning(request, f"'{dovr.ad}' dövrü üçün sizin haqqınızda hələ heç bir qiymətləndirmə tamamlanmayıb.")
+        return redirect('dashboard')
+
+    # --- Məlumatların Aqreqasiyası ---
+
+    # 1. Kompetensiyalar (kateqoriyalar) üzrə ortalama xalların hesablanması
+    # Django-nun güclü ORM-i ilə bunu daha səmərəli edirik
+    kateqoriya_neticeleri = SualKateqoriyasi.objects.filter(
+        sual__cavab__in=cavablar
+    ).annotate(
+        ortalama_xal=Avg('sual__cavab__xal')
+    ).distinct()
+
+    # 2. Yazılı rəylərin toplanması (boş olmayanlar)
+    yazili_reyler = cavablar.exclude(metnli_rey__exact='').values_list('metnli_rey', flat=True)
+
+    # --- Diaqram (Chart) üçün Məlumatların Hazırlanması ---
+    chart_labels = [k.ad for k in kateqoriya_neticeleri]
+    chart_data = [round(k.ortalama_xal, 2) for k in kateqoriya_neticeleri]
+
+    context = {
+        'ishchi': ishchi,
+        'dovr': dovr,
+        'kateqoriya_neticeleri': kateqoriya_neticeleri,
+        'yazili_reyler': yazili_reyler,
+        # JavaScript-də istifadə üçün məlumatları JSON formatına çeviririk
+        'chart_labels': json.dumps(chart_labels),
+        'chart_data': json.dumps(chart_data),
+    }
+
+    return render(request, 'core/hesabat.html', context)
