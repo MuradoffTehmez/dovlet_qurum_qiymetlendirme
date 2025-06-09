@@ -9,6 +9,7 @@
 {% if qiymetlendirmeler %}
 <p>Aşağıdakı şəxslər üçün qiymətləndirməni tamamlamalısınız:</p>
 <div class="list-group">
+
     {% for q in qiymetlendirmeler %}
     <a href="{% url 'qiymetlendirme_etmek' q.id %}" class="list-group-item list-group-item-action">
         <strong>{{ q.qiymetlendirilen.get_full_name }}</strong> ({{ q.qiymetlendirilen.vezife }})
@@ -22,4 +23,5 @@
     Hal-hazırda tamamlanmalı qiymətləndirmə tapşırığınız yoxdur.
 </div>
 {% endif %}
+
 {% endblock %}

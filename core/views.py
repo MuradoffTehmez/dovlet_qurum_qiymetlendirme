@@ -81,18 +81,22 @@ from .models import QiymetlendirmeDovru, Cavab, SualKateqoriyasi # Model importl
 
 # ... mövcud view-ların altında yeni funksiyanı yaradın
 
+# core/views.py faylında hesabat_sehifesi funksiyasını bununla əvəz edin:
+
 @login_required
 def hesabat_sehifesi(request):
-    # Hesabatı göstəriləcək istifadəçi
     ishchi = request.user
+    dovr = None # Başlanğıcda dövrü boş təyin edirik
 
-    # Aktiv və ya ən son bitmiş qiymətləndirmə dövrünü tapırıq
     try:
-        # Əvvəlcə aktiv dövrü axtarırıq
-        dovr = QiymetlendirmeDovru.objects.filter(aktivdir=True).latest('bitme_tarixi')
+        # Ən son aktiv və ya bitmiş qiymətləndirmə dövrünü tapırıq
+        dovr = QiymetlendirmeDovru.objects.order_by('-bitme_tarixi').first()
+        if not dovr:
+            # Əgər sistemdə heç bir dövr yoxdursa
+            raise QiymetlendirmeDovru.DoesNotExist
     except QiymetlendirmeDovru.DoesNotExist:
-        # Aktiv dövr yoxdursa, ən son bitmiş dövrü götürürük
-        dovr = QiymetlendirmeDovru.objects.filter(aktivdir=False).latest('bitme_tarixi')
+        messages.error(request, "Sistemdə heç bir qiymətləndirmə dövrü tapılmadı.")
+        return redirect('dashboard')
 
     # Həmin dövrdə bu işçi haqqında verilmiş bütün cavabları tapırıq
     cavablar = Cavab.objects.filter(
@@ -104,20 +108,17 @@ def hesabat_sehifesi(request):
         messages.warning(request, f"'{dovr.ad}' dövrü üçün sizin haqqınızda hələ heç bir qiymətləndirmə tamamlanmayıb.")
         return redirect('dashboard')
 
-    # --- Məlumatların Aqreqasiyası ---
-
-    # 1. Kompetensiyalar (kateqoriyalar) üzrə ortalama xalların hesablanması
-    # Django-nun güclü ORM-i ilə bunu daha səmərəli edirik
+    # Kateqoriyalar üzrə ortalama xalların hesablanması
     kateqoriya_neticeleri = SualKateqoriyasi.objects.filter(
         sual__cavab__in=cavablar
     ).annotate(
         ortalama_xal=Avg('sual__cavab__xal')
-    ).distinct()
+    ).distinct().order_by('ad') # Səliqəli görünüş üçün əlifba sırası ilə
 
-    # 2. Yazılı rəylərin toplanması (boş olmayanlar)
-    yazili_reyler = cavablar.exclude(metnli_rey__exact='').values_list('metnli_rey', flat=True)
+    # Yazılı rəylərin toplanması
+    yazili_reyler = cavablar.exclude(metnli_rey__isnull=True).exclude(metnli_rey__exact='').values_list('metnli_rey', flat=True)
 
-    # --- Diaqram (Chart) üçün Məlumatların Hazırlanması ---
+    # Diaqram üçün məlumatların hazırlanması
     chart_labels = [k.ad for k in kateqoriya_neticeleri]
     chart_data = [round(k.ortalama_xal, 2) for k in kateqoriya_neticeleri]
 
@@ -126,7 +127,6 @@ def hesabat_sehifesi(request):
         'dovr': dovr,
         'kateqoriya_neticeleri': kateqoriya_neticeleri,
         'yazili_reyler': yazili_reyler,
-        # JavaScript-də istifadə üçün məlumatları JSON formatına çeviririk
         'chart_labels': json.dumps(chart_labels),
         'chart_data': json.dumps(chart_data),
     }

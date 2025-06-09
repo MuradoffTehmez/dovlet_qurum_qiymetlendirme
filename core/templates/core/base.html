@@ -12,25 +12,34 @@
     <nav class="navbar navbar-expand-lg bg-body-tertiary mb-4">
         <div class="container">
             <a class="navbar-brand" href="{% url 'dashboard' %}">Qiymətləndirmə Sistemi</a>
-            <div class="collapse navbar-collapse">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+
                     {% if user.is_authenticated %}
                     <li class="nav-item">
                         <span class="navbar-text me-3">
                             Salam, {{ user.get_full_name|default:user.username }}
                         </span>
                     </li>
+                    <li class="nav-item me-2">
+                        <a href="{% url 'hesabatim' %}" class="btn btn-outline-primary">Hesabatım</a>
+                    </li>
                     <li class="nav-item">
-                        <form action="{% url 'logout' %}" method="post">
+                        <form action="{% url 'logout' %}" method="post" class="d-inline">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-outline-danger">Çıxış</button>
                         </form>
                     </li>
+
                     {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'login' %}">Daxil Ol</a>
                     </li>
                     {% endif %}
+
                 </ul>
             </div>
         </div>

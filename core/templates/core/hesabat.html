@@ -1,0 +1,99 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Qiymətləndirmə Hesabatı{% endblock %}
+
+{% block content %}
+<h2>Qiymətləndirmə Hesabatı</h2>
+<p>
+    <strong>İşçi:</strong> {{ ishchi.get_full_name }} <br>
+    <strong>Dövr:</strong> {{ dovr.ad }}
+</p>
+<hr>
+
+<div class="row">
+    <div class="col-md-6">
+        <h4>Kompetensiyalar üzrə Nəticələr</h4>
+        <canvas id="radarChart" width="400" height="400"></canvas>
+    </div>
+    <div class="col-md-6">
+        <h4>Ümumi Göstəricilər</h4>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Kompetensiya (Kateqoriya)</th>
+                    <th>Ortalama Xal (10 üzərindən)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for netice in kateqoriya_neticeleri %}
+                <tr>
+                    <td>{{ netice.ad }}</td>
+                    <td><strong>{{ netice.ortalama_xal|floatformat:2 }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<hr class="my-4">
+
+<div class="row">
+    <div class="col-12">
+        <h4>Anonim Yazılı Rəylər</h4>
+        {% if yazili_reyler %}
+        <ul class="list-group">
+            {% for rey in yazili_reyler %}
+            <li class="list-group-item">"{{ rey }}"</li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>Sizin haqqınızda yazılı rəy qeyd edilməyib.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const labels = JSON.parse('{{ chart_labels|escapejs }}');
+        const data = JSON.parse('{{ chart_data|escapejs }}');
+
+        const ctx = document.getElementById('radarChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Ortalama Xal',
+                    data: data,
+                    fill: true,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgb(54, 162, 235)',
+                    pointBackgroundColor: 'rgb(54, 162, 235)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(54, 162, 235)'
+                }]
+            },
+            options: {
+                elements: {
+                    line: {
+                        borderWidth: 3
+                    }
+                },
+                scales: {
+                    r: {
+                        suggestedMin: 0,
+                        suggestedMax: 10,
+                        angleLines: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
