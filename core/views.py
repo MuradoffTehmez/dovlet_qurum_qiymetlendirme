@@ -1,11 +1,13 @@
 # core/views.py
-
 import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Avg
 from django.http import HttpResponseForbidden
 from django.contrib import messages
+from django.http import HttpResponse
+from django.template.loader import render_to_string
+from weasyprint import HTML
 from .models import (
     Qiymetlendirme, Sual, Cavab, QiymetlendirmeDovru, 
     Ishchi, SualKateqoriyasi
@@ -165,3 +167,37 @@ def hesabat_bax(request, ishchi_id):
         return redirect('rehber_paneli')
         
     return render(request, 'core/hesabat.html', context)
+
+
+@login_required
+def hesabat_pdf_yukle(request, ishchi_id):
+    """Hesabatı PDF formatında generasiya edib yükləməni təmin edir."""
+    
+    # Hesabatına baxılan işçini tapırıq
+    ishchi = get_object_or_404(Ishchi, id=ishchi_id)
+
+    # Səlahiyyət yoxlanışı: Yalnız işçinin özü və ya onun rəhbəri baxa bilər
+    is_rehber = (request.user.rol == 'REHBER' and request.user.sektor == ishchi.sektor)
+    is_self = (request.user.id == ishchi.id)
+
+    if not (is_rehber or is_self):
+        return HttpResponseForbidden("Bu hesabatı yükləmək üçün icazəniz yoxdur.")
+
+    # Daha əvvəl yaratdığımız köməkçi funksiya ilə hesabat məlumatlarını alırıq
+    context = _generate_report_context(ishchi)
+
+    if context.get('error'):
+        messages.error(request, context['error'])
+        return redirect('dashboard')
+    
+    # HTML şablonunu məlumatlarla birlikdə render edib string-ə çeviririk
+    html_string = render_to_string('core/hesabat_pdf.html', context)
+    
+    # WeasyPrint ilə HTML string-dən PDF yaradırıq
+    pdf_file = HTML(string=html_string).write_pdf()
+    
+    # Brauzerə PDF faylı olaraq göndəririk
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="hesabat_{ishchi.username}.pdf"'
+    
+    return response
