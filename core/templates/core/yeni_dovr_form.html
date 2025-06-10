@@ -1,0 +1,49 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Yeni Qiymətləndirmə Dövrü Yarat{% endblock %}
+
+{% block content %}
+<h2>Yeni Qiymətləndirmə Dövrü Yarat</h2>
+<p>Bu forma vasitəsilə yeni bir qiymətləndirmə dövrü yaradıb, prosesə daxil ediləcək departamentləri seçə bilərsiniz.
+</p>
+<hr>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{ form.ad.label_tag }}
+                {{ form.ad }}
+                {% if form.ad.errors %}<div class="text-danger">{{ form.ad.errors }}</div>{% endif %}
+            </div>
+            <div class="mb-3">
+                {{ form.bashlama_tarixi.label_tag }}
+                {{ form.bashlama_tarixi }}
+                {% if form.bashlama_tarixi.errors %}<div class="text-danger">{{ form.bashlama_tarixi.errors }}</div>{%
+                endif %}
+            </div>
+            <div class="mb-3">
+                {{ form.bitme_tarixi.label_tag }}
+                {{ form.bitme_tarixi }}
+                {% if form.bitme_tarixi.errors %}<div class="text-danger">{{ form.bitme_tarixi.errors }}</div>{% endif
+                %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mb-3">
+                {{ form.departamentler.label_tag }}
+                <div class="border p-2 rounded" style="max-height: 200px; overflow-y: auto;">
+                    {{ form.departamentler }}
+                </div>
+                {% if form.departamentler.errors %}<div class="text-danger">{{ form.departamentler.errors }}</div>{%
+                endif %}
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Dövrü Yarat və Başlat</button>
+</form>
+
+{% endblock %}

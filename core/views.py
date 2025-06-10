@@ -8,11 +8,13 @@ from django.contrib import messages
 from django.template.loader import render_to_string
 from weasyprint import HTML
 
+# DÜZGÜN VERSİYA
+
 from .models import (
     Qiymetlendirme, Sual, Cavab, QiymetlendirmeDovru, 
-    Ishchi, SualKateqoriyasi,Departament,YeniDovrForm
+    Ishchi, SualKateqoriyasi, Departament
 )
-
+from .forms import YeniDovrForm # <-- YeniDovrForm-u .forms-dan import edirik
 # --- KÖMƏKÇİ FUNKSİYALAR ---
 
 def _get_performance_trend(ishchi):

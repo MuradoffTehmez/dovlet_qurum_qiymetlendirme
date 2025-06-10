@@ -3,15 +3,22 @@
 {% block title %}Superadmin Paneli{% endblock %}
 
 {% block content %}
-<h2>Superadmin İdarəetmə Paneli</h2>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Superadmin İdarəetmə Paneli</h2>
+    <a href="{% url 'yeni_dovr_yarat' %}" class="btn btn-lg btn-success">
+        + Yeni Dövr Başlat
+    </a>
+</div>
 
 {% if not dovr %}
-<div class="alert alert-warning">Sistemdə heç bir qiymətləndirmə dövrü tapılmadı.</div>
+<div class="alert alert-warning mt-4">
+    Sistemdə heç bir qiymətləndirmə dövrü tapılmadı. Zəhmət olmasa, yeni bir dövr başladın.
+</div>
 {% else %}
 <h4 class="text-muted mb-4">Aktiv Dövr: {{ dovr.ad }}</h4>
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-6 col-lg-4">
         <div class="card text-center text-white bg-primary mb-3">
             <div class="card-body">
                 <h5 class="card-title">Tamamlanma Nisbəti</h5>
@@ -20,12 +27,12 @@
             </div>
         </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-6 col-lg-4">
         <div class="card text-center text-white bg-info mb-3">
             <div class="card-body">
-                <h5 class="card-title">İştirakçı Sayı</h5>
-                <p class="display-4">N/A</p>
-                <p class="card-text">Bu dövrdə iştirak edən işçilər</p>
+                <h5 class="card-title">Departament Sayı</h5>
+                <p class="display-4">{{ departament_stat|length }}</p>
+                <p class="card-text">Prosesdə iştirak edən departamentlər</p>
             </div>
         </div>
     </div>
@@ -33,8 +40,9 @@
 
 <hr class="my-4">
 
+<h3 class="mt-4">Departamentlər üzrə Analiz</h3>
 <div class="row">
-    <div class="col-md-8">
+    <div class="col-lg-8">
         <h4>Departamentlər üzrə Ortalama Performans</h4>
         <div class="card">
             <div class="card-body">
@@ -42,10 +50,10 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-lg-4">
         <h4>Reytinq Cədvəli</h4>
         <table class="table table-hover">
-            <thead>
+            <thead class="table-light">
                 <tr>
                     <th>Departament</th>
                     <th>Ortalama Bal</th>
@@ -56,6 +64,10 @@
                 <tr>
                     <td>{{ stat.ad }}</td>
                     <td><span class="badge bg-success fs-6">{{ stat.ortalama_bal }}</span></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="2">Statistika üçün məlumat tapılmadı.</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -83,9 +95,20 @@
                         }]
                     },
         options: {
-        indexAxis: 'y', // Qrafiki üfüqi edir
+        indexAxis: 'y', // Qrafiki üfüqi edir ki, departament adları rahat oxunsun
         responsive: true,
-        scales: { x: { beginAtZero: true, suggestedMax: 10 } }
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                beginAtZero: true,
+                suggestedMax: 10
+            }
+        },
+        plugins: {
+            legend: {
+                display: false // Dataset-in adını gizlədirik, çünki onsuz da aydındır
+            }
+        }
     }
                 });
             }
