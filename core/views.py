@@ -7,6 +7,7 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib import messages
 from django.template.loader import render_to_string
 from weasyprint import HTML
+import random # Yalnız lazım olan modulları import edirik  
 
 # DÜZGÜN VERSİYA
 
@@ -302,7 +303,7 @@ def superadmin_paneli(request):
     return render(request, 'core/superadmin_paneli.html', context)
 
 
-# core/views.py faylının sonuna əlavə edin
+# core/views.py
 
 @login_required
 def yeni_dovr_yarat(request):
@@ -314,14 +315,77 @@ def yeni_dovr_yarat(request):
     if request.method == 'POST':
         form = YeniDovrForm(request.POST)
         if form.is_valid():
-            # Hələlik sadəcə formu yadda saxlayırıq.
-            # Avtomatlaşdırma məntiqini növbəti addımda bura əlavə edəcəyik.
-            yeni_dovr = form.save()
+            # 1. Yeni qiymətləndirmə dövrünü yaradırıq, amma hələ bazaya tam yazmırıq.
+            yeni_dovr = form.save(commit=False)
+            yeni_dovr.aktivdir = True
+            yeni_dovr.save() # İndi bazaya yazırıq
+
             secilmish_departamentler = form.cleaned_data['departamentler']
             
-            # --- AVTOMATLAŞDIRMA MƏNTİQİ GƏLƏCƏKDƏ BURADA OLACAQ ---
+            # --- AVTOMATLAŞDIRMA MƏNTİQİ BAŞLAYIR ---
             
-            messages.success(request, f"'{yeni_dovr.ad}' dövrü uğurla yaradıldı. Təyinatların avtomatlaşdırılması məntiqi hələ aktiv deyil.")
+            # 2. Seçilmiş departamentlərdəki bütün aktiv işçiləri tapırıq
+            butun_ishchiler = Ishchi.objects.filter(
+                is_active=True,
+                sektor__shobe__departament__in=secilmish_departamentler
+            ).select_related('sektor')
+
+            yeni_qiymetlendirmeler = []
+
+            # 3. Hər bir işçi üçün döngü yaradırıq
+            for ishchi in butun_ishchiler:
+                # a. Özünüqiymətləndirmə
+                yeni_qiymetlendirmeler.append(
+                    Qiymetlendirme(dovr=yeni_dovr, qiymetlendirilen=ishchi, qiymetlendiren=ishchi)
+                )
+
+                # b. Rəhbər tərəfindən qiymətləndirmə
+                try:
+                    rehber = Ishchi.objects.get(sektor=ishchi.sektor, rol='REHBER')
+                    if rehber != ishchi:
+                        yeni_qiymetlendirmeler.append(
+                            Qiymetlendirme(dovr=yeni_dovr, qiymetlendirilen=ishchi, qiymetlendiren=rehber)
+                        )
+                except Ishchi.DoesNotExist:
+                    rehber = None # Sektorda rəhbər yoxdur
+                except Ishchi.MultipleObjectsReturned:
+                    # Bir sektorda birdən çox rəhbər varsa, ilkini götürürük (bu qayda dəyişdirilə bilər)
+                    rehber = Ishchi.objects.filter(sektor=ishchi.sektor, rol='REHBER').first()
+                    if rehber != ishchi:
+                         yeni_qiymetlendirmeler.append(
+                            Qiymetlendirme(dovr=yeni_dovr, qiymetlendirilen=ishchi, qiymetlendiren=rehber)
+                        )
+
+                # c. Komanda yoldaşları tərəfindən qiymətləndirmə (2 nəfər)
+                komanda_yoldashlari = list(butun_ishchiler.filter(sektor=ishchi.sektor).exclude(id=ishchi.id))
+                if rehber:
+                    komanda_yoldashlari = [peer for peer in komanda_yoldashlari if peer.id != rehber.id]
+                
+                # Ən çox 2 nəfər seçirik
+                peer_sayi = min(len(komanda_yoldashlari), 2)
+                secilmish_peerler = random.sample(komanda_yoldashlari, peer_sayi)
+                
+                for peer in secilmish_peerler:
+                    yeni_qiymetlendirmeler.append(
+                        Qiymetlendirme(dovr=yeni_dovr, qiymetlendirilen=ishchi, qiymetlendiren=peer)
+                    )
+                
+                # d. Rəhbərin öz komandasını qiymətləndirməsi
+                if ishchi.rol == 'REHBER':
+                    onun_komandasi = butun_ishchiler.filter(sektor=ishchi.sektor).exclude(id=ishchi.id)
+                    for tabe_olan in onun_komandasi:
+                        yeni_qiymetlendirmeler.append(
+                            Qiymetlendirme(dovr=yeni_dovr, qiymetlendirilen=tabe_olan, qiymetlendiren=ishchi)
+                        )
+
+            # 4. Bütün təyinatları bir sorğu ilə bazaya əlavə edirik (çox effektivdir)
+            try:
+                Qiymetlendirme.objects.bulk_create(yeni_qiymetlendirmeler, ignore_conflicts=True)
+                yaradilan_say = len(yeni_qiymetlendirmeler)
+                messages.success(request, f"'{yeni_dovr.ad}' dövrü uğurla yaradıldı və {yaradilan_say} təyinat avtomatik olaraq əlavə edildi.")
+            except Exception as e:
+                messages.error(request, f"Təyinatlar yaradılarkən xəta baş verdi: {e}")
+
             return redirect('superadmin_paneli')
     else:
         form = YeniDovrForm()
