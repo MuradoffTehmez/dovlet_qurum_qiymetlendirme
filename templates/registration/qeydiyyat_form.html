@@ -1,0 +1,50 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Qeydiyyat{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-4">
+    <div class="col-md-8 col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header text-center">
+                <h3 class="mb-0">Yeni Hesab Yarat</h3>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger p-2">
+                        {% for error in form.non_field_errors %}
+                        <p class="mb-0 small">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% for field in form %}
+                    <div class="mb-3">
+                        {{ field.label_tag }}
+                        {{ field }}
+                        {% if field.help_text %}
+                        <div class="form-text small">{{ field.help_text|safe }}</div>
+                        {% endif %}
+                        {% for error in field.errors %}
+                        <div class="text-danger small mt-1">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary">Qeydiyyatdan Keç</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3">
+                <div class="small">
+                    Artıq hesabınız var? <a href="{% url 'login' %}">Daxil olun</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
