@@ -10,7 +10,7 @@ from weasyprint import HTML
 
 from .models import (
     Qiymetlendirme, Sual, Cavab, QiymetlendirmeDovru, 
-    Ishchi, SualKateqoriyasi,Departament
+    Ishchi, SualKateqoriyasi,Departament,YeniDovrForm
 )
 
 # --- KÖMƏKÇİ FUNKSİYALAR ---
@@ -298,3 +298,33 @@ def superadmin_paneli(request):
         context['chart_data'] = json.dumps([item['ortalama_bal'] for item in departament_stat])
 
     return render(request, 'core/superadmin_paneli.html', context)
+
+
+# core/views.py faylının sonuna əlavə edin
+
+@login_required
+def yeni_dovr_yarat(request):
+    """Superadminin yeni qiymətləndirmə dövrü yaratması üçün formanı və məntiqi idarə edir."""
+    
+    if not (request.user.is_superuser or request.user.rol == 'SUPERADMIN'):
+        return HttpResponseForbidden("Bu səhifəyə giriş icazəniz yoxdur.")
+
+    if request.method == 'POST':
+        form = YeniDovrForm(request.POST)
+        if form.is_valid():
+            # Hələlik sadəcə formu yadda saxlayırıq.
+            # Avtomatlaşdırma məntiqini növbəti addımda bura əlavə edəcəyik.
+            yeni_dovr = form.save()
+            secilmish_departamentler = form.cleaned_data['departamentler']
+            
+            # --- AVTOMATLAŞDIRMA MƏNTİQİ GƏLƏCƏKDƏ BURADA OLACAQ ---
+            
+            messages.success(request, f"'{yeni_dovr.ad}' dövrü uğurla yaradıldı. Təyinatların avtomatlaşdırılması məntiqi hələ aktiv deyil.")
+            return redirect('superadmin_paneli')
+    else:
+        form = YeniDovrForm()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'core/yeni_dovr_form.html', context)
