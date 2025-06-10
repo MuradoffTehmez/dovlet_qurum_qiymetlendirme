@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'crispy_forms',
+    'crispy_bootstrap5',
     'core',
 ]
 
@@ -130,3 +131,8 @@ LOGOUT_REDIRECT_URL = '/'
 
 # Test mərhələsi üçün e-poçtları terminalda göstərən backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# config/settings.py faylının sonuna əlavə edin
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
