@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'core',
 ]
 
+# Django-nun daxili tətbiqləri
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -125,21 +126,33 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# İstifadəçi modelini təyin edirik
+
 AUTH_USER_MODEL = 'core.Ishchi'
 
+# Authentication tənzimləmələri
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 # Test mərhələsi üçün e-poçtları terminalda göstərən backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# config/settings.py faylının sonuna əlavə edin
+
+# Crispy Forms tənzimləmələri
+# Crispy Forms, Django formalarını daha gözəl və funksional etmək üçün istifadə olunur.
+
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 
-# config/settings.py faylının sonuna əlavə edin
+
+
+# Jazzmin tənzimləmələri
+# Jazzmin, Django admin panelini daha gözəl və funksional etmək üçün istifadə olunan bir tətbiqdir.
+
+
+
 
 JAZZMIN_SETTINGS = {
     # Saytın başlığı (brauzer tabında görünür)
