@@ -1,9 +1,10 @@
+{% load i18n %}
 <!doctype html>
 <html lang="az">
 
 <head>
     <meta charset="utf-8">
-    <title>Qiymətləndirmə Hesabatı - {{ ishchi.get_full_name }}</title>
+    <title>{% trans "Qiymətləndirmə Hesabatı" %} - {{ ishchi.get_full_name }}</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
@@ -52,19 +53,19 @@
 </head>
 
 <body>
-    <h2>Qiymətləndirmə Hesabatı</h2>
+    <h2>{% trans "Qiymətləndirmə Hesabatı" %}</h2>
     <p>
-        <strong>İşçi:</strong> {{ ishchi.get_full_name }} <br>
-        <strong>Vəzifə:</strong> {{ ishchi.vezife }} <br>
-        <strong>Dövr:</strong> {{ dovr.ad }}
+        <strong>{% trans "İşçi:" %}</strong> {{ ishchi.get_full_name }} <br>
+        <strong>{% trans "Vəzifə:" %}</strong> {{ ishchi.vezife }} <br>
+        <strong>{% trans "Dövr:" %}</strong> {{ dovr.ad }}
     </p>
 
-    <h4>Ümumi Göstəricilər</h4>
+    <h4>{% trans "Ümumi Göstəricilər" %}</h4>
     <table>
         <thead>
             <tr>
-                <th>Kompetensiya (Kateqoriya)</th>
-                <th>Ortalama Xal (10 üzərindən)</th>
+                <th>{% trans "Kompetensiya (Kateqoriya)" %}</th>
+                <th>{% trans "Ortalama Xal (10 üzərindən)" %}</th>
             </tr>
         </thead>
         <tbody>
@@ -77,7 +78,7 @@
         </tbody>
     </table>
 
-    <h4 style="margin-top: 30px;">Anonim Yazılı Rəylər</h4>
+    <h4 style="margin-top: 30px;">{% trans "Anonim Yazılı Rəylər" %}</h4>
     {% if yazili_reyler %}
     <ul class="rey-list">
         {% for rey in yazili_reyler %}
@@ -85,7 +86,7 @@
         {% endfor %}
     </ul>
     {% else %}
-    <p>Yazılı rəy qeyd edilməyib.</p>
+    <p>{% trans "Yazılı rəy qeyd edilməyib." %}</p>
     {% endif %}
 
 </body>

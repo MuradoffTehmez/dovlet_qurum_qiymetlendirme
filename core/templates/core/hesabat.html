@@ -1,14 +1,15 @@
+{% load i18n %}
 {% extends 'core/base.html' %}
 
-{% block title %}Qiymətləndirmə Hesabatı{% endblock %}
+{% block title %}{% trans "Qiymətləndirmə Hesabatı" %}{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-2">
-    <h2>Qiymətləndirmə Hesabatı</h2>
+    <h2>{% trans "Qiymətləndirmə Hesabatı" %}</h2>
     {% if not detailed_context.error %}
     <a href="{% url 'hesabat_pdf_yukle' detailed_context.ishchi.id %}?dovr_id={{ selected_dovr_id }}"
         class="btn btn-danger" target="_blank">
-        PDF Yüklə
+        {% trans "PDF Yüklə" %}
     </a>
     {% endif %}
 </div>
@@ -16,7 +17,7 @@
 <div class="card mb-4">
     <div class="card-body">
         <form method="get" class="d-flex align-items-center flex-wrap">
-            <label for="dovr_id" class="form-label me-2 mb-0">Hesabat Dövrünü Seçin:</label>
+            <label for="dovr_id" class="form-label me-2 mb-0">{% trans "Hesabat Dövrünü Seçin:" %}</label>
             <select name="dovr_id" id="dovr_id" class="form-select me-2" style="width: auto;">
                 {% for cycle in cycles_for_template %}
                 <option value="{{ cycle.id }}" {% if cycle.is_selected %}selected{% endif %}>
@@ -24,7 +25,7 @@
                 </option>
                 {% endfor %}
             </select>
-            <button type="submit" class="btn btn-secondary btn-sm">Göstər</button>
+            <button type="submit" class="btn btn-secondary btn-sm">{% trans "Göstər" %}</button>
         </form>
     </div>
 </div>
@@ -36,23 +37,23 @@
     {{ detailed_context.error }}
 </div>
 {% else %}
-<h4>{{ detailed_context.dovr.ad }} Dövrü üçün Detallı Analiz</h4>
+<h4>{{ detailed_context.dovr.ad }} {% trans "Dövrü üçün Detallı Analiz" %}</h4>
 <p>
-    <strong>İşçi:</strong> {{ detailed_context.ishchi.get_full_name }}
+    <strong>{% trans "İşçi:" %}</strong> {{ detailed_context.ishchi.get_full_name }}
 </p>
 
 <div class="row">
     <div class="col-md-6 mb-4">
-        <h5>Kompetensiyalar üzrə Nəticələr</h5>
+        <h5>{% trans "Kompetensiyalar üzrə Nəticələr" %}</h5>
         <canvas id="radarChart"></canvas>
     </div>
     <div class="col-md-6">
-        <h5>Ümumi Göstəricilər</h5>
+        <h5>{% trans "Ümumi Göstəricilər" %}</h5>
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th>Kompetensiya (Kateqoriya)</th>
-                    <th>Ortalama Xal (10 üzərindən)</th>
+                    <th>{% trans "Kompetensiya (Kateqoriya)" %}</th>
+                    <th>{% trans "Ortalama Xal (10 üzərindən)" %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -63,7 +64,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="2">Bu dövr üçün göstərici tapılmadı.</td>
+                    <td colspan="2">{% trans "Bu dövr üçün göstərici tapılmadı." %}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -72,7 +73,7 @@
 </div>
 
 <hr class="my-4">
-<h4>{{ detailed_context.dovr.ad }} Dövrü üçün Yazılı Rəylər</h4>
+<h4>{{ detailed_context.dovr.ad }} {% trans "Dövrü üçün Yazılı Rəylər" %}</h4>
 {% if detailed_context.yazili_reyler %}
 <ul class="list-group">
     {% for rey in detailed_context.yazili_reyler %}
@@ -80,13 +81,13 @@
     {% endfor %}
 </ul>
 {% else %}
-<p>Bu dövr üçün yazılı rəy qeyd edilməyib.</p>
+<p>{% trans "Bu dövr üçün yazılı rəy qeyd edilməyib." %}</p>
 {% endif %}
 {% endif %}
 
 <hr class="my-4">
 
-<h4>Performans Tarixçəsi (Ümumi Ortalama Bal)</h4>
+<h4>{% trans "Performans Tarixçəsi (Ümumi Ortalama Bal)" %}</h4>
 <div class="card mb-4">
     <div class="card-body">
         <canvas id="trendChart"></canvas>
@@ -106,7 +107,7 @@
                 data: {
                     labels: {{ detailed_context.chart_labels | safe }},
         datasets: [{
-            label: 'Ortalama Xal',
+            label: '{% trans "Ortalama Xal" %}',
             data: {{ detailed_context.chart_data | safe }},
         fill: true,
         backgroundColor: 'rgba(54, 162, 235, 0.2)',
@@ -130,7 +131,7 @@
             data: {
                 labels: {{ trend_chart_labels| safe }},
     datasets: [{
-        label: 'Ümumi Ortalama Bal',
+        label: '{% trans "Ümumi Ortalama Bal" %}',
         data: {{ trend_chart_data| safe }},
         fill: false,
         borderColor: 'rgb(255, 99, 132)',

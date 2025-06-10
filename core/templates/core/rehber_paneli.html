@@ -1,10 +1,11 @@
+{% load i18n %}
 {% extends 'core/base.html' %}
 
-{% block title %}Rəhbər Paneli{% endblock %}
+{% block title %}{% trans "Rəhbər Paneli" %}{% endblock %}
 
 {% block content %}
-<h2>Rəhbər Paneli - Komanda Üzvləri</h2>
-<p>Sizin tabeliyinizdə olan işçilərin siyahısı:</p>
+<h2>{% trans "Rəhbər Paneli - Komanda Üzvləri" %}</h2>
+<p>{% trans "Sizin tabeliyinizdə olan işçilərin siyahısı:" %}</p>
 <hr>
 
 {% if tabe_olan_ishchiler %}
@@ -16,13 +17,13 @@
             <br>
             <small class="text-muted">{{ ishchi.vezife }}</small>
         </div>
-        <a href="{% url 'hesabat_bax' ishchi.id %}" class="btn btn-sm btn-info">Hesabata Bax</a>
+        <a href="{% url 'hesabat_bax' ishchi.id %}" class="btn btn-sm btn-info">{% trans "Hesabata Bax" %}</a>
     </div>
     {% endfor %}
 </div>
 {% else %}
 <div class="alert alert-info">
-    Sizin tabeliyinizdə heç bir işçi tapılmadı.
+    {% trans "Sizin tabeliyinizdə heç bir işçi tapılmadı." %}
 </div>
 {% endif %}
 {% endblock %}

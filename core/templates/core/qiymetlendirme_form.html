@@ -1,11 +1,12 @@
+{% load i18n %}
 {% extends 'core/base.html' %}
 
-{% block title %}Qiymətləndirmə Formu{% endblock %}
+{% block title %}{% trans "Qiymətləndirmə Formu" %}{% endblock %}
 
 {% block content %}
-<h2>Qiymətləndirmə Formu</h2>
-<p><strong>Qiymətləndirilən şəxs:</strong> {{ qiymetlendirme.qiymetlendirilen.get_full_name }}</p>
-<p><strong>Dövr:</strong> {{ qiymetlendirme.dovr.ad }}</p>
+<h2>{% trans "Qiymətləndirmə Formu" %}</h2>
+<p><strong>{% trans "Qiymətləndirilən şəxs:" %}</strong> {{ qiymetlendirme.qiymetlendirilen.get_full_name }}</p>
+<p><strong>{% trans "Dövr:" %}</strong> {{ qiymetlendirme.dovr.ad }}</p>
 <hr>
 
 <form method="post">
@@ -19,7 +20,7 @@
         </div>
         <div class="card-body">
             <div class="mb-3">
-                <label class="form-label">Xal (1-dən 10-a qədər):</label>
+                <label class="form-label">{% trans "Xal (1-dən 10-a qədər):" %}</label>
                 <br>
                 {% for i in "1234567891"|make_list %} {# 1-dən 10-a qədər radio yaratmaq üçün #}
                 <div class="form-check form-check-inline">
@@ -31,13 +32,13 @@
                 {% endfor %}
             </div>
             <div class="mb-3">
-                <label for="rey_{{ sual.id }}" class="form-label">Əlavə Rəy (istəyə bağlı):</label>
+                <label for="rey_{{ sual.id }}" class="form-label">{% trans "Əlavə Rəy (istəyə bağlı):" %}</label>
                 <textarea class="form-control" id="rey_{{ sual.id }}" name="rey_{{ sual.id }}" rows="3"></textarea>
             </div>
         </div>
     </div>
     {% endfor %}
 
-    <button type="submit" class="btn btn-primary btn-lg mt-3">Qiymətləndirməni Təsdiqlə</button>
+    <button type="submit" class="btn btn-primary btn-lg mt-3">{% trans "Qiymətləndirməni Təsdiqlə" %}</button>
 </form>
 {% endblock %}
