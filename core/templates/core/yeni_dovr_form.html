@@ -8,42 +8,52 @@
 </p>
 <hr>
 
-<form method="post" novalidate>
-    {% csrf_token %}
+<div class="card">
+    <div class="card-body">
+        <form method="post" novalidate>
+            {% csrf_token %}
 
-    <div class="row">
-        <div class="col-md-6">
-            <div class="mb-3">
-                {{ form.ad.label_tag }}
-                {{ form.ad }}
-                {% if form.ad.errors %}<div class="text-danger">{{ form.ad.errors }}</div>{% endif %}
-            </div>
-            <div class="mb-3">
-                {{ form.bashlama_tarixi.label_tag }}
-                {{ form.bashlama_tarixi }}
-                {% if form.bashlama_tarixi.errors %}<div class="text-danger">{{ form.bashlama_tarixi.errors }}</div>{%
-                endif %}
-            </div>
-            <div class="mb-3">
-                {{ form.bitme_tarixi.label_tag }}
-                {{ form.bitme_tarixi }}
-                {% if form.bitme_tarixi.errors %}<div class="text-danger">{{ form.bitme_tarixi.errors }}</div>{% endif
-                %}
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="mb-3">
-                {{ form.departamentler.label_tag }}
-                <div class="border p-2 rounded" style="max-height: 200px; overflow-y: auto;">
-                    {{ form.departamentler }}
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="{{ form.ad.id_for_label }}" class="form-label">{{ form.ad.label }}</label>
+                        {{ form.ad }}
+                        {% if form.ad.errors %}
+                        <div class="text-danger small mt-1">{{ form.ad.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.bashlama_tarixi.id_for_label }}" class="form-label">{{
+                            form.bashlama_tarixi.label }}</label>
+                        {{ form.bashlama_tarixi }}
+                        {% if form.bashlama_tarixi.errors %}
+                        <div class="text-danger small mt-1">{{ form.bashlama_tarixi.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="{{ form.bitme_tarixi.id_for_label }}" class="form-label">{{ form.bitme_tarixi.label
+                            }}</label>
+                        {{ form.bitme_tarixi }}
+                        {% if form.bitme_tarixi.errors %}
+                        <div class="text-danger small mt-1">{{ form.bitme_tarixi.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
                 </div>
-                {% if form.departamentler.errors %}<div class="text-danger">{{ form.departamentler.errors }}</div>{%
-                endif %}
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.departamentler.label }}</label>
+                        <div class="border p-2 rounded" style="max-height: 200px; overflow-y: auto;">
+                            {{ form.departamentler }}
+                        </div>
+                        {% if form.departamentler.errors %}
+                        <div class="text-danger small mt-1">{{ form.departamentler.errors|join:", " }}</div>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
-        </div>
+
+            <button type="submit" class="btn btn-primary mt-3">Dövrü Yarat və Başlat</button>
+        </form>
     </div>
-
-    <button type="submit" class="btn btn-primary mt-3">Dövrü Yarat və Başlat</button>
-</form>
-
+</div>
 {% endblock %}
