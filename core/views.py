@@ -1,19 +1,64 @@
 # core/views.py
 
+import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q
+from django.db.models import Q, Avg
 from django.http import HttpResponseForbidden
 from django.contrib import messages
-from .models import Qiymetlendirme, Sual, Cavab
+from .models import (
+    Qiymetlendirme, Sual, Cavab, QiymetlendirmeDovru, 
+    Ishchi, SualKateqoriyasi
+)
+
+# --- KÖMƏKÇİ FUNKSİYA ---
+# Kod təkrarının qarşısını almaq üçün hesabat məlumatlarını hazırlayan funksiya
+
+def _generate_report_context(ishchi):
+    """Verilən işçi üçün hesabat məlumatlarını hazırlayan köməkçi funksiya."""
+    dovr = QiymetlendirmeDovru.objects.order_by('-bitme_tarixi').first()
+    if not dovr:
+        return {'error': "Sistemdə heç bir qiymətləndirmə dövrü tapılmadı."}
+
+    cavablar = Cavab.objects.filter(
+        qiymetlendirme__qiymetlendirilen=ishchi,
+        qiymetlendirme__dovr=dovr
+    )
+    
+    if not cavablar.exists():
+        return {'error': f"'{dovr.ad}' dövrü üçün {ishchi.get_full_name()} haqqında qiymətləndirmə tamamlanmayıb."}
+
+    kateqoriya_neticeleri = SualKateqoriyasi.objects.filter(
+        sual__cavab__in=cavablar
+    ).annotate(
+        ortalama_xal=Avg('sual__cavab__xal')
+    ).distinct().order_by('ad')
+
+    yazili_reyler = cavablar.exclude(metnli_rey__isnull=True).exclude(metnli_rey__exact='').values_list('metnli_rey', flat=True)
+
+    chart_labels = [k.ad for k in kateqoriya_neticeleri]
+    chart_data = [round(k.ortalama_xal, 2) for k in kateqoriya_neticeleri]
+
+    return {
+        'ishchi': ishchi,
+        'dovr': dovr,
+        'kateqoriya_neticeleri': kateqoriya_neticeleri,
+        'yazili_reyler': yazili_reyler,
+        'chart_labels': json.dumps(chart_labels),
+        'chart_data': json.dumps(chart_data),
+        'error': None
+    }
+
+
+# --- ÜMUMİ İSTİFADƏÇİ GÖRÜNÜŞLƏRİ (VIEW-LARI) ---
 
 @login_required
 def dashboard(request):
-    # İstifadəçinin qiymətləndirməli olduğu və hələ tamamlanmamış tapşırıqları tapırıq
+    """İstifadəçinin qiymətləndirmə tapşırıqlarını göstərən ana səhifə."""
     qiymetlendirmeler = Qiymetlendirme.objects.filter(
         qiymetlendiren=request.user,
         status='GOZLEMEDE'
-    ).select_related('qiymetlendirilen', 'dovr') # Performans üçün optimizasiya
+    ).select_related('qiymetlendirilen', 'dovr')
     
     context = {
         'qiymetlendirmeler': qiymetlendirmeler
@@ -23,24 +68,22 @@ def dashboard(request):
 
 @login_required
 def qiymetlendirme_etmek(request, qiymetlendirme_id):
+    """Qiymətləndirmə formunun göstərilməsi və təsdiqlənməsi."""
     qiymetlendirme = get_object_or_404(Qiymetlendirme, id=qiymetlendirme_id)
 
-    # Yoxlayırıq ki, bu qiymətləndirmə həqiqətən bu istifadəçiyə aiddirmi
     if qiymetlendirme.qiymetlendiren != request.user:
         return HttpResponseForbidden("Bu səhifəyə giriş icazəniz yoxdur.")
     
-    # Yoxlayırıq ki, bu qiymətləndirmə artıq tamamlanıbmı
     if qiymetlendirme.status == 'TAMAMLANDI':
         messages.warning(request, "Bu qiymətləndirmə artıq tamamlanıb.")
         return redirect('dashboard')
 
-    # Qiymətləndirilən şəxsin strukturuna uyğun sualları seçirik
     ishchi = qiymetlendirme.qiymetlendirilen
     suallar = Sual.objects.filter(
-        Q(departament__isnull=True, shobe__isnull=True, sektor__isnull=True) | # Ümumi suallar
-        Q(departament=ishchi.sektor.shobe.departament) | # Departament sualları
-        Q(shobe=ishchi.sektor.shobe) | # Şöbə sualları
-        Q(sektor=ishchi.sektor) # Sektor sualları
+        Q(departament__isnull=True, shobe__isnull=True, sektor__isnull=True) |
+        Q(departament=ishchi.sektor.shobe.departament) |
+        Q(shobe=ishchi.sektor.shobe) |
+        Q(sektor=ishchi.sektor)
     ).distinct()
 
     if request.method == 'POST':
@@ -49,9 +92,9 @@ def qiymetlendirme_etmek(request, qiymetlendirme_id):
             rey_key = f'rey_{sual.id}'
             
             xal = request.POST.get(xal_key)
-            rey = request.POST.get(rey_key, '') # Rəy boş ola bilər
+            rey = request.POST.get(rey_key, '')
 
-            if xal: # Xal verilibsə cavabı yaradırıq
+            if xal:
                 Cavab.objects.create(
                     qiymetlendirme=qiymetlendirme,
                     sual=sual,
@@ -59,7 +102,6 @@ def qiymetlendirme_etmek(request, qiymetlendirme_id):
                     metnli_rey=rey
                 )
         
-        # Bütün cavablar yaradıldıqdan sonra qiymətləndirmənin statusunu dəyişirik
         qiymetlendirme.status = 'TAMAMLANDI'
         qiymetlendirme.save()
 
@@ -73,62 +115,53 @@ def qiymetlendirme_etmek(request, qiymetlendirme_id):
     return render(request, 'core/qiymetlendirme_form.html', context)
 
 
-
-# ... digər importların yanına "json" əlavə edin
-import json
-from django.db.models import Avg
-from .models import QiymetlendirmeDovru, Cavab, SualKateqoriyasi # Model importlarına əlavə edin
-
-# ... mövcud view-ların altında yeni funksiyanı yaradın
-
-# core/views.py faylında hesabat_sehifesi funksiyasını bununla əvəz edin:
-
 @login_required
 def hesabat_sehifesi(request):
-    ishchi = request.user
-    dovr = None # Başlanğıcda dövrü boş təyin edirik
-
-    try:
-        # Ən son aktiv və ya bitmiş qiymətləndirmə dövrünü tapırıq
-        dovr = QiymetlendirmeDovru.objects.order_by('-bitme_tarixi').first()
-        if not dovr:
-            # Əgər sistemdə heç bir dövr yoxdursa
-            raise QiymetlendirmeDovru.DoesNotExist
-    except QiymetlendirmeDovru.DoesNotExist:
-        messages.error(request, "Sistemdə heç bir qiymətləndirmə dövrü tapılmadı.")
-        return redirect('dashboard')
-
-    # Həmin dövrdə bu işçi haqqında verilmiş bütün cavabları tapırıq
-    cavablar = Cavab.objects.filter(
-        qiymetlendirme__qiymetlendirilen=ishchi,
-        qiymetlendirme__dovr=dovr
-    )
+    """İstifadəçinin öz hesabatına baxması üçün."""
+    context = _generate_report_context(request.user)
     
-    if not cavablar.exists():
-        messages.warning(request, f"'{dovr.ad}' dövrü üçün sizin haqqınızda hələ heç bir qiymətləndirmə tamamlanmayıb.")
+    if context.get('error'):
+        messages.warning(request, context['error'])
         return redirect('dashboard')
+        
+    return render(request, 'core/hesabat.html', context)
 
-    # Kateqoriyalar üzrə ortalama xalların hesablanması
-    kateqoriya_neticeleri = SualKateqoriyasi.objects.filter(
-        sual__cavab__in=cavablar
-    ).annotate(
-        ortalama_xal=Avg('sual__cavab__xal')
-    ).distinct().order_by('ad') # Səliqəli görünüş üçün əlifba sırası ilə
 
-    # Yazılı rəylərin toplanması
-    yazili_reyler = cavablar.exclude(metnli_rey__isnull=True).exclude(metnli_rey__exact='').values_list('metnli_rey', flat=True)
+# --- RƏHBƏR ÜÇÜN XÜSUSİ GÖRÜNÜŞLƏR (VIEW-LAR) ---
 
-    # Diaqram üçün məlumatların hazırlanması
-    chart_labels = [k.ad for k in kateqoriya_neticeleri]
-    chart_data = [round(k.ortalama_xal, 2) for k in kateqoriya_neticeleri]
+@login_required
+def rehber_paneli(request):
+    """Rəhbərin öz komanda üzvlərini gördüyü panel."""
+    if request.user.rol != 'REHBER':
+        return HttpResponseForbidden("Bu səhifəyə yalnız rəhbərlər daxil ola bilər.")
+
+    tabe_olan_ishchiler = []
+    if request.user.sektor:
+        tabe_olan_ishchiler = Ishchi.objects.filter(
+            sektor=request.user.sektor
+        ).exclude(id=request.user.id)
 
     context = {
-        'ishchi': ishchi,
-        'dovr': dovr,
-        'kateqoriya_neticeleri': kateqoriya_neticeleri,
-        'yazili_reyler': yazili_reyler,
-        'chart_labels': json.dumps(chart_labels),
-        'chart_data': json.dumps(chart_data),
+        'tabe_olan_ishchiler': tabe_olan_ishchiler
     }
+    return render(request, 'core/rehber_paneli.html', context)
 
+
+@login_required
+def hesabat_bax(request, ishchi_id):
+    """Rəhbərin tabeliyində olan işçinin hesabatına baxması."""
+    if request.user.rol != 'REHBER':
+        return HttpResponseForbidden("Bu səhifəyə yalnız rəhbərlər daxil ola bilər.")
+
+    hedef_ishchi = get_object_or_404(Ishchi, id=ishchi_id)
+
+    if hedef_ishchi.sektor != request.user.sektor:
+        return HttpResponseForbidden("Siz yalnız öz komandanızdakı işçilərin hesabatına baxa bilərsiniz.")
+
+    context = _generate_report_context(hedef_ishchi)
+    
+    if context.get('error'):
+        messages.warning(request, context['error'])
+        return redirect('rehber_paneli')
+        
     return render(request, 'core/hesabat.html', context)

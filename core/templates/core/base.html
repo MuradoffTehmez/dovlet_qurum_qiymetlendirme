@@ -16,7 +16,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav ms-auto align-items-center">
 
                     {% if user.is_authenticated %}
                     <li class="nav-item">
@@ -25,12 +25,19 @@
                         </span>
                     </li>
                     <li class="nav-item me-2">
-                        <a href="{% url 'hesabatim' %}" class="btn btn-outline-primary">Hesabatım</a>
+                        <a href="{% url 'hesabatim' %}" class="btn btn-outline-primary btn-sm">Hesabatım</a>
                     </li>
+
+                    {% if user.rol == 'REHBER' %}
+                    <li class="nav-item me-2">
+                        <a href="{% url 'rehber_paneli' %}" class="btn btn-outline-success btn-sm">Rəhbər Paneli</a>
+                    </li>
+                    {% endif %}
+
                     <li class="nav-item">
                         <form action="{% url 'logout' %}" method="post" class="d-inline">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger">Çıxış</button>
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Çıxış</button>
                         </form>
                     </li>
 
