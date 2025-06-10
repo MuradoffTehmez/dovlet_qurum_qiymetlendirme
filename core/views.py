@@ -10,7 +10,7 @@ from weasyprint import HTML
 
 from .models import (
     Qiymetlendirme, Sual, Cavab, QiymetlendirmeDovru, 
-    Ishchi, SualKateqoriyasi
+    Ishchi, SualKateqoriyasi,Departament
 )
 
 # --- KÖMƏKÇİ FUNKSİYALAR ---
@@ -247,3 +247,54 @@ def hesabat_pdf_yukle(request, ishchi_id):
     response['Content-Disposition'] = f'attachment; filename="hesabat_{ishchi.username}_{dovr.ad}.pdf"'
     
     return response
+
+
+@login_required
+def superadmin_paneli(request):
+    """Bütün təşkilat üzrə ümumi statistikaları göstərən panel."""
+    
+    # Yalnız Superadmin rolu və ya Django superuser-i bu səhifəyə baxa bilər
+    if not (request.user.is_superuser or request.user.rol == 'SUPERADMIN'):
+        return HttpResponseForbidden("Bu səhifəyə giriş icazəniz yoxdur.")
+
+    # Ən son qiymətləndirmə dövrünü tapırıq
+    dovr = QiymetlendirmeDovru.objects.order_by('-bitme_tarixi').first()
+    
+    # Ümumi kontekst lüğətini hazırlayırıq
+    context = {'dovr': dovr}
+
+    if dovr:
+        # --- Ümumi Tamamlanma Statistikası ---
+        total_qiymetlendirmeler = Qiymetlendirme.objects.filter(dovr=dovr)
+        tamamlanmish_sayi = total_qiymetlendirmeler.filter(status='TAMAMLANDI').count()
+        total_sayi = total_qiymetlendirmeler.count()
+        tamamlama_faizi = (tamamlanmish_sayi / total_sayi) * 100 if total_sayi > 0 else 0
+        
+        context.update({
+            'tamamlanmish_sayi': tamamlanmish_sayi,
+            'total_sayi': total_sayi,
+            'tamamlama_faizi': round(tamamlama_faizi, 2),
+        })
+
+        # --- Departamentlər üzrə Ortalama Bal Statistikası ---
+        departamentler = Departament.objects.all()
+        departament_stat = []
+        for dep in departamentler:
+            # Həmin departamentdəki bütün cavabların ortalama balını hesablayırıq
+            ortalama_bal = Cavab.objects.filter(
+                qiymetlendirme__dovr=dovr,
+                qiymetlendirme__qiymetlendirilen__sektor__shobe__departament=dep
+            ).aggregate(ortalama=Avg('xal'))['ortalama']
+            
+            departament_stat.append({
+                'ad': dep.ad,
+                'ortalama_bal': round(ortalama_bal, 2) if ortalama_bal else 0,
+            })
+        
+        context['departament_stat'] = departament_stat
+
+        # --- Qrafik üçün məlumatlar ---
+        context['chart_labels'] = json.dumps([item['ad'] for item in departament_stat])
+        context['chart_data'] = json.dumps([item['ortalama_bal'] for item in departament_stat])
+
+    return render(request, 'core/superadmin_paneli.html', context)

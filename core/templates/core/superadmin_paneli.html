@@ -1,0 +1,94 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Superadmin Paneli{% endblock %}
+
+{% block content %}
+<h2>Superadmin İdarəetmə Paneli</h2>
+
+{% if not dovr %}
+<div class="alert alert-warning">Sistemdə heç bir qiymətləndirmə dövrü tapılmadı.</div>
+{% else %}
+<h4 class="text-muted mb-4">Aktiv Dövr: {{ dovr.ad }}</h4>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card text-center text-white bg-primary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Tamamlanma Nisbəti</h5>
+                <p class="display-4">{{ tamamlama_faizi }}%</p>
+                <p class="card-text">{{ total_sayi }} tapşırıqdan {{ tamamlanmish_sayi }} tamamlanıb.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card text-center text-white bg-info mb-3">
+            <div class="card-body">
+                <h5 class="card-title">İştirakçı Sayı</h5>
+                <p class="display-4">N/A</p>
+                <p class="card-text">Bu dövrdə iştirak edən işçilər</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr class="my-4">
+
+<div class="row">
+    <div class="col-md-8">
+        <h4>Departamentlər üzrə Ortalama Performans</h4>
+        <div class="card">
+            <div class="card-body">
+                <canvas id="departmentChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <h4>Reytinq Cədvəli</h4>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Departament</th>
+                    <th>Ortalama Bal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in departament_stat %}
+                <tr>
+                    <td>{{ stat.ad }}</td>
+                    <td><span class="badge bg-success fs-6">{{ stat.ortalama_bal }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const departmentCtx = document.getElementById('departmentChart');
+        if (departmentCtx) {
+            new Chart(departmentCtx, {
+                type: 'bar', // Sütunlu qrafik (bar chart)
+                data: {
+                    labels: {{ chart_labels| safe }
+    },
+        datasets: [{
+            label: 'Departamentlərin Ortalama Balı',
+            data: {{ chart_data| safe }},
+        backgroundColor: 'rgba(25, 135, 84, 0.6)',
+        borderColor: 'rgba(25, 135, 84, 1)',
+        borderWidth: 1
+                        }]
+                    },
+        options: {
+        indexAxis: 'y', // Qrafiki üfüqi edir
+        responsive: true,
+        scales: { x: { beginAtZero: true, suggestedMax: 10 } }
+    }
+                });
+            }
+        });
+</script>
+{% endblock %}

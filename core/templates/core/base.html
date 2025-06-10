@@ -33,7 +33,11 @@
                         <a href="{% url 'rehber_paneli' %}" class="btn btn-outline-success btn-sm">Rəhbər Paneli</a>
                     </li>
                     {% endif %}
-
+                    {% if user.is_superuser or user.rol == 'SUPERADMIN' %}
+                    <li class="nav-item me-2">
+                        <a href="{% url 'superadmin_paneli' %}" class="btn btn-outline-warning btn-sm">Superadmin Paneli</a>
+                    </li>
+                    {% endif %}
                     <li class="nav-item">
                         <form action="{% url 'logout' %}" method="post" class="d-inline">
                             {% csrf_token %}
