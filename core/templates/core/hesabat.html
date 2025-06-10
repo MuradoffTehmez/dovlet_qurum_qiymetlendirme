@@ -3,117 +3,195 @@
 {% block title %}Qiymətləndirmə Hesabatı{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center">
-    <h2>Qiymətləndirmə Hesabatı</h2>
-    <a href="{% url 'hesabat_pdf_yukle' ishchi.id %}" class="btn btn-danger">
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-            class="bi bi-file-earmark-pdf-fill" viewBox="0 0 16 16">
-            <path
-                d="M5.523 12.424q.21-.164.474-.365a.73.73 0 0 1 .45.12.71.71 0 0 1 .14.432c0 .227-.063.402-.19.524a.79.79 0 0 1-.455.183q-.268 0-.52-.192a.85.85 0 0 1-.22-.505.74.74 0 0 1 .185-.523q.17-.18.42-.33Z" />
-            <path
-                d="M2 2a2 2 0 0 1 2-2h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2Zm5.5 1.5v2a1 1 0 0 0 1 1h2l-3-3Z" />
-            <path
-                d="M4.603 14.087a.8.8 0 0 1-1.037.12L3 13.738V12.8a.8.8 0 0 1 .8-.8h.4a.8.8 0 0 1 .8.8v.938l.418.32a.8.8 0 0 1 .12 1.037Z" />
-            <path
-                d="M11.365 14.087a.8.8 0 0 1-1.037.12L9.738 13.738V12.8a.8.8 0 0 1 .8-.8h.4a.8.8 0 0 1 .8.8v.938l.418.32a.8.8 0 0 1 .12 1.037Z" />
-            <path
-                d="M7.247 13.738a.85.85 0 0 1-.433-.166L6.32 13.048a.8.8 0 0 1-.12-1.037.8.8 0 0 1 1.037-.121l.246.185.246-.185a.8.8 0 0 1 1.037.121.8.8 0 0 1-.12 1.037l-.489.37a.85.85 0 0 1-.433.166Z" />
-        </svg>
-        PDF Yüklə
-    </a>
-</div>
-
-<p>
-    <strong>İşçi:</strong> {{ ishchi.get_full_name }} <br>
-    <strong>Dövr:</strong> {{ dovr.ad }}
-</p>
-
-<hr>
-
-<div class="row">
-    <div class="col-md-6">
-        <h4>Kompetensiyalar üzrə Nəticələr</h4>
-        <canvas id="radarChart" width="400" height="400"></canvas>
-    </div>
-    <div class="col-md-6">
-        <h4>Ümumi Göstəricilər</h4>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Kompetensiya (Kateqoriya)</th>
-                    <th>Ortalama Xal (10 üzərindən)</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for netice in kateqoriya_neticeleri %}
-                <tr>
-                    <td>{{ netice.ad }}</td>
-                    <td><strong>{{ netice.ortalama_xal|floatformat:2 }}</strong></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<hr class="my-4">
-
-<div class="row">
-    <div class="col-12">
-        <h4>Anonim Yazılı Rəylər</h4>
-        {% if yazili_reyler %}
-        <ul class="list-group">
-            {% for rey in yazili_reyler %}
-            <li class="list-group-item">"{{ rey }}"</li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <p>Sizin haqqınızda yazılı rəy qeyd edilməyib.</p>
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2>Qiymətləndirmə Hesabatı</h2>
+        {% if detailed_context.ishchi and selected_dovr_id %}
+            <a href="{% url 'hesabat_pdf_yukle' detailed_context.ishchi.id %}?dovr_id={{ selected_dovr_id }}" class="btn btn-danger" target="_blank">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-pdf-fill" viewBox="0 0 16 16">
+                    <path d="M5.523 12.424q.21-.164.474-.365a.73.73 0 0 1 .45.12.71.71 0 0 1 .14.432c0 .227-.063.402-.19.524a.79.79 0 0 1-.455.183q-.268 0-.52-.192a.85.85 0 0 1-.22-.505.74.74 0 0 1 .185-.523q.17-.18.42-.33Z"/>
+                    <path d="M2 2a2 2 0 0 1 2-2h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2Zm5.5 1.5v2a1 1 0 0 0 1 1h2l-3-3Z"/>
+                    <path d="M4.603 14.087a.8.8 0 0 1-1.037.12L3 13.738V12.8a.8.8 0 0 1 .8-.8h.4a.8.8 0 0 1 .8.8v.938l.418.32a.8.8 0 0 1 .12 1.037Z"/>
+                    <path d="M11.365 14.087a.8.8 0 0 1-1.037.12L9.738 13.738V12.8a.8.8 0 0 1 .8-.8h.4a.8.8 0 0 1 .8.8v.938l.418.32a.8.8 0 0 1 .12 1.037Z"/>
+                    <path d="M7.247 13.738a.85.85 0 0 1-.433-.166L6.32 13.048a.8.8 0 0 1-.12-1.037.8.8 0 0 1 1.037-.121l.246.185.246-.185a.8.8 0 0 1 1.037.121.8.8 0 0 1-.12 1.037l-.489.37a.85.85 0 0 1-.433.166Z"/>
+                </svg>
+                PDF Yüklə
+            </a>
         {% endif %}
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const labels = JSON.parse('{{ chart_labels|escapejs }}');
-        const data = JSON.parse('{{ chart_data|escapejs }}');
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="d-flex align-items-center flex-wrap">
+                <label for="dovr_id" class="form-label me-2 mb-0">Hesabat Dövrünü Seçin:</label>
+                <select name="dovr_id" id="dovr_id" class="form-select me-2" style="width: auto;">
+                    {% for dovr in all_user_cycles %}
+                        <option value="{{ dovr.id }}">
+                            {{ dovr.ad }}
+                        </option>
+                    {% empty %}
+                        <option value="">Dövr tapılmadı</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-secondary btn-sm">Göstər</button>
+            </form>
+        </div>
+    </div>
+    
+    {% if detailed_context %}
+        <hr>
+        <h4>{{ detailed_context.dovr.ad }} Dövrü üçün Detallı Analiz</h4>
+        <p>
+            <strong>İşçi:</strong> {{ detailed_context.ishchi.get_full_name }}
+        </p>
 
-        const ctx = document.getElementById('radarChart').getContext('2d');
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <h5>Kompetensiyalar üzrə Nəticələr</h5>
+                <div style="position: relative; height: 400px;">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h5>Ümumi Göstəricilər</h5>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Kompetensiya (Kateqoriya)</th>
+                            <th>Ortalama Xal (10 üzərindən)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for netice in detailed_context.kateqoriya_neticeleri %}
+                        <tr>
+                            <td>{{ netice.ad }}</td>
+                            <td><strong>{{ netice.ortalama_xal|floatformat:2 }}</strong></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2">Bu dövr üçün göstərici tapılmadı.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-        new Chart(ctx, {
-            type: 'radar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Ortalama Xal',
-                    data: data,
-                    fill: true,
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgb(54, 162, 235)',
-                    pointBackgroundColor: 'rgb(54, 162, 235)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgb(54, 162, 235)'
-                }]
-            },
-            options: {
-                elements: {
-                    line: {
-                        borderWidth: 3
-                    }
-                },
-                scales: {
-                    r: {
-                        suggestedMin: 0,
-                        suggestedMax: 10,
-                        angleLines: {
-                            display: false
+        <!-- Trend Chart Section -->
+        {% if trend_chart_labels and trend_chart_data %}
+            <hr class="my-4">
+            <h4>Performans Tarixçəsi (Ümumi Ortalama Bal)</h4>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div style="position: relative; height: 400px;">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        
+        <hr class="my-4">
+
+        <h4>{{ detailed_context.dovr.ad }} Dövrü üçün Yazılı Rəylər</h4>
+        {% if detailed_context.yazili_reyler %}
+            <ul class="list-group">
+                {% for rey in detailed_context.yazili_reyler %}
+                    <li class="list-group-item">"{{ rey|safe }}"</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Bu dövr üçün yazılı rəy qeyd edilməyib.</p>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-info">
+            <strong>Məlumat yoxdur:</strong> Seçilən dövr üçün hesabat məlumatı tapılmadı.
+        </div>
+    {% endif %}
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if data exists before creating charts
+            {% if detailed_context.chart_labels and detailed_context.chart_data %}
+                // Radar Chart (Kompetensiyalar)
+                const radarCtx = document.getElementById('radarChart');
+                if (radarCtx) {
+                    new Chart(radarCtx, {
+                        type: 'radar',
+                        data: {
+                            labels: {{ detailed_context.chart_labels|safe }},
+                            datasets: [{
+                                label: 'Ortalama Xal',
+                                data: {{ detailed_context.chart_data|safe }},
+                                fill: true,
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgb(54, 162, 235)',
+                                pointBackgroundColor: 'rgb(54, 162, 235)',
+                                pointBorderColor: '#fff',
+                                pointHoverBackgroundColor: '#fff',
+                                pointHoverBorderColor: 'rgb(54, 162, 235)'
+                            }]
+                        },
+                        options: { 
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: { 
+                                r: { 
+                                    suggestedMin: 0, 
+                                    suggestedMax: 10,
+                                    beginAtZero: true
+                                } 
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'top'
+                                }
+                            }
                         }
-                    }
+                    });
                 }
-            }
+            {% endif %}
+
+            {% if trend_chart_labels and trend_chart_data %}
+                // Line Chart (Trend Analizi)
+                const trendCtx = document.getElementById('trendChart');
+                if (trendCtx) {
+                    new Chart(trendCtx, {
+                        type: 'line',
+                        data: {
+                            labels: {{ trend_chart_labels|safe }},
+                            datasets: [{
+                                label: 'Ümumi Ortalama Bal',
+                                data: {{ trend_chart_data|safe }},
+                                fill: false,
+                                borderColor: 'rgb(255, 99, 132)',
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                tension: 0.1,
+                                pointRadius: 5,
+                                pointHoverRadius: 8
+                            }]
+                        },
+                        options: { 
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: { 
+                                y: { 
+                                    beginAtZero: true, 
+                                    suggestedMax: 10 
+                                } 
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'top'
+                                },
+                                tooltip: {
+                                    mode: 'index',
+                                    intersect: false
+                                }
+                            }
+                        }
+                    });
+                }
+            {% endif %}
         });
-    });
-</script>
+    </script>
 {% endblock %}
