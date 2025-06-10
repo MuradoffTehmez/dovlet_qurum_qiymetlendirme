@@ -1,5 +1,4 @@
-# core/views.py
-
+# core/views.py - TAM VƏ SON VERSİYA
 import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -14,11 +13,9 @@ from .models import (
     Ishchi, SualKateqoriyasi
 )
 
-
 # --- KÖMƏKÇİ FUNKSİYALAR ---
 
 def _get_performance_trend(ishchi):
-    """İşçinin bütün dövrlər üzrə performans trendini hesablayır."""
     dovrler = QiymetlendirmeDovru.objects.filter(
         qiymetlendirme__qiymetlendirilen=ishchi,
         qiymetlendirme__status='TAMAMLANDI'
@@ -38,14 +35,14 @@ def _get_performance_trend(ishchi):
 
 
 def _get_detailed_report_context(ishchi, dovr):
-    """Verilən işçi və dövr üçün detallı hesabat məlumatlarını hazırlayır."""
     cavablar = Cavab.objects.filter(
         qiymetlendirme__qiymetlendirilen=ishchi,
-        qiymetlendirme__dovr=dovr
+        qiymetlendirme__dovr=dovr,
+        qiymetlendirme__status='TAMAMLANDI' # Yalnız tamamlanmışları hesaba alırıq
     )
     
     if not cavablar.exists():
-        return {'error': f"'{dovr.ad}' dövrü üçün {ishchi.get_full_name()} haqqında qiymətləndirmə tamamlanmayıb."}
+        return {'error': f"'{dovr.ad}' dövrü üçün {ishchi.get_full_name()} haqqında heç bir tamamlanmış qiymətləndirmə tapılmadı."}
 
     kateqoriya_neticeleri = SualKateqoriyasi.objects.filter(
         sual__cavab__in=cavablar
@@ -73,7 +70,6 @@ def _get_detailed_report_context(ishchi, dovr):
 
 @login_required
 def dashboard(request):
-    """İstifadəçinin qiymətləndirmə tapşırıqlarını göstərən ana səhifə."""
     qiymetlendirmeler = Qiymetlendirme.objects.filter(
         qiymetlendiren=request.user,
         status='GOZLEMEDE'
@@ -87,7 +83,6 @@ def dashboard(request):
 
 @login_required
 def qiymetlendirme_etmek(request, qiymetlendirme_id):
-    """Qiymətləndirmə formunun göstərilməsi və təsdiqlənməsi."""
     qiymetlendirme = get_object_or_404(Qiymetlendirme, id=qiymetlendirme_id)
 
     if qiymetlendirme.qiymetlendiren != request.user:
@@ -136,10 +131,10 @@ def qiymetlendirme_etmek(request, qiymetlendirme_id):
 
 @login_required
 def hesabat_sehifesi(request):
-    """İstifadəçinin öz hesabatına baxması üçün (tarixçə ilə birlikdə)."""
     ishchi = request.user
     trend_data, all_user_cycles = _get_performance_trend(ishchi)
     
+    # Başlanğıcda heç bir hesabat yoxdursa
     if not all_user_cycles:
         messages.warning(request, "Haqqınızda heç bir tamamlanmış qiymətləndirmə tapılmadı.")
         return redirect('dashboard')
@@ -155,7 +150,7 @@ def hesabat_sehifesi(request):
     context = {
         'detailed_context': detailed_context,
         'all_user_cycles': all_user_cycles,
-        'selected_dovr_id': selected_dovr.id,
+        'selected_dovr_id': selected_dovr.id if selected_dovr else None,
         'trend_chart_labels': json.dumps(list(trend_data.keys())),
         'trend_chart_data': json.dumps(list(trend_data.values())),
     }
@@ -167,7 +162,6 @@ def hesabat_sehifesi(request):
 
 @login_required
 def rehber_paneli(request):
-    """Rəhbərin öz komanda üzvlərini gördüyü panel."""
     if request.user.rol != 'REHBER':
         return HttpResponseForbidden("Bu səhifəyə yalnız rəhbərlər daxil ola bilər.")
 
@@ -185,7 +179,6 @@ def rehber_paneli(request):
 
 @login_required
 def hesabat_bax(request, ishchi_id):
-    """Rəhbərin tabeliyində olan işçinin hesabatına baxması (tarixçə ilə birlikdə)."""
     if request.user.rol != 'REHBER':
         return HttpResponseForbidden("Bu səhifəyə yalnız rəhbərlər daxil ola bilər.")
 
@@ -211,7 +204,7 @@ def hesabat_bax(request, ishchi_id):
     context = {
         'detailed_context': detailed_context,
         'all_user_cycles': all_user_cycles,
-        'selected_dovr_id': selected_dovr.id,
+        'selected_dovr_id': selected_dovr.id if selected_dovr else None,
         'trend_chart_labels': json.dumps(list(trend_data.keys())),
         'trend_chart_data': json.dumps(list(trend_data.values())),
     }
@@ -223,7 +216,6 @@ def hesabat_bax(request, ishchi_id):
 
 @login_required
 def hesabat_pdf_yukle(request, ishchi_id):
-    """Hesabatı PDF formatında generasiya edib yükləməni təmin edir."""
     ishchi = get_object_or_404(Ishchi, id=ishchi_id)
 
     is_rehber = (request.user.rol == 'REHBER' and request.user.sektor == ishchi.sektor)
@@ -232,12 +224,11 @@ def hesabat_pdf_yukle(request, ishchi_id):
     if not (is_rehber or is_self):
         return HttpResponseForbidden("Bu hesabatı yükləmək üçün icazəniz yoxdur.")
 
-    # PDF-in hansı dövr üçün olacağını təyin edirik (URL-dən gələn parametrə görə)
     dovr_id = request.GET.get('dovr_id')
     if dovr_id:
         dovr = get_object_or_404(QiymetlendirmeDovru, id=dovr_id)
     else:
-        dovr = QiymetlendirmeDovru.objects.filter(qiymetlendirme__qiymetlendirilen=ishchi).distinct().order_by('-bitme_tarixi').first()
+        dovr = QiymetlendirmeDovru.objects.filter(qiymetlendirme__qiymetlendirilen=ishchi, qiymetlendirme__status='TAMAMLANDI').distinct().order_by('-bitme_tarixi').first()
     
     if not dovr:
         messages.error(request, "Hesabat yaratmaq üçün heç bir qiymətləndirmə dövrü tapılmadı.")
