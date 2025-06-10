@@ -7,16 +7,14 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib import messages
 from django.template.loader import render_to_string
 from weasyprint import HTML
-import random # Yalnız lazım olan modulları import edirik  
-
-# DÜZGÜN VERSİYA
+import random 
 
 from .models import (
     Qiymetlendirme, Sual, Cavab, QiymetlendirmeDovru, 
     Ishchi, SualKateqoriyasi, Departament
 )
-from .forms import YeniDovrForm # <-- YeniDovrForm-u .forms-dan import edirik
-# --- KÖMƏKÇİ FUNKSİYALAR ---
+from .forms import YeniDovrForm, IshchiCreationForm
+
 
 def _get_performance_trend(ishchi):
     dovrler = QiymetlendirmeDovru.objects.filter(
@@ -394,3 +392,19 @@ def yeni_dovr_yarat(request):
         'form': form,
     }
     return render(request, 'core/yeni_dovr_form.html', context)
+
+
+def qeydiyyat_sehifesi(request):
+    """Yeni istifadəçilərin qeydiyyatdan keçməsi üçün."""
+    if request.method == 'POST':
+        form = IshchiCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save() 
+            login(request, user) 
+            messages.success(request, "Qeydiyyat uğurla tamamlandı. Xoş gəlmisiniz!")
+            return redirect('dashboard')
+    else:
+        form = IshchiCreationForm()
+    
+    context = {'form': form}
+    return render(request, 'registration/qeydiyyat_form.html', context)

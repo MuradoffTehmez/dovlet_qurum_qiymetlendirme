@@ -5,7 +5,9 @@ from . import views
 
 urlpatterns = [
     path('', views.dashboard, name='dashboard'),
+    
     path('qiymetlendir/<int:qiymetlendirme_id>/', views.qiymetlendirme_etmek, name='qiymetlendirme_etmek'),
+
     path('hesabatim/', views.hesabat_sehifesi, name='hesabatim'), 
 
     path('rehber-paneli/', views.rehber_paneli, name='rehber_paneli'),
@@ -18,7 +20,7 @@ urlpatterns = [
 
     path('superadmin/yeni-dovr/', views.yeni_dovr_yarat, name='yeni_dovr_yarat'),
 
-
+    path('accounts/qeydiyyat/', views.qeydiyyat_sehifesi, name='qeydiyyat'),
 
     # Uncomment the following lines if you want to enable these views
 
