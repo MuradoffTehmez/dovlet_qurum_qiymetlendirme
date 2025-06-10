@@ -127,3 +127,6 @@ AUTH_USER_MODEL = 'core.Ishchi'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+# Test mərhələsi üçün e-poçtları terminalda göstərən backend
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
