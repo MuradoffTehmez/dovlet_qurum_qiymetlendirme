@@ -3,11 +3,31 @@
 {% block title %}Qiymətləndirmə Hesabatı{% endblock %}
 
 {% block content %}
-<h2>Qiymətləndirmə Hesabatı</h2>
+<div class="d-flex justify-content-between align-items-center">
+    <h2>Qiymətləndirmə Hesabatı</h2>
+    <a href="{% url 'hesabat_pdf_yukle' ishchi.id %}" class="btn btn-danger">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+            class="bi bi-file-earmark-pdf-fill" viewBox="0 0 16 16">
+            <path
+                d="M5.523 12.424q.21-.164.474-.365a.73.73 0 0 1 .45.12.71.71 0 0 1 .14.432c0 .227-.063.402-.19.524a.79.79 0 0 1-.455.183q-.268 0-.52-.192a.85.85 0 0 1-.22-.505.74.74 0 0 1 .185-.523q.17-.18.42-.33Z" />
+            <path
+                d="M2 2a2 2 0 0 1 2-2h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2Zm5.5 1.5v2a1 1 0 0 0 1 1h2l-3-3Z" />
+            <path
+                d="M4.603 14.087a.8.8 0 0 1-1.037.12L3 13.738V12.8a.8.8 0 0 1 .8-.8h.4a.8.8 0 0 1 .8.8v.938l.418.32a.8.8 0 0 1 .12 1.037Z" />
+            <path
+                d="M11.365 14.087a.8.8 0 0 1-1.037.12L9.738 13.738V12.8a.8.8 0 0 1 .8-.8h.4a.8.8 0 0 1 .8.8v.938l.418.32a.8.8 0 0 1 .12 1.037Z" />
+            <path
+                d="M7.247 13.738a.85.85 0 0 1-.433-.166L6.32 13.048a.8.8 0 0 1-.12-1.037.8.8 0 0 1 1.037-.121l.246.185.246-.185a.8.8 0 0 1 1.037.121.8.8 0 0 1-.12 1.037l-.489.37a.85.85 0 0 1-.433.166Z" />
+        </svg>
+        PDF Yüklə
+    </a>
+</div>
+
 <p>
     <strong>İşçi:</strong> {{ ishchi.get_full_name }} <br>
     <strong>Dövr:</strong> {{ dovr.ad }}
 </p>
+
 <hr>
 
 <div class="row">
