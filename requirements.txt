@@ -14,6 +14,7 @@ pillow==11.2.1
 pycparser==2.22
 pydyf==0.11.0
 pyphen==0.17.2
+python-dotenv==1.1.0
 sqlparse==0.5.3
 tinycss2==1.4.0
 tinyhtml5==2.0.0
