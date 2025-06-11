@@ -164,11 +164,41 @@ def hesabat_gorunumu(request, ishchi_id=None):
 @login_required
 @rehber_required
 def rehber_paneli(request):
-    """Rəhbərin öz komandasını gördüyü panel."""
-    tabe_olan_ishchiler = []
+    """Rəhbərin öz komandasını və komandanın ümumi statistikasını gördüyü panel."""
+    
+    tabe_olan_ishchiler = Ishchi.objects.none()
+    team_competency_stats = {}
+    
+    # Rəhbərin sektoru varsa, tabeliyindəki işçiləri tapırıq
     if request.user.sektor:
-        tabe_olan_ishchiler = Ishchi.objects.filter(sektor=request.user.sektor).exclude(id=request.user.id)
-    return render(request, 'core/rehber_paneli.html', {'tabe_olan_ishchiler': tabe_olan_ishchiler})
+        tabe_olan_ishchiler = Ishchi.objects.filter(
+            sektor=request.user.sektor
+        ).exclude(id=request.user.id)
+
+    # Ən son qiymətləndirmə dövrünü tapırıq
+    latest_dovr = QiymetlendirmeDovru.objects.order_by('-bitme_tarixi').first()
+
+    if tabe_olan_ishchiler.exists() and latest_dovr:
+        # Komandanın kompetensiyalar üzrə ortalama ballarını hesablayırıq
+        categories = SualKateqoriyasi.objects.all()
+        for cat in categories:
+            avg_score = Cavab.objects.filter(
+                qiymetlendirme__dovr=latest_dovr,
+                qiymetlendirme__qiymetlendirilen__in=tabe_olan_ishchiler,
+                sual__kateqoriya=cat
+            ).aggregate(ortalama=Avg('xal'))['ortalama']
+            
+            if avg_score is not None:
+                team_competency_stats[cat.ad] = round(avg_score, 2)
+    
+    context = {
+        'tabe_olan_ishchiler': tabe_olan_ishchiler,
+        'team_competency_stats': team_competency_stats,
+        'chart_labels': json.dumps(list(team_competency_stats.keys())),
+        'chart_data': json.dumps(list(team_competency_stats.values())),
+    }
+    return render(request, 'core/rehber_paneli.html', context)
+
 
 
 @login_required

@@ -104,14 +104,10 @@
                             user.get_full_name|default:user.username }}</span></li>
                     <li class="nav-item me-2"><a href="{% url 'hesabatim' %}" class="btn btn-outline-primary btn-sm">{%
                             trans "Hesabatım" %}</a></li>
-                    {% if user.rol == 'REHBER' %}
                     <li class="nav-item me-2"><a href="{% url 'rehber_paneli' %}"
                             class="btn btn-outline-success btn-sm">{% trans "Rəhbər Paneli" %}</a></li>
-                    {% endif %}
-                    {% if user.is_superuser or user.rol == 'SUPERADMIN' %}
                     <li class="nav-item me-2"><a href="{% url 'superadmin_paneli' %}"
                             class="btn btn-outline-warning btn-sm">{% trans "Superadmin Paneli" %}</a></li>
-                    {% endif %}
                     <li class="nav-item">
                         <form action="{% url 'logout' %}" method="post" class="d-inline">{% csrf_token %}<button
                                 type="submit" class="btn btn-outline-danger btn-sm">{% trans "Çıxış" %}</button></form>

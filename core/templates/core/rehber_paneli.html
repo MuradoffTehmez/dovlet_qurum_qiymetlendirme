@@ -1,13 +1,26 @@
 {% extends 'core/base.html' %}
-
 {% load i18n %}
 
 {% block title %}{% trans "Rəhbər Paneli" %}{% endblock %}
 
 {% block content %}
-<h2>{% trans "Rəhbər Paneli - Komanda Üzvləri" %}</h2>
-<p>{% trans "Sizin tabeliyinizdə olan işçilərin siyahısı:" %}</p>
+<h2>{% trans "Rəhbər Paneli" %}</h2>
 <hr>
+
+{% if team_competency_stats %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h4>{% trans "Komandanın Kompetensiyalar üzrə Performansı" %}</h4>
+        <div class="card">
+            <div class="card-body">
+                <canvas id="competencyChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+<h4>{% trans "Komanda Üzvləri" %}</h4>
+<p>{% trans "Sizin tabeliyinizdə olan işçilərin siyahısı:" %}</p>
 
 {% if tabe_olan_ishchiler %}
 <div class="list-group">
@@ -27,4 +40,59 @@
     {% trans "Sizin tabeliyinizdə heç bir işçi tapılmadı." %}
 </div>
 {% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const competencyCtx = document.getElementById('competencyChart');
+        if (competencyCtx) {
+            new Chart(competencyCtx, {
+                type: 'bar',
+                data: {
+                    labels: {{ chart_labels| safe }
+    },
+        datasets: [{
+            label: '{% trans "Komandanın Ortalama Balı" %}',
+            data: {{ chart_data| safe }},
+        backgroundColor: [
+            'rgba(255, 99, 132, 0.5)',
+            'rgba(54, 162, 235, 0.5)',
+            'rgba(255, 206, 86, 0.5)',
+            'rgba(75, 192, 192, 0.5)',
+            'rgba(153, 102, 255, 0.5)',
+            'rgba(255, 159, 64, 0.5)'
+        ],
+        borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(75, 192, 192, 1)',
+            'rgba(153, 102, 255, 1)',
+            'rgba(255, 159, 64, 1)'
+        ],
+        borderWidth: 1
+                }]
+            },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                suggestedMax: 10
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        }
+    }
+        });
+    }
+});
+</script>
 {% endblock %}
