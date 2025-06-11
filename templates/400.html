@@ -1,0 +1,7 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Səhv Sorğu" %}{% endblock %}
+{% block content %}
+{% include 'errors/components/generic_error.html' with code="400" color="secondary" title=_("Səhv Sorğu")
+message=_("Server sorğunuzu başa düşə bilmədi.") icon="arrow-left-circle-fill" %}
+{% endblock %}

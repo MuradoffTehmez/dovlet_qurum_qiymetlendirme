@@ -1,0 +1,7 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Giriş Tələb Olunur" %}{% endblock %}
+{% block content %}
+{% include 'errors/components/generic_error.html' with code="401" color="dark" title=_("Giriş Tələb Olunur")
+message=_("Bu səhifəyə daxil olmaq üçün əvvəlcə giriş etməlisiniz.") icon="box-arrow-in-right" %}
+{% endblock %}
