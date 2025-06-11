@@ -26,14 +26,13 @@
                     {% csrf_token %}
                     <input type="hidden" name="hedef_id" value="{{ hedef.id }}">
 
-                    <select name="status" class="form-select me-2" {% if request.user !=plan.ishchi %}disabled{% endif
-                        %}>
-                        {% for key, value in hedef.get_status_display|get_choices %}
+                    <select name="status" class="form-select me-2" {% if not is_plan_owner %}disabled{% endif %}>
+                        {% for key, value in status_choices %}
                         <option value="{{ key }}" {% if hedef.status==key %}selected{% endif %}>{{ value }}</option>
                         {% endfor %}
                     </select>
 
-                    {% if request.user == plan.ishchi %}
+                    {% if is_plan_owner %}
                     <button type="submit" class="btn btn-sm btn-success">{% trans "Yenilə" %}</button>
                     {% endif %}
                 </form>
@@ -46,20 +45,4 @@
 {% endfor %}
 
 <a href="{{ request.META.HTTP_REFERER|default:'/' }}" class="btn btn-secondary mt-3">{% trans "Geri Qayıt" %}</a>
-
-{% endblock %}
-
-{% block extra_js %}
-<script>
-    Object.defineProperty(Object.prototype, 'get_choices', {
-        value: function () {
-            let choices = [];
-            {% for key, value in plan.hedefler.first.get_status_choices %}
-            choices.push({ key: '{{ key }}', value: '{{ value }}' });
-            {% endfor %}
-            return choices;
-        },
-        enumerable: false
-    });
-</script>
 {% endblock %}

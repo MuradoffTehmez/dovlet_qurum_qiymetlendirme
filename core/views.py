@@ -396,6 +396,7 @@ def plan_yarat_ve_redakte_et(request, ishchi_id, dovr_id):
 
 # --- MÖVCUD FƏRDİ İNKİŞAF PLANINA BAXMA VƏ STATUS YENİLƏMƏ ---
 
+
 @login_required
 def plan_bax(request, plan_id):
     """Mövcud inkişaf planına baxmaq və statusları yeniləmək üçün."""
@@ -414,16 +415,31 @@ def plan_bax(request, plan_id):
     if not is_allowed:
         raise PermissionDenied
 
+    # --- YENİ MƏNTİQ ---
+    # İstifadəçinin planın sahibi olub-olmadığını yoxlayırıq
+    is_plan_owner = (request.user == plan.ishchi)
+
     if request.method == 'POST':
         # Yalnız planın sahibi statusu dəyişə bilər
-        if request.user == plan.ishchi:
+        if is_plan_owner:
             hedef_id = request.POST.get('hedef_id')
             yeni_status = request.POST.get('status')
             if hedef_id and yeni_status:
-                hedef = get_object_or_404(Hedef, id=hedef_id, plan=plan)
-                hedef.status = yeni_status
-                hedef.save()
-                messages.success(request, "Hədəfin statusu uğurla yeniləndi.")
+                try:
+                    hedef = get_object_or_404(Hedef, id=int(hedef_id), plan=plan)
+                    hedef.status = yeni_status
+                    hedef.save(update_fields=['status'])
+                    messages.success(request, "Hədəfin statusu uğurla yeniləndi.")
+                except (ValueError, TypeError):
+                    messages.error(request, "Xətalı sorğu.")
                 return redirect('plan_bax', plan_id=plan.id)
 
-    return render(request, 'core/plan_detail.html', {'plan': plan})
+    # get_choices-i şablonda istifadə etmək üçün context-ə əlavə edirik
+    status_choices = Hedef.Status.choices
+    
+    context = {
+        'plan': plan,
+        'is_plan_owner': is_plan_owner, # <-- Yeni bayrağı şablona göndəririk
+        'status_choices': status_choices,
+    }
+    return render(request, 'core/plan_detail.html', context)
