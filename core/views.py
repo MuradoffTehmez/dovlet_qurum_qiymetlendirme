@@ -408,7 +408,6 @@ def plan_yarat_ve_redakte_et(request, ishchi_id, dovr_id):
 # --- MÖVCUD FƏRDİ İNKİŞAF PLANINA BAXMA VƏ STATUS YENİLƏMƏ ---
 
 
-# core/views.py
 
 @login_required
 def plan_bax(request, plan_id):
@@ -418,13 +417,17 @@ def plan_bax(request, plan_id):
         id=plan_id
     )
 
-    # İcazə yoxlanışı
+    # İcazə yoxlanışı: Yalnız planın sahibi, onun rəhbəri və ya superuser baxa bilər
     try:
         rehber = Ishchi.objects.get(sektor=plan.ishchi.sektor, rol='REHBER')
     except (Ishchi.DoesNotExist, Ishchi.MultipleObjectsReturned):
         rehber = None
 
-    is_allowed = (request.user == plan.ishchi or request.user == rehber or request.user.is_superuser)
+    is_allowed = (
+        request.user == plan.ishchi or 
+        request.user == rehber or 
+        request.user.is_superuser
+    )
     if not is_allowed:
         raise PermissionDenied
 
@@ -443,8 +446,7 @@ def plan_bax(request, plan_id):
                 messages.error(request, "Xətalı sorğu.")
             return redirect('plan_bax', plan_id=plan.id)
     
-    # --- YENİ MƏNTİQ ---
-    # Hər bir hədəfə öz status seçimlərini əlavə edirik
+    # Hər bir hədəfə öz status seçimlərini əlavə edirik ki, şablon onu istifadə edə bilsin
     for hedef in plan.hedefler.all():
         hedef.status_choices_with_selection = []
         for key, value in Hedef.Status.choices:
