@@ -1,26 +1,5 @@
 {% extends 'core/base.html' %}
-{% load i18n %}
-
-{% block title %}{% trans "Ana Səhifə" %}{% endblock %}
 
 {% block content %}
-<h2>{% trans "Qiymətləndirmə Tapşırıqlarınız" %}</h2>
-<hr>
-
-{% if qiymetlendirmeler %}
-<p>{% trans "Aşağıdakı şəxslər üçün qiymətləndirməni tamamlamalısınız:" %}</p>
-<div class="list-group">
-    {% for q in qiymetlendirmeler %}
-    <a href="{% url 'qiymetlendirme_etmek' q.id %}" class="list-group-item list-group-item-action">
-        <strong>{{ q.qiymetlendirilen.get_full_name }}</strong> ({{ q.qiymetlendirilen.vezife }})
-        <br>
-        <small class="text-muted">{% trans "Qiymətləndirmə dövrü" %}: {{ q.dovr.ad }}</small>
-    </a>
-    {% endfor %}
-</div>
-{% else %}
-<div class="alert alert-success">
-    {% trans "Hal-hazırda tamamlanmalı qiymətləndirmə tapşırığınız yoxdur." %}
-</div>
-{% endif %}
+<h1>Salam, Dünya! Səhifə işləyir.</h1>
 {% endblock %}
