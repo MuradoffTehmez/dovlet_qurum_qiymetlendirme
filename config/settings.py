@@ -146,60 +146,106 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # Jazzmin, Django admin panelini daha gözəl və funksional etmək üçün istifadə olunan bir tətbiqdir.
 
 JAZZMIN_SETTINGS = {
-    # Saytın başlığı (brauzer tabında görünür)
-    "site_title": "Qiymətləndirmə Admin",
+    # Saytın brauzer başlığı
+    "site_title": "360° Qiymətləndirmə Paneli",
 
-    # Login səhifəsində və navbar-da görünən başlıq
-    "site_header": "Qiymətləndirmə Sistemi",
+    # Navbar və login səhifəsindəki başlıq
+    "site_header": "İşçi Dəyərləndirmə Sistemi",
 
-    # Saytın brendi (loqo yerinə mətn)
+    # Panel brendi
     "site_brand": "360° Dəyərləndirmə",
 
-    # Loqo (əgər varsa, static qovluğuna qoyulmalıdır)
+    # Loqo (əgər varsa, əlavə et: static/images/logo.png)
     # "site_logo": "images/logo.png",
+    # "login_logo": "images/logo.png",
 
-    # Login səhifəsindəki qarşılama mətni
-    "welcome_sign": "Qiymətləndirmə Sisteminə Xoş Gəlmisiniz",
+    # Loqo tipli favicon
+    # "site_icon": "images/favicon.ico",
 
-    # Müəllif hüquqları mətni
-    "copyright": "Muradov İT",
-    
+    # Xoş gəlmisiniz mətni
+    "welcome_sign": "360° Qiymətləndirmə Sisteminizə Xoş Gəlmisiniz",
 
-    # Modellərin göstərilməsi üçün UI tənzimləmələri
+    # Admin başlığının sol üst hissəsi
+    "site_header_short": "Dəyərləndirmə",
+
+    # Əsas sayt linki (brend kliklənəndə yönləndiriləcək ünvan)
+    "site_url": "/",
+
+    # Dəyişikliklər haqqında məlumat paneli göstərilsinmi?
+    "show_sidebar": True,
+
+    # Menyu başlıqları ilə ayrılmalıdırmı?
+    "navigation_expanded": True,
+
+    # Əlavə başlıqlar
+    "topmenu_links": [
+        {"name": "Ana Səhifə", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"model": "auth.User"},
+        {"app": "your_app_label"},  # Əgər tam app göstərmək istəyirsənsə
+    ],
+
+    # Alt menu strukturu (sıralama və qruplaşma)
+    "custom_links": {
+        "auth": [
+            {
+                "name": "İstifadəçi əlavə et",
+                "url": "add_user",  # custom view varsa
+                "icon": "fas fa-user-plus",
+                "permissions": ["auth.add_user"]
+            }
+        ]
+    },
+
+    # Admin səhifəsinin alt hissəsi
+    "copyright": "© 2025 Muradov İT MMC",
+
+    # UI Builder-i göstərmək
     "show_ui_builder": True,
+
+    # Model konfiqurasiya (görünüş optimallaşdırması)
+    "order_with_respect_to": ["Qiymetlendirme", "Ishci", "Rehber"],
+    
+    # İstifadəçi menyusunda nə göstərilsin
+    "user_avatar": None,
 }
+
 
 JAZZMIN_UI_TWEAKS = {
-    "navbar_small_text": False,
-    "footer_small_text": False,
-    "body_small_text": False,
-    "brand_small_text": False,
-    "brand_colour": "navbar-dark",
-    "accent": "accent-primary",
-    "navbar": "navbar-dark",
-    "no_navbar_border": False,
-    "navbar_fixed": False,
-    "layout_boxed": False,
-    "footer_fixed": False,
-    "sidebar_fixed": True,
-    "sidebar": "sidebar-dark-primary",
-    "sidebar_nav_small_text": False,
-    "sidebar_disable_expand": False,
-    "sidebar_nav_child_indent": False,
-    "sidebar_nav_compact_style": False,
-    "sidebar_nav_legacy_style": False,
-    "sidebar_nav_flat_style": False,
-    "theme": "darkly",
+    "theme": "darkly",  # Alternativ: "solar", "cyborg", "superhero"
     "dark_mode_theme": "darkly",
+
+    "navbar": "navbar-dark navbar-primary",
+    "brand_colour": "navbar-primary",
+    "accent": "accent-info",
+
+    "navbar_small_text": False,
+    "brand_small_text": False,
+    "footer_small_text": True,
+    "body_small_text": False,
+
+    "sidebar": "sidebar-dark-primary",
+    "sidebar_fixed": True,
+    "sidebar_nav_small_text": False,
+    "sidebar_nav_flat_style": True,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_compact_style": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": True,
+
+    "layout_boxed": False,
+    "navbar_fixed": True,
+    "footer_fixed": True,
+
     "button_classes": {
-        "primary": "btn-primary",
-        "secondary": "btn-secondary",
-        "info": "btn-info",
-        "warning": "btn-warning",
-        "danger": "btn-danger",
-        "success": "btn-success"
+        "primary": "btn btn-primary",
+        "secondary": "btn btn-secondary",
+        "info": "btn btn-info",
+        "warning": "btn btn-warning",
+        "danger": "btn btn-danger",
+        "success": "btn btn-success"
     }
 }
+
 
 from django.utils.translation import gettext_lazy as _
 

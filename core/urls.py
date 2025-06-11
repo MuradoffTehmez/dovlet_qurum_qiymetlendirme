@@ -19,6 +19,7 @@ urlpatterns = [
     path('rehber-paneli/', views.rehber_paneli, name='rehber_paneli'),
     path('superadmin/', views.superadmin_paneli, name='superadmin_paneli'),
     path('superadmin/yeni-dovr/', views.yeni_dovr_yarat, name='yeni_dovr_yarat'),
+    path('superadmin/export-excel/', views.export_departments_excel, name='export_departments_excel'),
 ]
 
     # Uncomment the following lines if you want to enable these views

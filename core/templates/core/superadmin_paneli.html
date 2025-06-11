@@ -51,7 +51,11 @@
         </div>
     </div>
     <div class="col-lg-4">
-        <h4>Reytinq Cədvəli</h4>
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Reytinq Cədvəli</h4>
+            <a href="{% url 'export_departments_excel' %}" class="btn btn-sm btn-outline-success">
+                <i class="bi bi-file-earmark-excel"></i> Excel-ə İxrac Et
+            </a>  </div>
         <table class="table table-hover">
             <thead class="table-light">
                 <tr>

@@ -11,6 +11,8 @@ from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.contrib.auth import login
 from django.core.exceptions import PermissionDenied
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment
 
 # Lokal importlar
 from .models import (
@@ -231,4 +233,64 @@ def hesabat_pdf_yukle(request, ishchi_id):
     pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
     response = HttpResponse(pdf_file, content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="hesabat_{ishchi.username}_{dovr.ad}.pdf"'
+    return response
+
+
+# --- EXCEL İXRAÇLARI ---
+
+@login_required
+@superadmin_required
+def export_departments_excel(request):
+    """Superadmin paneli üçün departament statistikasını Excel faylı olaraq ixrac edir."""
+    
+    # Ən son qiymətləndirmə dövrünü tapırıq
+    dovr = QiymetlendirmeDovru.objects.order_by('-bitme_tarixi').first()
+    if not dovr:
+        messages.error(request, "Hesabat yaratmaq üçün heç bir qiymətləndirmə dövrü tapılmadı.")
+        return redirect('superadmin_paneli')
+
+    # Məlumatları yenidən hesablayırıq (superadmin_paneli view-undakı məntiqin təkrarı)
+    departamentler = Departament.objects.all()
+    departament_stat = []
+    for dep in departamentler:
+        ortalama_bal = Cavab.objects.filter(
+            qiymetlendirme__dovr=dovr,
+            qiymetlendirme__qiymetlendirilen__sektor__shobe__departament=dep
+        ).aggregate(ortalama=Avg('xal'))['ortalama']
+        departament_stat.append({
+            'ad': dep.ad,
+            'ortalama_bal': round(ortalama_bal, 2) if ortalama_bal else 0,
+        })
+        
+    # --- Excel Faylının Yaradılması ---
+    
+    # Yeni bir Excel kitabı yaradırıq
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = f"{dovr.ad} - Departament Hesabatı"
+
+    # Başlıq sətrini yaradırıq və stilləndiririk
+    headers = ["Departament Adı", "Ortalama Bal"]
+    sheet.append(headers)
+    for cell in sheet[1]:
+        cell.font = Font(bold=True)
+        cell.alignment = Alignment(horizontal='center')
+    
+    # Məlumatları sətirlərə əlavə edirik
+    for stat in departament_stat:
+        sheet.append([stat['ad'], stat['ortalama_bal']])
+    
+    # Sütunların enini avtomatik tənzimləyirik
+    sheet.column_dimensions['A'].width = 40
+    sheet.column_dimensions['B'].width = 20
+
+    # HTTP cavabını hazırlayırıq
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = f'attachment; filename="departament_hesabati_{dovr.ad}.xlsx"'
+    
+    # Excel kitabını cavaba yazırıq
+    workbook.save(response)
+    
     return response
