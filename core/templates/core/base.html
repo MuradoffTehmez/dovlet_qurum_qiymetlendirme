@@ -1,7 +1,7 @@
 {% load i18n %}
 
 <!doctype html>
-<html lang="az">
+<html lang="{{ request.LANGUAGE_CODE }}">
 
 <head>
     <meta charset="utf-8">
@@ -75,9 +75,7 @@
     <script>
         (function () {
             const theme = localStorage.getItem('theme');
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark-mode');
-            }
+            if (theme === 'dark') { document.documentElement.classList.add('dark-mode'); }
         })();
     </script>
 
@@ -105,7 +103,7 @@
                             {% get_current_language as CURRENT_LANGUAGE %}
                             {% get_available_languages as AVAILABLE_LANGUAGES %}
                             {% for lang_code, lang_name in AVAILABLE_LANGUAGES %}
-                            <li {% if lang_code==CURRENT_LANGUAGE %} class="active" {% endif %}>
+                            <li {% ifequal lang_code CURRENT_LANGUAGE %}class="active" {% endifequal %}>
                                 <a class="dropdown-item"
                                     href="/{{ lang_code }}{{ request.get_full_path|slice:'3:' }}">{{ lang_name }}</a>
                             </li>
@@ -170,12 +168,10 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const themeToggleBtn = document.getElementById('theme-toggle-btn');
             const htmlElement = document.documentElement;
-
             const updateIcon = () => {
                 if (htmlElement.classList.contains('dark-mode')) {
                     themeToggleBtn.innerHTML = '<i class="bi bi-sun-fill"></i>';
@@ -183,10 +179,8 @@
                     themeToggleBtn.innerHTML = '<i class="bi bi-moon-stars-fill"></i>';
                 }
             };
-
             themeToggleBtn.addEventListener('click', () => {
                 htmlElement.classList.toggle('dark-mode');
-
                 if (htmlElement.classList.contains('dark-mode')) {
                     localStorage.setItem('theme', 'dark');
                 } else {
@@ -194,7 +188,6 @@
                 }
                 updateIcon();
             });
-
             updateIcon();
         });
     </script>
