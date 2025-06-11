@@ -4,6 +4,16 @@
 {% block title %}{% trans "Ana Səhifə" %}{% endblock %}
 
 {% block content %}
+
+{% if aktiv_plan %}
+<div class="alert alert-info shadow-sm mb-4">
+    <h4 class="alert-heading">{% trans "Aktiv İnkişaf Planınız" %}</h4>
+    <p>{% trans "Sizin üçün" %} <strong>{{ aktiv_plan.dovr.ad }}</strong> {% trans "dövrü üzrə bir inkişaf planı
+        mövcuddur." %}</p>
+    <hr>
+    <a href="{% url 'plan_bax' aktiv_plan.id %}" class="btn btn-primary fw-bold">{% trans "Plana Bax" %}</a>
+</div>
+{% endif %}
 <h2>{% trans "Qiymətləndirmə Tapşırıqlarınız" %}</h2>
 <hr>
 
@@ -19,8 +29,9 @@
     {% endfor %}
 </div>
 {% else %}
-<div class="alert alert-success">
+<div class="alert alert-light">
     {% trans "Hal-hazırda tamamlanmalı qiymətləndirmə tapşırığınız yoxdur." %}
 </div>
 {% endif %}
+
 {% endblock %}

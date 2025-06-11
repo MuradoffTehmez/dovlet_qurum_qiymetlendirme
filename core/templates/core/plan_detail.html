@@ -1,0 +1,65 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Fərdi İnkişaf Planı" %}{% endblock %}
+
+{% block content %}
+<h2>{% trans "Fərdi İnkişaf Planı" %}</h2>
+<p>
+    <strong>{% trans "İşçi:" %}</strong> {{ plan.ishchi.get_full_name }} <br>
+    <strong>{% trans "Qiymətləndirmə Dövrü:" %}</strong> {{ plan.dovr.ad }}
+</p>
+<hr>
+
+<h4>{% trans "Hədəflər" %}</h4>
+
+{% for hedef in plan.hedefler.all %}
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <p class="card-text">{{ hedef.tesvir }}</p>
+                <small class="text-muted">{% trans "Son tarix:" %} {{ hedef.son_tarix|date:"d-m-Y" }}</small>
+            </div>
+            <div class="col-md-4">
+                <form method="post" class="d-flex align-items-center justify-content-end">
+                    {% csrf_token %}
+                    <input type="hidden" name="hedef_id" value="{{ hedef.id }}">
+
+                    <select name="status" class="form-select me-2" {% if request.user !=plan.ishchi %}disabled{% endif
+                        %}>
+                        {% for key, value in hedef.get_status_display|get_choices %}
+                        <option value="{{ key }}" {% if hedef.status==key %}selected{% endif %}>{{ value }}</option>
+                        {% endfor %}
+                    </select>
+
+                    {% if request.user == plan.ishchi %}
+                    <button type="submit" class="btn btn-sm btn-success">{% trans "Yenilə" %}</button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% empty %}
+<div class="alert alert-info">{% trans "Bu plan üçün heç bir hədəf təyin edilməyib." %}</div>
+{% endfor %}
+
+<a href="{{ request.META.HTTP_REFERER|default:'/' }}" class="btn btn-secondary mt-3">{% trans "Geri Qayıt" %}</a>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    Object.defineProperty(Object.prototype, 'get_choices', {
+        value: function () {
+            let choices = [];
+            {% for key, value in plan.hedefler.first.get_status_choices %}
+            choices.push({ key: '{{ key }}', value: '{{ value }}' });
+            {% endfor %}
+            return choices;
+        },
+        enumerable: false
+    });
+</script>
+{% endblock %}

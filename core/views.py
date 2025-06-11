@@ -30,14 +30,21 @@ from .utils import get_performance_trend, get_detailed_report_context
 
 @login_required
 def dashboard(request):
-    """İstifadəçinin aktiv qiymətləndirmə tapşırıqlarını göstərir."""
-    qiymetlendirmeler = Qiymetlendirme.objects.filter(
-        qiymetlendiren=request.user,
-        status='GOZLEMEDE'
-    ).select_related('qiymetlendirilen', 'dovr') # ORM Optimizasiyası
+    """İstifadəçinin aktiv qiymətləndirmə tapşırıqlarını və inkişaf planını göstərir."""
     
-    return render(request, 'core/dashboard.html', {'qiymetlendirmeler': qiymetlendirmeler})
-
+    # Aktiv qiymətləndirmə tapşırıqları
+    qiymetlendirmeler = Qiymetlendirme.objects.filter(
+        qiymetlendiren=request.user, status='GOZLEMEDE'
+    ).select_related('qiymetlendirilen', 'dovr')
+    
+    # İstifadəçinin aktiv inkişaf planını tapırıq
+    aktiv_plan = InkishafPlani.objects.filter(ishchi=request.user, status='AKTIV').select_related('dovr').first()
+    
+    context = {
+        'qiymetlendirmeler': qiymetlendirmeler,
+        'aktiv_plan': aktiv_plan,
+    }
+    return render(request, 'core/dashboard.html', context)
 
 def qeydiyyat_sehifesi(request):
     """Yeni istifadəçilərin qeydiyyatdan keçməsini təmin edir."""
