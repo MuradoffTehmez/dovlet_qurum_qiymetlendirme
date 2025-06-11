@@ -1,7 +1,10 @@
 {% extends 'core/base.html' %}
 {% load i18n %}
-{% block title %}{% trans "İcazə Verilmir" %}{% endblock %}
+
+{% block title %}{% trans "Əlçatan Deyil" %}{% endblock %}
+
 {% block content %}
-{% include 'errors/components/generic_error.html' with code="403" color="warning" title=_("İcazə Verilmir")
-message=_("Bu səhifəyə giriş icazəniz yoxdur.") icon="shield-lock-fill" %}
+{# Düzgün işləməsi üçün `with` parametrindəki tərcümə teqləri dəyişdirildi #}
+{% include 'errors/components/generic_error.html' with code="403" color="danger" title=_("Giriş Rədd Edildi")
+message=_("Bu səhifəyə daxil olmaq üçün icazəniz yoxdur.") icon="lock-fill" %}
 {% endblock %}
