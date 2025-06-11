@@ -21,12 +21,20 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 
-# --- STATİK VƏ MEDİA FAYLLAR ÜÇÜN URL-LƏR (YALNIZ DEVELOPMENT ÜÇÜN) ---
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
 if settings.DEBUG:
-    # `collectstatic` ilə yığılan faylları göstərmək üçün
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 
-    # İstifadəçilərin yüklədiyi faylları göstərmək üçün
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+
+# if settings.DEBUG:
+#     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 
+#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Dil prefiksi olan URL-lər (/az/, /en/)
 # Bütün istifadəçi tərəfindən görünən səhifələr burada olmalıdır
@@ -42,11 +50,7 @@ urlpatterns += i18n_patterns(
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
-
-# --- XƏTA HANDLER-LƏRİNİN TƏYİN EDİLMƏSİ ---
-# Django-ya hansı xətada hansı standart view-ı işə salacağını deyirik.
-# Bu view-lar isə avtomatik olaraq templates qovluğundakı
-# 400.html, 403.html, 404.html və 500.html fayllarını axtarıb göstərəcək.
+# --- XƏTA SƏHİFƏLƏRİ ---
 
 handler400 = bad_request
 handler403 = permission_denied

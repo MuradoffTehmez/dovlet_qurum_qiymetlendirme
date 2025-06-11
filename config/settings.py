@@ -124,12 +124,9 @@ LOCALE_PATHS = [
 # (STATIC FILES)
 # ------------------------------------------------------------------------------
 
-STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles' # Deployment üçün lazım olacaq
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static",
-]
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 
 # ------------------------------------------------------------------------------
