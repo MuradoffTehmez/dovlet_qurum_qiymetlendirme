@@ -1,0 +1,48 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Fərdi İnkişaf Planı{% endblock %}
+
+{% block content %}
+<h2>Fərdi İnkişaf Planı</h2>
+<p>
+    <strong>İşçi:</strong> {{ ishchi.get_full_name }} <br>
+    <strong>Qiymətləndirmə Dövrü:</strong> {{ dovr.ad }}
+</p>
+<hr>
+
+<p>Aşağıdakı form vasitəsilə işçi üçün yeni inkişaf hədəfləri təyin edə və ya mövcud olanları redaktə edə bilərsiniz.
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }} <div class="card">
+        <div class="card-header">
+            Hədəflər
+        </div>
+        <div class="card-body">
+            {% for form in formset %}
+            <div class="row align-items-center mb-3 p-2 border-bottom">
+                <div class="col-md-5">
+                    {{ form.tesvir|as_crispy_field }}
+                </div>
+                <div class="col-md-3">
+                    {{ form.son_tarix|as_crispy_field }}
+                </div>
+                <div class="col-md-3">
+                    {{ form.status|as_crispy_field }}
+                </div>
+                {% if form.instance.id %}
+                <div class="col-md-1">
+                    {{ form.DELETE|as_crispy_field }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Planı Yadda Saxla</button>
+    <a href="{% url 'hesabat_bax' ishchi.id %}" class="btn btn-secondary mt-3">Geri Qayıt</a>
+</form>
+{% endblock %}

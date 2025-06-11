@@ -21,8 +21,8 @@ urlpatterns = [
     path('superadmin/yeni-dovr/', views.yeni_dovr_yarat, name='yeni_dovr_yarat'),
     path('superadmin/export-excel/', views.export_departments_excel, name='export_departments_excel'),
     path('superadmin/export-pdf/', views.export_departments_pdf, name='export_departments_pdf'),
+    path('plan/yarat/<int:ishchi_id>/<int:dovr_id>/', views.plan_yarat_ve_redakte_et, name='plan_yarat'),
 ]
-
     # Uncomment the following lines if you want to enable these views
 
     # path('superadmin/dovrlar/', views.dovrlar_siyahisi, name='dovrlar_siyahisi'),

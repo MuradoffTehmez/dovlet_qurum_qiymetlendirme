@@ -9,6 +9,10 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column, Submit
 
 
+from .models import Hedef
+from django.forms import inlineformset_factory
+
+
 
 class YeniDovrForm(forms.ModelForm):
     departamentler = forms.ModelMultipleChoiceField(
@@ -89,3 +93,25 @@ class IshchiCreationForm(UserCreationForm):
             'sektor': 'Sektor',
             'vezife': 'Vəzifəniz',
         }
+
+
+# Hədəf modeli üçün sadə bir ModelForm
+class HedefForm(forms.ModelForm):
+    class Meta:
+        model = Hedef
+        fields = ['tesvir', 'son_tarix', 'status']
+        widgets = {
+            'tesvir': forms.Textarea(attrs={'rows': 2}),
+            'son_tarix': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+# InkishafPlani və Hedef arasında əlaqə quran bir FormSet yaradırıq.
+# Bu, bir plana bir neçə hədəfi eyni anda əlavə etməyə imkan verəcək.
+HedefFormSet = inlineformset_factory(
+    InkishafPlani,  # Əsas (valideyn) model
+    Hedef,          # Inline (övlad) model
+    form=HedefForm,
+    extra=2,        # Varsayılan olaraq 2 ədəd boş hədəf formu göstər
+    can_delete=True,# Hədəfləri silmək imkanı olsunmu?
+    min_num=1,      # Ən azı 1 hədəf olmalıdır
+)

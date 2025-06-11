@@ -4,7 +4,7 @@ import json
 import random
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.db.models import Q, Avg  # <-- DÜZƏLİŞ BURADADIR: Avg import edildi
+from django.db.models import Q, Avg  
 from django.http import HttpResponse
 from django.contrib import messages
 from django.template.loader import render_to_string
@@ -13,6 +13,8 @@ from django.contrib.auth import login
 from django.core.exceptions import PermissionDenied
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment
+from .forms import YeniDovrForm, IshchiCreationForm, HedefFormSet
+from .models import InkishafPlani 
 
 # Lokal importlar
 from .models import (
@@ -296,7 +298,7 @@ def export_departments_excel(request):
     return response
 
 
-# core/views.py faylının sonuna əlavə edin
+# --- PDF İXRAÇLARI ---
 
 @login_required
 @superadmin_required
@@ -338,3 +340,38 @@ def export_departments_pdf(request):
     response['Content-Disposition'] = f'attachment; filename="departament_hesabati_{dovr.ad}.pdf"'
     
     return response
+
+# --- FƏRDİ İNKİŞAF PLANI YARATMA VƏ REDAKTE ETMƏ ---
+
+@login_required
+@rehber_required
+def plan_yarat_ve_redakte_et(request, ishchi_id, dovr_id):
+    """
+    Rəhbərin, işçi üçün verilmiş dövrə əsasən yeni bir İnkişaf Planı
+    yaratması və ya mövcud olanı redaktə etməsi üçün.
+    """
+    ishchi = get_object_or_404(Ishchi, id=ishchi_id)
+    dovr = get_object_or_404(QiymetlendirmeDovru, id=dovr_id)
+
+    # Rəhbərin yalnız öz komandasına plan yaza bilməsini təmin edirik
+    if not (request.user.is_superuser or (request.user.rol == 'REHBER' and request.user.sektor == ishchi.sektor)):
+        raise PermissionDenied
+
+    # Əgər bu işçi və dövr üçün plan artıq varsa, onu tapırıq. Yoxdursa, yenisini yaradırıq.
+    plan, created = InkishafPlani.objects.get_or_create(ishchi=ishchi, dovr=dovr)
+    
+    formset = HedefFormSet(request.POST or None, instance=plan)
+
+    if request.method == 'POST':
+        if formset.is_valid():
+            formset.save()
+            messages.success(request, f"{ishchi.get_full_name()} üçün İnkişaf Planı uğurla yadda saxlanıldı.")
+            # Rəhbəri həmin işçinin hesabat səhifəsinə geri yönləndiririk
+            return redirect('hesabat_bax', ishchi_id=ishchi.id)
+
+    context = {
+        'formset': formset,
+        'ishchi': ishchi,
+        'dovr': dovr,
+    }
+    return render(request, 'core/plan_form.html', context)
