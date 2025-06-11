@@ -13,7 +13,7 @@ from .models import (
     QiymetlendirmeDovru, Departament, Ishchi, 
     Hedef, InkishafPlani, Sektor
 )
-
+from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 
 # --- Qeydiyyat Formu ---
 
