@@ -21,21 +21,21 @@
 
 <h4 class="mt-4">{% trans "Hədəflər" %}</h4>
 
-{% for hedef in plan.hedefler.all %}
+{% for item in hedefler_with_choices %}
 <div class="card mb-3">
     <div class="card-body">
         <div class="row align-items-center">
             <div class="col-md-8">
-                <p class="card-text">{{ hedef.tesvir|linebreaks }}</p>
-                <small class="text-muted">{% trans "Son tarix:" %} {{ hedef.son_tarix|date:"d-m-Y" }}</small>
+                <p class="card-text">{{ item.hedef_obj.tesvir|linebreaks }}</p>
+                <small class="text-muted">{% trans "Son tarix:" %} {{ item.hedef_obj.son_tarix|date:"d-m-Y" }}</small>
             </div>
             <div class="col-md-4">
                 <form method="post" class="d-flex align-items-center justify-content-end">
                     {% csrf_token %}
-                    <input type="hidden" name="hedef_id" value="{{ hedef.id }}">
+                    <input type="hidden" name="hedef_id" value="{{ item.hedef_obj.id }}">
 
                     <select name="status" class="form-select me-2" {% if not is_plan_owner %}disabled{% endif %}>
-                        {% for choice in hedef.status_choices_with_selection %}
+                        {% for choice in item.status_choices %}
                         <option value="{{ choice.key }}" {% if choice.is_selected %}selected{% endif %}>{{ choice.value
                             }}</option>
                         {% endfor %}
