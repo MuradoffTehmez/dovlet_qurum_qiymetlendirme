@@ -1,0 +1,16 @@
+<div class="container text-center py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <h1 class="display-1 fw-bold text-{{ color }}">{{ code }}</h1>
+                    <h2 class="mb-4">{{ title }}</h2>
+                    <p class="lead text-muted">{{ message }}</p>
+                    <a href="{% url 'dashboard' %}" class="btn btn-{{ color }} mt-3">
+                        <i class="bi bi-{{ icon }}"></i> {% trans "Ana Səhifəyə Qayıt" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
