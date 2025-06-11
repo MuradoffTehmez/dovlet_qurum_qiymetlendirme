@@ -385,3 +385,38 @@ def plan_yarat_ve_redakte_et(request, ishchi_id, dovr_id):
         'dovr': dovr,
     }
     return render(request, 'core/plan_form.html', context)
+
+
+# --- MÖVCUD FƏRDİ İNKİŞAF PLANINA BAXMA VƏ STATUS YENİLƏMƏ ---
+
+@login_required
+def plan_bax(request, plan_id):
+    """Mövcud inkişaf planına baxmaq və statusları yeniləmək üçün."""
+    plan = get_object_or_404(
+        InkishafPlani.objects.prefetch_related('hedefler'), # Optimizasiya
+        id=plan_id
+    )
+
+    # İcazə yoxlanışı: Yalnız planın sahibi, onun rəhbəri və ya superuser baxa bilər
+    rehber = Ishchi.objects.filter(sektor=plan.ishchi.sektor, rol='REHBER').first()
+    is_allowed = (
+        request.user == plan.ishchi or 
+        request.user == rehber or 
+        request.user.is_superuser
+    )
+    if not is_allowed:
+        raise PermissionDenied
+
+    if request.method == 'POST':
+        # Yalnız planın sahibi statusu dəyişə bilər
+        if request.user == plan.ishchi:
+            hedef_id = request.POST.get('hedef_id')
+            yeni_status = request.POST.get('status')
+            if hedef_id and yeni_status:
+                hedef = get_object_or_404(Hedef, id=hedef_id, plan=plan)
+                hedef.status = yeni_status
+                hedef.save()
+                messages.success(request, "Hədəfin statusu uğurla yeniləndi.")
+                return redirect('plan_bax', plan_id=plan.id)
+
+    return render(request, 'core/plan_detail.html', {'plan': plan})
