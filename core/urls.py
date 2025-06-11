@@ -5,14 +5,13 @@ from . import views
 
 urlpatterns = [
     path('', views.dashboard, name='dashboard'),
-    path('qeydiyyat/', views.qeydiyyat_sehifesi, name='qeydiyyat'), # Qeydiyyatı bura da əlavə etmək olar
+    path('qeydiyyat/', views.qeydiyyat_sehifesi, name='qeydiyyat'), 
     
     path('qiymetlendir/<int:qiymetlendirme_id>/', views.qiymetlendirme_etmek, name='qiymetlendirme_etmek'),
     
     # Yeni ortaq hesabat URL-ləri
-    path('hesabatim/', views.hesabat_gorunumu, name='hesabatim'), # İşçi öz hesabatına baxır
-    path('hesabat/bax/<int:ishchi_id>/', views.hesabat_gorunumu, name='hesabat_bax'), # Rəhbər işçinin hesabatına baxır
-    
+    path('hesabatim/', views.hesabat_gorunumu, name='hesabatim'),
+    path('hesabat/bax/<int:ishchi_id>/', views.hesabat_gorunumu, name='hesabat_bax'), 
     path('hesabat/pdf/<int:ishchi_id>/', views.hesabat_pdf_yukle, name='hesabat_pdf_yukle'),
 
     # Rəhbər və Superadmin panelləri
@@ -24,6 +23,16 @@ urlpatterns = [
     path('plan/yarat/<int:ishchi_id>/<int:dovr_id>/', views.plan_yarat_ve_redakte_et, name='plan_yarat'),
     path('plan/bax/<int:plan_id>/', views.plan_bax, name='plan_bax'),
 ]
+
+# handler400 = 'core.views.error_400'
+# handler401 = 'core.views.error_401'
+# handler403 = 'core.views.error_403'
+# handler404 = 'core.views.error_404'
+# handler429 = 'core.views.error_429'
+# handler500 = 'core.views.error_500'
+# handler502 = 'core.views.error_502'
+# handler503 = 'core.views.error_503'
+
     # Uncomment the following lines if you want to enable these views
 
     # path('superadmin/dovrlar/', views.dovrlar_siyahisi, name='dovrlar_siyahisi'),
