@@ -87,13 +87,6 @@ class CavabAdmin(SimpleHistoryAdmin):
     search_fields = ('qiymetlendirme__qiymetlendirilen__username',)
 
 
-# Admin paneli üçün xüsusi tənzimləmələr
-admin.site.site_header = "360° Qiymətləndirmə Paneli"
-admin.site.site_title = "360° Qiymətləndirmə Paneli"
-admin.site.index_title = "İşçi Dəyərləndirmə Sistemi"
-
-# core/admin.py faylının sonuna əlavə edin
-
 from .models import InkishafPlani, Hedef # Yeni modelləri import edirik
 
 class HedefInline(admin.TabularInline):

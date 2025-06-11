@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # DEBUG REJİMİ: Production mühitində mütləq False olmalıdır!
-DEBUG = os.getenv('DEBUG', 'False') == 'true'
+DEBUG = os.getenv('DEBUG', 'False') == 'False'
 # ALLOWED_HOSTS: Yalnız lokal hostlar üçün icazə verilir
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
@@ -129,7 +129,11 @@ LOCALE_PATHS = [
 # ------------------------------------------------------------------------------
 
 STATIC_URL = 'static/'
-# STATIC_ROOT = BASE_DIR / 'staticfiles' # Deployment üçün lazım olacaq
+STATIC_ROOT = BASE_DIR / 'staticfiles' # Deployment üçün lazım olacaq
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
 
 
 # ------------------------------------------------------------------------------
