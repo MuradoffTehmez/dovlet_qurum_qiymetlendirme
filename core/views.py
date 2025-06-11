@@ -294,3 +294,47 @@ def export_departments_excel(request):
     workbook.save(response)
     
     return response
+
+
+# core/views.py faylının sonuna əlavə edin
+
+@login_required
+@superadmin_required
+def export_departments_pdf(request):
+    """Superadmin paneli üçün departament statistikasını PDF faylı olaraq ixrac edir."""
+    
+    dovr = QiymetlendirmeDovru.objects.order_by('-bitme_tarixi').first()
+    if not dovr:
+        messages.error(request, "Hesabat yaratmaq üçün heç bir qiymətləndirmə dövrü tapılmadı.")
+        return redirect('superadmin_paneli')
+
+    # Məlumatları alırıq (bu kod Excel ixracı ilə eynidir)
+    departamentler = Departament.objects.all()
+    departament_stat = []
+    for dep in departamentler:
+        ortalama_bal = Cavab.objects.filter(
+            qiymetlendirme__dovr=dovr,
+            qiymetlendirme__qiymetlendirilen__sektor__shobe__departament=dep
+        ).aggregate(ortalama=Avg('xal'))['ortalama']
+        departament_stat.append({
+            'ad': dep.ad,
+            'ortalama_bal': round(ortalama_bal, 2) if ortalama_bal else 0,
+        })
+
+    # --- PDF Faylının Yaradılması ---
+    context = {
+        'departament_stat': departament_stat,
+        'dovr': dovr,
+    }
+
+    # PDF üçün xüsusi bir HTML şablonu render edirik
+    html_string = render_to_string('reports/summary_departments_pdf.html', context)
+    
+    # WeasyPrint ilə HTML-dən PDF yaradırıq
+    pdf_file = HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf()
+    
+    # Brauzerə PDF faylı olaraq göndəririk
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="departament_hesabati_{dovr.ad}.pdf"'
+    
+    return response

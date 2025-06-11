@@ -20,6 +20,7 @@ urlpatterns = [
     path('superadmin/', views.superadmin_paneli, name='superadmin_paneli'),
     path('superadmin/yeni-dovr/', views.yeni_dovr_yarat, name='yeni_dovr_yarat'),
     path('superadmin/export-excel/', views.export_departments_excel, name='export_departments_excel'),
+    path('superadmin/export-pdf/', views.export_departments_pdf, name='export_departments_pdf'),
 ]
 
     # Uncomment the following lines if you want to enable these views

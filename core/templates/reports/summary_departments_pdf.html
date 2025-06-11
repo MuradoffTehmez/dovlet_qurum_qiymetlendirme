@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="az">
+
+<head>
+    <meta charset="utf-8">
+    <title>Departamentlər üzrə Hesabat</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+
+        p {
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 10px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Departamentlər üzrə Ümumi Hesabat</h2>
+    <p><strong>Qiymətləndirmə Dövrü:</strong> {{ dovr.ad }}</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Departament Adı</th>
+                <th>Ortalama Bal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stat in departament_stat %}
+            <tr>
+                <td>{{ stat.ad }}</td>
+                <td><strong>{{ stat.ortalama_bal }}</strong></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">Məlumat tapılmadı.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Hesabat {% now "d-m-Y H:i" %} tarixində generasiya edilib.
+    </div>
+</body>
+
+</html>
