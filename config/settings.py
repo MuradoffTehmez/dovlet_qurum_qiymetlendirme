@@ -51,7 +51,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'simple_history',
-    
+
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -125,7 +125,7 @@ LOCALE_PATHS = [
 
 
 # ------------------------------------------------------------------------------
-# STATİK FAYLLAR (STATIC FILES)
+# (STATIC FILES)
 # ------------------------------------------------------------------------------
 
 STATIC_URL = 'static/'
@@ -137,7 +137,7 @@ STATICFILES_DIRS = [
 
 
 # ------------------------------------------------------------------------------
-# AUTENTİFİKASİYA (AUTHENTICATION)
+# (AUTHENTICATION)
 # ------------------------------------------------------------------------------
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -147,7 +147,7 @@ LOGOUT_REDIRECT_URL = '/'
 
 
 # ------------------------------------------------------------------------------
-# E-POÇT TƏNZİMLƏMƏLƏRİ (EMAIL SETTINGS)
+#(EMAIL SETTINGS)
 # ------------------------------------------------------------------------------
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
