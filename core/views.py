@@ -408,7 +408,6 @@ def plan_yarat_ve_redakte_et(request, ishchi_id, dovr_id):
 # --- MÖVCUD FƏRDİ İNKİŞAF PLANINA BAXMA VƏ STATUS YENİLƏMƏ ---
 
 
-
 @login_required
 def plan_bax(request, plan_id):
     """Mövcud inkişaf planına baxmaq və statusları yeniləmək üçün."""
@@ -416,18 +415,13 @@ def plan_bax(request, plan_id):
         InkishafPlani.objects.select_related('ishchi', 'dovr').prefetch_related('hedefler'),
         id=plan_id
     )
-
-    # İcazə yoxlanışı: Yalnız planın sahibi, onun rəhbəri və ya superuser baxa bilər
+    # Rəhbərin və ya işçinin planı görmək icazəsini yoxlayırıq
     try:
         rehber = Ishchi.objects.get(sektor=plan.ishchi.sektor, rol='REHBER')
     except (Ishchi.DoesNotExist, Ishchi.MultipleObjectsReturned):
         rehber = None
 
-    is_allowed = (
-        request.user == plan.ishchi or 
-        request.user == rehber or 
-        request.user.is_superuser
-    )
+    is_allowed = (request.user == plan.ishchi or request.user == rehber or request.user.is_superuser)
     if not is_allowed:
         raise PermissionDenied
 
@@ -436,7 +430,7 @@ def plan_bax(request, plan_id):
     if request.method == 'POST' and is_plan_owner:
         hedef_id = request.POST.get('hedef_id')
         yeni_status = request.POST.get('status')
-        if hedef_id and yeni_status:
+        if hedef_id and yeni_status and yeni_status in Hedef.Status.values:
             try:
                 hedef = get_object_or_404(Hedef, id=int(hedef_id), plan=plan)
                 hedef.status = yeni_status
@@ -445,19 +439,25 @@ def plan_bax(request, plan_id):
             except (ValueError, TypeError):
                 messages.error(request, "Xətalı sorğu.")
             return redirect('plan_bax', plan_id=plan.id)
-    
-    # Hər bir hədəfə öz status seçimlərini əlavə edirik ki, şablon onu istifadə edə bilsin
+
+    # Bütün məntiqi burada hazırlayırıq
+    hedefler_with_choices = []
     for hedef in plan.hedefler.all():
-        hedef.status_choices_with_selection = []
+        choices = []
         for key, value in Hedef.Status.choices:
-            hedef.status_choices_with_selection.append({
+            choices.append({
                 'key': key,
                 'value': value,
                 'is_selected': hedef.status == key
             })
+        hedefler_with_choices.append({
+            'hedef_obj': hedef,
+            'status_choices': choices
+        })
 
     context = {
         'plan': plan,
         'is_plan_owner': is_plan_owner,
+        'hedefler_with_choices': hedefler_with_choices,
     }
     return render(request, 'core/plan_detail.html', context)
