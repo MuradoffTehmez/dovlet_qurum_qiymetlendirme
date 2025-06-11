@@ -1,0 +1,7 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Server Xətası" %}{% endblock %}
+{% block content %}
+{% include 'errors/components/generic_error.html' with code="500" color="danger" title=_("Server Xətası")
+message=_("Serverdə gözlənilməz bir xəta baş verdi.") icon="arrow-clockwise" %}
+{% endblock %}
