@@ -1,7 +1,12 @@
 {% extends 'core/base.html' %}
 {% load i18n %}
-{% block title %}{% trans "Xidmət Müvəqqəti Mövcud Deyil" %}{% endblock %}
+
+{% block title %}{% trans "Xidmət Mövcud Deyil" %}{% endblock %}
+
 {% block content %}
-{% include 'errors/components/generic_error.html' with code="503" color="warning" title=_("Xidmət Mövcud Deyil")
-message=_("Hazırda xidmət müvəqqəti dayandırılıb. Bir az sonra yenidən cəhd edin.") icon="exclamation-triangle-fill" %}
+{% trans "Xidmət Mövcud Deyil" as error_title %}
+{% trans "Server hazırda sorğuları qəbul edə bilmir. Zəhmət olmasa, bir neçə dəqiqə sonra yenidən cəhd edin." as
+error_message %}
+{% include 'errors/components/generic_error.html' with code="503" color="warning" title=error_title
+message=error_message icon="exclamation-triangle-fill" %}
 {% endblock %}
