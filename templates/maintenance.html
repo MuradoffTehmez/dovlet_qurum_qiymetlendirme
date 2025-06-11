@@ -1,0 +1,7 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Texniki Xidmət" %}{% endblock %}
+{% block content %}
+{% include 'errors/components/generic_error.html' with code="🛠️" color="secondary" title=_("Sayt Texniki Xidmətdədir")
+message=_("Hazırda sistemdə texniki işlər aparılır. Zəhmət olmasa bir az sonra yenidən yoxlayın.") icon="tools" %}
+{% endblock %}
