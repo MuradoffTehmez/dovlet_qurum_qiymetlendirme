@@ -34,6 +34,12 @@ DEBUG = os.getenv('DEBUG', 'False') == 'true'
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
+# AUTENTİFİKASİYA ARXA TƏRƏFLƏRİ (BACKENDS)
+AUTHENTICATION_BACKENDS = [
+    'core.backends.EmailOrUsernameBackend',          # Bizim xüsusi backend-imiz
+    'django.contrib.auth.backends.ModelBackend', # Django-nun standart backend-i (admin paneli üçün vacibdir)
+]
+
 
 # ------------------------------------------------------------------------------
 # TƏTBİQLƏR (APPLICATIONS)
