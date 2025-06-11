@@ -2,6 +2,7 @@
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from simple_history.models import HistoricalRecords # Simple History üçün model tarixi saxlamaq üçün
 
 # --- İyerarxiya Modelləri ---
 
@@ -10,6 +11,8 @@ class Departament(models.Model):
 
     def __str__(self):
         return self.ad
+    
+    history = HistoricalRecords()
 
 class Shobe(models.Model):
     ad = models.CharField(max_length=255, verbose_name="Şöbənin Adı")
@@ -18,12 +21,16 @@ class Shobe(models.Model):
     def __str__(self):
         return f"{self.departament.ad} / {self.ad}"
 
+    history = HistoricalRecords()
+
 class Sektor(models.Model):
     ad = models.CharField(max_length=255, verbose_name="Sektorun Adı")
     shobe = models.ForeignKey(Shobe, on_delete=models.CASCADE, related_name='sektorler')
 
     def __str__(self):
         return f"{self.shobe.ad} / {self.ad}"
+
+    history = HistoricalRecords()
 
 # --- Genişləndirilmiş İstifadəçi Modeli ---
 
@@ -38,6 +45,8 @@ class Ishchi(AbstractUser):
     vezife = models.CharField(max_length=255, verbose_name="Vəzifəsi", blank=True)
     sektor = models.ForeignKey(Sektor, on_delete=models.SET_NULL, null=True, blank=True, related_name='ishchiler')
 
+    history = HistoricalRecords()
+
 # --- Sual Hovuzu Modelləri ---
 
 class SualKateqoriyasi(models.Model):
@@ -45,6 +54,8 @@ class SualKateqoriyasi(models.Model):
 
     def __str__(self):
         return self.ad
+    
+    history = HistoricalRecords()
 
 class Sual(models.Model):
     metn = models.TextField(verbose_name="Sualın Mətni")
@@ -60,6 +71,8 @@ class Sual(models.Model):
     def __str__(self):
         return self.metn[:50] + "..."
 
+    history = HistoricalRecords()
+
 # --- Qiymətləndirmə Prosesi Modelləri ---
 
 class QiymetlendirmeDovru(models.Model):
@@ -70,6 +83,8 @@ class QiymetlendirmeDovru(models.Model):
 
     def __str__(self):
         return self.ad
+    
+    history = HistoricalRecords()
 
 class Qiymetlendirme(models.Model):
     class Status(models.TextChoices):
@@ -88,6 +103,8 @@ class Qiymetlendirme(models.Model):
     def __str__(self):
         return f"{self.qiymetlendiren} -> {self.qiymetlendirilen} ({self.dovr.ad})"
 
+    history = HistoricalRecords()
+
 class Cavab(models.Model):
     qiymetlendirme = models.ForeignKey(Qiymetlendirme, on_delete=models.CASCADE, related_name='cavablar')
     sual = models.ForeignKey(Sual, on_delete=models.CASCADE)
@@ -96,3 +113,5 @@ class Cavab(models.Model):
 
     def __str__(self):
         return f"{self.qiymetlendirme}: Sual {self.sual.id} - {self.xal} xal"
+
+    history = HistoricalRecords()
