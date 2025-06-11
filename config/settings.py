@@ -29,9 +29,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # DEBUG REJİMİ: Production mühitində mütləq False olmalıdır!
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = os.getenv('DEBUG', 'False') == 'true'
+# ALLOWED_HOSTS: Yalnız lokal hostlar üçün icazə verilir
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # ------------------------------------------------------------------------------
