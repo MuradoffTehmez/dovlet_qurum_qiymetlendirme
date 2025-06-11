@@ -8,6 +8,7 @@ from django.contrib import messages
 from django.template.loader import render_to_string
 from weasyprint import HTML
 import random 
+from .decorators import rehber_required, superadmin_required  
 
 from .models import (
     Qiymetlendirme, Sual, Cavab, QiymetlendirmeDovru, 
@@ -65,9 +66,6 @@ def _get_detailed_report_context(ishchi, dovr):
         'chart_data': json.dumps(chart_data),
         'error': None
     }
-
-
-# --- ÜMUMİ İSTİFADƏÇİ GÖRÜNÜŞLƏRİ ---
 
 @login_required
 def dashboard(request):
@@ -135,7 +133,6 @@ def hesabat_sehifesi(request):
     ishchi = request.user
     trend_data, all_user_cycles = _get_performance_trend(ishchi)
     
-    # Başlanğıcda heç bir hesabat yoxdursa
     if not all_user_cycles:
         messages.warning(request, "Haqqınızda heç bir tamamlanmış qiymətləndirmə tapılmadı.")
         return redirect('dashboard')
@@ -159,13 +156,10 @@ def hesabat_sehifesi(request):
     return render(request, 'core/hesabat.html', context)
 
 
-# --- RƏHBƏR GÖRÜNÜŞLƏRİ ---
 
 @login_required
+@rehber_required
 def rehber_paneli(request):
-    if request.user.rol != 'REHBER':
-        return HttpResponseForbidden("Bu səhifəyə yalnız rəhbərlər daxil ola bilər.")
-
     tabe_olan_ishchiler = []
     if request.user.sektor:
         tabe_olan_ishchiler = Ishchi.objects.filter(
