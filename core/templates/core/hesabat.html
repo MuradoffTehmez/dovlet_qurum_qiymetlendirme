@@ -14,12 +14,26 @@
         </a>
         {% endif %}
     
-        {% if not detailed_context.error %}
-        <a href="{% url 'hesabat_pdf_yukle' detailed_context.ishchi.id %}?dovr_id={{ detailed_context.dovr.id }}"
-            class="btn btn-danger ms-2" target="_blank">
-            <i class="bi bi-file-earmark-pdf"></i> {% trans "PDF Yüklə" %}
-        </a>
-        {% endif %}
+        <div>
+            {% if can_manage_idp and not detailed_context.error %}
+            {% if detailed_context.movcud_plan %}
+            <a href="{% url 'plan_bax' detailed_context.movcud_plan.id %}" class="btn btn-primary">
+                <i class="bi bi-eye-fill"></i> {% trans "Plana Bax" %}
+            </a>
+            {% else %}
+            <a href="{% url 'plan_yarat' detailed_context.ishchi.id detailed_context.dovr.id %}" class="btn btn-info">
+                <i class="bi bi-plus-circle-fill"></i> {% trans "İnkişaf Planı Yarat" %}
+            </a>
+            {% endif %}
+            {% endif %}
+        
+            {% if not detailed_context.error %}
+            <a href="{% url 'hesabat_pdf_yukle' detailed_context.ishchi.id %}?dovr_id={{ detailed_context.dovr.id }}"
+                class="btn btn-danger ms-2" target="_blank">
+                <i class="bi bi-file-earmark-pdf"></i> {% trans "PDF Yüklə" %}
+            </a>
+            {% endif %}
+            </div>
     </div>
 </div>
 

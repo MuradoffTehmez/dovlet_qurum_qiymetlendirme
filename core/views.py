@@ -19,7 +19,7 @@ from .models import InkishafPlani
 # Lokal importlar
 from .models import (
     Qiymetlendirme, Sual, Cavab, QiymetlendirmeDovru,
-    Ishchi, Departament, SualKateqoriyasi
+    Ishchi, Departament, SualKateqoriyasi, Hedef 
 )
 from .forms import YeniDovrForm, IshchiCreationForm
 from .decorators import rehber_required, superadmin_required
@@ -102,46 +102,57 @@ def qiymetlendirme_etmek(request, qiymetlendirme_id):
 
 # --- HESABAT GÖRÜNÜŞLƏRİ ---
 
+# core/views.py
+
 @login_required
 def hesabat_gorunumu(request, ishchi_id=None):
     """
-    Həm işçinin öz hesabatı, həm də rəhbərin işçinin hesabatına baxması üçün ortaq view.
+    Həm işçinin öz hesabatı, həm də rəhbərin işçinin hesabatına baxması üçün ortaq,
+    təkmilləşdirilmiş view.
     """
+    # 1. Hədəf işçini və icazələri müəyyən edirik
     if ishchi_id:
         hedef_ishchi = get_object_or_404(Ishchi, id=ishchi_id)
-        # Təhlükəsizlik yoxlanışı
+        # Rəhbər və ya Superuser-in icazəsini yoxlayırıq
         is_allowed_to_view = request.user.is_superuser or \
                              (request.user.rol == 'REHBER' and request.user.sektor == hedef_ishchi.sektor)
         if not is_allowed_to_view:
             raise PermissionDenied
     else:
+        # İstifadəçi öz hesabatına baxır
         hedef_ishchi = request.user
 
+    # 2. Performans trendini və mövcud dövrləri alırıq
     trend_data, all_user_cycles = get_performance_trend(hedef_ishchi)
     
     if not all_user_cycles:
         messages.warning(request, f"{hedef_ishchi.get_full_name()} üçün heç bir tamamlanmış qiymətləndirmə tapılmadı.")
         return redirect('dashboard' if not ishchi_id else 'rehber_paneli')
         
-    # Dropdown-dan seçilən dövrü götürürük, seçilməyibsə ən sonuncunu
+    # 3. Hansı dövrün hesabatının göstəriləcəyini təhlükəsiz şəkildə təyin edirik
     selected_dovr_id = request.GET.get('dovr_id', all_user_cycles.last().id)
-    selected_dovr = get_object_or_404(QiymetlendirmeDovru, id=selected_dovr_id)
-    
+    try:
+        selected_dovr = get_object_or_404(QiymetlendirmeDovru, id=int(selected_dovr_id))
+    except (ValueError, TypeError):
+        selected_dovr = all_user_cycles.last()
+
+    # 4. Detallı hesabat məlumatlarını alırıq
     detailed_context = get_detailed_report_context(hedef_ishchi, selected_dovr)
 
-    # --- YENİ MƏNTİQ BURADADIR ---
-    # İnkişaf Planı düyməsinin görünüb-görünmədiyini yoxlayırıq
-    can_manage_idp = False
-    if not detailed_context.get('error'):
-        if request.user.is_superuser or (request.user.rol == 'REHBER' and request.user.sektor == hedef_ishchi.sektor):
-            can_manage_idp = True
+    # 5. Şablon üçün əlavə məntiqi dəyərləri hazırlayırıq
+    # Rəhbər və ya superuser İnkişaf Planı yarada bilər
+    can_manage_idp = (request.user.is_superuser or (request.user.rol == 'REHBER' and request.user.sektor == hedef_ishchi.sektor))
+    # Bu işçi və dövr üçün planın olub-olmadığını yoxlayırıq
+    movcud_plan = InkishafPlani.objects.filter(ishchi=hedef_ishchi, dovr=selected_dovr).first()
     
-    cycles_for_template = [{'id': dovr.id, 'ad': dovr.ad, 'is_selected': dovr.id == int(selected_dovr_id)} for dovr in all_user_cycles]
+    cycles_for_template = [{'id': dovr.id, 'ad': dovr.ad, 'is_selected': dovr.id == selected_dovr.id} for dovr in all_user_cycles]
 
+    # 6. Bütün məlumatları şablona göndəririk
     context = {
         'detailed_context': detailed_context,
         'cycles_for_template': cycles_for_template,
-        'can_manage_idp': can_manage_idp, # <-- Yeni bayrağı şablona göndəririk
+        'can_manage_idp': can_manage_idp,
+        'movcud_plan': movcud_plan, # Planın olub-olmadığı barədə məlumat
         'trend_chart_labels': json.dumps(list(trend_data.keys())),
         'trend_chart_data': json.dumps(list(trend_data.values())),
     }
@@ -397,16 +408,22 @@ def plan_yarat_ve_redakte_et(request, ishchi_id, dovr_id):
 # --- MÖVCUD FƏRDİ İNKİŞAF PLANINA BAXMA VƏ STATUS YENİLƏMƏ ---
 
 
+# core/views.py faylının sonuna əlavə edin
+
 @login_required
 def plan_bax(request, plan_id):
     """Mövcud inkişaf planına baxmaq və statusları yeniləmək üçün."""
     plan = get_object_or_404(
-        InkishafPlani.objects.prefetch_related('hedefler'), # Optimizasiya
+        InkishafPlani.objects.select_related('ishchi', 'dovr').prefetch_related('hedefler'), 
         id=plan_id
     )
 
     # İcazə yoxlanışı: Yalnız planın sahibi, onun rəhbəri və ya superuser baxa bilər
-    rehber = Ishchi.objects.filter(sektor=plan.ishchi.sektor, rol='REHBER').first()
+    try:
+        rehber = Ishchi.objects.get(sektor=plan.ishchi.sektor, rol='REHBER')
+    except (Ishchi.DoesNotExist, Ishchi.MultipleObjectsReturned):
+        rehber = None
+
     is_allowed = (
         request.user == plan.ishchi or 
         request.user == rehber or 
@@ -415,31 +432,24 @@ def plan_bax(request, plan_id):
     if not is_allowed:
         raise PermissionDenied
 
-    # --- YENİ MƏNTİQ ---
-    # İstifadəçinin planın sahibi olub-olmadığını yoxlayırıq
     is_plan_owner = (request.user == plan.ishchi)
 
-    if request.method == 'POST':
-        # Yalnız planın sahibi statusu dəyişə bilər
-        if is_plan_owner:
-            hedef_id = request.POST.get('hedef_id')
-            yeni_status = request.POST.get('status')
-            if hedef_id and yeni_status:
-                try:
-                    hedef = get_object_or_404(Hedef, id=int(hedef_id), plan=plan)
-                    hedef.status = yeni_status
-                    hedef.save(update_fields=['status'])
-                    messages.success(request, "Hədəfin statusu uğurla yeniləndi.")
-                except (ValueError, TypeError):
-                    messages.error(request, "Xətalı sorğu.")
-                return redirect('plan_bax', plan_id=plan.id)
+    if request.method == 'POST' and is_plan_owner:
+        hedef_id = request.POST.get('hedef_id')
+        yeni_status = request.POST.get('status')
+        if hedef_id and yeni_status:
+            try:
+                hedef = get_object_or_404(Hedef, id=int(hedef_id), plan=plan)
+                hedef.status = yeni_status
+                hedef.save(update_fields=['status'])
+                messages.success(request, "Hədəfin statusu uğurla yeniləndi.")
+            except (ValueError, TypeError):
+                messages.error(request, "Xətalı sorğu.")
+            return redirect('plan_bax', plan_id=plan.id)
 
-    # get_choices-i şablonda istifadə etmək üçün context-ə əlavə edirik
-    status_choices = Hedef.Status.choices
-    
     context = {
         'plan': plan,
-        'is_plan_owner': is_plan_owner, # <-- Yeni bayrağı şablona göndəririk
-        'status_choices': status_choices,
+        'is_plan_owner': is_plan_owner,
+        'status_choices': Hedef.Status.choices,
     }
     return render(request, 'core/plan_detail.html', context)
