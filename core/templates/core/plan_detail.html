@@ -11,7 +11,7 @@
 <hr>
 <div class="card shadow-sm">
     <div class="card-header">
-        <h5 class="mb-0">Plan Məlumatları</h5>
+        <h5 class="mb-0">{% trans "Plan Məlumatları" %}</h5>
     </div>
     <div class="card-body">
         <p class="mb-1"><strong>{% trans "İşçi:" %}</strong> {{ plan.ishchi.get_full_name }}</p>
@@ -35,8 +35,9 @@
                     <input type="hidden" name="hedef_id" value="{{ hedef.id }}">
 
                     <select name="status" class="form-select me-2" {% if not is_plan_owner %}disabled{% endif %}>
-                        {% for key, value in status_choices %}
-                        <option value="{{ key }}" {% if hedef.status==key %}selected{% endif %}>{{ value }}</option>
+                        {% for choice in hedef.status_choices_with_selection %}
+                        <option value="{{ choice.key }}" {% if choice.is_selected %}selected{% endif %}>{{ choice.value
+                            }}</option>
                         {% endfor %}
                     </select>
 

@@ -408,27 +408,23 @@ def plan_yarat_ve_redakte_et(request, ishchi_id, dovr_id):
 # --- MÖVCUD FƏRDİ İNKİŞAF PLANINA BAXMA VƏ STATUS YENİLƏMƏ ---
 
 
-# core/views.py faylının sonuna əlavə edin
+# core/views.py
 
 @login_required
 def plan_bax(request, plan_id):
     """Mövcud inkişaf planına baxmaq və statusları yeniləmək üçün."""
     plan = get_object_or_404(
-        InkishafPlani.objects.select_related('ishchi', 'dovr').prefetch_related('hedefler'), 
+        InkishafPlani.objects.select_related('ishchi', 'dovr').prefetch_related('hedefler'),
         id=plan_id
     )
 
-    # İcazə yoxlanışı: Yalnız planın sahibi, onun rəhbəri və ya superuser baxa bilər
+    # İcazə yoxlanışı
     try:
         rehber = Ishchi.objects.get(sektor=plan.ishchi.sektor, rol='REHBER')
     except (Ishchi.DoesNotExist, Ishchi.MultipleObjectsReturned):
         rehber = None
 
-    is_allowed = (
-        request.user == plan.ishchi or 
-        request.user == rehber or 
-        request.user.is_superuser
-    )
+    is_allowed = (request.user == plan.ishchi or request.user == rehber or request.user.is_superuser)
     if not is_allowed:
         raise PermissionDenied
 
@@ -446,10 +442,20 @@ def plan_bax(request, plan_id):
             except (ValueError, TypeError):
                 messages.error(request, "Xətalı sorğu.")
             return redirect('plan_bax', plan_id=plan.id)
+    
+    # --- YENİ MƏNTİQ ---
+    # Hər bir hədəfə öz status seçimlərini əlavə edirik
+    for hedef in plan.hedefler.all():
+        hedef.status_choices_with_selection = []
+        for key, value in Hedef.Status.choices:
+            hedef.status_choices_with_selection.append({
+                'key': key,
+                'value': value,
+                'is_selected': hedef.status == key
+            })
 
     context = {
         'plan': plan,
         'is_plan_owner': is_plan_owner,
-        'status_choices': Hedef.Status.choices,
     }
     return render(request, 'core/plan_detail.html', context)
