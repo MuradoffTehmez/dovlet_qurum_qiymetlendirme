@@ -6,12 +6,21 @@
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-2">
     <h2>{% trans "Qiymətləndirmə Hesabatı" %}</h2>
-    {% if not detailed_context.error %}
-    <a href="{% url 'hesabat_pdf_yukle' detailed_context.ishchi.id %}?dovr_id={{ selected_dovr_id }}"
-        class="btn btn-danger" target="_blank">
-        {% trans "PDF Yüklə" %}
-    </a>
-    {% endif %}
+
+    <div>
+        {% if not detailed_context.error and (request.user.rol == 'REHBER' or request.user.is_superuser) %}
+        <a href="{% url 'plan_yarat' detailed_context.ishchi.id detailed_context.dovr.id %}" class="btn btn-info">
+            <i class="bi bi-bullseye"></i> {% trans "İnkişaf Planı" %}
+        </a>
+        {% endif %}
+
+        {% if not detailed_context.error %}
+        <a href="{% url 'hesabat_pdf_yukle' detailed_context.ishchi.id %}?dovr_id={{ detailed_context.dovr.id }}"
+            class="btn btn-danger ms-2" target="_blank">
+            <i class="bi bi-file-earmark-pdf"></i> {% trans "PDF Yüklə" %}
+        </a>
+        {% endif %}
+    </div>
 </div>
 
 <div class="card mb-4">
@@ -112,15 +121,15 @@
         fill: true,
         backgroundColor: 'rgba(54, 162, 235, 0.2)',
         borderColor: 'rgb(54, 162, 235)',
-                        }]
-                    },
+                    }]
+                },
         options: {
         responsive: true,
         maintainAspectRatio: false,
         scales: { r: { suggestedMin: 0, suggestedMax: 10 } }
     }
-                });
-            }
+            });
+        }
     {% endif %}
 
     // Line Chart (Trend Analizi)
@@ -136,15 +145,15 @@
         fill: false,
         borderColor: 'rgb(255, 99, 132)',
         tension: 0.1
-                        }]
-                    },
+                    }]
+                },
     options: {
         responsive: true,
             maintainAspectRatio: false,
                 scales: { y: { beginAtZero: true, suggestedMax: 10 } }
     }
-                });
-            }
-        });
+            });
+        }
+    });
 </script>
 {% endblock %}
