@@ -106,7 +106,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
@@ -137,25 +136,14 @@ AUTH_USER_MODEL = 'core.Ishchi'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-# Test mərhələsi üçün e-poçtları terminalda göstərən backend
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-
 # Crispy Forms tənzimləmələri
 # Crispy Forms, Django formalarını daha gözəl və funksional etmək üçün istifadə olunur.
-
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
-
-
-
 # Jazzmin tənzimləmələri
 # Jazzmin, Django admin panelini daha gözəl və funksional etmək üçün istifadə olunan bir tətbiqdir.
-
-
-
 
 JAZZMIN_SETTINGS = {
     # Saytın başlığı (brauzer tabında görünür)
@@ -213,8 +201,6 @@ JAZZMIN_UI_TWEAKS = {
     }
 }
 
-
-
 from django.utils.translation import gettext_lazy as _
 
 # Saytda mövcud olacaq dillər
@@ -227,3 +213,12 @@ LANGUAGES = [
 LOCALE_PATHS = [
     BASE_DIR / 'locale',
 ]
+
+# --- E-POÇT TƏNZİMLƏMƏLƏRİ ---
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'muradofftehmez01@gmail.com'
+EMAIL_HOST_PASSWORD = 'juuu wxbb gcvw cbhj'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

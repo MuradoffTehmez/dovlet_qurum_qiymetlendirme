@@ -5,22 +5,21 @@ from . import views
 
 urlpatterns = [
     path('', views.dashboard, name='dashboard'),
+    path('qeydiyyat/', views.qeydiyyat_sehifesi, name='qeydiyyat'), # Qeydiyyatı bura da əlavə etmək olar
     
     path('qiymetlendir/<int:qiymetlendirme_id>/', views.qiymetlendirme_etmek, name='qiymetlendirme_etmek'),
-
-    path('hesabatim/', views.hesabat_sehifesi, name='hesabatim'), 
-
-    path('rehber-paneli/', views.rehber_paneli, name='rehber_paneli'),
-
-    path('hesabat/bax/<int:ishchi_id>/', views.hesabat_bax, name='hesabat_bax'),
-
+    
+    # Yeni ortaq hesabat URL-ləri
+    path('hesabatim/', views.hesabat_gorunumu, name='hesabatim'), # İşçi öz hesabatına baxır
+    path('hesabat/bax/<int:ishchi_id>/', views.hesabat_gorunumu, name='hesabat_bax'), # Rəhbər işçinin hesabatına baxır
+    
     path('hesabat/pdf/<int:ishchi_id>/', views.hesabat_pdf_yukle, name='hesabat_pdf_yukle'),
 
+    # Rəhbər və Superadmin panelləri
+    path('rehber-paneli/', views.rehber_paneli, name='rehber_paneli'),
     path('superadmin/', views.superadmin_paneli, name='superadmin_paneli'),
-
     path('superadmin/yeni-dovr/', views.yeni_dovr_yarat, name='yeni_dovr_yarat'),
-
-    path('accounts/qeydiyyat/', views.qeydiyyat_sehifesi, name='qeydiyyat'),
+]
 
     # Uncomment the following lines if you want to enable these views
 
@@ -41,5 +40,3 @@ urlpatterns = [
     # path('superadmin/hesabatlar/duzenle/<int:hesabat_id>/pdf/duzenle/', views.hesabat_pdf_duzenle, name='hesabat_pdf_duzenle'),
     # path('superadmin/hesabatlar/duzenle/<int:hesabat_id>/pdf/yukle/', views.hesabat_pdf_yukle, name='hesabat_pdf_yukle'),
     # path('superadmin/hesabatlar/duzenle/<int:hesabat_id>/pdf/sil/', views.hesabat_pdf_sil, name='hesabat_pdf_sil'),
-
-]
