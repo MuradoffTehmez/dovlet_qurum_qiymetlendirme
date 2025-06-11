@@ -1,0 +1,12 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Çoxlu Sorğu" %}{% endblock %}
+
+{% block content %}
+{% trans "Çoxlu Sorğu" as error_title %}
+{% trans "Siz qısa müddət ərzində çox sayda sorğu göndərmisiniz. Zəhmət olmasa, bir az sonra yenidən cəhd edin." as
+error_message %}
+{% include 'errors/components/generic_error.html' with code="429" color="warning" title=error_title
+message=error_message icon="alarm-fill" %}
+{% endblock %}
