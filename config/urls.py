@@ -21,6 +21,13 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 
+# --- STATİK VƏ MEDİA FAYLLAR ÜÇÜN URL-LƏR (YALNIZ DEVELOPMENT ÜÇÜN) ---
+if settings.DEBUG:
+    # `collectstatic` ilə yığılan faylları göstərmək üçün
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 
+    # İstifadəçilərin yüklədiyi faylları göstərmək üçün
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 # Dil prefiksi olan URL-lər (/az/, /en/)
 # Bütün istifadəçi tərəfindən görünən səhifələr burada olmalıdır
 urlpatterns += i18n_patterns(
