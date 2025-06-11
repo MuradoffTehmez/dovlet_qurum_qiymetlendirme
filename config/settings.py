@@ -46,13 +46,13 @@ AUTHENTICATION_BACKENDS = [
 # ------------------------------------------------------------------------------
 
 INSTALLED_APPS = [
-    # Xarici tətbiqlər (dizayn və s.)
+
     'jazzmin',
     'crispy_forms',
     'crispy_bootstrap5',
     'simple_history',
     
-    # Django-nun daxili tətbiqləri
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -60,7 +60,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # Bizim lokal tətbiqimiz
+    
     'core.apps.CoreConfig',
 ]
 
