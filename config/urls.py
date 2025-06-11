@@ -1,23 +1,33 @@
+# config/urls.py
+
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.i18n import i18n_patterns
+from django.conf import settings
+from django.conf.urls.static import static
 
-# Dil prefiksi olmayan URL-lər (məsələn: admin paneli üçün)
+# Xəta səhifələri üçün standart view-ları import edirik
+from django.views.defaults import (
+    page_not_found,
+    server_error,
+    permission_denied,
+    bad_request,
+)
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 
-# Dil prefiksi olan URL-lər (/az/, /en/ və s.)
 urlpatterns += i18n_patterns(
-    path('accounts/', include('django.contrib.auth.urls')),  # Daxil olma / çıxış üçün URL-lər
-    path('', include('core.urls')),                          # Əsas tətbiqə aid URL-lər
-
-    # Gələcəkdə dilə uyğun başqa URL-lər də bura əlavə edilə bilər
-    # Məsələn: path('hesabatlar/', include('reports.urls'))
-    
-    # Əgər prefix_default_language=False yazsanız,
-    # əsas dil (məs: azərbaycan dili) üçün "/az/" prefiksi göstərilməyəcək.
-    # Yəni, saytınız azərbaycanca olanda URL-lər birbaşa / olacaq,
-    # ingiliscə olduqda isə /en/ prefiksi ilə açılacaq.
-    # prefix_default_language=False
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('', include('core.urls')),
 )
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Xəta handler-lərini təyin edirik
+handler400 = bad_request
+handler403 = permission_denied
+handler404 = page_not_found
+handler500 = server_error
