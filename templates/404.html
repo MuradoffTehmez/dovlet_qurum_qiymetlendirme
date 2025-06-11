@@ -1,0 +1,26 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Səhifə Tapılmadı" %}{% endblock %}
+
+{% block content %}
+<div class="container text-center py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-lg">
+                <div class="card-body p-5">
+                    <h1 class="display-1 fw-bold text-primary">404</h1>
+                    <h2 class="mb-4">{% trans "Səhifə Tapılmadı" %}</h2>
+                    <p class="lead text-muted">
+                        {% trans "Axtardığınız səhifə mövcud deyil. Ola bilsin ki, səhv ünvan daxil etmisiniz və ya
+                        səhifə silinib." %}
+                    </p>
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary mt-3">
+                        <i class="bi bi-house-door-fill"></i> {% trans "Ana Səhifəyə Qayıt" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
