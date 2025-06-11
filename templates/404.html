@@ -1,7 +1,14 @@
 {% extends 'core/base.html' %}
 {% load i18n %}
+
 {% block title %}{% trans "Səhifə Tapılmadı" %}{% endblock %}
+
 {% block content %}
-{% include 'errors/components/generic_error.html' with code="404" color="primary" title=_("Səhifə Tapılmadı")
-message=_("Axtardığınız səhifə mövcud deyil.") icon="house-door-fill" %}
+{# Əvvəlcə tərcümələri dəyişənlərə mənimsədirik #}
+{% trans "Səhifə Tapılmadı" as error_title %}
+{% trans "Axtardığınız səhifə mövcud deyil." as error_message %}
+
+{# İndi dəyişənləri include-a ötürürük #}
+{% include 'errors/components/generic_error.html' with code="404" color="primary" title=error_title
+message=error_message icon="search" %}
 {% endblock %}
