@@ -97,10 +97,15 @@ def qiymetlendirme_etmek(request, qiymetlendirme_id):
 
 @login_required
 def hesabat_gorunumu(request, ishchi_id=None):
-    """Həm işçinin öz hesabatı, həm də rəhbərin işçinin hesabatına baxması üçün ortaq view."""
+    """
+    Həm işçinin öz hesabatı, həm də rəhbərin işçinin hesabatına baxması üçün ortaq view.
+    """
     if ishchi_id:
         hedef_ishchi = get_object_or_404(Ishchi, id=ishchi_id)
-        if not (request.user.is_superuser or (request.user.rol == 'REHBER' and request.user.sektor == hedef_ishchi.sektor)):
+        # Təhlükəsizlik yoxlanışı
+        is_allowed_to_view = request.user.is_superuser or \
+                             (request.user.rol == 'REHBER' and request.user.sektor == hedef_ishchi.sektor)
+        if not is_allowed_to_view:
             raise PermissionDenied
     else:
         hedef_ishchi = request.user
@@ -111,25 +116,30 @@ def hesabat_gorunumu(request, ishchi_id=None):
         messages.warning(request, f"{hedef_ishchi.get_full_name()} üçün heç bir tamamlanmış qiymətləndirmə tapılmadı.")
         return redirect('dashboard' if not ishchi_id else 'rehber_paneli')
         
-    selected_dovr_id = request.GET.get('dovr_id')
-    if selected_dovr_id:
-        selected_dovr = get_object_or_404(QiymetlendirmeDovru, id=selected_dovr_id)
-    else:
-        selected_dovr = all_user_cycles.last()
-
+    # Dropdown-dan seçilən dövrü götürürük, seçilməyibsə ən sonuncunu
+    selected_dovr_id = request.GET.get('dovr_id', all_user_cycles.last().id)
+    selected_dovr = get_object_or_404(QiymetlendirmeDovru, id=selected_dovr_id)
+    
     detailed_context = get_detailed_report_context(hedef_ishchi, selected_dovr)
 
-    cycles_for_template = [{'id': dovr.id, 'ad': dovr.ad} for dovr in all_user_cycles]
+    # --- YENİ MƏNTİQ BURADADIR ---
+    # İnkişaf Planı düyməsinin görünüb-görünmədiyini yoxlayırıq
+    can_manage_idp = False
+    if not detailed_context.get('error'):
+        if request.user.is_superuser or (request.user.rol == 'REHBER' and request.user.sektor == hedef_ishchi.sektor):
+            can_manage_idp = True
+    
+    cycles_for_template = [{'id': dovr.id, 'ad': dovr.ad, 'is_selected': dovr.id == int(selected_dovr_id)} for dovr in all_user_cycles]
 
     context = {
         'detailed_context': detailed_context,
         'cycles_for_template': cycles_for_template,
-        'selected_dovr_id': selected_dovr.id if selected_dovr else None,
+        'can_manage_idp': can_manage_idp, # <-- Yeni bayrağı şablona göndəririk
         'trend_chart_labels': json.dumps(list(trend_data.keys())),
         'trend_chart_data': json.dumps(list(trend_data.values())),
     }
+    
     return render(request, 'core/hesabat.html', context)
-
 
 # --- RƏHBƏR VƏ SUPERADMIN GÖRÜNÜŞLƏRİ ---
 

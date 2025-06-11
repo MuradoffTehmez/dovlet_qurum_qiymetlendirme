@@ -8,12 +8,12 @@
     <h2>{% trans "Qiymətləndirmə Hesabatı" %}</h2>
 
     <div>
-        {% if not detailed_context.error and (request.user.rol == 'REHBER' or request.user.is_superuser) %}
+        {% if can_manage_idp %}
         <a href="{% url 'plan_yarat' detailed_context.ishchi.id detailed_context.dovr.id %}" class="btn btn-info">
             <i class="bi bi-bullseye"></i> {% trans "İnkişaf Planı" %}
         </a>
         {% endif %}
-
+    
         {% if not detailed_context.error %}
         <a href="{% url 'hesabat_pdf_yukle' detailed_context.ishchi.id %}?dovr_id={{ detailed_context.dovr.id }}"
             class="btn btn-danger ms-2" target="_blank">
