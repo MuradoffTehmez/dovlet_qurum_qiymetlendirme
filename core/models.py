@@ -115,3 +115,48 @@ class Cavab(models.Model):
         return f"{self.qiymetlendirme}: Sual {self.sual.id} - {self.xal} xal"
 
     history = HistoricalRecords()
+
+
+# core/models.py faylının sonuna əlavə edin
+
+# --- Fərdi İnkişaf Planı (IDP) Modelləri ---
+
+class InkishafPlani(models.Model):
+    class Status(models.TextChoices):
+        AKTIV = 'AKTIV', 'Aktiv'
+        TAMAMLANMISH = 'TAMAMLANMISH', 'Tamamlanmış'
+
+    ishchi = models.ForeignKey(Ishchi, on_delete=models.CASCADE, related_name='inkishaf_planlari', verbose_name="İşçi")
+    dovr = models.ForeignKey(QiymetlendirmeDovru, on_delete=models.CASCADE, verbose_name="Qiymətləndirmə Dövrü")
+    yaradilma_tarixi = models.DateField(auto_now_add=True, verbose_name="Yaradılma Tarixi")
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.AKTIV, verbose_name="Planın Statusu")
+    history = HistoricalRecords()
+
+    class Meta:
+        verbose_name = "Fərdi İnkişaf Planı"
+        verbose_name_plural = "Fərdi İnkişaf Planları"
+        unique_together = ('ishchi', 'dovr') # Hər işçinin bir dövr üçün yalnız bir planı ola bilər
+
+    def __str__(self):
+        return f"{self.ishchi.get_full_name()} - {self.dovr.ad} İnkişaf Planı"
+
+
+class Hedef(models.Model):
+    class Status(models.TextChoices):
+        BASHLANMAYIB = 'BASHLANMAYIB', 'Başlanmayıb'
+        DAVAM_EDIR = 'DAVAM_EDIR', 'Davam Edir'
+        TAMAMLANDI = 'TAMAMLANDI', 'Tamamlandı'
+        LEGVEDILDI = 'LEGVEDILDI', 'Ləğv Edildi'
+
+    plan = models.ForeignKey(InkishafPlani, on_delete=models.CASCADE, related_name='hedefler', verbose_name="İnkişaf Planı")
+    tesvir = models.TextField(verbose_name="Hədəfin Təsviri")
+    son_tarix = models.DateField(verbose_name="Hədəfin Son İcra Tarixi")
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.BASHLANMAYIB, verbose_name="Hədəfin Statusu")
+    history = HistoricalRecords()
+
+    class Meta:
+        verbose_name = "Hədəf"
+        verbose_name_plural = "Hədəflər"
+
+    def __str__(self):
+        return self.tesvir[:70]

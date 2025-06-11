@@ -85,3 +85,28 @@ class QiymetlendirmeAdmin(SimpleHistoryAdmin):
 class CavabAdmin(SimpleHistoryAdmin):
     list_display = ('sual', 'xal', 'qiymetlendirme')
     search_fields = ('qiymetlendirme__qiymetlendirilen__username',)
+
+
+# Admin paneli üçün xüsusi tənzimləmələr
+admin.site.site_header = "360° Qiymətləndirmə Paneli"
+admin.site.site_title = "360° Qiymətləndirmə Paneli"
+admin.site.index_title = "İşçi Dəyərləndirmə Sistemi"
+
+# core/admin.py faylının sonuna əlavə edin
+
+from .models import InkishafPlani, Hedef # Yeni modelləri import edirik
+
+class HedefInline(admin.TabularInline):
+    """Hədəfləri birbaşa İnkişaf Planının içində göstərmək üçün inline."""
+    model = Hedef
+    extra = 1 # Varsayılan olaraq 1 ədəd boş hədəf sahəsi göstərir
+    fields = ('tesvir', 'son_tarix', 'status')
+
+
+@admin.register(InkishafPlani)
+class InkishafPlaniAdmin(SimpleHistoryAdmin):
+    """Fərdi İnkişaf Planı üçün admin paneli."""
+    list_display = ('ishchi', 'dovr', 'status', 'yaradilma_tarixi')
+    list_filter = ('status', 'dovr')
+    search_fields = ('ishchi__username', 'ishchi__first_name', 'ishchi__last_name')
+    inlines = [HedefInline] # Hədəfləri bura daxil edirik
