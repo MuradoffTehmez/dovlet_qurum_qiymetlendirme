@@ -211,41 +211,37 @@ JAZZMIN_SETTINGS = {
     "user_avatar": None,
 }
 
-
 JAZZMIN_UI_TWEAKS = {
-    "theme": "darkly",  # Alternativ: "solar", "cyborg", "superhero"
-    "dark_mode_theme": "darkly",
-
-    "navbar": "navbar-dark navbar-primary",
-    "brand_colour": "navbar-primary",
-    "accent": "accent-info",
-
     "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": True,
     "brand_small_text": False,
-    "footer_small_text": True,
-    "body_small_text": False,
-
-    "sidebar": "sidebar-dark-primary",
+    "brand_colour": "navbar-success",
+    "accent": "accent-lime",
+    "navbar": "navbar-success navbar-dark",
+    "no_navbar_border": False,
+    "navbar_fixed": False,
+    "layout_boxed": False,
+    "footer_fixed": False,
     "sidebar_fixed": True,
+    "sidebar": "sidebar-dark-primary",
     "sidebar_nav_small_text": False,
-    "sidebar_nav_flat_style": True,
-    "sidebar_nav_legacy_style": False,
-    "sidebar_nav_compact_style": False,
     "sidebar_disable_expand": False,
     "sidebar_nav_child_indent": True,
-
-    "layout_boxed": False,
-    "navbar_fixed": True,
-    "footer_fixed": True,
-
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": True,
+    "theme": "slate",
+    "dark_mode_theme": "slate",
     "button_classes": {
-        "primary": "btn btn-primary",
-        "secondary": "btn btn-secondary",
-        "info": "btn btn-info",
-        "warning": "btn btn-warning",
-        "danger": "btn btn-danger",
-        "success": "btn btn-success"
-    }
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-outline-success"
+    },
+    "actions_sticky_top": False
 }
 
 
