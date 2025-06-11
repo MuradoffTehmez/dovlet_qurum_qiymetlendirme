@@ -14,35 +14,31 @@ from django.utils.translation import gettext_lazy as _
 # ƏSAS TƏNZİMLƏMƏLƏR VƏ YOLLAR (BASE CONFIGURATION & PATHS)
 # ------------------------------------------------------------------------------
 
-# .env faylındakı dəyişənləri yükləyirik
 load_dotenv()
 
-# Layihənin kök qovluğu
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # ------------------------------------------------------------------------------
-# TƏHLÜKƏSİZLİK (SECURITY)
+# (SECURITY)
 # ------------------------------------------------------------------------------
 
-# GİZLİ AÇAR: Həssas məlumatları .env faylından oxuyuruq
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-# DEBUG REJİMİ: Production mühitində mütləq False olmalıdır!
-DEBUG = os.getenv('DEBUG', 'False') == 'False'
-# ALLOWED_HOSTS: Yalnız lokal hostlar üçün icazə verilir
+DEBUG = os.getenv('DEBUG', 'False') == 'true'
+
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
-# AUTENTİFİKASİYA ARXA TƏRƏFLƏRİ (BACKENDS)
+
 AUTHENTICATION_BACKENDS = [
-    'core.backends.EmailOrUsernameBackend',          # Bizim xüsusi backend-imiz
-    'django.contrib.auth.backends.ModelBackend', # Django-nun standart backend-i (admin paneli üçün vacibdir)
+    'core.backends.EmailOrUsernameBackend',         
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 
 # ------------------------------------------------------------------------------
-# TƏTBİQLƏR (APPLICATIONS)
+# (APPLICATIONS)
 # ------------------------------------------------------------------------------
 
 INSTALLED_APPS = [
