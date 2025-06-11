@@ -1,0 +1,7 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Keçid Xətası" %}{% endblock %}
+{% block content %}
+{% include 'errors/components/generic_error.html' with code="502" color="danger" title=_("Bad Gateway")
+message=_("Server digər serverdən düzgün cavab ala bilmədi.") icon="diagram-3-fill" %}
+{% endblock %}
