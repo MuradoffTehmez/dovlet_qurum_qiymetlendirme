@@ -1,7 +1,11 @@
 {% extends 'core/base.html' %}
 {% load i18n %}
-{% block title %}{% trans "Səhv Sorğu" %}{% endblock %}
+
+{% block title %}{% trans "Xəta" %}{% endblock %}
+
 {% block content %}
-{% include 'errors/components/generic_error.html' with code="400" color="secondary" title=_("Səhv Sorğu")
-message=_("Server sorğunuzu başa düşə bilmədi.") icon="arrow-left-circle-fill" %}
+{% trans "Səhv Sorğu" as error_title %}
+{% trans "Sorğunuz düzgün deyil və emal edilə bilmədi." as error_message %}
+{% include 'errors/components/generic_error.html' with code="400" color="danger" title=error_title message=error_message
+icon="x-circle-fill" %}
 {% endblock %}
