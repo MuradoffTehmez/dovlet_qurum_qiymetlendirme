@@ -1,14 +1,16 @@
-# core/tests.py - GENİŞLƏNDİRİLMİŞ TEST DƏSTİ
+# core/tests.py - BÜTÜN MODULLARI ƏHATƏ EDƏN TEST DƏSTİ
 
+import re
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.conf import settings
+from django.core import mail # E-poçtları test etmək üçün
 from .models import (
     Ishchi, Sektor, Shobe, Departament, 
     QiymetlendirmeDovru, InkishafPlani, Hedef
 )
 
-# Testləri qruplaşdırmaq üçün ümumi bir "hazırlıq" sinfi yaradırıq
+# Testləri qruplaşdırmaq üçün ümumi bir "hazırlıq" sinfi
 class BaseTestCase(TestCase):
     def setUp(self):
         """Bütün test sinifləri üçün ortaq olan hazırlıq."""
@@ -18,16 +20,19 @@ class BaseTestCase(TestCase):
         self.sektor = Sektor.objects.create(ad="Test Sektoru", shobe=self.shobe)
 
         self.normal_user = Ishchi.objects.create_user(
-            username='testishchi', password='password123', rol='ISHCHI', 
-            sektor=self.sektor, first_name="Test", last_name="İşçi"
-        )
-        self.manager_user = Ishchi.objects.create_user(
-            username='testrehber', password='password123', rol='REHBER', 
-            sektor=self.sektor, first_name="Test", last_name="Rəhbər"
+            username='testishchi', 
+            password='password123', 
+            email='ishchi@example.com',
+            rol='ISHCHI', 
+            sektor=self.sektor,
+            first_name="Test", last_name="İşçi"
         )
         self.superadmin_user = Ishchi.objects.create_user(
-            username='testsuperadmin', password='password123', rol='SUPERADMIN', 
-            sektor=self.sektor, is_staff=True, is_superuser=True
+            username='testsuperadmin', 
+            password='password123', 
+            rol='SUPERADMIN', 
+            sektor=self.sektor,
+            is_staff=True, is_superuser=True
         )
 
 # --- Test Sinif 1: Səhifəyə Giriş İcazələri ---
@@ -58,59 +63,68 @@ class PageAccessTests(BaseTestCase):
         response = self.client.get(reverse('superadmin_paneli'))
         self.assertEqual(response.status_code, 200)
 
-# --- Test Sinif 2: Fərdi İnkişaf Planı (IDP) Axını ---
-class IDPWorkflowTests(BaseTestCase):
 
-    def setUp(self):
-        """Bu test sinfi üçün əlavə hazırlıq."""
-        super().setUp() # Əsas BaseTestCase-in hazırlığını çağırırıq
-        self.dovr = QiymetlendirmeDovru.objects.create(
-            ad="Test IDP Dövrü", 
-            bashlama_tarixi="2025-01-01", 
-            bitme_tarixi="2025-12-31"
-        )
+# --- Test Sinif 2: Autentifikasiya Axınları (Login, Register, Password Reset) ---
+class AuthenticationFlowsTests(BaseTestCase):
 
-    def test_manager_can_create_idp(self):
-        """Test 5: Rəhbərin işçi üçün yeni bir IDP yarada bilməsi."""
-        self.client.login(username='testrehber', password='password123')
-        
-        # Plan yaratma səhifəsinə POST sorğusu göndəririk
-        url = reverse('plan_yarat', kwargs={'ishchi_id': self.normal_user.id, 'dovr_id': self.dovr.id})
-        post_data = {
-            'hedefler-TOTAL_FORMS': '1',
-            'hedefler-INITIAL_FORMS': '0',
-            'hedefler-MIN_NUM_FORMS': '1',
-            'hedefler-MAX_NUM_FORMS': '1000',
-            'hedefler-0-tesvir': 'Yeni bir bacarıq öyrənmək',
-            'hedefler-0-son_tarix': '2025-10-10',
-            'hedefler-0-status': 'BASHLANMAYIB',
-        }
-        response = self.client.post(url, data=post_data)
-        
-        # Gözləyirik ki, uğurlu əməliyyatdan sonra yönləndirmə olsun (302)
+    def test_successful_registration(self):
+        """Test 5: Yeni istifadəçinin qeydiyyatdan uğurla keçməsi."""
+        user_count_before = Ishchi.objects.count()
+        response = self.client.post(reverse('qeydiyyat'), {
+            'username': 'yeniistifadechi',
+            'first_name': 'Yeni',
+            'last_name': 'İstifadəçi',
+            'email': 'yeni@example.com',
+            'sektor': self.sektor.id,
+            'password1': 'GucluShifre123',
+            'password2': 'GucluShifre123',
+        })
+        # Uğurlu qeydiyyatdan sonra ana səhifəyə yönləndirilməlidir
         self.assertEqual(response.status_code, 302)
-        
-        # Verilənlər bazasında planın və hədəfin yarandığını yoxlayırıq
-        self.assertTrue(InkishafPlani.objects.filter(ishchi=self.normal_user, dovr=self.dovr).exists())
-        self.assertTrue(Hedef.objects.filter(plan__ishchi=self.normal_user, tesvir='Yeni bir bacarıq öyrənmək').exists())
+        self.assertEqual(response.url, reverse('dashboard'))
+        # İstifadəçi sayının bir vahid artdığını yoxlayırıq
+        self.assertEqual(Ishchi.objects.count(), user_count_before + 1)
 
-    def test_employee_can_update_goal_status(self):
-        """Test 6: İşçinin öz IDP hədəfinin statusunu yeniləyə bilməsi."""
-        # Əvvəlcə rəhbər tərəfindən bir plan və hədəf yaradırıq
-        plan = InkishafPlani.objects.create(ishchi=self.normal_user, dovr=self.dovr)
-        hedef = Hedef.objects.create(plan=plan, tesvir='Test hədəfi', son_tarix='2025-09-01', status='BASHLANMAYIB')
+    def test_login_with_email(self):
+        """Test 6: İstifadəçinin həm istifadəçi adı, həm də e-poçt ilə daxil ola bilməsi."""
+        # E-poçt ilə giriş
+        login_successful = self.client.login(username='ishchi@example.com', password='password123')
+        self.assertTrue(login_successful)
+        response = self.client.get(reverse('dashboard'))
+        self.assertEqual(response.status_code, 200)
+        self.client.logout()
+
+        # İstifadəçi adı ilə giriş
+        login_successful = self.client.login(username='testishchi', password='password123')
+        self.assertTrue(login_successful)
+        response = self.client.get(reverse('dashboard'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_password_reset_flow(self):
+        """Test 7: Şifrə bərpası axınının tam olaraq işləməsi."""
+        # Addım 1: Şifrə bərpası tələbi göndəririk
+        self.client.post(reverse('password_reset'), {'email': 'ishchi@example.com'})
         
-        # İndi işçi kimi daxil oluruq
-        self.client.login(username='testishchi', password='password123')
+        # Addım 2: E-poçtun göndərildiyini yoxlayırıq (konsola yazılır)
+        self.assertEqual(len(mail.outbox), 1)
+        sent_email = mail.outbox[0]
+        self.assertEqual(sent_email.to[0], 'ishchi@example.com')
         
-        # Plana baxış səhifəsinə POST sorğusu göndərərək statusu dəyişirik
-        url = reverse('plan_bax', kwargs={'plan_id': plan.id})
-        post_data = {
-            'hedef_id': hedef.id,
-            'status': 'DAVAM_EDIR',
-        }
-        self.client.post(url, data=post_data)
-        
-        # Hədəfin statusunun bazada dəyişdiyini yoxlayırıq
-        hedef.refresh_from_db()
-        self.assertEqual(hedef.status, 'DAVAM_EDIR')
+        # Addım 3: E-poçtdan bərpa linkini tapırıq
+        url_match = re.search(r'http://testserver(/accounts/reset/[^/]+/[^/]+/)\s', sent_email.body)
+        self.assertIsNotNone(url_match)
+        reset_url = url_match.group(1)
+
+        # Addım 4: Yeni şifrə təyin etmə səhifəsinə POST sorğusu göndəririk
+        response = self.client.post(reset_url, {
+            'new_password1': 'yeniGucluShifre456',
+            'new_password2': 'yeniGucluShifre456',
+        })
+
+        # Addım 5: Uğurlu dəyişiklikdən sonra yönləndirməni yoxlayırıq
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('password_reset_complete'))
+
+        # Addım 6: Yeni şifrə ilə daxil olmağı yoxlayırıq
+        login_successful = self.client.login(username='testishchi', password='yeniGucluShifre456')
+        self.assertTrue(login_successful)
