@@ -1,0 +1,71 @@
+{% extends 'core/base.html' %}
+{% load i18n crispy_forms_tags %}
+
+{% block title %}{% trans "Profilim" %}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        <div class="card shadow-sm mb-4">
+            <div class="card-body text-center">
+                <img src="{{ user.profil_sekli.url }}" alt="{% trans 'Profil Şəkli' %}"
+                    class="rounded-circle img-fluid mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                <h5 class="my-3">{{ user.get_full_name }}</h5>
+                <p class="text-muted mb-1">{{ user.vezife }}</p>
+                <p class="text-muted mb-4">{{ user.sektor }}</p>
+            </div>
+        </div>
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <p class="mb-1"><strong>{% trans "İstifadəçi adı:" %}</strong> {{ user.username }}</p>
+                <hr>
+                <p class="mb-1"><strong>{% trans "E-poçt:" %}</strong> {{ user.email }}</p>
+                <hr>
+                <p class="mb-1"><strong>{% trans "Əlaqə Nömrəsi:" %}</strong> {{ user.elaqe_nomresi|default:"-" }}</p>
+                <hr>
+                <p class="mb-1"><strong>{% trans "Doğum Tarixi:" %}</strong> {{
+                    user.dogum_tarixi|date:"d-m-Y"|default:"-" }}</p>
+                <hr>
+                <p class="mb-0"><strong>{% trans "Qeydiyyat Tarixi:" %}</strong> {{ user.date_joined|date:"d-m-Y" }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="info-tab" data-bs-toggle="tab"
+                            data-bs-target="#info-tab-pane" type="button" role="tab">{% trans "Məlumatları Dəyiş"
+                            %}</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="password-tab" data-bs-toggle="tab"
+                            data-bs-target="#password-tab-pane" type="button" role="tab">{% trans "Şifrəni Dəyiş"
+                            %}</button>
+                    </li>
+                </ul>
+                <div class="tab-content pt-3" id="myTabContent">
+                    <div class="tab-pane fade show active" id="info-tab-pane" role="tabpanel">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ info_form|crispy }}
+                            <div class="d-grid">
+                                <button type="submit" name="update_info" class="btn btn-primary mt-3">{% trans "Yadda
+                                    Saxla" %}</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="password-tab-pane" role="tabpanel">
+                        <form method="post">
+                            {% csrf_token %}
+                            {% crispy password_form %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
