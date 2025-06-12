@@ -26,7 +26,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 
-# Lokal importlar
+# --- Lokal Layihə Modulları ---
 from .models import (
     Qiymetlendirme, Sual, Cavab, QiymetlendirmeDovru,
     Ishchi, Departament, SualKateqoriyasi, Hedef 
