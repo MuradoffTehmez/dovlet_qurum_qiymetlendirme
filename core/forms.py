@@ -33,10 +33,10 @@ class IshchiCreationForm(UserCreationForm):
 
 class IshchiUpdateForm(UserChangeForm):
     """İstifadəçinin profil məlumatlarını yeniləməsi üçün forma."""
-    password = None # Bu formada şifrəni göstərmirik
+    password = None  # Bu formada şifrəni göstərmirik
     profil_sekli = forms.ImageField(label='Profil Şəklini Yenilə', required=False, widget=forms.FileInput)
     dogum_tarixi = forms.DateField(label='Doğum Tarixi', widget=forms.DateInput(attrs={'type': 'date'}), required=False)
-    
+
     class Meta:
         model = Ishchi
         fields = ('first_name', 'last_name', 'email', 'vezife', 'elaqe_nomresi', 'dogum_tarixi', 'profil_sekli')
@@ -45,14 +45,13 @@ class IshchiUpdateForm(UserChangeForm):
             'vezife': 'Vəzifəniz', 'elaqe_nomresi': 'Əlaqə Nömrəsi',
         }
 
-
 class IshchiPasswordChangeForm(PasswordChangeForm):
     """İstifadəçinin öz profilindən şifrəsini dəyişməsi üçün forma."""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_method = 'post'
-        # Crispy-yə düymə adını ötürürük ki, view-da hansı formanın göndərildiyini bilək
+        # Düyməyə ad veririk ki, view-da hansı formanın göndərildiyini bilək
         self.helper.add_input(Submit('change_password', 'Şifrəni Dəyişdir', css_class='btn-danger w-100 mt-3'))
 
 
