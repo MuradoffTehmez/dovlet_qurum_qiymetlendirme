@@ -1,4 +1,4 @@
-# config/urls.py
+# config/urls.py - YEKUN VƏ TƏKMİLLƏŞDİRİLMİŞ VERSİYA
 
 from django.contrib import admin
 from django.urls import path, include
@@ -6,25 +6,30 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 
-# 1. Dil prefiksi TƏLƏB EDƏN URL-ləri ayrıca təyin edirik
-# Bütün istifadəçi tərəfindən görünən səhifələr burada olmalıdır
-i18n_urlpatterns = i18n_patterns(
-    path('accounts/', include('django.contrib.auth.urls')),
-    path('', include('core.urls')),
-    # core.urls faylında olan URL-lər burada daxil edilir
-    # core.urls faylında olan URL-lər dilə həssas olacaq
-    # prefix_default_language=False parametiri standart dil üçün ('az') 
-    
-    # Məsələn: /hesabatim/ (az) və /en/my-report/ (en)
-    # prefix_default_language=True olarsa, URL-lər belə olacaq: /az/hesabatim/ və /en/my-report/
+# Bizim xüsusi Login View-umuzu import edirik
+from core.views import CustomLoginView
 
-    # prefix_default_language=True,  # Bu parametr True olaraq saxlanılırsa,
-    # prefix_default_language=False,
+# --- URL BÖLGÜSÜ ---
+
+# 1. Dil prefiksi TƏLƏB EDƏN URL-ləri ayrıca təyin edirik
+i18n_urlpatterns = i18n_patterns(
+    # Bizim xüsusi login səhifəmizi birinci qeyd edirik
+    path('accounts/login/', CustomLoginView.as_view(), name='login'),
+    
+    # Sonra Django-nun qalan autentifikasiya URL-lərini əlavə edirik
+    # (logout, password_reset, password_change və s.)
+    path('accounts/', include('django.contrib.auth.urls')),
+    
+    # Əsas tətbiqimizin URL-ləri
+    path('', include('core.urls')),
+    
+    # Standart dil üçün də /az/ prefiksinin görünməsini təmin edir
+    prefix_default_language=True,
 )
 
 # 2. Əsas urlpatterns siyahısını yaradırıq və dilə həssas olmayanları əlavə edirik
 urlpatterns = [
-    # Dil prefiksi olmayan URL-lər (yalnız admin paneli kimi)
+    # Dil prefiksi olmayan URL (yalnız admin paneli)
     path('admin/', admin.site.urls),
 ]
 
