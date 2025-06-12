@@ -100,6 +100,8 @@ class AuthenticationFlowsTests(BaseTestCase):
         # Səhv şifrə ilə girişin uğursuz olması
         self.assertFalse(self.client.login(username='testishchi', password='sehvsifre'))
 
+    # core/tests.py
+
     def test_password_reset_flow(self):
         """Test 7: Şifrə bərpası axınının tam olaraq işləməsi."""
         # Addım 1: Şifrə bərpası tələbi göndəririk
@@ -114,18 +116,18 @@ class AuthenticationFlowsTests(BaseTestCase):
         self.assertTrue(len(urls) > 0, "E-poçt mətnində bərpa linki tapılmadı.")
         reset_link = urls[0]
 
-        # DÜZƏLİŞ: GET sorğusunun statusunu yoxlamaq əvəzinə birbaşa POST edirik.
-        # Bu, aradakı yönləndirmələrdən asılılığı aradan qaldırır.
-        
-        # Addım 4: Yeni şifrəni təyin edirik
+        # Addım 4: Yeni şifrəni birbaşa POST sorğusu ilə təyin edirik
         response_post = self.client.post(reset_link, {
             'new_password1': 'yeniGucluShifre456',
             'new_password2': 'yeniGucluShifre456',
         })
 
-        # Addım 5: Uğurlu dəyişiklikdən sonra yönləndirməni yoxlayırıq
-        self.assertEqual(response_post.status_code, 302, "Şifrə dəyişdirildikdən sonra yönləndirmə baş vermədi.")
+        # SİZİN İSTƏYİNİZLƏ ƏLAVƏ EDİLDİ: Yönləndirmə URL-ini terminalda çap edirik
+        print("Yönləndirmə URL-i:", response_post.url)
+
+        # Addım 5: Uğurlu dəyişiklikdən sonra yönləndirmənin düzgün olub-olmadığını yoxlayırıq
+        self.assertEqual(response_post.status_code, 302)
         self.assertEqual(response_post.url, reverse('password_reset_complete'))
 
         # Addım 6: Yeni şifrə ilə daxil olmağı yoxlayırıq
-        self.assertTrue(self.client.login(username='testishchi', password='yeniGucluShifre456'), "Yeni şifrə ilə daxil olmaq mümkün olmadı.")
+        self.assertTrue(self.client.login(username='testishchi', password='yeniGucluShifre456'))
