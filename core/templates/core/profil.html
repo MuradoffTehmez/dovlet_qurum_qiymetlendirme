@@ -4,6 +4,10 @@
 {% block title %}{% trans "Profilim" %}{% endblock %}
 
 {% block content %}
+<h2>{% trans "Profilim" %}</h2>
+<p class="text-muted">{% trans "Burada şəxsi məlumatlarınızı redaktə edə və şifrənizi dəyişə bilərsiniz." %}</p>
+<hr>
+
 <div class="row">
     <div class="col-lg-4">
         <div class="card shadow-sm mb-4">
@@ -17,16 +21,28 @@
         </div>
         <div class="card shadow-sm mb-4">
             <div class="card-body">
-                <p class="mb-1"><strong>{% trans "İstifadəçi adı:" %}</strong> {{ user.username }}</p>
-                <hr>
-                <p class="mb-1"><strong>{% trans "E-poçt:" %}</strong> {{ user.email }}</p>
-                <hr>
-                <p class="mb-1"><strong>{% trans "Əlaqə Nömrəsi:" %}</strong> {{ user.elaqe_nomresi|default:"-" }}</p>
-                <hr>
-                <p class="mb-1"><strong>{% trans "Doğum Tarixi:" %}</strong> {{
-                    user.dogum_tarixi|date:"d-m-Y"|default:"-" }}</p>
-                <hr>
-                <p class="mb-0"><strong>{% trans "Qeydiyyat Tarixi:" %}</strong> {{ user.date_joined|date:"d-m-Y" }}</p>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between">
+                        <strong>{% trans "İstifadəçi adı:" %}</strong>
+                        <span>{{ user.username }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <strong>{% trans "E-poçt:" %}</strong>
+                        <span>{{ user.email }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <strong>{% trans "Əlaqə Nömrəsi:" %}</strong>
+                        <span>{{ user.elaqe_nomresi|default:"-" }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <strong>{% trans "Doğum Tarixi:" %}</strong>
+                        <span>{{ user.dogum_tarixi|date:"d-m-Y"|default:"-" }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between">
+                        <strong>{% trans "Qeydiyyat Tarixi:" %}</strong>
+                        <span>{{ user.date_joined|date:"d-m-Y" }}</span>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
@@ -46,7 +62,7 @@
                             %}</button>
                     </li>
                 </ul>
-                <div class="tab-content pt-3" id="myTabContent">
+                <div class="tab-content pt-4" id="myTabContent">
                     <div class="tab-pane fade show active" id="info-tab-pane" role="tabpanel">
                         <form method="post" enctype="multipart/form-data">
                             {% csrf_token %}
