@@ -1,21 +1,27 @@
 {% extends 'core/base.html' %}
-{% load crispy_forms_tags %}
+{% load i18n crispy_forms_tags %}
 
-{% block title %}Qeydiyyat{% endblock %}
+{% block title %}{% trans "Qeydiyyat" %}{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center mt-4">
     <div class="col-md-8 col-lg-7">
         <div class="card shadow-sm">
             <div class="card-header text-center">
-                <h3 class="mb-0">Yeni Hesab Yarat</h3>
+                <h3 class="mb-0">{% trans "Yeni Hesab Yarat" %}</h3>
             </div>
             <div class="card-body">
-                {% crispy form %}
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary">{% trans "Qeydiyyatdan Keç" %}</button>
+                    </div>
+                </form>
             </div>
             <div class="card-footer text-center py-3">
                 <div class="small">
-                    Artıq hesabınız var? <a href="{% url 'login' %}">Daxil olun</a>
+                    {% trans "Artıq hesabınız var?" %} <a href="{% url 'login' %}">{% trans "Daxil olun" %}</a>
                 </div>
             </div>
         </div>

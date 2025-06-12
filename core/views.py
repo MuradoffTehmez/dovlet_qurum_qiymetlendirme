@@ -46,17 +46,24 @@ def dashboard(request):
     }
     return render(request, 'core/dashboard.html', context)
 
+# core/views.py
 def qeydiyyat_sehifesi(request):
     """Yeni istifadəçilərin qeydiyyatdan keçməsini təmin edir."""
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+        
     if request.method == 'POST':
         form = IshchiCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            # TODO: E-mail aktivasiya məntiqi gələcəkdə bura əlavə ediləcək.
+            # Hələlik istifadəçi dərhal aktiv olur və sistemə daxil edilir.
             login(request, user)
             messages.success(request, "Qeydiyyat uğurla tamamlandı. Xoş gəlmisiniz!")
             return redirect('dashboard')
     else:
         form = IshchiCreationForm()
+    
     return render(request, 'registration/qeydiyyat_form.html', {'form': form})
 
 

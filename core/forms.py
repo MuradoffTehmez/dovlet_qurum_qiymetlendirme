@@ -1,64 +1,62 @@
-# core/forms.py - YENİDƏN TƏŞKİL EDİLMİŞ VƏ DÜZƏLİŞ EDİLMİŞ VERSİYA
+# core/forms.py
 
+# --- Django-nun Daxili Modulları ---
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm, PasswordChangeForm
 from django.forms import inlineformset_factory
 
-# Crispy Forms üçün importlar
+# --- Xarici Paketlər ---
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column, Submit
 
-# Modelləri bir yerdə import edirik
+# --- Lokal Modellər ---
 from .models import (
     QiymetlendirmeDovru, Departament, Ishchi, 
     Hedef, InkishafPlani, Sektor
 )
-from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 
-# --- Qeydiyyat Formu ---
+
+# --- 1. Qeydiyyat və Profil Formaları ---
 
 class IshchiCreationForm(UserCreationForm):
     """Yeni istifadəçilərin qeydiyyatı üçün istifadə olunan forma."""
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.layout = Layout(
-            Row(
-                Column('username', css_class='form-group col-md-12 mb-3'),
-                css_class='form-row'
-            ),
-            Row(
-                Column('first_name', css_class='form-group col-md-6 mb-3'),
-                Column('last_name', css_class='form-group col-md-6 mb-3'),
-                css_class='form-row'
-            ),
-            Row(
-                 Column('email', css_class='form-group col-md-12 mb-3'),
-                css_class='form-row'
-            ),
-             Row(
-                Column('sektor', css_class='form-group col-md-6 mb-3'),
-                Column('vezife', css_class='form-group col-md-6 mb-3'),
-                css_class='form-row'
-            ),
-            'password1',
-            'password2',
-            Submit('submit', 'Qeydiyyatdan Keç', css_class='btn-primary w-100 mt-3')
-        )
+    dogum_tarixi = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=False, label="Doğum Tarixi")
 
     class Meta(UserCreationForm.Meta):
         model = Ishchi
-        fields = UserCreationForm.Meta.fields + ('first_name', 'last_name', 'email', 'sektor', 'vezife')
+        fields = UserCreationForm.Meta.fields + ('first_name', 'last_name', 'email', 'sektor', 'vezife', 'elaqe_nomresi', 'dogum_tarixi')
         labels = {
-            'first_name': 'Ad',
-            'last_name': 'Soyad',
-            'email': 'E-poçt',
-            'sektor': 'Sektor',
-            'vezife': 'Vəzifəniz',
+            'first_name': 'Ad', 'last_name': 'Soyad', 'email': 'E-poçt',
+            'sektor': 'Sektor', 'vezife': 'Vəzifəniz', 'elaqe_nomresi': 'Əlaqə Nömrəsi',
         }
 
 
-# --- Superadmin üçün Formalar ---
+class IshchiUpdateForm(UserChangeForm):
+    """İstifadəçinin profil məlumatlarını yeniləməsi üçün forma."""
+    password = None # Bu formada şifrəni göstərmirik
+    profil_sekli = forms.ImageField(label='Profil Şəklini Yenilə', required=False, widget=forms.FileInput)
+    dogum_tarixi = forms.DateField(label='Doğum Tarixi', widget=forms.DateInput(attrs={'type': 'date'}), required=False)
+    
+    class Meta:
+        model = Ishchi
+        fields = ('first_name', 'last_name', 'email', 'vezife', 'elaqe_nomresi', 'dogum_tarixi', 'profil_sekli')
+        labels = {
+            'first_name': 'Ad', 'last_name': 'Soyad', 'email': 'E-poçt Ünvanı',
+            'vezife': 'Vəzifəniz', 'elaqe_nomresi': 'Əlaqə Nömrəsi',
+        }
+
+
+class IshchiPasswordChangeForm(PasswordChangeForm):
+    """İstifadəçinin öz profilindən şifrəsini dəyişməsi üçün forma."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        # Crispy-yə düymə adını ötürürük ki, view-da hansı formanın göndərildiyini bilək
+        self.helper.add_input(Submit('change_password', 'Şifrəni Dəyişdir', css_class='btn-danger w-100 mt-3'))
+
+
+# --- 2. Superadmin üçün Formalar ---
 
 class YeniDovrForm(forms.ModelForm):
     """Superadminin yeni qiymətləndirmə dövrü yaratması üçün forma."""
@@ -74,13 +72,8 @@ class YeniDovrForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.layout = Layout(
-            Row(
-                Column('ad', css_class='form-group col-md-12 mb-3'),
-            ),
-            Row(
-                Column('bashlama_tarixi', css_class='form-group col-md-6 mb-3'),
-                Column('bitme_tarixi', css_class='form-group col-md-6 mb-3'),
-            ),
+            Row(Column('ad', css_class='form-group col-md-12 mb-3')),
+            Row(Column('bashlama_tarixi', css_class='form-group col-md-6 mb-3'), Column('bitme_tarixi', css_class='form-group col-md-6 mb-3')),
             'departamentler',
             Submit('submit', 'Dövrü Yarat və Başlat', css_class='btn-primary mt-4')
         )
@@ -99,7 +92,7 @@ class YeniDovrForm(forms.ModelForm):
         }
 
 
-# --- Fərdi İnkişaf Planı üçün Formalar ---
+# --- 3. Fərdi İnkişaf Planı üçün Formalar ---
 
 class HedefForm(forms.ModelForm):
     """Bir ədəd inkişaf hədəfi üçün istifadə olunan alt-forma."""
@@ -121,7 +114,7 @@ HedefFormSet = inlineformset_factory(
     InkishafPlani,
     Hedef,
     form=HedefForm,
-    extra=1,        # Varsayılan olaraq 1 ədəd boş hədəf formu göstər
+    extra=1,
     can_delete=True,
     min_num=1,
     validate_min=True,
