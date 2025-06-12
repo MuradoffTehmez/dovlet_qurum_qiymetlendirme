@@ -1,39 +1,52 @@
-# core/views.py 
+# core/views.py
 
+# --- Django-nun Daxili Modulları ---
+# --- Sistem modulları ---
 import json
 import random
+
+# --- Django core və HTTP əlaqəli modullar ---
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from django.db.models import Q, Avg  
 from django.http import HttpResponse
-from django.contrib import messages
-from weasyprint import HTML
-from django.contrib.auth import login, authenticate
+from django.urls import reverse
+from django.template.loader import render_to_string
 from django.core.exceptions import PermissionDenied
-from openpyxl import Workbook
-from openpyxl.styles import Font, Alignment
-from .forms import YeniDovrForm, IshchiCreationForm, HedefFormSet
-from .models import InkishafPlani
+from django.core.mail import EmailMessage
+from django.db.models import Q, Avg
+
+# --- Django auth modulları ---
+from django.contrib import messages
+from django.contrib.auth import login, authenticate, update_session_auth_hash
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.template.loader import render_to_string
-from django.core.mail import EmailMessage
-from .tokens import account_activation_token
-from django.views.generic import TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin
 
+# --- Xarici paketlər ---
+from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment
+from weasyprint import HTML
 
-
-# --- Lokal Layihə Modulları ---
+# --- Lokal modellər ---
 from .models import (
-    Qiymetlendirme, Sual, Cavab, QiymetlendirmeDovru,
-    Ishchi, Departament, SualKateqoriyasi, Hedef 
+    Ishchi, Departament, Sektor, Shobe,
+    SualKateqoriyasi, QiymetlendirmeDovru, Sual,
+    Qiymetlendirme, Cavab, InkishafPlani, Hedef
 )
-from .forms import YeniDovrForm, IshchiCreationForm
+
+# --- Lokal formalar ---
+from .forms import (
+    IshchiCreationForm, IshchiUpdateForm, IshchiPasswordChangeForm,
+    YeniDovrForm, HedefFormSet
+)
+
+# --- Lokal util və dekoratorlar ---
 from .decorators import rehber_required, superadmin_required
 from .utils import get_performance_trend, get_detailed_report_context
+from .tokens import account_activation_token
+
 
 
 # --- ÜMUMİ VƏ QEYDİYYAT GÖRÜNÜŞLƏRİ ---
@@ -572,7 +585,6 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # GET sorğusu üçün formaları hazırlayırıq
         if 'info_form' not in context:
             context['info_form'] = IshchiUpdateForm(instance=self.request.user)
         if 'password_form' not in context:
@@ -581,7 +593,6 @@ class ProfileView(LoginRequiredMixin, TemplateView):
 
     def post(self, request, *args, **kwargs):
         context = {}
-        # Hansı formanın göndərildiyini düymənin adına görə yoxlayırıq
         if 'update_info' in request.POST:
             info_form = IshchiUpdateForm(request.POST, request.FILES, instance=request.user)
             if info_form.is_valid():
