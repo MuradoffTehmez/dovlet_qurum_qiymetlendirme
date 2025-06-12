@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-12 12:08+0400\n"
+"POT-Creation-Date: 2025-06-12 19:22+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,13 +18,13 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\config\settings.py:106
+#: .\config\settings.py:107
 msgid "Azərbaycan"
 msgstr "Azerbaijan"
 
-#: .\config\settings.py:107
-msgid "English"
-msgstr "İngilis dili"
+#: .\config\settings.py:108
+msgid "İngilis dili"
+msgstr "English"
 
 #: .\core\templates\core\base.html:8 .\core\templates\core\base.html:81
 #: .\core\templates\core\base.html:135
@@ -43,13 +43,13 @@ msgstr "Leadership Panel"
 
 #: .\core\templates\core\base.html:110
 msgid "Superadmin Paneli"
-msgstr ""
+msgstr "Superadmin Panel"
 
 #: .\core\templates\core\base.html:113
 msgid "Çıxış"
 msgstr "Logout"
 
-#: .\core\templates\core\base.html:116
+#: .\core\templates\core\base.html:116 .\templates\registration\login.html:47
 msgid "Daxil Ol"
 msgstr "Login"
 
@@ -59,16 +59,16 @@ msgstr "Home Page"
 
 #: .\core\templates\core\dashboard.html:10
 msgid "Aktiv İnkişaf Planınız"
-msgstr ""
+msgstr "Your Active Development Plan"
 
 #: .\core\templates\core\dashboard.html:11
 msgid "Sizin üçün"
-msgstr ""
+msgstr "For you"
 
 #: .\core\templates\core\dashboard.html:14
 #: .\core\templates\core\hesabat.html:15
 msgid "Plana Bax"
-msgstr ""
+msgstr "View Plan"
 
 #: .\core\templates\core\dashboard.html:17
 msgid "Qiymətləndirmə Tapşırıqlarınız"
@@ -96,7 +96,7 @@ msgstr "Evaluation Report"
 
 #: .\core\templates\core\hesabat.html:19
 msgid "İnkişaf Planı Yarat"
-msgstr ""
+msgstr "Create a Development Plan"
 
 #: .\core\templates\core\hesabat.html:26
 msgid "PDF Yüklə"
@@ -183,15 +183,15 @@ msgstr "No written opinion was recorded."
 #: .\core\templates\core\plan_detail.html:4
 #: .\core\templates\core\plan_detail.html:8
 msgid "Fərdi İnkişaf Planı"
-msgstr ""
+msgstr "Personal Development Plan"
 
 #: .\core\templates\core\plan_detail.html:9
 msgid "Geri Qayıt"
-msgstr ""
+msgstr "Go Back"
 
 #: .\core\templates\core\plan_detail.html:14
 msgid "Plan Məlumatları"
-msgstr ""
+msgstr "Plan Details"
 
 #: .\core\templates\core\plan_detail.html:18
 #, fuzzy
@@ -201,15 +201,15 @@ msgstr "Evaluation period:"
 
 #: .\core\templates\core\plan_detail.html:22
 msgid "Hədəflər"
-msgstr ""
+msgstr "Targets"
 
 #: .\core\templates\core\plan_detail.html:30
 msgid "Son tarix:"
-msgstr ""
+msgstr "Deadline:"
 
 #: .\core\templates\core\plan_detail.html:45
 msgid "Yenilə"
-msgstr ""
+msgstr "Refresh"
 
 #: .\core\templates\core\plan_detail.html:53
 #, fuzzy
@@ -240,12 +240,12 @@ msgstr "Confirm Rating"
 
 #: .\core\templates\core\rehber_paneli.html:13
 msgid "Komandanın Kompetensiyalar üzrə Performansı"
-msgstr ""
+msgstr "Team Performance on Competencies"
 
 #: .\core\templates\core\rehber_paneli.html:22
 #, fuzzy
 #| msgid "Rəhbər Paneli - Komanda Üzvləri"
-msgid "Komanda Üzvləri"
+msgid "Rəhbər Paneli - Komanda Üzvləri"
 msgstr "Leadership Panel - Team Members"
 
 #: .\core\templates\core\rehber_paneli.html:23
@@ -268,82 +268,133 @@ msgstr "Overall Average Score"
 
 #: .\templates\400.html:4
 msgid "Xəta"
-msgstr ""
+msgstr "Error"
 
 #: .\templates\400.html:7
 msgid "Səhv Sorğu"
-msgstr ""
+msgstr "Invalid Request"
 
 #: .\templates\400.html:8
 msgid "Sorğunuz düzgün deyil və emal edilə bilmədi."
-msgstr ""
+msgstr "Your request is invalid and could not be processed."
 
 #: .\templates\401.html:4
 msgid "Giriş Tələb Olunur"
-msgstr ""
+msgstr "Login Required"
 
 #: .\templates\401.html:7
 msgid "İcazə Verilmədi"
-msgstr ""
+msgstr "Permission Denied"
 
 #: .\templates\401.html:8
-msgid ""
-"Bu səhifəyə baxmaq üçün autentifikasiyadan keçməlisiniz (giriş etməlisiniz)."
-msgstr ""
+msgid "Bu səhifəyə baxmaq üçün autentifikasiyadan keçməlisiniz (giriş etməlisiniz)."
+msgstr "You must be authenticated (logged in) to view this page."
 
 #: .\templates\403.html:4
 msgid "Əlçatan Deyil"
-msgstr ""
+msgstr "Not Available"
 
 #: .\templates\403.html:8
 msgid "Giriş Rədd Edildi"
-msgstr ""
+msgstr "Login Denied"
 
 #: .\templates\403.html:9
 msgid "Bu səhifəyə daxil olmaq üçün icazəniz yoxdur."
-msgstr ""
+msgstr "You do not have permission to access this page."
 
 #: .\templates\404.html:4 .\templates\404.html:8
 msgid "Səhifə Tapılmadı"
-msgstr ""
+msgstr "Page Not Found"
 
 #: .\templates\404.html:9
 msgid "Axtardığınız səhifə mövcud deyil."
-msgstr ""
+msgstr "The page you are looking for does not exist."
 
 #: .\templates\429.html:4 .\templates\429.html:7
 msgid "Çoxlu Sorğu"
-msgstr ""
+msgstr "Multiple Requests"
 
 #: .\templates\500.html:4 .\templates\500.html:7
 msgid "Server Xətası"
-msgstr ""
+msgstr "Server Error"
 
 #: .\templates\500.html:8
 msgid "Daxili server xətası baş verdi. Komandamız problemi araşdırır."
-msgstr ""
+msgstr "An internal server error has occurred. Our team is investigating the issue."
 
 #: .\templates\502.html:4 .\templates\502.html:7
 msgid "Keçid Xətası"
-msgstr ""
+msgstr "Transition Error"
 
 #: .\templates\503.html:4 .\templates\503.html:7
 msgid "Xidmət Mövcud Deyil"
-msgstr ""
+msgstr "Service Not Available"
 
 #: .\templates\errors\components\generic_error.html:10
 #, fuzzy
 #| msgid "Ana Səhifə"
 msgid "Ana Səhifəyə Qayıt"
-msgstr "Home Page"
+msgstr "Return to Home Page"
 
 #: .\templates\maintenance.html:4 .\templates\maintenance.html:7
 msgid "Texniki Xidmət"
-msgstr ""
+msgstr "Technical Service"
 
 #: .\templates\maintenance.html:8
 msgid "Hazırda sistemdə texniki xidmət aparılır. Qısa zamanda geri dönəcəyik."
+msgstr "The system is currently undergoing maintenance. We will be back shortly."
+
+#: .\templates\registration\login.html:4 .\templates\registration\login.html:11
+#, fuzzy
+#| msgid "Daxil Ol"
+msgid "Sistemə Daxil Ol"
+msgstr "Login"
+
+#: .\templates\registration\login.html:16
+msgid "İstifadəçi adı və ya şifrə yanlışdır. Zəhmət olmasa, yenidən cəhd edin."
+msgstr "The username or password is incorrect. Please try again."
+
+#: .\templates\registration\login.html:31
+msgid "Şifrə"
+msgstr "Password"
+
+#: .\templates\registration\login.html:40
+msgid "Məni xatırla"
+msgstr "Remember me"
+
+#: .\templates\registration\login.html:43
+msgid "Şifrənizi unutmusunuz?"
 msgstr ""
+
+#: .\templates\registration\login.html:53
+msgid "Hesabınız yoxdur?"
+msgstr ""
+
+#: .\templates\registration\login.html:53
+msgid "Qeydiyyatdan keçin"
+msgstr ""
+
+#: .\templates\registration\qeydiyyat_form.html:5
+msgid "Qeydiyyat"
+msgstr ""
+
+#: .\templates\registration\qeydiyyat_form.html:12
+msgid "Yeni Hesab Yarat"
+msgstr ""
+
+#: .\templates\registration\qeydiyyat_form.html:19
+msgid "Qeydiyyatdan Keç"
+msgstr ""
+
+#: .\templates\registration\qeydiyyat_form.html:25
+msgid "Artıq hesabınız var?"
+msgstr ""
+
+#: .\templates\registration\qeydiyyat_form.html:25
+#, fuzzy
+#| msgid "Daxil Ol"
+msgid "Daxil olun"
+msgstr "Login"
 
 #: .\venv\Lib\site-packages\click\_termui_impl.py:600
 #, python-brace-format
