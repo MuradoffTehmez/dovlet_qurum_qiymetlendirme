@@ -102,26 +102,30 @@ class AuthenticationFlowsTests(BaseTestCase):
 
     def test_password_reset_flow(self):
         """Test 7: Şifrə bərpası axınının tam olaraq işləməsi."""
-        # Addım 1: Şifrə bərpası tələbi göndəririk
         self.client.post(reverse('password_reset'), {'email': 'ishchi@example.com'})
         
-        # Addım 2: E-poçtun göndərildiyini yoxlayırıq (konsola yazılır)
         self.assertEqual(len(mail.outbox), 1)
         sent_email = mail.outbox[0]
         self.assertEqual(sent_email.to[0], 'ishchi@example.com')
         
-        # Addım 3: E-poçtdan bərpa linkini tapırıq
-        url_match = re.search(r'http://testserver(/accounts/reset/[^/]+/[^/]+/)\s', sent_email.body)
-        self.assertIsNotNone(url_match)
-        reset_url = url_match.group(1)
+        # DÜZƏLİŞ: Linki daha etibarlı bir üsulla tapırıq
+        # E-poçtun mətnindəki bütün URL-ləri tapırıq
+        urls = re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', sent_email.body)
+        
+        # Linkin tapıldığından əmin oluruq
+        self.assertTrue(len(urls) > 0, "E-poçt mətnində bərpa linki tapılmadı.")
+        reset_link = urls[0]
 
-        # Addım 4: Yeni şifrə təyin etmə səhifəsinə POST sorğusu göndəririk
-        response = self.client.post(reset_url, {
+        # Addım 4: Yeni şifrə təyin etmə səhifəsinə GET sorğusu göndəririk (səhifənin açıldığını yoxlamaq üçün)
+        response = self.client.get(reset_link)
+        self.assertEqual(response.status_code, 200)
+
+        # Addım 5: Yeni şifrəni təyin edirik
+        response = self.client.post(reset_link, {
             'new_password1': 'yeniGucluShifre456',
             'new_password2': 'yeniGucluShifre456',
         })
 
-        # Addım 5: Uğurlu dəyişiklikdən sonra yönləndirməni yoxlayırıq
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.url, reverse('password_reset_complete'))
 

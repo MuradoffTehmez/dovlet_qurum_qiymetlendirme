@@ -9,12 +9,13 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.template.loader import render_to_string
 from weasyprint import HTML
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 from django.core.exceptions import PermissionDenied
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment
 from .forms import YeniDovrForm, IshchiCreationForm, HedefFormSet
 from .models import InkishafPlani 
+
 
 # Lokal importlar
 from .models import (
@@ -47,18 +48,22 @@ def dashboard(request):
     return render(request, 'core/dashboard.html', context)
 
 # core/views.py
+
 def qeydiyyat_sehifesi(request):
     """Yeni istifadəçilərin qeydiyyatdan keçməsini təmin edir."""
     if request.user.is_authenticated:
         return redirect('dashboard')
         
     if request.method == 'POST':
-        form = IshchiCreationForm(request.POST)
+        form = IshchiCreationForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
-            # TODO: E-mail aktivasiya məntiqi gələcəkdə bura əlavə ediləcək.
-            # Hələlik istifadəçi dərhal aktiv olur və sistemə daxil edilir.
-            login(request, user)
+            
+            # DÜZƏLİŞ: Django-ya hansı autentifikasiya metodunu istifadə edəcəyini deyirik
+            # Bu, user obyektinə 'backend' atributunu əlavə edir.
+            user.backend = 'core.backends.EmailOrUsernameBackend'
+            login(request, user) # İndi login funksiyası düzgün işləyəcək
+            
             messages.success(request, "Qeydiyyat uğurla tamamlandı. Xoş gəlmisiniz!")
             return redirect('dashboard')
     else:
