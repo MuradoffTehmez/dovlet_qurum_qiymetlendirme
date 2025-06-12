@@ -8,6 +8,8 @@ from django.forms import inlineformset_factory
 # --- Xarici Paketlər ---
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column, Submit
+from captcha.fields import ReCaptchaField
+from captcha.widgets import ReCaptchaV2Checkbox
 
 # --- Lokal Modellər ---
 from .models import (
@@ -21,10 +23,11 @@ from .models import (
 class IshchiCreationForm(UserCreationForm):
     """Yeni istifadəçilərin qeydiyyatı üçün istifadə olunan forma."""
     dogum_tarixi = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=False, label="Doğum Tarixi")
+    captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox)
 
     class Meta(UserCreationForm.Meta):
         model = Ishchi
-        fields = UserCreationForm.Meta.fields + ('first_name', 'last_name', 'email', 'sektor', 'vezife', 'elaqe_nomresi', 'dogum_tarixi')
+        fields = UserCreationForm.Meta.fields + ('first_name', 'last_name', 'email', 'sektor', 'vezife', 'elaqe_nomresi', 'dogum_tarixi', 'captcha')
         labels = {
             'first_name': 'Ad', 'last_name': 'Soyad', 'email': 'E-poçt',
             'sektor': 'Sektor', 'vezife': 'Vəzifəniz', 'elaqe_nomresi': 'Əlaqə Nömrəsi',

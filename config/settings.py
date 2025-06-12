@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'simple_history',
+    'captcha',
 
     # Django daxilində olanlar
     'django.contrib.admin',
@@ -322,3 +323,14 @@ CELERY_BEAT_SCHEDULE = {
         'schedule': datetime.timedelta(hours=1),  # Hər saat
     },
 }
+
+
+# ===================================================================
+# CAPTCHA KONFİQURASİYASI
+# ===================================================================
+RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_SITE_KEY')
+RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_SECRET_KEY')
+
+# ===================================================================
+# SIMPLE HISTORY KONFİQURASİYASI
+# ===================================================================
