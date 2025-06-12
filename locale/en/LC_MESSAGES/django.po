@@ -364,31 +364,31 @@ msgstr "Remember me"
 
 #: .\templates\registration\login.html:43
 msgid "Şifrənizi unutmusunuz?"
-msgstr ""
+msgstr "Forgot your password?"
 
 #: .\templates\registration\login.html:53
 msgid "Hesabınız yoxdur?"
-msgstr ""
+msgstr "Don't have an account?"
 
 #: .\templates\registration\login.html:53
 msgid "Qeydiyyatdan keçin"
-msgstr ""
+msgstr "Register"
 
 #: .\templates\registration\qeydiyyat_form.html:5
 msgid "Qeydiyyat"
-msgstr ""
+msgstr "Registration"
 
 #: .\templates\registration\qeydiyyat_form.html:12
 msgid "Yeni Hesab Yarat"
-msgstr ""
+msgstr "Create New Account"
 
 #: .\templates\registration\qeydiyyat_form.html:19
 msgid "Qeydiyyatdan Keç"
-msgstr ""
+msgstr "Register"
 
 #: .\templates\registration\qeydiyyat_form.html:25
 msgid "Artıq hesabınız var?"
-msgstr ""
+msgstr "Already have an account?"
 
 #: .\templates\registration\qeydiyyat_form.html:25
 #, fuzzy
