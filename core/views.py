@@ -21,6 +21,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 from .tokens import account_activation_token
+from django.views.generic import TemplateView
 
 
 
@@ -562,3 +563,41 @@ def activate(request, uidb64, token):
     else:
         messages.error(request, 'Aktivasiya linki etibarsızdır!')
         return redirect('dashboard')
+
+
+
+class ProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'core/profil.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # GET sorğusu üçün formaları hazırlayırıq
+        if 'info_form' not in context:
+            context['info_form'] = IshchiUpdateForm(instance=self.request.user)
+        if 'password_form' not in context:
+            context['password_form'] = IshchiPasswordChangeForm(self.request.user)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        context = {}
+        # Hansı formanın göndərildiyini düymənin adına görə yoxlayırıq
+        if 'update_info' in request.POST:
+            info_form = IshchiUpdateForm(request.POST, request.FILES, instance=request.user)
+            if info_form.is_valid():
+                info_form.save()
+                messages.success(request, 'Profil məlumatlarınız uğurla yeniləndi!')
+                return redirect('profil')
+            else:
+                context['info_form'] = info_form
+        
+        elif 'change_password' in request.POST:
+            password_form = IshchiPasswordChangeForm(request.user, request.POST)
+            if password_form.is_valid():
+                user = password_form.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, 'Şifrəniz uğurla dəyişdirildi!')
+                return redirect('profil')
+            else:
+                context['password_form'] = password_form
+        
+        return self.render_to_response(self.get_context_data(**context))
