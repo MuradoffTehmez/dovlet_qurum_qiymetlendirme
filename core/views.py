@@ -7,7 +7,6 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Avg  
 from django.http import HttpResponse
 from django.contrib import messages
-from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.contrib.auth import login, authenticate
 from django.core.exceptions import PermissionDenied
@@ -17,6 +16,11 @@ from .forms import YeniDovrForm, IshchiCreationForm, HedefFormSet
 from .models import InkishafPlani
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.forms import AuthenticationForm
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+from .tokens import account_activation_token
 
 
 
@@ -53,22 +57,38 @@ def dashboard(request):
 # core/views.py
 
 def qeydiyyat_sehifesi(request):
-    """Yeni istifadəçilərin qeydiyyatdan keçməsini təmin edir."""
+    """Yeni istifadəçiləri qeydiyyatdan keçirir və aktivasiya e-poçtu göndərir."""
     if request.user.is_authenticated:
         return redirect('dashboard')
         
     if request.method == 'POST':
         form = IshchiCreationForm(request.POST, request.FILES)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            user.is_active = False # Hesabı qeyri-aktiv edirik
+            user.save()
+
+            # Aktivasiya e-poçtunu hazırlayırıq
+            mail_subject = 'Hesabınızı aktivləşdirin'
             
-            # DÜZƏLİŞ: Django-ya hansı autentifikasiya metodunu istifadə edəcəyini deyirik
-            # Bu, user obyektinə 'backend' atributunu əlavə edir.
-            user.backend = 'core.backends.EmailOrUsernameBackend'
-            login(request, user) # İndi login funksiyası düzgün işləyəcək
+            # Mesajı HTML şablonundan render edirik
+            message = render_to_string('registration/activation_email.html', {
+                'user': user,
+                'domain': request.META['HTTP_HOST'],
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.generate_token(user),
+            })
             
-            messages.success(request, "Qeydiyyat uğurla tamamlandı. Xoş gəlmisiniz!")
-            return redirect('dashboard')
+            to_email = form.cleaned_data.get('email')
+            email = EmailMessage(mail_subject, message, to=[to_email])
+            
+            try:
+                email.send()
+                messages.success(request, 'Qeydiyyat uğurla tamamlandı! Zəhmət olmasa, hesabınızı aktivləşdirmək üçün e-poçtunuzu yoxlayın.')
+                return redirect('login')
+            except Exception as e:
+                messages.error(request, f"E-poçt göndərilərkən xəta baş verdi: {e}")
+
     else:
         form = IshchiCreationForm()
     
