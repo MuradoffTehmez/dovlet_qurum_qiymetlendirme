@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from django.utils.translation import gettext_lazy as _
 import datetime
 
+
 # ===================================================================
 # ƏSAS QURĞULAR VƏ YOLLAR (BASE CONFIGURATIONS & PATHS)
 # ===================================================================
@@ -150,33 +151,38 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # ===================================================================
 
 JAZZMIN_SETTINGS = {
-    "site_title": "360° Qiymətləndirmə Paneli",
-    "site_header": "İşçi Dəyərləndirmə Sistemi",
+    # Saytın brauzer başlığı
+    "site_title": "360° İdarəetmə Paneli",
+
+    # Navbar və login səhifəsindəki başlıq
+    "site_header": "Qiymətləndirmə Sistemi",
+
+    # Panel brendi
     "site_brand": "360° Dəyərləndirmə",
-    "welcome_sign": "360° Qiymətləndirmə Sisteminizə Xoş Gəlmisiniz",
+
+    # Admin başlığının sol üst hissəsi
     "site_header_short": "Dəyərləndirmə",
-    "site_url": "/",
-    "show_sidebar": True,
-    "navigation_expanded": True,
-    "topmenu_links": [
-        {"name": "Ana Səhifə", "url": "admin:index", "permissions": ["auth.view_user"]},
-        {"model": "auth.User"},
-        {"app": "your_app_label"},
-    ],
-    "custom_links": {
-        "auth": [
-            {
-                "name": "İstifadəçi əlavə et",
-                "url": "add_user",
-                "icon": "fas fa-user-plus",
-                "permissions": ["auth.add_user"]
-            }
-        ]
-    },
+
+    # Xoş gəlmisiniz mətni
+    "welcome_sign": "360° Qiymətləndirmə Sisteminə Xoş Gəlmisiniz",
+
+    # Admin səhifəsinin alt hissəsi
     "copyright": "© 2025 Muradov İT MMC",
+
+    # UI Builder-i göstərmək
     "show_ui_builder": True,
-    "order_with_respect_to": ["Qiymetlendirme", "Ishci", "Rehber"],
-    "user_avatar": None,
+
+    # Yuxarı menyuya faydalı linklər əlavə edirik
+    "topmenu_links": [
+        # Əsas sayta keçid
+        {"name": "Ana Səhifə", "url": "/", "permissions": ["auth.view_user"]},
+
+        # Bütün istifadəçilərin siyahısı (bizim Ishchi modeli)
+        {"model": "core.Ishchi"},
+    ],
+
+    # Yan menyunu avtomatik qruplaşdırmaq
+    "order_with_respect_to": ["core", "core.Ishchi", "core.Qiymetlendirme", "core.InkishafPlani"],
 }
 
 JAZZMIN_UI_TWEAKS = {
@@ -251,46 +257,55 @@ SESSION_CACHE_ALIAS = "default"
 # LOGGING (GÜNLÜK GÖZƏTİM SİSTEMİ)
 # ===================================================================
 
-# Hər server başlananda ayrıca log faylı yaratmaq üçün tarixi fayl adı kimi istifadə edirik.
-LOG_FILE_NAME = BASE_DIR / f'logs/django_{datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.log'
+LOGS_DIR = BASE_DIR / 'logs'
+LOGS_DIR.mkdir(exist_ok=True) # Əgər qovluq yoxdursa, onu yaradır
 
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-
+    # Logların formatını təyin edirik
     'formatters': {
         'verbose': {
-            'format': '[{asctime}] {levelname} {name} - {message}',
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
             'style': '{',
         },
         'simple': {
-            'format': '{levelname}: {message}',
+            'format': '{levelname} {message}',
             'style': '{',
         },
     },
-
+    # Logları hara yazacağımızı təyin edirik (handlerlər)
     'handlers': {
+        # Konsola (terminala) çıxan loglar
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'simple',
         },
+        # Fayla yazılan loglar
         'file': {
-            'class': 'logging.FileHandler',
-            'filename': LOG_FILE_NAME,
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / 'debug.log', # Log faylının adı və yeri
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
             'formatter': 'verbose',
-            'encoding': 'utf-8',
         },
     },
-
+    # Hansı logları harada göstərəcəyimizi təyin edirik
     'loggers': {
+        # Django-nun öz logları
         'django': {
             'handlers': ['console', 'file'],
-            'level': 'DEBUG' if DEBUG else 'INFO',
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
             'propagate': True,
+        },
+        # Bizim tətbiqin (və ya digərlərinin) logları
+        '': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
         },
     },
 }
-
 # ===================================================================
 # CELERY KONFİQURASİYASI
 # ===================================================================

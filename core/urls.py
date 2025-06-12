@@ -23,18 +23,7 @@ urlpatterns = [
     path('plan/yarat/<int:ishchi_id>/<int:dovr_id>/', views.plan_yarat_ve_redakte_et, name='plan_yarat'),
     path('plan/bax/<int:plan_id>/', views.plan_bax, name='plan_bax'),
 ]
-
-# handler400 = 'core.views.error_400'
-# handler401 = 'core.views.error_401'
-# handler403 = 'core.views.error_403'
-# handler404 = 'core.views.error_404'
-# handler429 = 'core.views.error_429'
-# handler500 = 'core.views.error_500'
-# handler502 = 'core.views.error_502'
-# handler503 = 'core.views.error_503'
-
     # Uncomment the following lines if you want to enable these views
-
     # path('superadmin/dovrlar/', views.dovrlar_siyahisi, name='dovrlar_siyahisi'),
     # path('superadmin/dovrlar/sil/<int:dovr_id>/', views.dovr_sil, name='dovr_sil'),
     # path('superadmin/dovrlar/duzenle/<int:dovr_id>/', views.dovr_duzenle, name='dovr_duzenle'),
