@@ -13,6 +13,7 @@ urlpatterns = [
     path('hesabatim/', views.hesabat_gorunumu, name='hesabatim'),
     path('hesabat/bax/<int:ishchi_id>/', views.hesabat_gorunumu, name='hesabat_bax'), 
     path('hesabat/pdf/<int:ishchi_id>/', views.hesabat_pdf_yukle, name='hesabat_pdf_yukle'),
+    path('profil/', views.ProfileView.as_view(), name='profil'),
 
     # Rəhbər və Superadmin panelləri
     path('rehber-paneli/', views.rehber_paneli, name='rehber_paneli'),
