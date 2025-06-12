@@ -10,45 +10,43 @@ import os
 from dotenv import load_dotenv
 from django.utils.translation import gettext_lazy as _
 
-# ------------------------------------------------------------------------------
-# ƏSAS TƏNZİMLƏMƏLƏR VƏ YOLLAR (BASE CONFIGURATION & PATHS)
-# ------------------------------------------------------------------------------
+# ==============================================================================
+# ƏSAS QURĞULAR VƏ YOLLAR (BASE CONFIGURATIONS & PATHS)
+# ==============================================================================
 
-load_dotenv()
+load_dotenv()  # .env faylından dəyişənləri yükləmək üçün
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent  # Layihənin əsas direktoriyası
 
+# ==============================================================================
+# TƏHLÜKƏSİZLİK (SECURITY SETTINGS)
+# ==============================================================================
 
-# ------------------------------------------------------------------------------
-# (SECURITY)
-# ------------------------------------------------------------------------------
+SECRET_KEY = os.getenv('SECRET_KEY')  # Gizli açar (mühit dəyişənindən gəlir)
 
-SECRET_KEY = os.getenv('SECRET_KEY')
+DEBUG = os.getenv('DEBUG', 'False') == 'true'  # DEBUG rejimi
 
-DEBUG = os.getenv('DEBUG', 'False') == 'true'
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']  # İcazə verilmiş hostlar
 
-
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-
-
+# İstifadəçi login mexanizmləri (e-mail və ya username ilə giriş)
 AUTHENTICATION_BACKENDS = [
     'core.backends.EmailOrUsernameBackend',         
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-
-# ------------------------------------------------------------------------------
-# (APPLICATIONS)
-# ------------------------------------------------------------------------------
+# ==============================================================================
+# TƏTBİQLƏR (INSTALLED APPLICATIONS)
+# ==============================================================================
 
 INSTALLED_APPS = [
 
-    'jazzmin',
-    'crispy_forms',
-    'crispy_bootstrap5',
-    'simple_history',
+    # Üçüncü tərəf paketləri
+    'jazzmin',               # Admin panelin görünüşünü yaxşılaşdırır
+    'crispy_forms',          # Formaların renderi üçün
+    'crispy_bootstrap5',     # Bootstrap5 üçün crispy təməl
+    'simple_history',        # Model tarixçəsini saxlamaq üçün
 
-
+    # Django daxilində olanlar
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -56,30 +54,36 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    
+    # Layihə daxilində öz tətbiqimiz
     'core.apps.CoreConfig',
 ]
+
+# ==============================================================================
+# MİDDLEWARE (ORTA QAT FUNKSİYALARI)
+# ==============================================================================
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware', # Dil üçün
+    'django.middleware.locale.LocaleMiddleware',  # Lokalizasiya (dil) üçün
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'simple_history.middleware.HistoryRequestMiddleware', # Tarixçə üçün
+    'simple_history.middleware.HistoryRequestMiddleware',  # Model tarixçəsi üçün
 ]
 
-ROOT_URLCONF = 'config.urls'
+# ==============================================================================
+# URL, WSGI
+# ==============================================================================
 
+ROOT_URLCONF = 'config.urls'
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
-# ------------------------------------------------------------------------------
+# ==============================================================================
 # VERİLƏNLƏR BAZASI (DATABASE)
-# ------------------------------------------------------------------------------
+# ==============================================================================
 
 DATABASES = {
     'default': {
@@ -88,10 +92,9 @@ DATABASES = {
     }
 }
 
-
-# ------------------------------------------------------------------------------
-# ŞİFRƏ YOXLAMALARI (PASSWORD VALIDATION)
-# ------------------------------------------------------------------------------
+# ==============================================================================
+# ŞİFRƏ TƏHLÜKƏSİZLİYİ (PASSWORD VALIDATORS)
+# ==============================================================================
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -100,55 +103,48 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-# ------------------------------------------------------------------------------
-# BEYNƏLXALQLAŞDIRMA VƏ LOKALLAŞDIRMA (I18N & L10N)
-# ------------------------------------------------------------------------------
+# ==============================================================================
+# DİL VƏ SAAT ZONU (INTERNATIONALIZATION)
+# ==============================================================================
 
 LANGUAGE_CODE = 'az'
 TIME_ZONE = 'Asia/Baku'
 USE_I18N = True
 USE_TZ = True
 
+# Dəstəklənən dillər
 LANGUAGES = [
     ('az', _('Azərbaycan')),
     ('en', _('English')),
 ]
 
+# Tərcümə fayllarının yolu
 LOCALE_PATHS = [
     BASE_DIR / 'locale',
 ]
 
-
-# ------------------------------------------------------------------------------
-# (STATIC FILES)
-# ------------------------------------------------------------------------------
-
-
+# ==============================================================================
+# STATİK FAYLLAR (STATIC FILES)
+# ==============================================================================
 
 STATIC_URL = '/static/'
-
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # `collectstatic` ilə buraya toplanacaq
 STATICFILES_DIRS = [
-    BASE_DIR / 'static', 
+    BASE_DIR / 'static',  # Əlavə statik fayl qovluğu
 ]
 
-
-
-# ------------------------------------------------------------------------------
-# (AUTHENTICATION)
-# ------------------------------------------------------------------------------
+# ==============================================================================
+# AUTHENTICATION VƏ USER MODEL
+# ==============================================================================
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-AUTH_USER_MODEL = 'core.Ishchi'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+AUTH_USER_MODEL = 'core.Ishchi'  # Öz `User` modelimiz
+LOGIN_REDIRECT_URL = '/'         # Girişdən sonra yönləndirmə
+LOGOUT_REDIRECT_URL = '/'        # Çıxışdan sonra yönləndirmə
 
-
-# ------------------------------------------------------------------------------
-#(EMAIL SETTINGS)
-# ------------------------------------------------------------------------------
+# ==============================================================================
+# E-MAIL TƏNZİMLƏMƏLƏRİ (EMAIL CONFIGURATION)
+# ==============================================================================
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -158,78 +154,47 @@ EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+# ==============================================================================
+# CRISPY FORMS TƏNZİMLƏRİ
+# ==============================================================================
 
-# ------------------------------------------------------------------------------
-# XARİCİ PAKETLƏRİN TƏNZİMLƏMƏLƏRİ (THIRD-PARTY PACKAGES)
-# ------------------------------------------------------------------------------
-
-# Crispy Forms Tənzimləmələri
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
+# ==============================================================================
+# JAZZMIN – ADMIN PANELİ DİZAYNI
+# ==============================================================================
 
-# Jazzmin Admin Paneli Tənzimləmələri
 JAZZMIN_SETTINGS = {
-    # Saytın brauzer başlığı
     "site_title": "360° Qiymətləndirmə Paneli",
-
-    # Navbar və login səhifəsindəki başlıq
     "site_header": "İşçi Dəyərləndirmə Sistemi",
-
-    # Panel brendi
     "site_brand": "360° Dəyərləndirmə",
-
-    # Loqo (əgər varsa, əlavə et: static/images/logo.png)
     # "site_logo": "images/logo.png",
     # "login_logo": "images/logo.png",
-
-    # Loqo tipli favicon
     # "site_icon": "images/favicon.ico",
-
-    # Xoş gəlmisiniz mətni
     "welcome_sign": "360° Qiymətləndirmə Sisteminizə Xoş Gəlmisiniz",
-
-    # Admin başlığının sol üst hissəsi
     "site_header_short": "Dəyərləndirmə",
-
-    # Əsas sayt linki (brend kliklənəndə yönləndiriləcək ünvan)
     "site_url": "/",
-
-    # Dəyişikliklər haqqında məlumat paneli göstərilsinmi?
     "show_sidebar": True,
-
-    # Menyu başlıqları ilə ayrılmalıdırmı?
     "navigation_expanded": True,
-
-    # Əlavə başlıqlar
     "topmenu_links": [
         {"name": "Ana Səhifə", "url": "admin:index", "permissions": ["auth.view_user"]},
         {"model": "auth.User"},
-        {"app": "your_app_label"},  # Əgər tam app göstərmək istəyirsənsə
+        {"app": "your_app_label"},
     ],
-
-    # Alt menu strukturu (sıralama və qruplaşma)
     "custom_links": {
         "auth": [
             {
                 "name": "İstifadəçi əlavə et",
-                "url": "add_user",  # custom view varsa
+                "url": "add_user",
                 "icon": "fas fa-user-plus",
                 "permissions": ["auth.add_user"]
             }
         ]
     },
-
-    # Admin səhifəsinin alt hissəsi
     "copyright": "© 2025 Muradov İT MMC",
-
-    # UI Builder-i göstərmək
     "show_ui_builder": True,
-
-    # Model konfiqurasiya (görünüş optimallaşdırması)
     "order_with_respect_to": ["Qiymetlendirme", "Ishci", "Rehber"],
-    
-    # İstifadəçi menyusunda nə göstərilsin
     "user_avatar": None,
 }
 
@@ -262,20 +227,18 @@ JAZZMIN_UI_TWEAKS = {
         "warning": "btn-warning",
         "danger": "btn-danger",
         "success": "btn-outline-success"
-        
     },
     "actions_sticky_top": False
 }
 
-
-# ------------------------------------------------------------------------------
-# ŞABLONLAR (TEMPLATES)
-# ------------------------------------------------------------------------------
+# ==============================================================================
+# TEMPLATES (ŞABLONLARIN KONFİQURASİYASI)
+# ==============================================================================
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / 'templates'],  # HTML şablonlarının yolu
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -283,27 +246,24 @@ TEMPLATES = [
                 'django.template.context_processors.request', 
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'core.context_processors.language_switcher_context', 
+                'core.context_processors.language_switcher_context',  # Dil dəyişdirici üçün
             ],
         },
     },
 ]
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'debug.log',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
+# ==============================================================================
+# CACHE (MÜVƏQQƏTİ YADDAŞ)
+# ==============================================================================
+# Redis ilə caching: performans və sessiya idarəsi üçün
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": os.getenv('REDIS_URL', 'redis://127.0.0.1:6379/1'),
+    }
 }
+
+# Session məlumatlarını da Redis-də saxla (opsional)
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS = "default"
