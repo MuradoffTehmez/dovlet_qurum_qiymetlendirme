@@ -11,11 +11,15 @@ from django.conf.urls.i18n import i18n_patterns
 i18n_urlpatterns = i18n_patterns(
     path('accounts/', include('django.contrib.auth.urls')),
     path('', include('core.urls')),
-    
+    # core.urls faylında olan URL-lər burada daxil edilir
+    # core.urls faylında olan URL-lər dilə həssas olacaq
     # prefix_default_language=False parametiri standart dil üçün ('az') 
     # URL-də /az/ prefiksini göstərmir. Bu, daha səliqəli görünə bilər.
     # Məsələn: /hesabatim/ (az) və /en/my-report/ (en)
-    prefix_default_language=False,
+    # prefix_default_language=True olarsa, URL-lər belə olacaq: /az/hesabatim/ və /en/my-report/
+    
+    # prefix_default_language=True,  # Bu parametr True olaraq saxlanılırsa,
+    # prefix_default_language=False,
 )
 
 # 2. Əsas urlpatterns siyahısını yaradırıq və dilə həssas olmayanları əlavə edirik
