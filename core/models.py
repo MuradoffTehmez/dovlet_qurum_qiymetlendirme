@@ -41,11 +41,20 @@ class Ishchi(AbstractUser):
         REHBER = 'REHBER', 'Rəhbər'
         ISHCHI = 'ISHCHI', 'İşçi'
 
+    # İstifadəçi modelini genişləndiririk
+    # ad = models.CharField(max_length=30, verbose_name="Ad", blank=True)
     rol = models.CharField(max_length=10, choices=Rol.choices, default=Rol.ISHCHI, verbose_name="İstifadəçi Rolu")
     vezife = models.CharField(max_length=255, verbose_name="Vəzifəsi", blank=True)
     sektor = models.ForeignKey(Sektor, on_delete=models.SET_NULL, null=True, blank=True, related_name='ishchiler')
+    
+    elaqe_nomresi = models.CharField(max_length=20, blank=True, null=True, verbose_name="Əlaqə Nömrəsi")
+    dogum_tarixi = models.DateField(blank=True, null=True, verbose_name="Doğum Tarixi")
+    profil_sekli = models.ImageField(upload_to='profil_sekilleri/', default='profil_sekilleri/default.png', verbose_name="Profil Şəkli")
 
     history = HistoricalRecords()
+
+    def __str__(self):
+        return self.get_full_name() or self.username
 
 # --- Sual Hovuzu Modelləri ---
 
