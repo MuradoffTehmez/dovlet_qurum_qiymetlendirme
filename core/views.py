@@ -1,11 +1,10 @@
-# core/views.py
+# core/views.py 
 
-# --- Django-nun Daxili Modulları ---
-# --- Sistem modulları ---
+# --- Sistem modulları (Python-un daxili) ---
 import json
 import random
 
-# --- Django core və HTTP əlaqəli modullar ---
+# --- Django core və HTTP modulları ---
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.urls import reverse
@@ -13,6 +12,7 @@ from django.template.loader import render_to_string
 from django.core.exceptions import PermissionDenied
 from django.core.mail import EmailMessage
 from django.db.models import Q, Avg
+from django.conf import settings
 
 # --- Django auth modulları ---
 from django.contrib import messages
@@ -20,34 +20,30 @@ from django.contrib.auth import login, authenticate, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.forms import AuthenticationForm
+
+# --- Django util modulları ---
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
+from django.views.generic import TemplateView
 
 # --- Xarici paketlər ---
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment
 from weasyprint import HTML
 
-# --- Lokal modellər ---
+# --- Lokal Layihə Modulları ---
 from .models import (
-    Ishchi, Departament, Sektor, Shobe,
-    SualKateqoriyasi, QiymetlendirmeDovru, Sual,
-    Qiymetlendirme, Cavab, InkishafPlani, Hedef
+    Ishchi, Departament, Sektor, Shobe, SualKateqoriyasi,
+    QiymetlendirmeDovru, Sual, Qiymetlendirme, Cavab,
+    InkishafPlani, Hedef
 )
-
-# --- Lokal formalar ---
 from .forms import (
     IshchiCreationForm, IshchiUpdateForm, IshchiPasswordChangeForm,
     YeniDovrForm, HedefFormSet
 )
-
-# --- Lokal util və dekoratorlar ---
 from .decorators import rehber_required, superadmin_required
 from .utils import get_performance_trend, get_detailed_report_context
 from .tokens import account_activation_token
-
-
 
 # --- ÜMUMİ VƏ QEYDİYYAT GÖRÜNÜŞLƏRİ ---
 
