@@ -24,7 +24,7 @@ i18n_urlpatterns = i18n_patterns(
     path('', include('core.urls')),
     
     # Standart dil üçün də /az/ prefiksinin görünməsini təmin edir
-    prefix_default_language=True,
+    # prefix_default_language=True,
 )
 
 # 2. Əsas urlpatterns siyahısını yaradırıq və dilə həssas olmayanları əlavə edirik
