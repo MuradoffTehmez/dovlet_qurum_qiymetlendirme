@@ -14,7 +14,9 @@ from django.core.exceptions import PermissionDenied
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment
 from .forms import YeniDovrForm, IshchiCreationForm, HedefFormSet
-from .models import InkishafPlani 
+from .models import InkishafPlani
+from django.contrib.auth.views import LoginView
+from django.contrib.auth.forms import AuthenticationForm
 
 
 # Lokal importlar
@@ -503,3 +505,28 @@ def plan_bax(request, plan_id):
         'hedefler_with_choices': hedefler_with_choices,
     }
     return render(request, 'core/plan_detail.html', context)
+
+# --- XÜSUSİ GİRİŞ VƏ "MƏNİ XATIRLA" FUNKSİYASI ---
+
+class CustomLoginView(LoginView):
+    """
+    "Məni xatırla" funksionallığını əlavə edən xüsusi LoginView.
+    """
+    template_name = 'registration/login.html'
+    authentication_form = AuthenticationForm
+
+    def form_valid(self, form):
+        # "Məni xatırla" checkbox-ının seçilib-seçilmədiyini yoxlayırıq
+        remember_me = self.request.POST.get('remember_me')
+        
+        if not remember_me:
+            # Əgər seçilməyibsə, sessiya brauzer bağlananda bitsin
+            self.request.session.set_expiry(0)
+            messages.info(self.request, "Sessiyanız brauzer bağlananda bitəcək.")
+        else:
+            # Əgər seçilibsə, sessiya 30 gün aktiv qalsın (saniyə ilə)
+            self.request.session.set_expiry(30 * 24 * 60 * 60)
+            messages.info(self.request, "Sessiyanız 30 gün aktiv qalacaq.")
+
+        # Standart login prosesini davam etdiririk
+        return super().form_valid(form)
