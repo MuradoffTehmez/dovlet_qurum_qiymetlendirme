@@ -102,32 +102,38 @@ class AuthenticationFlowsTests(BaseTestCase):
 
     # core/tests.py
 
+    # core/tests.py - test_password_reset_flow funksiyasının son versiyası
+
     def test_password_reset_flow(self):
         """Test 7: Şifrə bərpası axınının tam olaraq işləməsi."""
-        # Addım 1: Şifrə bərpası tələbi göndəririk
-        self.client.post(reverse('password_reset'), {'email': 'ishchi@example.com'})
-        
-        # Addım 2: E-poçtun göndərildiyini yoxlayırıq
-        self.assertEqual(len(mail.outbox), 1)
+        # Addım 1: Şifrə bərpası üçün POST sorğusu göndəririk
+        response = self.client.post(reverse('password_reset'), {'email': 'ishchi@example.com'})
+        self.assertEqual(response.status_code, 302) # Gözləyirik ki, "done" səhifəsinə yönlənsin
+        self.assertEqual(len(mail.outbox), 1) # Göndərilən e-poçt sayını yoxlayırıq
+
+        # Addım 2: E-poçtdan bərpa linkini və token-i çıxarırıq
         sent_email = mail.outbox[0]
+        uid_match = re.search(r'reset/([a-zA-Z0-9_-]+)/', sent_email.body)
+        token_match = re.search(r'reset/[a-zA-Z0-9_-]+/([a-zA-Z0-9_-]{1,13}-[a-zA-Z0-9-_]{1,32})/', sent_email.body)
         
-        # Addım 3: E-poçtdan bərpa linkini tapırıq
-        urls = re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', sent_email.body)
-        self.assertTrue(len(urls) > 0, "E-poçt mətnində bərpa linki tapılmadı.")
-        reset_link = urls[0]
+        self.assertIsNotNone(uid_match, "E-poçtda istifadəçi ID-si (uid) tapılmadı.")
+        self.assertIsNotNone(token_match, "E-poçtda bərpa tokeni tapılmadı.")
+        
+        uid = uid_match.group(1)
+        token = token_match.group(1)
 
-        # Addım 4: Yeni şifrəni birbaşa POST sorğusu ilə təyin edirik
-        response_post = self.client.post(reset_link, {
-            'new_password1': 'yeniGucluShifre456',
-            'new_password2': 'yeniGucluShifre456',
+        # Addım 3: Yeni şifrəni təyin etmə səhifəsinə POST edirik
+        reset_confirm_url = reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token})
+        
+        new_password = 'SomeVeryComplexPassword!123'
+        response_post = self.client.post(reset_confirm_url, {
+            'new_password1': new_password,
+            'new_password2': new_password,
         })
-
-        # SİZİN İSTƏYİNİZLƏ ƏLAVƏ EDİLDİ: Yönləndirmə URL-ini terminalda çap edirik
-        print("Yönləndirmə URL-i:", response_post.url)
-
-        # Addım 5: Uğurlu dəyişiklikdən sonra yönləndirmənin düzgün olub-olmadığını yoxlayırıq
-        self.assertEqual(response_post.status_code, 302)
+        
+        # Addım 4: Uğurlu dəyişiklikdən sonra yönləndirməni yoxlayırıq
+        self.assertEqual(response_post.status_code, 302, "Şifrə dəyişdirildikdən sonra yönləndirmə baş vermədi.")
         self.assertEqual(response_post.url, reverse('password_reset_complete'))
-
-        # Addım 6: Yeni şifrə ilə daxil olmağı yoxlayırıq
-        self.assertTrue(self.client.login(username='testishchi', password='yeniGucluShifre456'))
+        
+        # Addım 5: Yeni şifrənin həqiqətən işlədiyini yoxlayırıq
+        self.assertTrue(self.client.login(username='testishchi', password=new_password), "Yeni şifrə ilə daxil olmaq mümkün olmadı.")
