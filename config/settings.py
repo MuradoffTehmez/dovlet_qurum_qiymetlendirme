@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent  # Layihənin əsas direktoriy
 # ===================================================================
 
 SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'False'  # .env faylından DEBUG dəyərini oxuyuruq
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 AUTHENTICATION_BACKENDS = [
@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'simple_history',
-    'captcha',
+    # 'captcha',
 
     # Django daxilində olanlar
     'django.contrib.admin',
@@ -240,6 +240,13 @@ TEMPLATES = [
     },
 ]
 
+
+# ===================================================================
+# CAPTCHA KONFİQURASİYASI
+# ===================================================================
+# RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_SITE_KEY')
+# RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_SECRET_KEY')
+
 # ===================================================================
 # CACHE (MÜVƏQQƏTİ YADDAŞ)
 # ===================================================================
@@ -324,13 +331,3 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-
-# ===================================================================
-# CAPTCHA KONFİQURASİYASI
-# ===================================================================
-RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_SITE_KEY')
-RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_SECRET_KEY')
-
-# ===================================================================
-# SIMPLE HISTORY KONFİQURASİYASI
-# ===================================================================
