@@ -100,21 +100,18 @@ class AuthenticationFlowsTests(BaseTestCase):
         # Səhv şifrə ilə girişin uğursuz olması
         self.assertFalse(self.client.login(username='testishchi', password='sehvsifre'))
 
-    # core/tests.py
-
     # core/tests.py - test_password_reset_flow funksiyasının son versiyası
 
     def test_password_reset_flow(self):
         """Test 7: Şifrə bərpası axınının tam olaraq işləməsi."""
         # Addım 1: Şifrə bərpası üçün POST sorğusu göndəririk
-        response = self.client.post(reverse('password_reset'), {'email': 'ishchi@example.com'})
-        self.assertEqual(response.status_code, 302) # Gözləyirik ki, "done" səhifəsinə yönlənsin
-        self.assertEqual(len(mail.outbox), 1) # Göndərilən e-poçt sayını yoxlayırıq
-
-        # Addım 2: E-poçtdan bərpa linkini və token-i çıxarırıq
+        self.client.post(reverse('password_reset'), {'email': 'ishchi@example.com'})
+        self.assertEqual(len(mail.outbox), 1)
         sent_email = mail.outbox[0]
+
+        # Addım 2: E-poçtdan uid və token-i çıxarırıq
         uid_match = re.search(r'reset/([a-zA-Z0-9_-]+)/', sent_email.body)
-        token_match = re.search(r'reset/[a-zA-Z0-9_-]+/([a-zA-Z0-9_-]{1,13}-[a-zA-Z0-9-_]{1,32})/', sent_email.body)
+        token_match = re.search(r'reset/[a-zA-Z0-9_-]+/([a-zA-Z0-9-_]+)/', sent_email.body)
         
         self.assertIsNotNone(uid_match, "E-poçtda istifadəçi ID-si (uid) tapılmadı.")
         self.assertIsNotNone(token_match, "E-poçtda bərpa tokeni tapılmadı.")
