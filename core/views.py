@@ -544,3 +544,21 @@ class CustomLoginView(LoginView):
             # Əgər seçilibsə, sessiya 30 gün aktiv qalsın (saniyə ilə)
             self.request.session.set_expiry(30 * 24 * 60 * 60)
         return super().form_valid(form)
+
+# --- HESAB AKTİVLƏŞDİRMƏ ---
+def activate(request, uidb64, token):
+    """E-poçtdakı link vasitəsilə hesabı aktivləşdirir."""
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = Ishchi.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, Ishchi.DoesNotExist):
+        user = None
+
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        messages.success(request, 'Təşəkkürlər! Hesabınız uğurla aktivləşdirildi. İndi daxil ola bilərsiniz.')
+        return redirect('login')
+    else:
+        messages.error(request, 'Aktivasiya linki etibarsızdır!')
+        return redirect('dashboard')

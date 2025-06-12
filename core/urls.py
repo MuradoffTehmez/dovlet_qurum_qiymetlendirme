@@ -22,6 +22,7 @@ urlpatterns = [
     path('superadmin/export-pdf/', views.export_departments_pdf, name='export_departments_pdf'),
     path('plan/yarat/<int:ishchi_id>/<int:dovr_id>/', views.plan_yarat_ve_redakte_et, name='plan_yarat'),
     path('plan/bax/<int:plan_id>/', views.plan_bax, name='plan_bax'),
+    path('activate/<uidb64>/<token>/', views.activate, name='activate'),
 ]
     # Uncomment the following lines if you want to enable these views
     # path('superadmin/dovrlar/', views.dovrlar_siyahisi, name='dovrlar_siyahisi'),
