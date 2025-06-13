@@ -10,56 +10,90 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         :root {
-            --bg: #f4f6f8;
-            --text: #1a1a1a;
-            --nav: #ffffff;
-            --card: #ffffff;
-            --border: #dee2e6;
+            --main-bg-color: #f8f9fa;
+            --main-text-color: #212529;
+            --card-bg-color: #ffffff;
+            --card-border-color: rgba(0, 0, 0, 0.175);
+            --navbar-bg-color: #ffffff;
+            --footer-bg-color: #f8f9fa;
+            --link-color: #0d6efd;
+            --btn-text-color: #212529;
         }
 
         html.dark-mode {
-            --bg: #121212;
-            --text: #e5e5e5;
-            --nav: #1e1e1e;
-            --card: #2a2a2a;
-            --border: #333;
+            --main-bg-color: #212529;
+            --main-text-color: #dee2e6;
+            --card-bg-color: #2b3035;
+            --card-border-color: rgba(255, 255, 255, 0.125);
+            --navbar-bg-color: #2b3035;
+            --footer-bg-color: #2b3035;
+            --link-color: #66b2ff;
+            --btn-text-color: #ffffff;
         }
 
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--main-bg-color);
+            color: var(--main-text-color);
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         main.container {
             flex-grow: 1;
         }
 
-        .navbar,
-        .footer {
-            background-color: var(--nav) !important;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .footer {
-            border-top: 1px solid var(--border);
-        }
-
         .card,
-        .modal-content,
         .list-group-item,
-        .dropdown-menu {
-            background-color: var(--card);
-            border-color: var(--border);
-            color: var(--text);
+        .modal-content {
+            background-color: var(--card-bg-color);
+            color: var(--main-text-color);
+            border-color: var(--card-border-color);
         }
 
-        .nav-item .btn {
-            margin-left: 0.25rem;
-            border-radius: 0.4rem;
+        .navbar {
+            background-color: var(--navbar-bg-color) !important;
+            transition: background-color 0.3s ease;
+        }
+
+        .footer.bg-light {
+            background-color: var(--footer-bg-color) !important;
+        }
+
+        html.dark-mode .table {
+            color: var(--main-text-color);
+        }
+
+        html.dark-mode .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        html.dark-mode .navbar-toggler-icon {
+            filter: invert(1);
+        }
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+
+        .dropdown-menu-end {
+            min-width: 120px;
+        }
+
+        .btn-toggle-mode {
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-secondary,
+        .btn-outline-primary,
+        .btn-outline-success,
+        .btn-outline-warning,
+        .btn-outline-danger {
+            color: var(--btn-text-color);
+            border-color: var(--card-border-color);
         }
 
         .btn-outline-secondary:hover,
@@ -67,16 +101,13 @@
         .btn-outline-success:hover,
         .btn-outline-warning:hover,
         .btn-outline-danger:hover {
-            background-color: var(--border);
-            color: var(--text);
+            opacity: 0.9;
         }
 
-        .navbar-text img {
-            border: 2px solid var(--border);
-        }
-
-        html.dark-mode .btn-close {
-            filter: invert(1);
+        a,
+        .nav-link,
+        .dropdown-item {
+            color: var(--link-color);
         }
     </style>
 </head>
@@ -85,42 +116,42 @@
     <script>
         (function () {
             const theme = localStorage.getItem('theme');
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark-mode');
-            }
+            if (theme === 'dark') { document.documentElement.classList.add('dark-mode'); }
         })();
     </script>
-
-    <nav class="navbar navbar-expand-lg shadow-sm">
+    <nav class="navbar navbar-expand-lg shadow-sm border-bottom">
         <div class="container">
             <a class="navbar-brand fw-bold" href="/">{% trans "Qiymətləndirmə Sistemi" %}</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span
+                    class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto align-items-center">
+                <ul class="navbar-nav ms-auto align-items-center gap-2">
                     <li class="nav-item">
-                        <button id="theme-toggle-btn" class="btn btn-sm btn-outline-secondary">
-                            <i class="bi bi-moon-stars-fill"></i>
-                        </button>
+                        <button id="theme-toggle-btn" class="btn btn-sm btn-outline-secondary btn-toggle-mode"><i
+                                class="bi bi-moon-stars-fill"></i></button>
                     </li>
-                    <li class="nav-item dropdown ms-2">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="langDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-translate"></i>
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="langDropdown">
                             {% for lang in language_switcher_data %}
-                            <li><a class="dropdown-item"
+                            <li {% if lang.is_current %}class="active" {% endif %}>
+                                <a class="dropdown-item"
                                     href="/{{ lang.code }}{{ request.get_full_path|slice:'3:' }}">{{ lang.name }}</a>
                             </li>
                             {% endfor %}
                         </ul>
                     </li>
                     {% if user.is_authenticated %}
-                    <li class="nav-item d-flex align-items-center ms-3">
-                        <img src="{{ user.profil_sekli.url }}" class="rounded-circle me-2" width="30" height="30">
-                        <span>{% trans "Salam" %}, {{ user.get_full_name|default:user.username }}</span>
+                    <li class="nav-item d-flex align-items-center">
+                        {% if user.profil_sekli %}
+                        <img src="{{ user.profil_sekli.url }}" alt="Avatar" width="30" height="30"
+                            class="rounded-circle me-2">
+                        {% endif %}
+                        <span class="fw-semibold">{% trans "Salam" %}, {{ user.get_full_name|default:user.username
+                            }}</span>
                     </li>
                     <li class="nav-item"><a href="{% url 'profil' %}" class="btn btn-outline-secondary btn-sm">{% trans
                             "Profil" %}</a></li>
@@ -131,20 +162,17 @@
                     <li class="nav-item"><a href="{% url 'superadmin_paneli' %}"
                             class="btn btn-outline-warning btn-sm">{% trans "Superadmin" %}</a></li>
                     <li class="nav-item">
-                        <form method="post" action="{% url 'logout' %}">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-outline-danger btn-sm">{% trans "Çıxış" %}</button>
-                        </form>
+                        <form action="{% url 'logout' %}" method="post" class="d-inline">{% csrf_token %}<button
+                                type="submit" class="btn btn-outline-danger btn-sm">{% trans "Çıxış" %}</button></form>
                     </li>
                     {% else %}
-                    <li class="nav-item"><a href="{% url 'login' %}" class="nav-link">{% trans "Daxil Ol" %}</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">{% trans "Daxil Ol" %}</a></li>
                     {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
-
-    <main class="container py-4">
+    <main class="container my-4">
         {% if messages %}
         {% for message in messages %}
         <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
@@ -156,35 +184,29 @@
 
         {% block content %}{% endblock %}
     </main>
-
-    <footer class="footer mt-auto py-3">
+    <footer class="footer mt-auto py-3 bg-light">
         <div class="container text-center">
             <span class="text-muted">{% trans "Qiymətləndirmə Sistemi" %} &copy; {% now "Y" %}</span>
         </div>
     </footer>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const themeToggleBtn = document.getElementById('theme-toggle-btn');
-            const html = document.documentElement;
-
+            const htmlElement = document.documentElement;
             const updateIcon = () => {
-                themeToggleBtn.innerHTML = html.classList.contains('dark-mode')
+                themeToggleBtn.innerHTML = htmlElement.classList.contains('dark-mode')
                     ? '<i class="bi bi-sun-fill"></i>'
                     : '<i class="bi bi-moon-stars-fill"></i>';
             };
-
             themeToggleBtn.addEventListener('click', () => {
-                html.classList.toggle('dark-mode');
-                localStorage.setItem('theme', html.classList.contains('dark-mode') ? 'dark' : 'light');
+                htmlElement.classList.toggle('dark-mode');
+                localStorage.setItem('theme', htmlElement.classList.contains('dark-mode') ? 'dark' : 'light');
                 updateIcon();
             });
-
             updateIcon();
         });
     </script>
-
     {% block extra_js %}{% endblock %}
 </body>
 
