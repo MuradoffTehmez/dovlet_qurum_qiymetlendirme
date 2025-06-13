@@ -9,7 +9,7 @@ import datetime
 # ƏSAS QURĞULAR VƏ YOLLAR (BASE CONFIGURATIONS & PATHS)
 # ===================================================================
 
-load_dotenv()  # .env faylından dəyişənləri yükləmək üçün
+load_dotenv() # .env faylını yükləyirik
 
 BASE_DIR = Path(__file__).resolve().parent.parent  # Layihənin əsas direktoriyası
 
