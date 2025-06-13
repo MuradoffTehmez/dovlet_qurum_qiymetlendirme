@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent  # Layihənin əsas direktoriy
 # ===================================================================
 
 SECRET_KEY = os.getenv('SECRET_KEY')
-DEBUG = os.getenv('DEBUG', 'False').lower() == 'False'  # .env faylından DEBUG dəyərini oxuyuruq
+DEBUG = os.getenv('DEBUG', 'False').lower() == 'True'  # .env faylından DEBUG dəyərini oxuyuruq
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 AUTHENTICATION_BACKENDS = [
@@ -85,9 +85,6 @@ DATABASES = {
 }
 
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
 # ===================================================================
 # ŞİFRƏ TƏHLÜKƏSİZLİYİ (PASSWORD VALIDATORS)
 # ===================================================================
@@ -122,6 +119,9 @@ LOCALE_PATHS = [BASE_DIR / 'locale']
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # ===================================================================
 # AUTHENTICATION VƏ USER MODEL
