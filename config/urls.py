@@ -37,8 +37,6 @@ urlpatterns += i18n_urlpatterns
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    
-
 
 # 5. Xəta səhifələrini təyin edirik (string formatında daha stabildir)
 handler400 = 'django.views.defaults.bad_request'
