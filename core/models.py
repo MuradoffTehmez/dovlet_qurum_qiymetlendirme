@@ -1,8 +1,9 @@
 # core/models.py
 
-from django.db import models
 from django.contrib.auth.models import AbstractUser
-from simple_history.models import HistoricalRecords # Simple History üçün model tarixi saxlamaq üçün
+from django.db import models
+from simple_history.models import \
+    HistoricalRecords  # Simple History üçün model tarixi saxlamaq üçün
 
 # --- İyerarxiya Modelləri ---
 
