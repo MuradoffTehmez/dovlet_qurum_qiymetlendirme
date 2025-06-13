@@ -1,16 +1,24 @@
 {% extends 'core/base.html' %}
 {% load i18n %}
-{% load crispy_forms_tags %} {% block title %}Yeni Qiymətləndirmə Dövrü Yarat{% endblock %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% trans "Yeni Qiymətləndirmə Dövrü Yarat" %}{% endblock %}
 
 {% block content %}
-<h2>Yeni Qiymətləndirmə Dövrü Yarat</h2>
-<p>Bu forma vasitəsilə yeni bir qiymətləndirmə dövrü yaradıb, prosesə daxil ediləcək departamentləri seçə bilərsiniz.
-</p>
-<hr>
+<div class="animate__animated animate__fadeIn">
+    <h2 class="fw-bold mb-3">{% trans "Yeni Qiymətləndirmə Dövrü Yarat" %}</h2>
+    <p class="text-muted mb-4">{% trans "Bu forma vasitəsilə yeni bir qiymətləndirmə dövrü yaradıb, prosesə daxil
+        ediləcək departamentləri seçə bilərsiniz." %}</p>
+    <hr class="mb-4">
 
-<div class="card">
-    <div class="card-body">
-        {% crispy form %}
+    <div class="card shadow-sm animate__animated animate__fadeInUp animate__faster">
+        <div class="card-body">
+            {% crispy form %}
+        </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 {% endblock %}
