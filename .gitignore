@@ -1,85 +1,167 @@
-# Python bytecode
-__pycache__/
+##################################
+# Python
+##################################
 *.py[cod]
 *$py.class
+__pycache__/
+*.pyo
+*.pyd
+*.pyc
+*.pyw
+*.py,cover
 
-# Django migrations
+##################################
+# Django
+##################################
+
+# Migration faylları
 */migrations/
 !*/migrations/__init__.py
 
-# SQLite database
+# Verilənlər bazası faylları
 *.sqlite3
 *.db
+*.db-journal
 
-# Secret keys and environment config
-.env
-.env.*
-*.secrets.json
-secrets.json
+# Media və yüklənmiş fayllar
+# /media/
+/uploads/
+/media_root/
+/media_cdn/
 
-# Django settings
-*.local.py
-settings_dev.py
-settings_prod.py
-
-# VSCode / IDE settings
-.vscode/
-.idea/
-*.code-workspace
-
-# Logs and debug
-*.log
-*.pot
-*.mo
-*.log.*
-*.bak
-
-# Media and static cache
-media/
+# Static fayllar
 staticfiles/
 static_cdn/
 public/static/
 
-# Virtual environments
+# Debug, log, backup
+*.log
+*.log.*
+*.bak
+*.swp
+*.tmp
+*.pot
+*.mo
+
+##################################
+# Virtual environment
+##################################
 venv/
+.venv/
 env/
 ENV/
-.venv/
 .Python
 pip-selfcheck.json
 
-# pip tools
-*.lock
-poetry.lock
-Pipfile.lock
+##################################
+# Konfiqurasiya, şifrələr, env
+##################################
+.env
+.env.*
+*.env
+secrets.json
+*.secrets.json
+*.local.py
+settings_dev.py
+settings_prod.py
+config/settings/local.py
+config/settings/staging.py
+config/settings/production.py
 
-# Compiled files
-*.pyc
-*.pyo
-*.pyd
+##################################
+# Build / Packaging
+##################################
+build/
+dist/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+__pypackages__/
 
-# Test coverage and reports
+##################################
+# Test nəticələri və Coverage
+##################################
 htmlcov/
 .tox/
+.nox/
 .coverage
 .coverage.*
 .cache
 nosetests.xml
 coverage.xml
 *.cover
-*.py,cover
 
-# Build and distribution
-build/
-dist/
-*.egg-info/
-*.egg
-.eggs/
+##################################
+# IDE və Editor faylları
+##################################
+.vscode/
+.idea/
+*.code-workspace
+*.sublime-project
+*.sublime-workspace
 
-# Jupyter / Notebooks
-.ipynb_checkpoints/
+# JetBrains
+*.iml
+*.ipr
+*.iws
+out/
 
-# System files
+##################################
+# OS və sistem faylları
+##################################
 .DS_Store
+.DS_Store?
+Icon?
+._*
+.Spotlight-V100
+.Trashes
 Thumbs.db
-desktop.ini
+ehthumbs.db
+Desktop.ini
+
+##################################
+# PyInstaller
+##################################
+*.manifest
+*.spec
+
+##################################
+# MyPy
+##################################
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+##################################
+# Pyre
+##################################
+.pyre/
+
+##################################
+# Pylint
+##################################
+pylint-report.txt
+pylint-global.rc
+
+##################################
+# Pipenv / Poetry / Pip tools
+##################################
+Pipfile.lock
+poetry.lock
+requirements-dev.txt.lock
+*.lock
+
+##################################
+# Jupyter Notebook
+##################################
+.ipynb_checkpoints/
