@@ -1,14 +1,14 @@
 # core/tests.py - BÜTÜN MODULLARI ƏHATƏ EDƏN YEKUN TEST DƏSTİ
 
 import re
-from django.test import TestCase, Client
-from django.urls import reverse
+
 from django.conf import settings
 from django.core import mail
-from .models import (
-    Ishchi, Sektor, Shobe, Departament, 
-    QiymetlendirmeDovru, InkishafPlani, Hedef
-)
+from django.test import Client, TestCase
+from django.urls import reverse
+
+from .models import (Departament, Hedef, InkishafPlani, Ishchi,
+                     QiymetlendirmeDovru, Sektor, Shobe)
 
 
 class BaseTestCase(TestCase):
