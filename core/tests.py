@@ -7,15 +7,8 @@ from django.core import mail
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from .models import (
-    Departament,
-    Hedef,
-    InkishafPlani,
-    Ishchi,
-    QiymetlendirmeDovru,
-    Sektor,
-    Shobe,
-)
+from .models import (Departament, Hedef, InkishafPlani, Ishchi,
+                     QiymetlendirmeDovru, Sektor, Shobe)
 
 
 class BaseTestCase(TestCase):
