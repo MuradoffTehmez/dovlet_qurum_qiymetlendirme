@@ -1,15 +1,12 @@
-# config/urls.py - YEKUN VƏ TƏKMİLLƏŞDİRİLMİŞ VERSİYA
+# config/urls.py
 
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+
 from django.conf.urls.i18n import i18n_patterns
-
-# Bizim xüsusi Login View-umuzu import edirik
 from core.views import CustomLoginView
-
-# --- URL BÖLGÜSÜ ---
 
 # 1. Dil prefiksi TƏLƏB EDƏN URL-ləri ayrıca təyin edirik
 i18n_urlpatterns = i18n_patterns(
@@ -24,7 +21,7 @@ i18n_urlpatterns = i18n_patterns(
     path('', include('core.urls')),
     
     # Standart dil üçün də /az/ prefiksinin görünməsini təmin edir
-    # prefix_default_language=True,
+    prefix_default_language=True,
 )
 
 # 2. Əsas urlpatterns siyahısını yaradırıq və dilə həssas olmayanları əlavə edirik
@@ -40,6 +37,7 @@ urlpatterns += i18n_urlpatterns
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    
 
 
 # 5. Xəta səhifələrini təyin edirik (string formatında daha stabildir)
