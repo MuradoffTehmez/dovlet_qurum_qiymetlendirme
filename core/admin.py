@@ -3,11 +3,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from simple_history.admin import SimpleHistoryAdmin
-from .models import (
-    Departament, Shobe, Sektor, Ishchi, 
-    SualKateqoriyasi, Sual, 
-    QiymetlendirmeDovru, Qiymetlendirme, Cavab
-)
+
+from .models import (Cavab, Departament, Ishchi, Qiymetlendirme,
+                     QiymetlendirmeDovru, Sektor, Shobe, Sual,
+                     SualKateqoriyasi)
+
 
 # Ishchi modeli üçün UserAdmin-i SimpleHistoryAdmin ilə birləşdiririk
 # Bu, həm standart istifadəçi panelini, həm də tarixçə funksionallığını təmin edir.
@@ -87,7 +87,8 @@ class CavabAdmin(SimpleHistoryAdmin):
     search_fields = ('qiymetlendirme__qiymetlendirilen__username',)
 
 
-from .models import InkishafPlani, Hedef # Yeni modelləri import edirik
+from .models import Hedef, InkishafPlani  # Yeni modelləri import edirik
+
 
 class HedefInline(admin.TabularInline):
     """Hədəfləri birbaşa İnkişaf Planının içində göstərmək üçün inline."""
