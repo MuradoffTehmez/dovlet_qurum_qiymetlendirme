@@ -2,6 +2,7 @@
 
 from django.utils.translation import get_language
 
+
 def language_switcher_context(request):
     """
     Bütün şablonlara dil dəyişdirmə menyusu üçün
