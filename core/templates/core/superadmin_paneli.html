@@ -1,39 +1,41 @@
 {% extends 'core/base.html' %}
 {% load i18n %}
 
-{% block title %}Superadmin Paneli{% endblock %}
+{% block title %}{% trans "Superadmin Paneli" %}{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Superadmin İdarəetmə Paneli</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold">{% trans "Superadmin Paneli" %}</h2>
     <a href="{% url 'yeni_dovr_yarat' %}" class="btn btn-lg btn-success">
-        + Yeni Dövr Başlat
+        <i class="bi bi-plus-circle me-1"></i> {% trans "Yeni Dövr Başlat" %}
     </a>
 </div>
 
 {% if not dovr %}
 <div class="alert alert-warning mt-4">
-    Sistemdə heç bir qiymətləndirmə dövrü tapılmadı. Zəhmət olmasa, yeni bir dövr başladın.
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    {% trans "Sistemdə heç bir qiymətləndirmə dövrü tapılmadı. Zəhmət olmasa, yeni bir dövr başladın." %}
 </div>
 {% else %}
-<h4 class="text-muted mb-4">Aktiv Dövr: {{ dovr.ad }}</h4>
+<h5 class="text-muted mb-4">{% trans "Aktiv Dövr:" %} <span class="fw-semibold">{{ dovr.ad }}</span></h5>
 
-<div class="row">
+<div class="row g-4">
     <div class="col-md-6 col-lg-4">
-        <div class="card text-center text-white bg-primary mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Tamamlanma Nisbəti</h5>
-                <p class="display-4">{{ tamamlama_faizi }}%</p>
-                <p class="card-text">{{ total_sayi }} tapşırıqdan {{ tamamlanmish_sayi }} tamamlanıb.</p>
+        <div class="card text-white bg-primary shadow-sm h-100">
+            <div class="card-body text-center">
+                <h6 class="card-title">{% trans "Tamamlanma Nisbəti" %}</h6>
+                <p class="display-5 fw-bold">{{ tamamlama_faizi }}%</p>
+                <p class="card-text">{{ total_sayi }} {% trans "tapşırıqdan" %} {{ tamamlanmish_sayi }} {% trans
+                    "tamamlanıb." %}</p>
             </div>
         </div>
     </div>
     <div class="col-md-6 col-lg-4">
-        <div class="card text-center text-white bg-info mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Departament Sayı</h5>
-                <p class="display-4">{{ departament_stat|length }}</p>
-                <p class="card-text">Prosesdə iştirak edən departamentlər</p>
+        <div class="card text-white bg-info shadow-sm h-100">
+            <div class="card-body text-center">
+                <h6 class="card-title">{% trans "Departament Sayı" %}</h6>
+                <p class="display-5 fw-bold">{{ departament_stat|length }}</p>
+                <p class="card-text">{% trans "Prosesdə iştirak edən departamentlər" %}</p>
             </div>
         </div>
     </div>
@@ -41,47 +43,51 @@
 
 <hr class="my-4">
 
-<h3 class="mt-4">Departamentlər üzrə Analiz</h3>
-<div class="row">
+<div class="row g-4">
     <div class="col-lg-8">
-        <h4>Departamentlər üzrə Ortalama Performans</h4>
-        <div class="card">
+        <div class="card shadow-sm h-100">
+            <div class="card-header fw-semibold">{% trans "Departamentlər üzrə Ortalama Performans" %}</div>
             <div class="card-body">
-                <canvas id="departmentChart"></canvas>
+                <canvas id="departmentChart" style="height: 300px;"></canvas>
             </div>
         </div>
     </div>
     <div class="col-lg-4">
-        <div class="d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Reytinq Cədvəli</h4>
-            <div>
-                <a href="{% url 'export_departments_excel' %}" class="btn btn-sm btn-outline-success">
-                    <i class="bi bi-file-earmark-excel"></i> Excel
-                </a>
-                <a href="{% url 'export_departments_pdf' %}" class="btn btn-sm btn-outline-danger ms-2">
-                    <i class="bi bi-file-earmark-pdf"></i> PDF
-                </a>
-            </div>  </div>
-        <table class="table table-hover">
-            <thead class="table-light">
-                <tr>
-                    <th>Departament</th>
-                    <th>Ortalama Bal</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for stat in departament_stat %}
-                <tr>
-                    <td>{{ stat.ad }}</td>
-                    <td><span class="badge bg-success fs-6">{{ stat.ortalama_bal }}</span></td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="2">Statistika üçün məlumat tapılmadı.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="card shadow-sm h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span class="fw-semibold">{% trans "Reytinq Cədvəli" %}</span>
+                <div>
+                    <a href="{% url 'export_departments_excel' %}" class="btn btn-sm btn-outline-success">
+                        <i class="bi bi-file-earmark-excel"></i>
+                    </a>
+                    <a href="{% url 'export_departments_pdf' %}" class="btn btn-sm btn-outline-danger ms-2">
+                        <i class="bi bi-file-earmark-pdf"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>{% trans "Departament" %}</th>
+                            <th>{% trans "Ortalama Bal" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stat in departament_stat %}
+                        <tr>
+                            <td>{{ stat.ad }}</td>
+                            <td><span class="badge bg-success fs-6">{{ stat.ortalama_bal }}</span></td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2" class="text-center">{% trans "Statistika üçün məlumat tapılmadı." %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 {% endif %}
@@ -92,20 +98,20 @@
         const departmentCtx = document.getElementById('departmentChart');
         if (departmentCtx) {
             new Chart(departmentCtx, {
-                type: 'bar', // Sütunlu qrafik (bar chart)
+                type: 'bar',
                 data: {
                     labels: {{ chart_labels| safe }
     },
         datasets: [{
-            label: 'Departamentlərin Ortalama Balı',
+            label: gettext('Departamentlərin Ortalama Balı'),
             data: {{ chart_data| safe }},
         backgroundColor: 'rgba(25, 135, 84, 0.6)',
         borderColor: 'rgba(25, 135, 84, 1)',
         borderWidth: 1
-                        }]
-                    },
+                    }]
+                },
         options: {
-        indexAxis: 'y', // Y oxunda etiketlər, X oxunda dəyərlər
+        indexAxis: 'y',
         responsive: true,
         maintainAspectRatio: false,
         scales: {
@@ -116,12 +122,12 @@
         },
         plugins: {
             legend: {
-                display: false // Dataset-in adını gizlədirik, çünki onsuz da aydındır
+                display: false
             }
         }
     }
-                });
-            }
-        });
+            });
+        }
+    });
 </script>
 {% endblock %}
