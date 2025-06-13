@@ -4,17 +4,9 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from simple_history.admin import SimpleHistoryAdmin
 
-from .models import (
-    Cavab,
-    Departament,
-    Ishchi,
-    Qiymetlendirme,
-    QiymetlendirmeDovru,
-    Sektor,
-    Shobe,
-    Sual,
-    SualKateqoriyasi,
-)
+from .models import (Cavab, Departament, Ishchi, Qiymetlendirme,
+                     QiymetlendirmeDovru, Sektor, Shobe, Sual,
+                     SualKateqoriyasi)
 
 
 # Ishchi modeli üçün UserAdmin-i SimpleHistoryAdmin ilə birləşdiririk
