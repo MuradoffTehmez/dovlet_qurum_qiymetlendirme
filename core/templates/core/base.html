@@ -10,32 +10,24 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         :root {
-            --main-bg-color: #f8f9fa;
-            --main-text-color: #212529;
-            --card-bg-color: #ffffff;
-            --card-border-color: rgba(0, 0, 0, 0.175);
-            --navbar-bg-color: #ffffff;
-            --footer-bg-color: #f8f9fa;
-            --btn-hover-color: #e2e6ea;
+            --bg: #f4f6f8;
+            --text: #1a1a1a;
+            --nav: #ffffff;
+            --card: #ffffff;
+            --border: #dee2e6;
         }
 
         html.dark-mode {
-            --main-bg-color: #121212;
-            --main-text-color: #e0e0e0;
-            --card-bg-color: #1e1e1e;
-            --card-border-color: rgba(255, 255, 255, 0.15);
-            --navbar-bg-color: #1a1a1a;
-            --footer-bg-color: #1a1a1a;
-            --btn-hover-color: #333;
-        }
-
-        * {
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            --bg: #121212;
+            --text: #e5e5e5;
+            --nav: #1e1e1e;
+            --card: #2a2a2a;
+            --border: #333;
         }
 
         body {
-            background-color: var(--main-bg-color);
-            color: var(--main-text-color);
+            background-color: var(--bg);
+            color: var(--text);
             font-family: 'Segoe UI', sans-serif;
             display: flex;
             flex-direction: column;
@@ -46,38 +38,28 @@
             flex-grow: 1;
         }
 
-        .card,
-        .list-group-item,
-        .modal-content {
-            background-color: var(--card-bg-color);
-            color: var(--main-text-color);
-            border-color: var(--card-border-color);
-        }
-
-        .bg-body-tertiary,
         .navbar,
-        .footer.bg-light {
-            background-color: var(--navbar-bg-color) !important;
-        }
-
-        .navbar {
-            border-bottom: 1px solid var(--card-border-color);
+        .footer {
+            background-color: var(--nav) !important;
+            border-bottom: 1px solid var(--border);
         }
 
         .footer {
-            border-top: 1px solid var(--card-border-color);
+            border-top: 1px solid var(--border);
         }
 
-        html.dark-mode .table {
-            color: var(--main-text-color);
+        .card,
+        .modal-content,
+        .list-group-item,
+        .dropdown-menu {
+            background-color: var(--card);
+            border-color: var(--border);
+            color: var(--text);
         }
 
-        html.dark-mode .table-striped tbody tr:nth-of-type(odd) {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        html.dark-mode .navbar-toggler-icon {
-            filter: invert(1);
+        .nav-item .btn {
+            margin-left: 0.25rem;
+            border-radius: 0.4rem;
         }
 
         .btn-outline-secondary:hover,
@@ -85,35 +67,12 @@
         .btn-outline-success:hover,
         .btn-outline-warning:hover,
         .btn-outline-danger:hover {
-            background-color: var(--btn-hover-color);
-            color: var(--main-text-color);
-            border-color: var(--card-border-color);
-        }
-
-        .dropdown-menu {
-            background-color: var(--card-bg-color);
-            border-color: var(--card-border-color);
-        }
-
-        .dropdown-item {
-            color: var(--main-text-color);
-        }
-
-        .dropdown-item:hover {
-            background-color: var(--btn-hover-color);
-            color: var(--main-text-color);
+            background-color: var(--border);
+            color: var(--text);
         }
 
         .navbar-text img {
-            border: 2px solid var(--card-border-color);
-        }
-
-        .alert {
-            transition: all 0.3s ease;
-        }
-
-        .btn-close {
-            filter: invert(0);
+            border: 2px solid var(--border);
         }
 
         html.dark-mode .btn-close {
@@ -132,9 +91,9 @@
         })();
     </script>
 
-    <nav class="navbar navbar-expand-lg bg-body-tertiary mb-4 shadow-sm">
+    <nav class="navbar navbar-expand-lg shadow-sm">
         <div class="container">
-            <a class="navbar-brand fw-semibold" href="/">{% trans "Qiymətləndirmə Sistemi" %}</a>
+            <a class="navbar-brand fw-bold" href="/">{% trans "Qiymətləndirmə Sistemi" %}</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -147,47 +106,45 @@
                         </button>
                     </li>
                     <li class="nav-item dropdown ms-2">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false"><i class="bi bi-translate"></i></a>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-translate"></i>
+                        </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             {% for lang in language_switcher_data %}
-                            <li {% if lang.is_current %}class="active" {% endif %}>
-                                <a class="dropdown-item"
+                            <li><a class="dropdown-item"
                                     href="/{{ lang.code }}{{ request.get_full_path|slice:'3:' }}">{{ lang.name }}</a>
                             </li>
                             {% endfor %}
                         </ul>
                     </li>
                     {% if user.is_authenticated %}
-                    <li class="nav-item"><span class="navbar-text ms-3 me-3 d-flex align-items-center">
-                            <img src="{{ user.profil_sekli.url }}" alt="Avatar" width="30" height="30"
-                                class="rounded-circle me-2">
-                            {% trans "Salam" %}, {{ user.get_full_name|default:user.username }}</span>
+                    <li class="nav-item d-flex align-items-center ms-3">
+                        <img src="{{ user.profil_sekli.url }}" class="rounded-circle me-2" width="30" height="30">
+                        <span>{% trans "Salam" %}, {{ user.get_full_name|default:user.username }}</span>
                     </li>
-                    <li class="nav-item me-2"><a href="{% url 'profil' %}" class="btn btn-outline-secondary btn-sm">{%
-                            trans "Profilim" %}</a></li>
-                    <li class="nav-item me-2"><a href="{% url 'hesabatim' %}" class="btn btn-outline-primary btn-sm">{%
-                            trans "Hesabatım" %}</a></li>
-                    <li class="nav-item me-2"><a href="{% url 'rehber_paneli' %}"
-                            class="btn btn-outline-success btn-sm">{% trans "Rəhbər Paneli" %}</a></li>
-                    <li class="nav-item me-2"><a href="{% url 'superadmin_paneli' %}"
-                            class="btn btn-outline-warning btn-sm">{% trans "Superadmin Paneli" %}</a></li>
+                    <li class="nav-item"><a href="{% url 'profil' %}" class="btn btn-outline-secondary btn-sm">{% trans
+                            "Profil" %}</a></li>
+                    <li class="nav-item"><a href="{% url 'hesabatim' %}" class="btn btn-outline-primary btn-sm">{% trans
+                            "Hesabat" %}</a></li>
+                    <li class="nav-item"><a href="{% url 'rehber_paneli' %}" class="btn btn-outline-success btn-sm">{%
+                            trans "Rəhbər" %}</a></li>
+                    <li class="nav-item"><a href="{% url 'superadmin_paneli' %}"
+                            class="btn btn-outline-warning btn-sm">{% trans "Superadmin" %}</a></li>
                     <li class="nav-item">
-                        <form action="{% url 'logout' %}" method="post" class="d-inline">
+                        <form method="post" action="{% url 'logout' %}">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-outline-danger btn-sm">{% trans "Çıxış" %}</button>
                         </form>
                     </li>
                     {% else %}
-                    <li class="nav-item ms-2"><a class="nav-link" href="{% url 'login' %}">{% trans "Daxil Ol" %}</a>
-                    </li>
+                    <li class="nav-item"><a href="{% url 'login' %}" class="nav-link">{% trans "Daxil Ol" %}</a></li>
                     {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
-    <main class="container my-4">
+    <main class="container py-4">
         {% if messages %}
         {% for message in messages %}
         <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
@@ -200,7 +157,7 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="footer mt-auto py-3 bg-light">
+    <footer class="footer mt-auto py-3">
         <div class="container text-center">
             <span class="text-muted">{% trans "Qiymətləndirmə Sistemi" %} &copy; {% now "Y" %}</span>
         </div>
@@ -210,29 +167,24 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const themeToggleBtn = document.getElementById('theme-toggle-btn');
-            const htmlElement = document.documentElement;
+            const html = document.documentElement;
 
             const updateIcon = () => {
-                if (htmlElement.classList.contains('dark-mode')) {
-                    themeToggleBtn.innerHTML = '<i class="bi bi-sun-fill"></i>';
-                } else {
-                    themeToggleBtn.innerHTML = '<i class="bi bi-moon-stars-fill"></i>';
-                }
+                themeToggleBtn.innerHTML = html.classList.contains('dark-mode')
+                    ? '<i class="bi bi-sun-fill"></i>'
+                    : '<i class="bi bi-moon-stars-fill"></i>';
             };
 
             themeToggleBtn.addEventListener('click', () => {
-                htmlElement.classList.toggle('dark-mode');
-                if (htmlElement.classList.contains('dark-mode')) {
-                    localStorage.setItem('theme', 'dark');
-                } else {
-                    localStorage.setItem('theme', 'light');
-                }
+                html.classList.toggle('dark-mode');
+                localStorage.setItem('theme', html.classList.contains('dark-mode') ? 'dark' : 'light');
                 updateIcon();
             });
 
             updateIcon();
         });
     </script>
+
     {% block extra_js %}{% endblock %}
 </body>
 
