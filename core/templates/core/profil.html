@@ -5,80 +5,80 @@
 {% block title %}{% trans "Profilim" %}{% endblock %}
 
 {% block content %}
-<h2>{% trans "Profilim" %}</h2>
-<p class="text-muted">{% trans "Burada şəxsi məlumatlarınızı redaktə edə və şifrənizi dəyişə bilərsiniz." %}</p>
-<hr>
+<div class="container">
+    <h2 class="mb-2">{% trans "Profilim" %}</h2>
+    <p class="text-muted mb-4">{% trans "Burada şəxsi məlumatlarınızı redaktə edə və şifrənizi dəyişə bilərsiniz." %}
+    </p>
 
-<div class="row">
-    <div class="col-lg-4">
-        <div class="card shadow-sm mb-4">
-            <div class="card-body text-center">
-                <img src="{{ user.profil_sekli.url }}" alt="{% trans 'Profil Şəkli' %}"
-                    class="rounded-circle img-fluid mb-3" style="width: 150px; height: 150px; object-fit: cover;">
-                <h5 class="my-3">{{ user.get_full_name }}</h5>
-                <p class="text-muted mb-1">{{ user.vezife }}</p>
-                <p class="text-muted mb-4">{{ user.sektor }}</p>
-            </div>
-        </div>
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between">
-                        <strong>{% trans "İstifadəçi adı:" %}</strong>
-                        <span>{{ user.username }}</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <strong>{% trans "E-poçt:" %}</strong>
-                        <span>{{ user.email }}</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <strong>{% trans "Əlaqə Nömrəsi:" %}</strong>
-                        <span>{{ user.elaqe_nomresi|default:"-" }}</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <strong>{% trans "Doğum Tarixi:" %}</strong>
-                        <span>{{ user.dogum_tarixi|date:"d-m-Y"|default:"-" }}</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between">
-                        <strong>{% trans "Qeydiyyat Tarixi:" %}</strong>
-                        <span>{{ user.date_joined|date:"d-m-Y" }}</span>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-8">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <ul class="nav nav-tabs" id="myTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="info-tab" data-bs-toggle="tab"
-                            data-bs-target="#info-tab-pane" type="button" role="tab">{% trans "Məlumatları Dəyiş"
-                            %}</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="password-tab" data-bs-toggle="tab"
-                            data-bs-target="#password-tab-pane" type="button" role="tab">{% trans "Şifrəni Dəyiş"
-                            %}</button>
-                    </li>
-                </ul>
-                <div class="tab-content pt-4" id="myTabContent">
-                    <div class="tab-pane fade show active" id="info-tab-pane" role="tabpanel">
-                        <form method="post" enctype="multipart/form-data">
-                            {% csrf_token %}
-                            {{ info_form|crispy }}
-                            <div class="d-grid">
-                                <button type="submit" name="update_info" class="btn btn-primary mt-3">{% trans "Yadda
-                                    Saxla" %}</button>
-                            </div>
-                        </form>
+    <div class="row g-4">
+        <!-- Profil kartı -->
+        <div class="col-lg-4">
+            <div class="card text-center shadow-sm h-100">
+                <div class="card-body d-flex flex-column align-items-center">
+                    <div class="position-relative">
+                        <img src="{{ user.profil_sekli.url }}" alt="{% trans 'Profil Şəkli' %}"
+                            class="rounded-circle shadow-sm mb-3 border"
+                            style="width: 140px; height: 140px; object-fit: cover; transition: 0.3s;">
                     </div>
-                    <div class="tab-pane fade" id="password-tab-pane" role="tabpanel">
-                        <form method="post">
-                            {% csrf_token %}
-                            {% crispy password_form %}
-                        </form>
+                    <h5 class="fw-semibold mb-0">{{ user.get_full_name }}</h5>
+                    <small class="text-muted">{{ user.vezife }}</small>
+                    <small class="text-muted">{{ user.sektor }}</small>
+                </div>
+                <ul class="list-group list-group-flush text-start">
+                    <li class="list-group-item"><strong>{% trans "İstifadəçi adı:" %}</strong> <span
+                            class="float-end">{{ user.username }}</span></li>
+                    <li class="list-group-item"><strong>{% trans "E-poçt:" %}</strong> <span class="float-end">{{
+                            user.email }}</span></li>
+                    <li class="list-group-item"><strong>{% trans "Əlaqə Nömrəsi:" %}</strong> <span class="float-end">{{
+                            user.elaqe_nomresi|default:"-" }}</span></li>
+                    <li class="list-group-item"><strong>{% trans "Doğum Tarixi:" %}</strong> <span class="float-end">{{
+                            user.dogum_tarixi|date:"d-m-Y"|default:"-" }}</span></li>
+                    <li class="list-group-item"><strong>{% trans "Qeydiyyat Tarixi:" %}</strong> <span
+                            class="float-end">{{ user.date_joined|date:"d-m-Y" }}</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tab Məlumatları -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <ul class="nav nav-pills mb-3" id="profileTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="info-tab" data-bs-toggle="pill"
+                                data-bs-target="#info-pane" type="button" role="tab">
+                                {% trans "Məlumatları Dəyiş" %}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="password-tab" data-bs-toggle="pill"
+                                data-bs-target="#password-pane" type="button" role="tab">
+                                {% trans "Şifrəni Dəyiş" %}
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content pt-2" id="profileTabContent">
+                        <!-- Info form -->
+                        <div class="tab-pane fade show active" id="info-pane" role="tabpanel">
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                {{ info_form|crispy }}
+                                <div class="d-grid">
+                                    <button type="submit" name="update_info" class="btn btn-primary mt-3">
+                                        {% trans "Yadda Saxla" %}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Password form -->
+                        <div class="tab-pane fade" id="password-pane" role="tabpanel">
+                            <form method="post">
+                                {% csrf_token %}
+                                {% crispy password_form %}
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
