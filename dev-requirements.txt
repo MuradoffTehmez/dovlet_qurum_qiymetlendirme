@@ -1,0 +1,22 @@
+# Konsol və repl alətləri
+click>=8.2.1
+click-didyoumean>=0.3.1
+click-plugins>=1.1.1
+click-repl>=0.3.0
+prompt_toolkit>=3.0.51
+colorama>=0.4.6
+wcwidth>=0.2.13
+
+# Celery-nin daxili asinxron komponentləri
+billiard>=4.2.1
+kombu>=5.5.4
+amqp>=5.3.1
+vine>=5.1.0
+
+# C kitabxanaları
+cffi>=1.17.1
+pycparser>=2.22
+
+# Paket idarəsi
+packaging>=25.0
+six>=1.17.0

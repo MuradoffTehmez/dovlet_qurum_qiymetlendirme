@@ -8,8 +8,8 @@ from django.forms import inlineformset_factory
 # --- Xarici Paketlər ---
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column, Submit
-from captcha.fields import ReCaptchaField
-from captcha.widgets import ReCaptchaV2Checkbox
+# from captcha.fields import ReCaptchaField
+# from captcha.widgets import ReCaptchaV2Checkbox
 
 
 # --- Lokal Modellər ---
