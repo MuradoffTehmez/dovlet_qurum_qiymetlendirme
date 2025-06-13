@@ -1,8 +1,11 @@
 # core/utils.py
 
 import json
+
 from django.db.models import Avg
-from .models import QiymetlendirmeDovru, Cavab, SualKateqoriyasi
+
+from .models import Cavab, QiymetlendirmeDovru, SualKateqoriyasi
+
 
 def get_performance_trend(ishchi):
     """İşçinin bütün dövrlər üzrə performans trendini hesablayır."""
