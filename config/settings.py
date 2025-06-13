@@ -1,9 +1,9 @@
-from pathlib import Path
-import os
-from dotenv import load_dotenv
-from django.utils.translation import gettext_lazy as _
 import datetime
+import os
+from pathlib import Path
 
+from django.utils.translation import gettext_lazy as _
+from dotenv import load_dotenv
 
 # ===================================================================
 # ƏSAS QURĞULAR VƏ YOLLAR (BASE CONFIGURATIONS & PATHS)
