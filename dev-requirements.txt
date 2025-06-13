@@ -17,6 +17,6 @@ vine>=5.1.0
 cffi>=1.17.1
 pycparser>=2.22
 
-# Paket idarəsi
+#
 packaging>=25.0
 six>=1.17.0
