@@ -1,84 +1,66 @@
-<!doctype html>
-<html lang="az">
+{% extends 'core/base.html' %}
+{% load i18n %}
 
-<head>
-    <meta charset="utf-8">
-    <title>Departamentlər üzrə Hesabat</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+{% block title %}{% trans "Qiymətləndirmə Formu" %}{% endblock %}
 
-        body {
-            font-family: 'Roboto', sans-serif;
-            line-height: 1.5;
-            color: #333;
-        }
-
-        h2 {
-            color: #2c3e50;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 5px;
-        }
-
-        p {
-            font-size: 14px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            font-size: 12px;
-        }
-
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 10px;
-            color: #777;
-        }
-    </style>
-</head>
-
-<body>
-    <h2>Departamentlər üzrə Ümumi Hesabat</h2>
-    <p><strong>Qiymətləndirmə Dövrü:</strong> {{ dovr.ad }}</p>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Departament Adı</th>
-                <th>Ortalama Bal</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for stat in departament_stat %}
-            <tr>
-                <td>{{ stat.ad }}</td>
-                <td><strong>{{ stat.ortalama_bal }}</strong></td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="2">Məlumat tapılmadı.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    <div class="footer">
-        Hesabat {% now "d-m-Y H:i" %} tarixində generasiya edilib.
+{% block content %}
+<div class="container py-4 animate__animated animate__fadeIn">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary display-5">{% trans "Qiymətləndirmə Formu" %}</h2>
+        <p class="text-muted fs-5">{% trans "Qiymətləndirilən şəxs:" %} <strong>{{
+                qiymetlendirme.qiymetlendirilen.get_full_name }}</strong></p>
+        <p class="text-muted fs-5">{% trans "Dövr:" %} <strong>{{ qiymetlendirme.dovr.ad }}</strong></p>
     </div>
-</body>
 
-</html>
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+
+        {% for sual in suallar %}
+        <div class="card border-0 shadow-lg mb-4 animate__animated animate__fadeInUp animate__faster">
+            <div class="card-header bg-gradient-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ forloop.counter }}. {{ sual.metn }}</h5>
+                    {% if sual.kateqoriya %}<span class="badge bg-dark">{{ sual.kateqoriya.ad }}</span>{% endif %}
+                </div>
+            </div>
+            <div class="card-body bg-light">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-dark">{% trans "Xal (1-dən 10-a qədər):" %}</label>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for i in "12345678910"|make_list %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="xal_{{ sual.id }}"
+                                id="xal_{{ sual.id }}_{{ forloop.counter }}" value="{{ forloop.counter }}" required>
+                            <label class="form-check-label" for="xal_{{ sual.id }}_{{ forloop.counter }}">{{
+                                forloop.counter }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="rey_{{ sual.id }}" class="form-label fw-semibold text-dark">{% trans "Əlavə Rəy (istəyə
+                        bağlı):" %}</label>
+                    <textarea class="form-control" id="rey_{{ sual.id }}" name="rey_{{ sual.id }}" rows="3"
+                        placeholder="{% trans 'Əlavə fikirlərinizi yaza bilərsiniz...' %}"></textarea>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-success btn-lg animate__animated animate__fadeInUp animate__fast">
+                {% trans "Qiymətləndirməni Təsdiqlə" %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #007bff, #6610f2);
+    }
+</style>
+{% endblock %}
