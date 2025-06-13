@@ -4,47 +4,40 @@
 import json
 import random
 
-# --- Django core və HTTP modulları ---
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
-from django.urls import reverse
-from django.template.loader import render_to_string
-from django.core.exceptions import PermissionDenied
-from django.core.mail import EmailMessage
-from django.db.models import Q, Avg
 from django.conf import settings
-
 # --- Django auth modulları ---
 from django.contrib import messages
-from django.contrib.auth import login, authenticate, update_session_auth_hash
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate, login, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-
-# --- Django util modulları ---
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.auth.views import LoginView
+from django.core.exceptions import PermissionDenied
+from django.core.mail import EmailMessage
+from django.db.models import Avg, Q
+from django.http import HttpResponse
+# --- Django core və HTTP modulları ---
+from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils.encoding import force_bytes, force_str
+# --- Django util modulları ---
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.generic import TemplateView
-
 # --- Xarici paketlər ---
 from openpyxl import Workbook
-from openpyxl.styles import Font, Alignment
+from openpyxl.styles import Alignment, Font
 from weasyprint import HTML
 
-# --- Lokal Layihə Modulları ---
-from .models import (
-    Ishchi, Departament, Sektor, Shobe, SualKateqoriyasi,
-    QiymetlendirmeDovru, Sual, Qiymetlendirme, Cavab,
-    InkishafPlani, Hedef
-)
-from .forms import (
-    IshchiCreationForm, IshchiUpdateForm, IshchiPasswordChangeForm,
-    YeniDovrForm, HedefFormSet
-)
 from .decorators import rehber_required, superadmin_required
-from .utils import get_performance_trend, get_detailed_report_context
+from .forms import (HedefFormSet, IshchiCreationForm, IshchiPasswordChangeForm,
+                    IshchiUpdateForm, YeniDovrForm)
+# --- Lokal Layihə Modulları ---
+from .models import (Cavab, Departament, Hedef, InkishafPlani, Ishchi,
+                     Qiymetlendirme, QiymetlendirmeDovru, Sektor, Shobe, Sual,
+                     SualKateqoriyasi)
 from .tokens import account_activation_token
+from .utils import get_detailed_report_context, get_performance_trend
 
 # --- ÜMUMİ VƏ QEYDİYYAT GÖRÜNÜŞLƏRİ ---
 
