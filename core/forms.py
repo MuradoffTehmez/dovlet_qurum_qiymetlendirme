@@ -1,22 +1,22 @@
 # core/forms.py
 
 # --- Django-nun Daxili Modulları ---
-from django import forms
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm, PasswordChangeForm
-from django.forms import inlineformset_factory
-
 # --- Xarici Paketlər ---
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Row, Column, Submit
+from crispy_forms.layout import Column, Layout, Row, Submit
+from django import forms
+from django.contrib.auth.forms import (PasswordChangeForm, UserChangeForm,
+                                       UserCreationForm)
+from django.forms import inlineformset_factory
+
+# --- Lokal Modellər ---
+from .models import (Departament, Hedef, InkishafPlani, Ishchi,
+                     QiymetlendirmeDovru, Sektor)
+
 # from captcha.fields import ReCaptchaField
 # from captcha.widgets import ReCaptchaV2Checkbox
 
 
-# --- Lokal Modellər ---
-from .models import (
-    QiymetlendirmeDovru, Departament, Ishchi, 
-    Hedef, InkishafPlani, Sektor
-)
 
 
 # --- 1. Qeydiyyat və Profil Formaları ---
