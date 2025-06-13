@@ -9,10 +9,13 @@ class EmailOrUsernameBackend(ModelBackend):
     İstifadəçiyə həm istifadəçi adı, həm də e-poçt ünvanı ilə
     sistemə daxil olmaq imkanı verən xüsusi autentifikasiya arxa tərəfi.
     """
+
     def authenticate(self, request, username=None, password=None, **kwargs):
         try:
-            
-            user = Ishchi.objects.get(Q(username__iexact=username) | Q(email__iexact=username))
+
+            user = Ishchi.objects.get(
+                Q(username__iexact=username) | Q(email__iexact=username)
+            )
         except Ishchi.DoesNotExist:
 
             return None

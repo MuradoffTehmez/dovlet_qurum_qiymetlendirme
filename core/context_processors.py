@@ -9,20 +9,20 @@ def language_switcher_context(request):
     hazır məlumat ötürən kontekst prosessoru.
     """
     current_lang_code = get_language()
-    
+
     languages = [
-        {'code': 'az', 'name': 'Azərbaycan'},
-        {'code': 'en', 'name': 'English'},
+        {"code": "az", "name": "Azərbaycan"},
+        {"code": "en", "name": "English"},
     ]
-    
+
     processed_languages = []
     for lang in languages:
-        processed_languages.append({
-            'code': lang['code'],
-            'name': lang['name'],
-            'is_current': lang['code'] == current_lang_code
-        })
+        processed_languages.append(
+            {
+                "code": lang["code"],
+                "name": lang["name"],
+                "is_current": lang["code"] == current_lang_code,
+            }
+        )
 
-    return {
-        'language_switcher_data': processed_languages
-    }
+    return {"language_switcher_data": processed_languages}

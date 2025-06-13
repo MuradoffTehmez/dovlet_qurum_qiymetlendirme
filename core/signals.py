@@ -18,8 +18,8 @@ def send_notification_on_new_assignment(sender, instance, created, **kwargs):
         qiymetlendiren = instance.qiymetlendiren
         qiymetlendirilen = instance.qiymetlendirilen
 
-        subject = 'Yeni Qiymətləndirmə Tapşırığı'
-        
+        subject = "Yeni Qiymətləndirmə Tapşırığı"
+
         message = f"""
 Salam, {qiymetlendiren.get_full_name()},
 
@@ -35,7 +35,7 @@ URL: http://127.0.0.1:8000/
 Hörmətlə,
 Qiymətləndirmə Sistemi
 """
-        
+
         # E-poçtu göndəririk
         if qiymetlendiren.email:
             try:
