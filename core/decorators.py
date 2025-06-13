@@ -2,6 +2,7 @@
 
 from django.core.exceptions import PermissionDenied
 
+
 def role_required(allowed_roles=[]):
     """İstifadəçinin rolunun icazə verilən rollardan biri olmasını yoxlayan dekorator."""
     def decorator(view_func):
