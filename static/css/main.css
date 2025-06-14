@@ -1,0 +1,101 @@
+
+        :root {
+            --main-bg-color: #f8f9fa;
+            --main-text-color: #212529;
+            --card-bg-color: #ffffff;
+            --card-border-color: rgba(0, 0, 0, 0.175);
+            --navbar-bg-color: #ffffff;
+            --footer-bg-color: #f8f9fa;
+            --link-color: #0d6efd;
+            --btn-text-color: #212529;
+        }
+
+        html.dark-mode {
+            --main-bg-color: #212529;
+            --main-text-color: #dee2e6;
+            --card-bg-color: #2b3035;
+            --card-border-color: rgba(255, 255, 255, 0.125);
+            --navbar-bg-color: #2b3035;
+            --footer-bg-color: #2b3035;
+            --link-color: #66b2ff;
+            --btn-text-color: #ffffff;
+        }
+
+        body {
+            background-color: var(--main-bg-color);
+            color: var(--main-text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        main.container {
+            flex-grow: 1;
+        }
+
+        .card,
+        .list-group-item,
+        .modal-content {
+            background-color: var(--card-bg-color);
+            color: var(--main-text-color);
+            border-color: var(--card-border-color);
+        }
+
+        .navbar {
+            background-color: var(--navbar-bg-color) !important;
+            transition: background-color 0.3s ease;
+        }
+
+        .footer.bg-light {
+            background-color: var(--footer-bg-color) !important;
+        }
+
+        html.dark-mode .table {
+            color: var(--main-text-color);
+        }
+
+        html.dark-mode .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        html.dark-mode .navbar-toggler-icon {
+            filter: invert(1);
+        }
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1030;
+        }
+
+        .dropdown-menu-end {
+            min-width: 120px;
+        }
+
+        .btn-toggle-mode {
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-secondary,
+        .btn-outline-primary,
+        .btn-outline-success,
+        .btn-outline-warning,
+        .btn-outline-danger {
+            color: var(--btn-text-color);
+            border-color: var(--card-border-color);
+        }
+
+        .btn-outline-secondary:hover,
+        .btn-outline-primary:hover,
+        .btn-outline-success:hover,
+        .btn-outline-warning:hover,
+        .btn-outline-danger:hover {
+            opacity: 0.9;
+        }
+
+        a,
+        .nav-link,
+        .dropdown-item {
+            color: var(--link-color);
+        }
