@@ -17,490 +17,491 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
 #: .\config\settings.py:111
 msgid "Azərbaycan"
-msgstr ""
+msgstr "Azerbaijani"
 
 #: .\config\settings.py:112
 msgid "English"
-msgstr ""
+msgstr "English"
 
 #: .\core\templates\core\base.html:8 .\core\templates\core\base.html:124
 #: .\core\templates\core\base.html:189
 msgid "Qiymətləndirmə Sistemi"
-msgstr ""
+msgstr "Evaluation System"
 
 #: .\core\templates\core\base.html:153
 msgid "Salam"
-msgstr ""
+msgstr "Hello"
 
 #: .\core\templates\core\base.html:163
 msgid "Superadmin"
-msgstr ""
+msgstr "Superadmin"
 
 #: .\core\templates\core\base.html:166
 msgid "Çıxış"
-msgstr ""
+msgstr "Logout"
 
 #: .\core\templates\core\base.html:169 .\templates\registration\login.html:47
 msgid "Daxil Ol"
-msgstr ""
+msgstr "Login"
 
 #: .\core\templates\core\dashboard.html:4
 msgid "Ana Səhifə"
-msgstr ""
+msgstr "Home"
 
 #: .\core\templates\core\dashboard.html:10
 msgid "Aktiv İnkişaf Planınız"
-msgstr ""
+msgstr "Your Active Development Plan"
 
 #: .\core\templates\core\dashboard.html:11
 msgid "Sizin üçün"
-msgstr ""
+msgstr "For You"
 
 #: .\core\templates\core\dashboard.html:14
 #: .\core\templates\core\hesabat.html:17
 msgid "Plana Bax"
-msgstr ""
+msgstr "View Plan"
 
 #: .\core\templates\core\dashboard.html:17
 msgid "Qiymətləndirmə Tapşırıqlarınız"
-msgstr ""
+msgstr "Your Evaluation Tasks"
 
 #: .\core\templates\core\dashboard.html:21
 msgid "Aşağıdakı şəxslər üçün qiymətləndirməni tamamlamalısınız:"
-msgstr ""
+msgstr "You must complete evaluations for the following people:"
 
 #: .\core\templates\core\dashboard.html:27
 msgid "Qiymətləndirmə dövrü"
-msgstr ""
+msgstr "Evaluation Period"
 
 #: .\core\templates\core\dashboard.html:33
 msgid "Hal-hazırda tamamlanmalı qiymətləndirmə tapşırığınız yoxdur."
-msgstr ""
+msgstr "You currently have no evaluation tasks to complete."
 
 #: .\core\templates\core\hesabat.html:4 .\core\templates\core\hesabat.html:10
 #: .\core\templates\core\hesabat_pdf.html:8
 #: .\core\templates\core\hesabat_pdf.html:120
 msgid "Qiymətləndirmə Hesabatı"
-msgstr ""
+msgstr "Evaluation Report"
 
 #: .\core\templates\core\hesabat.html:22
 msgid "İnkişaf Planı Yarat"
-msgstr ""
+msgstr "Create Development Plan"
 
 #: .\core\templates\core\hesabat.html:28
 msgid "PDF Yüklə"
-msgstr ""
+msgstr "Download PDF"
 
 #: .\core\templates\core\hesabat.html:37
 msgid "Hesabat Dövrünü Seçin:"
-msgstr ""
+msgstr "Select Report Period:"
 
 #: .\core\templates\core\hesabat.html:45
 msgid "Göstər"
-msgstr ""
+msgstr "Show"
 
 #: .\core\templates\core\hesabat.html:55
 msgid "Dövrü üçün Detallı Analiz"
-msgstr ""
+msgstr "Detailed Analysis for the Period"
 
 #: .\core\templates\core\hesabat.html:56
 #: .\core\templates\core\hesabat_pdf.html:122
 #: .\core\templates\core\plan_detail.html:21
 #: .\core\templates\core\plan_form.html:12
 msgid "İşçi:"
-msgstr ""
+msgstr "Employee:"
 
 #: .\core\templates\core\hesabat.html:60
 msgid "Kompetensiyalar üzrə Nəticələr"
-msgstr ""
+msgstr "Results by Competencies"
 
 #: .\core\templates\core\hesabat.html:66
 #: .\core\templates\core\hesabat_pdf.html:127
 msgid "Ümumi Göstəricilər"
-msgstr ""
+msgstr "General Indicators"
 
 #: .\core\templates\core\hesabat.html:70
 #: .\core\templates\core\hesabat_pdf.html:131
 msgid "Kompetensiya (Kateqoriya)"
-msgstr ""
+msgstr "Competency (Category)"
 
 #: .\core\templates\core\hesabat.html:71
 #: .\core\templates\core\hesabat_pdf.html:132
 msgid "Ortalama Xal (10 üzərindən)"
-msgstr ""
+msgstr "Average Score (Out of 10)"
 
 #: .\core\templates\core\hesabat.html:82
 msgid "Bu dövr üçün göstərici tapılmadı."
-msgstr ""
+msgstr "No indicators found for this period."
 
 #: .\core\templates\core\hesabat.html:91
 msgid "Dövrü üçün Yazılı Rəylər"
-msgstr ""
+msgstr "Written Feedback for the Period"
 
 #: .\core\templates\core\hesabat.html:99
 msgid "Bu dövr üçün yazılı rəy qeyd edilməyib."
-msgstr ""
+msgstr "No written feedback has been recorded for this period."
 
 #: .\core\templates\core\hesabat.html:104
 msgid "Performans Tarixçəsi (Ümumi Ortalama Bal)"
-msgstr ""
+msgstr "Performance History (Overall Average Score)"
 
 #: .\core\templates\core\hesabat.html:126
 msgid "Ortalama Xal"
-msgstr ""
+msgstr "Average Score"
 
 #: .\core\templates\core\hesabat.html:155
 msgid "Ümumi Ortalama Bal"
-msgstr ""
+msgstr "Overall Average Score"
 
 #: .\core\templates\core\hesabat_pdf.html:123
 msgid "Vəzifə:"
-msgstr ""
+msgstr "Position:"
 
 #: .\core\templates\core\hesabat_pdf.html:124
 #: .\core\templates\core\qiymetlendirme_form.html:12
 #: .\core\templates\reports\summary_departments_pdf.html:12
 msgid "Dövr:"
-msgstr ""
+msgstr "Period:"
 
 #: .\core\templates\core\hesabat_pdf.html:145
 msgid "Anonim Yazılı Rəylər"
-msgstr ""
+msgstr "Anonymous Written Feedback"
 
 #: .\core\templates\core\hesabat_pdf.html:153
 msgid "Yazılı rəy qeyd edilməyib."
-msgstr ""
+msgstr "No written feedback has been recorded."
 
 #: .\core\templates\core\plan_detail.html:5
 #: .\core\templates\core\plan_detail.html:10
 #: .\core\templates\core\plan_form.html:5
 #: .\core\templates\core\plan_form.html:10
 msgid "Fərdi İnkişaf Planı"
-msgstr ""
+msgstr "Individual Development Plan"
 
 #: .\core\templates\core\plan_detail.html:18
 msgid "Plan Məlumatları"
-msgstr ""
+msgstr "Plan Information"
 
 #: .\core\templates\core\plan_detail.html:22
 #: .\core\templates\core\plan_form.html:13
 msgid "Qiymətləndirmə Dövrü:"
-msgstr ""
+msgstr "Evaluation Period:"
 
 #: .\core\templates\core\plan_detail.html:35
 #: .\core\templates\core\plan_form.html:26
 msgid "Hədəflər"
-msgstr ""
+msgstr "Goals"
 
 #: .\core\templates\core\profil.html:5 .\core\templates\core\profil.html:9
 msgid "Profilim"
-msgstr ""
+msgstr "My Profile"
 
 #: .\core\templates\core\profil.html:10
 msgid ""
 "Burada şəxsi məlumatlarınızı redaktə edə və şifrənizi dəyişə bilərsiniz."
-msgstr ""
+msgstr "Here you can edit your personal information and change your password."
 
 #: .\core\templates\core\profil.html:19
 msgid "Profil Şəkli"
-msgstr ""
+msgstr "Profile Picture"
 
 #: .\core\templates\core\profil.html:28
 msgid "İstifadəçi adı:"
-msgstr ""
+msgstr "Username:"
 
 #: .\core\templates\core\profil.html:30
 msgid "E-poçt:"
-msgstr ""
+msgstr "Email:"
 
 #: .\core\templates\core\profil.html:32
 msgid "Əlaqə Nömrəsi:"
-msgstr ""
+msgstr "Phone Number:"
 
 #: .\core\templates\core\profil.html:34
 msgid "Doğum Tarixi:"
-msgstr ""
+msgstr "Date of Birth:"
 
 #: .\core\templates\core\profil.html:36
 msgid "Qeydiyyat Tarixi:"
-msgstr ""
+msgstr "Registration Date:"
 
 #: .\core\templates\core\profil.html:50
 msgid "Məlumatları Dəyiş"
-msgstr ""
+msgstr "Edit Information"
 
 #: .\core\templates\core\profil.html:56
 msgid "Şifrəni Dəyiş"
-msgstr ""
+msgstr "Change Password"
 
 #: .\core\templates\core\profil.html:69
 msgid "Yadda Saxla"
-msgstr ""
+msgstr "Save"
 
 #: .\core\templates\core\qiymetlendirme_form.html:4
 #: .\core\templates\core\qiymetlendirme_form.html:9
 #: .\core\templates\reports\summary_departments_pdf.html:4
 #: .\core\templates\reports\summary_departments_pdf.html:9
 msgid "Qiymətləndirmə Formu"
-msgstr ""
+msgstr "Evaluation Form"
 
 #: .\core\templates\core\qiymetlendirme_form.html:10
 #: .\core\templates\reports\summary_departments_pdf.html:10
 msgid "Qiymətləndirilən şəxs:"
-msgstr ""
+msgstr "Person Being Evaluated:"
 
 #: .\core\templates\core\qiymetlendirme_form.html:28
 #: .\core\templates\reports\summary_departments_pdf.html:28
 msgid "Xal (1-dən 10-a qədər):"
-msgstr ""
+msgstr "Score (1 to 10):"
 
 #: .\core\templates\core\qiymetlendirme_form.html:44
 #: .\core\templates\reports\summary_departments_pdf.html:44
 msgid "Əlavə fikirlərinizi yaza bilərsiniz..."
-msgstr ""
+msgstr "You can write your additional thoughts here..."
 
 #: .\core\templates\core\qiymetlendirme_form.html:52
 #: .\core\templates\reports\summary_departments_pdf.html:52
 msgid "Qiymətləndirməni Təsdiqlə"
-msgstr ""
+msgstr "Confirm Evaluation"
 
 #: .\core\templates\core\rehber_paneli.html:4
 #: .\core\templates\core\rehber_paneli.html:7
 msgid "Rəhbər Paneli"
-msgstr ""
+msgstr "Manager Panel"
 
 #: .\core\templates\core\rehber_paneli.html:13
 msgid "Komandanın Kompetensiyalar üzrə Performansı"
-msgstr ""
+msgstr "Team Performance by Competencies"
 
 #: .\core\templates\core\rehber_paneli.html:22
 msgid "Komanda Üzvləri"
-msgstr ""
+msgstr "Team Members"
 
 #: .\core\templates\core\rehber_paneli.html:23
 msgid "Sizin tabeliyinizdə olan işçilərin siyahısı:"
-msgstr ""
+msgstr "List of employees under your supervision:"
 
 #: .\core\templates\core\rehber_paneli.html:34
 msgid "Hesabata Bax"
-msgstr ""
+msgstr "View Report"
 
 #: .\core\templates\core\rehber_paneli.html:40
 msgid "Sizin tabeliyinizdə heç bir işçi tapılmadı."
-msgstr ""
+msgstr "No employees found under your supervision."
 
 #: .\core\templates\core\rehber_paneli.html:58
 msgid "Komandanın Ortalama Balı"
-msgstr ""
+msgstr "Team Average Score"
 
 #: .\core\templates\core\superadmin_paneli.html:4
 #: .\core\templates\core\superadmin_paneli.html:8
 msgid "Superadmin Paneli"
-msgstr ""
+msgstr "Superadmin Panel"
 
 #: .\core\templates\core\superadmin_paneli.html:10
 msgid "Yeni Dövr Başlat"
-msgstr ""
+msgstr "Start New Period"
 
 #: .\core\templates\core\superadmin_paneli.html:17
 msgid ""
 "Sistemdə heç bir qiymətləndirmə dövrü tapılmadı. Zəhmət olmasa, yeni bir "
 "dövr başladın."
-msgstr ""
+msgstr "No evaluation period found in the system. Please start a new period."
 
 #: .\core\templates\core\superadmin_paneli.html:20
 msgid "Aktiv Dövr:"
-msgstr ""
+msgstr "Active Period:"
 
 #: .\core\templates\core\superadmin_paneli.html:26
 msgid "Tamamlanma Nisbəti"
-msgstr ""
+msgstr "Completion Rate"
 
 #: .\core\templates\core\superadmin_paneli.html:28
 msgid "tapşırıqdan"
-msgstr ""
+msgstr "out of"
 
 #: .\core\templates\core\superadmin_paneli.html:36
 msgid "Departament Sayı"
-msgstr ""
+msgstr "Department Count"
 
 #: .\core\templates\core\superadmin_paneli.html:38
 msgid "Prosesdə iştirak edən departamentlər"
-msgstr ""
+msgstr "Departments participating in the process"
 
 #: .\core\templates\core\superadmin_paneli.html:49
 msgid "Departamentlər üzrə Ortalama Performans"
-msgstr ""
+msgstr "Average Performance by Departments"
 
 #: .\core\templates\core\superadmin_paneli.html:58
 msgid "Reytinq Cədvəli"
-msgstr ""
+msgstr "Rating Table"
 
 #: .\core\templates\core\superadmin_paneli.html:72
 msgid "Departament"
-msgstr ""
+msgstr "Department"
 
 #: .\core\templates\core\superadmin_paneli.html:73
 msgid "Ortalama Bal"
-msgstr ""
+msgstr "Average Score"
 
 #: .\core\templates\core\superadmin_paneli.html:84
 msgid "Statistika üçün məlumat tapılmadı."
-msgstr ""
+msgstr "No data found for statistics."
 
 #: .\core\templates\core\yeni_dovr_form.html:5
 #: .\core\templates\core\yeni_dovr_form.html:9
 msgid "Yeni Qiymətləndirmə Dövrü Yarat"
-msgstr ""
+msgstr "Create New Evaluation Period"
 
 #: .\templates\400.html:4
 msgid "Xəta"
-msgstr ""
+msgstr "Error"
 
 #: .\templates\400.html:7
 msgid "Səhv Sorğu"
-msgstr ""
+msgstr "Bad Request"
 
 #: .\templates\400.html:8
 msgid "Sorğunuz düzgün deyil və emal edilə bilmədi."
-msgstr ""
+msgstr "Your request is invalid and could not be processed."
 
 #: .\templates\401.html:4
 msgid "Giriş Tələb Olunur"
-msgstr ""
+msgstr "Login Required"
 
 #: .\templates\401.html:7
 msgid "İcazə Verilmədi"
-msgstr ""
+msgstr "Unauthorized"
 
 #: .\templates\401.html:8
 msgid ""
 "Bu səhifəyə baxmaq üçün autentifikasiyadan keçməlisiniz (giriş etməlisiniz)."
-msgstr ""
+msgstr "You must be authenticated (logged in) to view this page."
 
 #: .\templates\403.html:4
 msgid "Əlçatan Deyil"
-msgstr ""
+msgstr "Forbidden"
 
 #: .\templates\403.html:8
 msgid "Giriş Rədd Edildi"
-msgstr ""
+msgstr "Access Denied"
 
 #: .\templates\403.html:9
 msgid "Bu səhifəyə daxil olmaq üçün icazəniz yoxdur."
-msgstr ""
+msgstr "You do not have permission to access this page."
 
 #: .\templates\404.html:4 .\templates\404.html:8
 msgid "Səhifə Tapılmadı"
-msgstr ""
+msgstr "Page Not Found"
 
 #: .\templates\404.html:9
 msgid "Axtardığınız səhifə mövcud deyil."
-msgstr ""
+msgstr "The page you are looking for does not exist."
 
 #: .\templates\429.html:4 .\templates\429.html:7
 msgid "Çoxlu Sorğu"
-msgstr ""
+msgstr "Too Many Requests"
 
 #: .\templates\500.html:4 .\templates\500.html:7
 msgid "Server Xətası"
-msgstr ""
+msgstr "Server Error"
 
 #: .\templates\500.html:8
 msgid "Daxili server xətası baş verdi. Komandamız problemi araşdırır."
-msgstr ""
+msgstr "An internal server error occurred. Our team is investigating the issue."
 
 #: .\templates\502.html:4 .\templates\502.html:7
 msgid "Keçid Xətası"
-msgstr ""
+msgstr "Bad Gateway"
 
 #: .\templates\503.html:4 .\templates\503.html:7
 msgid "Xidmət Mövcud Deyil"
-msgstr ""
+msgstr "Service Unavailable"
 
 #: .\templates\errors\components\generic_error.html:10
 msgid "Ana Səhifəyə Qayıt"
-msgstr ""
+msgstr "Return to Home"
 
 #: .\templates\maintenance.html:4 .\templates\maintenance.html:7
 msgid "Texniki Xidmət"
-msgstr ""
+msgstr "Maintenance"
 
 #: .\templates\maintenance.html:8
 msgid "Hazırda sistemdə texniki xidmət aparılır. Qısa zamanda geri dönəcəyik."
-msgstr ""
+msgstr "The system is currently undergoing maintenance. We will be back shortly."
 
 #: .\templates\registration\login.html:4 .\templates\registration\login.html:11
 msgid "Sistemə Daxil Ol"
-msgstr ""
+msgstr "Login to System"
 
 #: .\templates\registration\login.html:16
 msgid "İstifadəçi adı və ya şifrə yanlışdır. Zəhmət olmasa, yenidən cəhd edin."
-msgstr ""
+msgstr "Username or password is incorrect. Please try again."
 
 #: .\templates\registration\login.html:31
 msgid "Şifrə"
-msgstr ""
+msgstr "Password"
 
 #: .\templates\registration\login.html:40
 msgid "Məni xatırla"
-msgstr ""
+msgstr "Remember me"
 
 #: .\templates\registration\login.html:43
 msgid "Şifrənizi unutmusunuz?"
-msgstr ""
+msgstr "Forgot your password?"
 
 #: .\templates\registration\login.html:53
 msgid "Hesabınız yoxdur?"
-msgstr ""
+msgstr "Don't have an account?"
 
 #: .\templates\registration\login.html:53
 msgid "Qeydiyyatdan keçin"
-msgstr ""
+msgstr "Register"
 
 #: .\templates\registration\password_reset_email.html:3
 #, python-format
 msgid "Salam, %(user_full_name)s!"
-msgstr ""
+msgstr "Hello, %(user_full_name)s!"
 
 #: .\templates\registration\password_reset_email.html:5
 msgid "Biz sizin e-poçt ünvanınız üçün şifrə sıfırlama tələbi aldıq."
-msgstr ""
+msgstr "We received a password reset request for your email address."
 
 #: .\templates\registration\password_reset_email.html:7
 msgid "Yeni şifrə təyin etmək üçün aşağıdakı linkə daxil olun:"
-msgstr ""
+msgstr "To set a new password, please click the link below:"
 
 #: .\templates\registration\password_reset_email.html:11
 msgid "Əgər bu sorğunu siz etməmisinizsə, bu e-poçta məhəl qoymayın."
-msgstr ""
+msgstr "If you did not make this request, please ignore this email."
 
 #: .\templates\registration\password_reset_email.html:13
 msgid "Hörmətlə,"
-msgstr ""
+msgstr "Best regards,"
 
 #: .\templates\registration\password_reset_email.html:14
 msgid "Qiymətləndirmə Sistemi Komandası"
-msgstr ""
+msgstr "Evaluation System Team"
 
 #: .\templates\registration\qeydiyyat_form.html:5
 msgid "Qeydiyyat"
-msgstr ""
+msgstr "Registration"
 
 #: .\templates\registration\qeydiyyat_form.html:12
 msgid "Yeni Hesab Yarat"
-msgstr ""
+msgstr "Create New Account"
 
 #: .\templates\registration\qeydiyyat_form.html:19
 msgid "Qeydiyyatdan Keç"
-msgstr ""
+msgstr "Register"
 
 #: .\templates\registration\qeydiyyat_form.html:25
 msgid "Artıq hesabınız var?"
-msgstr ""
+msgstr "Already have an account?"
 
 #: .\templates\registration\qeydiyyat_form.html:25
 msgid "Daxil olun"
-msgstr ""
+msgstr "Login"
