@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "simple_history",
-    # 'captcha',
+    'captcha',
     # Django daxilində olanlar
     "django.contrib.admin",
     "django.contrib.auth",
@@ -242,12 +242,12 @@ TEMPLATES = [
     },
 ]
 
-
 # ===================================================================
 # CAPTCHA KONFİQURASİYASI
 # ===================================================================
-# RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_SITE_KEY')
-# RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_SECRET_KEY')
+
+RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_SITE_KEY')
+RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_SECRET_KEY')
 
 # ===================================================================
 # CACHE (MÜVƏQQƏTİ YADDAŞ)
