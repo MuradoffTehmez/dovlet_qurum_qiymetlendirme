@@ -363,13 +363,14 @@ def yeni_dovr_yarat(request):
                     .exclude(rol="REHBER")
                 )
                 peer_sayi = min(len(komanda_yoldashlari), 2)
-                secilmish_peerler = random.sample(komanda_yoldashlari, peer_sayi)
-                for peer in secilmish_peerler:
-                    yeni_qiymetlendirmeler.append(
-                        Qiymetlendirme(
-                            dovr=yeni_dovr, qiymetlendirilen=ishchi, qiymetlendiren=peer
+                if peer_sayi > 0:
+                    secilmish_peerler = random.sample(komanda_yoldashlari, peer_sayi)
+                    for peer in secilmish_peerler:
+                        yeni_qiymetlendirmeler.append(
+                            Qiymetlendirme(
+                                dovr=yeni_dovr, qiymetlendirilen=ishchi, qiymetlendiren=peer
+                            )
                         )
-                    )
 
             Qiymetlendirme.objects.bulk_create(
                 yeni_qiymetlendirmeler, ignore_conflicts=True
@@ -382,6 +383,7 @@ def yeni_dovr_yarat(request):
     else:
         form = YeniDovrForm()
     return render(request, "core/yeni_dovr_form.html", {"form": form})
+
 
 
 # --- PDF YÜKLƏMƏ GÖRÜNÜŞÜ ---
