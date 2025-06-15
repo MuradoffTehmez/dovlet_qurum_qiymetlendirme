@@ -28,7 +28,7 @@ urlpatterns = [
 # Development rejimində (DEBUG=True) statik və media fayllarını əlavə edirik
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
 
 
 # Xəta handler-lərini təyin edirik
