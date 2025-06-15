@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "simple_history",
-    'captcha',
+    # 'captcha',
     # Django daxilində olanlar
     "django.contrib.admin",
     "django.contrib.auth",
