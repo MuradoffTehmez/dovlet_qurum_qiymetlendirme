@@ -20,5 +20,9 @@
   "bugs": {
     "url": "https://github.com/MuradoffTehmez/dovlet_qurum_qiymetlendirme/issues"
   },
-  "homepage": "https://github.com/MuradoffTehmez/dovlet_qurum_qiymetlendirme#readme"
+  "homepage": "https://github.com/MuradoffTehmez/dovlet_qurum_qiymetlendirme#readme",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "6.4",
+    "bootstrap": "5.3"
+  }
 }
