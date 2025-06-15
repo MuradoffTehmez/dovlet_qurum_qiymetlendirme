@@ -34,7 +34,7 @@ from .forms import (HedefFormSet, IshchiCreationForm, IshchiPasswordChangeForm,
                     IshchiUpdateForm, YeniDovrForm)
 # --- Lokal Layihə Modulları ---
 from .models import (Cavab, Hedef, InkishafPlani, Ishchi, OrganizationUnit,
-                     Qiymetlendirme, QiymetlendirmeDovru, Shobe, Sual,
+                     Qiymetlendirme, QiymetlendirmeDovru, Sual,
                      SualKateqoriyasi)
 from .tokens import account_activation_token
 from .utils import get_detailed_report_context, get_performance_trend
