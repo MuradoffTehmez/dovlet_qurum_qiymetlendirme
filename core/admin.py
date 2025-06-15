@@ -1,74 +1,43 @@
-# core/admin.py
-
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from simple_history.admin import SimpleHistoryAdmin
 
-from .models import (Cavab, Departament, Ishchi, Qiymetlendirme,
-                     QiymetlendirmeDovru, Sektor, Shobe, Sual,
-                     SualKateqoriyasi)
+from .models import (
+    Cavab, Ishchi, Qiymetlendirme, QiymetlendirmeDovru,
+    Sual, SualKateqoriyasi, Hedef, InkishafPlani, OrganizationUnit
+)
 
-
-# Ishchi modeli üçün UserAdmin-i SimpleHistoryAdmin ilə birləşdiririk
-# Bu, həm standart istifadəçi panelini, həm də tarixçə funksionallığını təmin edir.
+# --- Ishchi modeli üçün admin ---
 @admin.register(Ishchi)
 class IshchiHistoryAdmin(UserAdmin, SimpleHistoryAdmin):
-    list_display = ("username", "first_name", "last_name", "rol", "sektor")
+    list_display = ("username", "first_name", "last_name", "rol", "organization_unit")
     list_filter = (
         "rol",
-        "sektor__shobe__departament",
-        "sektor__shobe",
+        "organization_unit",
         "is_staff",
         "is_active",
     )
-
-    # Redaktə səhifəsinə bizim xüsusi sahələrimizi əlavə edirik
     fieldsets = UserAdmin.fieldsets + (
-        ("Təşkilati Məlumatlar", {"fields": ("rol", "vezife", "sektor")}),
+        ("Təşkilati Məlumatlar", {"fields": ("rol", "vezife", "organization_unit", "elaqe_nomresi", "dogum_tarixi", "profil_sekli")}),
     )
     add_fieldsets = UserAdmin.add_fieldsets + (
-        ("Təşkilati Məlumatlar", {"fields": ("rol", "vezife", "sektor")}),
+        ("Təşkilati Məlumatlar", {"fields": ("rol", "vezife", "organization_unit")}),
     )
 
 
-# --- İyerarxiya modelləri ---
-class ShobeInline(admin.TabularInline):
-    model = Shobe
-    extra = 1
-
-
-class SektorInline(admin.TabularInline):
-    model = Sektor
-    extra = 1
-
-
-@admin.register(Departament)
-class DepartamentAdmin(SimpleHistoryAdmin):
-    list_display = ("ad",)
-    search_fields = ("ad",)
-    inlines = [ShobeInline]
-
-
-@admin.register(Shobe)
-class ShobeAdmin(SimpleHistoryAdmin):
-    list_display = ("ad", "departament")
-    list_filter = ("departament",)
-    search_fields = ("ad", "departament__ad")
-    inlines = [SektorInline]
-
-
-@admin.register(Sektor)
-class SektorAdmin(SimpleHistoryAdmin):
-    list_display = ("ad", "shobe")
-    list_filter = ("shobe__departament", "shobe")
-    search_fields = ("ad", "shobe__ad")
+# --- Yeni Struktur Vahidi modeli üçün admin ---
+@admin.register(OrganizationUnit)
+class OrganizationUnitAdmin(SimpleHistoryAdmin):
+    list_display = ("name", "type", "parent")
+    list_filter = ("type", "parent")
+    search_fields = ("name",)
 
 
 # --- Sual hovuzu modelləri ---
 @admin.register(Sual)
 class SualAdmin(SimpleHistoryAdmin):
     list_display = ("metn", "kateqoriya", "yaradan")
-    list_filter = ("kateqoriya", "departament", "shobe", "sektor")
+    list_filter = ("kateqoriya", "applicable_to")
     search_fields = ("metn",)
 
 
@@ -77,7 +46,7 @@ class SualKateqoriyasiAdmin(SimpleHistoryAdmin):
     list_display = ("ad",)
 
 
-# --- Qiymətləndirmə prosesi modelləri ---
+# --- Qiymətləndirmə dövrləri ---
 @admin.register(QiymetlendirmeDovru)
 class QiymetlendirmeDovruAdmin(SimpleHistoryAdmin):
     list_display = ("ad", "bashlama_tarixi", "bitme_tarixi", "aktivdir")
@@ -104,22 +73,16 @@ class CavabAdmin(SimpleHistoryAdmin):
     search_fields = ("qiymetlendirme__qiymetlendirilen__username",)
 
 
-from .models import Hedef, InkishafPlani  # Yeni modelləri import edirik
-
-
+# --- İnkişaf Planı və Hədəflər ---
 class HedefInline(admin.TabularInline):
-    """Hədəfləri birbaşa İnkişaf Planının içində göstərmək üçün inline."""
-
     model = Hedef
-    extra = 1  # Varsayılan olaraq 1 ədəd boş hədəf sahəsi göstərir
+    extra = 1
     fields = ("tesvir", "son_tarix", "status")
 
 
 @admin.register(InkishafPlani)
 class InkishafPlaniAdmin(SimpleHistoryAdmin):
-    """Fərdi İnkişaf Planı üçün admin paneli."""
-
     list_display = ("ishchi", "dovr", "status", "yaradilma_tarixi")
     list_filter = ("status", "dovr")
     search_fields = ("ishchi__username", "ishchi__first_name", "ishchi__last_name")
-    inlines = [HedefInline]  # Hədəfləri bura daxil edirik
+    inlines = [HedefInline]
