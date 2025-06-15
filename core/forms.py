@@ -7,8 +7,8 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column, Submit
 
 # --- Captcha üçün yeni importlar ---
-from captcha.fields import ReCaptchaField
-from captcha.widgets import ReCaptchaV2Checkbox
+# from captcha.fields import ReCaptchaField
+# from captcha.widgets import ReCaptchaV2Checkbox
 
 # --- Lokal Modellər ---
 from .models import (Hedef, InkishafPlani, Ishchi, OrganizationUnit, QiymetlendirmeDovru)
@@ -20,14 +20,16 @@ class IshchiCreationForm(UserCreationForm):
     """Yeni istifadəçilərin qeydiyyatı üçün istifadə olunan forma."""
     dogum_tarixi = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=False, label="Doğum Tarixi")
     
-    # Captcha sahəsini bura əlavə edirik
-    captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox, label='')
+    # Captcha
+    # captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox, label='')
 
     class Meta(UserCreationForm.Meta):
         model = Ishchi
         fields = UserCreationForm.Meta.fields + (
             'first_name', 'last_name', 'email', 'organization_unit', 
-            'vezife', 'elaqe_nomresi', 'captcha' 'dogum_tarixi' 
+            'vezife', 'elaqe_nomresi', 
+            # 'captcha', 
+            'dogum_tarixi' 
         )
         labels = {
             'first_name': 'Ad', 'last_name': 'Soyad', 'email': 'E-poçt',
