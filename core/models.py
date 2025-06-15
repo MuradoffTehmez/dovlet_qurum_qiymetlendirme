@@ -1,71 +1,49 @@
-# core/models.py
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from simple_history.models import \
-    HistoricalRecords  # Simple History üçün model tarixi saxlamaq üçün
-
-# --- İyerarxiya Modelləri ---
+from simple_history.models import HistoricalRecords
 
 
-class Departament(models.Model):
-    ad = models.CharField(max_length=255, verbose_name="Departamentin Adı")
+# --- Yeni Təşkilati Struktur Modeli ---
+class OrganizationUnit(models.Model):
+    class UnitType(models.TextChoices):
+        ALI_IDARE = 'ali_idare', 'Ali İdarə'
+        NAZIRLIK = 'nazirlik', 'Nazirlik'
+        IDARE_KOMITE = 'idare_komite', 'İdarə / Komitə'
+        MUESSISE = 'muessise', 'Müəssisə'
+        SHOBE = 'shobe', 'Şöbə'
+        SEKTOR = 'sektor', 'Sektor'
 
-    def __str__(self):
-        return self.ad
-
-    history = HistoricalRecords()
-
-
-class Shobe(models.Model):
-    ad = models.CharField(max_length=255, verbose_name="Şöbənin Adı")
-    departament = models.ForeignKey(
-        Departament, on_delete=models.CASCADE, related_name="shobeler"
+    name = models.CharField(max_length=255, verbose_name="Struktur Vahidinin Adı")
+    type = models.CharField(max_length=50, choices=UnitType.choices, verbose_name="Növü")
+    parent = models.ForeignKey(
+        'self', on_delete=models.CASCADE, null=True, blank=True,
+        related_name='children', verbose_name="Tabe Olduğu Qurum"
     )
 
-    def __str__(self):
-        return f"{self.departament.ad} / {self.ad}"
-
     history = HistoricalRecords()
 
-
-class Sektor(models.Model):
-    ad = models.CharField(max_length=255, verbose_name="Sektorun Adı")
-    shobe = models.ForeignKey(Shobe, on_delete=models.CASCADE, related_name="sektorler")
+    class Meta:
+        verbose_name = "Təşkilati Vahid"
+        verbose_name_plural = "Təşkilati Vahidlər"
 
     def __str__(self):
-        return f"{self.shobe.ad} / {self.ad}"
-
-    history = HistoricalRecords()
+        return self.name
 
 
 # --- Genişləndirilmiş İstifadəçi Modeli ---
-
-
 class Ishchi(AbstractUser):
     class Rol(models.TextChoices):
-        SUPERADMIN = "SUPERADMIN", "Superadmin"
-        ADMIN = "ADMIN", "Admin"
-        REHBER = "REHBER", "Rəhbər"
-        ISHCHI = "ISHCHI", "İşçi"
+        SUPERADMIN = 'SUPERADMIN', 'Superadmin'
+        ADMIN = 'ADMIN', 'Admin'
+        REHBER = 'REHBER', 'Rəhbər'
+        ISHCHI = 'ISHCHI', 'İşçi'
 
-    # İstifadəçi modelini genişləndiririk
-    # ad = models.CharField(max_length=30, verbose_name="Ad", blank=True)
-    rol = models.CharField(
-        max_length=10,
-        choices=Rol.choices,
-        default=Rol.ISHCHI,
-        verbose_name="İstifadəçi Rolu",
-    )
+    rol = models.CharField(max_length=10, choices=Rol.choices, default=Rol.ISHCHI, verbose_name="İstifadəçi Rolu")
     vezife = models.CharField(max_length=255, verbose_name="Vəzifəsi", blank=True)
-    sektor = models.ForeignKey(
-        Sektor,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="ishchiler",
+    organization_unit = models.ForeignKey(
+        OrganizationUnit, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="ishchiler", verbose_name="Təşkilati Vahid"
     )
-
     elaqe_nomresi = models.CharField(
         max_length=20, blank=True, null=True, verbose_name="Əlaqə Nömrəsi"
     )
@@ -83,8 +61,6 @@ class Ishchi(AbstractUser):
 
 
 # --- Sual Hovuzu Modelləri ---
-
-
 class SualKateqoriyasi(models.Model):
     ad = models.CharField(max_length=255, verbose_name="Kompetensiya / Kateqoriya Adı")
 
@@ -95,20 +71,21 @@ class SualKateqoriyasi(models.Model):
 
 
 class Sual(models.Model):
+    class ApplicableTo(models.TextChoices):
+        EMPLOYEE = 'employee', 'Əməkdaş'
+        MANAGER = 'manager', 'Rəhbər'
+        ALL = 'all', 'Hamısı'
+
     metn = models.TextField(verbose_name="Sualın Mətni")
     kateqoriya = models.ForeignKey(
         SualKateqoriyasi, on_delete=models.SET_NULL, null=True, blank=True
     )
-
-    # Sualın ümumi və ya spesifik olduğunu təyin edir
-    departament = models.ForeignKey(
-        Departament, on_delete=models.CASCADE, null=True, blank=True
+    applicable_to = models.CharField(
+        max_length=50, choices=ApplicableTo.choices, default=ApplicableTo.ALL,
+        verbose_name="Aid Olduğu Rol"
     )
-    shobe = models.ForeignKey(Shobe, on_delete=models.CASCADE, null=True, blank=True)
-    sektor = models.ForeignKey(Sektor, on_delete=models.CASCADE, null=True, blank=True)
-
     yaradan = models.ForeignKey(
-        "Ishchi", on_delete=models.SET_NULL, null=True, verbose_name="Sualı Yaradan"
+        Ishchi, on_delete=models.SET_NULL, null=True, verbose_name="Sualı Yaradan"
     )
 
     def __str__(self):
@@ -118,8 +95,6 @@ class Sual(models.Model):
 
 
 # --- Qiymətləndirmə Prosesi Modelləri ---
-
-
 class QiymetlendirmeDovru(models.Model):
     ad = models.CharField(max_length=255, verbose_name="Dövrün Adı (məs: 2025 Q1)")
     bashlama_tarixi = models.DateField()
@@ -139,17 +114,16 @@ class Qiymetlendirme(models.Model):
 
     dovr = models.ForeignKey(QiymetlendirmeDovru, on_delete=models.CASCADE)
     qiymetlendirilen = models.ForeignKey(
-        "Ishchi", on_delete=models.CASCADE, related_name="verilen_qiymetler"
+        Ishchi, on_delete=models.CASCADE, related_name="verilen_qiymetler"
     )
     qiymetlendiren = models.ForeignKey(
-        "Ishchi", on_delete=models.CASCADE, related_name="etdiyi_qiymetler"
+        Ishchi, on_delete=models.CASCADE, related_name="etdiyi_qiymetler"
     )
     status = models.CharField(
         max_length=10, choices=Status.choices, default=Status.GOZLEMEDE
     )
 
     class Meta:
-        # Bir qiymətləndirən eyni dövrdə bir nəfəri yalnız bir dəfə qiymətləndirə bilər
         unique_together = ("dovr", "qiymetlendirilen", "qiymetlendiren")
 
     def __str__(self):
@@ -172,48 +146,34 @@ class Cavab(models.Model):
     history = HistoricalRecords()
 
 
-# core/models.py faylının sonuna əlavə edin
-
-# --- Fərdi İnkişaf Planı (IDP) Modelləri ---
-
-
 class InkishafPlani(models.Model):
     class Status(models.TextChoices):
         AKTIV = "AKTIV", "Aktiv"
         TAMAMLANMISH = "TAMAMLANMISH", "Tamamlanmış"
 
     ishchi = models.ForeignKey(
-        Ishchi,
-        on_delete=models.CASCADE,
-        related_name="inkishaf_planlari",
-        verbose_name="İşçi",
+        Ishchi, on_delete=models.CASCADE,
+        related_name="inkishaf_planlari", verbose_name="İşçi"
     )
     dovr = models.ForeignKey(
-        QiymetlendirmeDovru,
-        on_delete=models.CASCADE,
-        verbose_name="Qiymətləndirmə Dövrü",
+        QiymetlendirmeDovru, on_delete=models.CASCADE,
+        verbose_name="Qiymətləndirmə Dövrü"
     )
-    yaradilma_tarixi = models.DateField(
-        auto_now_add=True, verbose_name="Yaradılma Tarixi"
-    )
+    yaradilma_tarixi = models.DateField(auto_now_add=True, verbose_name="Yaradılma Tarixi")
     status = models.CharField(
-        max_length=20,
-        choices=Status.choices,
-        default=Status.AKTIV,
-        verbose_name="Planın Statusu",
+        max_length=20, choices=Status.choices,
+        default=Status.AKTIV, verbose_name="Planın Statusu"
     )
-    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "Fərdi İnkişaf Planı"
         verbose_name_plural = "Fərdi İnkişaf Planları"
-        unique_together = (
-            "ishchi",
-            "dovr",
-        )  # Hər işçinin bir dövr üçün yalnız bir planı ola bilər
+        unique_together = ("ishchi", "dovr")
 
     def __str__(self):
         return f"{self.ishchi.get_full_name()} - {self.dovr.ad} İnkişaf Planı"
+
+    history = HistoricalRecords()
 
 
 class Hedef(models.Model):
@@ -224,24 +184,17 @@ class Hedef(models.Model):
         LEGVEDILDI = "LEGVEDILDI", "Ləğv Edildi"
 
     plan = models.ForeignKey(
-        InkishafPlani,
-        on_delete=models.CASCADE,
-        related_name="hedefler",
-        verbose_name="İnkişaf Planı",
+        InkishafPlani, on_delete=models.CASCADE,
+        related_name="hedefler", verbose_name="İnkişaf Planı"
     )
     tesvir = models.TextField(verbose_name="Hədəfin Təsviri")
     son_tarix = models.DateField(verbose_name="Hədəfin Son İcra Tarixi")
     status = models.CharField(
-        max_length=20,
-        choices=Status.choices,
-        default=Status.BASHLANMAYIB,
-        verbose_name="Hədəfin Statusu",
+        max_length=20, choices=Status.choices,
+        default=Status.BASHLANMAYIB, verbose_name="Hədəfin Statusu"
     )
-    history = HistoricalRecords()
-
-    class Meta:
-        verbose_name = "Hədəf"
-        verbose_name_plural = "Hədəflər"
 
     def __str__(self):
         return self.tesvir[:70]
+
+    history = HistoricalRecords()
