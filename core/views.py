@@ -179,7 +179,7 @@ def hesabat_gorunumu(request, ishchi_id=None):
         hedef_ishchi = get_object_or_404(Ishchi, id=ishchi_id)
         # Rəhbər və ya Superuser-in icazəsini yoxlayırıq
         is_allowed_to_view = request.user.is_superuser or (
-            request.user.rol == "REHBER" and request.user.sektor == hedef_ishchi.sektor
+            request.user.rol == "REHBER" and request.user.organization_unit == hedef_ishchi.organization_unit
         )
         if not is_allowed_to_view:
             raise PermissionDenied
@@ -328,8 +328,8 @@ def rehber_paneli(request):
     team_competency_stats = {}
 
     # Rəhbərin sektoru varsa, tabeliyindəki işçiləri tapırıq
-    if request.user.sektor:
-        tabe_olan_ishchiler = Ishchi.objects.filter(sektor=request.user.sektor).exclude(
+    if request.user.organization_unit:
+        tabe_olan_ishchiler = Ishchi.objects.filter(organization_unit=request.user.sektor).exclude(
             id=request.user.id
         )
 
