@@ -33,12 +33,12 @@ AUTHENTICATION_BACKENDS = [
 # ===================================================================
 
 INSTALLED_APPS = [
-    # Üçüncü tərəf paketləri
+    # Üçüncü tərəf tətbiqləri
     "jazzmin",
     "crispy_forms",
     "crispy_bootstrap5",
     "simple_history",
-    # 'captcha',
+    # 'captcha',  # CAPTCHA üçün əlavə edirik, amma aktiv etməmişik
     # Django daxilində olanlar
     "django.contrib.admin",
     "django.contrib.auth",
