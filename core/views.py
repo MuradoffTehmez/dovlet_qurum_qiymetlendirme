@@ -234,6 +234,8 @@ def hesabat_gorunumu(request, ishchi_id=None):
 
     return render(request, "core/hesabat.html", context)
 
+# core/views.py
+
 @login_required
 @superadmin_required
 def yeni_dovr_yarat(request):
@@ -247,16 +249,14 @@ def yeni_dovr_yarat(request):
         form = YeniDovrForm(request.POST)
         if form.is_valid():
             # Yeni dövrü yaradırıq
-            yeni_dovr = form.save(commit=False)
-            yeni_dovr.created_by = request.user
-            yeni_dovr.save()
+            yeni_dovr = form.save()
             
             # Seçilmiş unitləri və onlara bağlı işçiləri alırıq
             secilmish_unitler = form.cleaned_data['units']
             butun_ishchiler = Ishchi.objects.filter(
                 is_active=True,
                 organization_unit__in=secilmish_unitler
-            ).select_related('organization_unit').prefetch_related('organization_unit__managers')
+            ).select_related('organization_unit')
             
             # Bütün yeni qiymətləndirmələr üçün boş siyahı
             yeni_qiymetlendirmeler = []
@@ -264,35 +264,29 @@ def yeni_dovr_yarat(request):
             # Hər işçi üçün lazımi qiymətləndirmələri yaradırıq
             for ishchi in butun_ishchiler:
                 current_unit = ishchi.organization_unit
-                
+                if not current_unit:
+                    continue # Əgər işçinin unit-i yoxdursa, onu ötürürük
+
                 # 1. Özünüqiymətləndirmə əlavə edirik
                 yeni_qiymetlendirmeler.append(
-                    Qiymetlendirme(
-                        dovr=yeni_dovr,
-                        qiymetlendirilen=ishchi,
-                        qiymetlendiren=ishchi,
-                        tipi='OZ'
-                    )
+                    Qiymetlendirme(dovr=yeni_dovr, qiymetlendirilen=ishchi, qiymetlendiren=ishchi)
                 )
                 
-                # 2. Birbaşa rəhbər tərəfindən qiymətləndirmə
-                if current_unit.managers.exists():
-                    for manager in current_unit.managers.all():
-                        if manager != ishchi:  # İşçi öz rəhbəri deyilsə
-                            yeni_qiymetlendirmeler.append(
-                                Qiymetlendirme(
-                                    dovr=yeni_dovr,
-                                    qiymetlendirilen=ishchi,
-                                    qiymetlendiren=manager,
-                                    tipi='REHBER'
-                                )
-                            )
+                # 2. Rəhbər tərəfindən qiymətləndirmə
+                # Qəbul etdiyimiz qayda: Rəhbər, işçi ilə eyni unit-də olan və rolu 'REHBER' olan şəxsdir
+                rehberler = Ishchi.objects.filter(organization_unit=current_unit, rol='REHBER')
+                for rehber in rehberler:
+                    if rehber != ishchi:
+                        yeni_qiymetlendirmeler.append(
+                            Qiymetlendirme(dovr=yeni_dovr, qiymetlendirilen=ishchi, qiymetlendiren=rehber)
+                        )
                 
                 # 3. Komanda yoldaşları tərəfindən qiymətləndirmə
+                # Rəhbərləri çıxmaqla, eyni unit-dəki digər işçilər
                 komanda_yoldashlari = list(
                     butun_ishchiler.filter(organization_unit=current_unit)
-                    .exclude(id=ishchi.id)  # Özünü çıxarırıq
-                    .exclude(id__in=current_unit.managers.values_list('id', flat=True))  # Rəhbərləri çıxarırıq
+                    .exclude(id=ishchi.id)
+                    .exclude(rol='REHBER')
                 )
                 
                 # Təsadüfi 2 komanda yoldaşı seçirik (əgər varsa)
@@ -301,34 +295,16 @@ def yeni_dovr_yarat(request):
                     secilmish_peerler = random.sample(komanda_yoldashlari, peer_sayi)
                     for peer in secilmish_peerler:
                         yeni_qiymetlendirmeler.append(
-                            Qiymetlendirme(
-                                dovr=yeni_dovr,
-                                qiymetlendirilen=ishchi,
-                                qiymetlendiren=peer,
-                                tipi='KOLEQA'
-                            )
+                            Qiymetlendirme(dovr=yeni_dovr, qiymetlendirilen=ishchi, qiymetlendiren=peer)
                         )
             
-            # Bütün qiymətləndirmələri bir dəfəyə yaradırıq
-            created_count = len(Qiymetlendirme.objects.bulk_create(yeni_qiymetlendirmeler))
-            
-            # Aktiv inkişaf planları üçün boş şablon yaradırıq
-            inkishaf_planlari = [
-                InkishafPlani(
-                    dovr=yeni_dovr,
-                    ishchi=ishchi,
-                    status='DRAFT',
-                    created_by=request.user
-                )
-                for ishchi in butun_ishchiler
-            ]
-            InkishafPlani.objects.bulk_create(inkishaf_planlari)
+            # Bütün qiymətləndirmələri bir dəfəyə yaradırıq (təkrarların qarşısını almaq üçün ignore_conflicts=True)
+            created_objects = Qiymetlendirme.objects.bulk_create(yeni_qiymetlendirmeler, ignore_conflicts=True)
             
             messages.success(
                 request,
                 f"'{yeni_dovr.ad}' dövrü uğurla yaradıldı. "
-                f"{created_count} qiymətləndirmə təyinatı və "
-                f"{len(inkishaf_planlari)} inkişaf planı generasiya edildi."
+                f"{len(created_objects)} unikal qiymətləndirmə təyinatı generasiya edildi."
             )
             return redirect('superadmin_paneli')
     else:
