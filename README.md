@@ -39,7 +39,7 @@ Bu, Django web framework-u ilə yaradılmış, dövlət orqanları və ya təşk
 
 4.  **Sistem Asılılıqlarını Quraşdırın (Windows üçün):**
     - `WeasyPrint` üçün [GTK3](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#windows) quraşdırın.
-    - `makemessages` üçün [gettext](https://mlocati.github.io/articles/gettext-iconv-windows.html) yükləyib, `bin` qovluğunu sistemin `PATH`-ına əlavə edin...
+    - `makemessages` üçün [gettext](https://mlocati.github.io/articles/gettext-iconv-windows.html) yükləyib, `bin` qovluğunu sistemin `PATH`-ına əlavə edin.
 
 5.  **`.env` Faylını Yaradın:**
     - `.env.example` faylının adını `.env` olaraq dəyişdirin.
