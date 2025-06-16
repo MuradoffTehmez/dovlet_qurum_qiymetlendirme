@@ -17,6 +17,7 @@ Aşkar etdiyiniz boşluğu bizə bildirmək üçün, zəhmət olmasa, aşağıda
 **muradoffcode@gmail.com**
 
 Yaxşı bir təhlükəsizlik hesabatı aşağıdakıları ehtiva etməlidir:
+
 - Boşluğun ətraflı təsviri.
 - Problemin potensial təsirinin izahı.
 - Problemi təkrar yaratmaq üçün addım-addım təlimatlar (Proof of Concept).
@@ -26,6 +27,7 @@ Hesabatınızı aldıqdan sonra 48 saat ərzində sizə cavab verəcəyimizə v�
 ## Tətbiq Olunmuş Təhlükəsizlik Tədbirləri
 
 Q360 sistemi, Django framework-unun təqdim etdiyi bir çox daxili təhlükəsizlik mexanizmlərindən istifadə edir:
+
 - **CSRF (Cross-Site Request Forgery) Qoruması:** Bütün POST sorğuları CSRF tokenləri ilə qorunur.
 - **XSS (Cross-Site Scripting) Qoruması:** Django şablonları, daxil edilən məlumatları avtomatik olaraq "escape" edərək XSS hücumlarının qarşısını alır.
 - **SQL Injection Qoruması:** Django ORM, verilənlər bazasına olan sorğuları parametrləşdirərək SQL Injection hücumlarına qarşı qoruma təmin edir.
