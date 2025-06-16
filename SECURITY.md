@@ -14,7 +14,7 @@ Q360 layihəsində təhlükəsizliyi çox ciddiyə alırıq. Əgər hər hansı 
 
 Aşkar etdiyiniz boşluğu bizə bildirmək üçün, zəhmət olmasa, aşağıdakı e-poçt ünvanına detallı bir məlumat göndərin:
 
-**muradoffcode@gmail.com**
+**<muradoffcode@gmail.com>**
 
 Yaxşı bir təhlükəsizlik hesabatı aşağıdakıları ehtiva etməlidir:
 
