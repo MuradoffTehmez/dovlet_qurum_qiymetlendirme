@@ -103,21 +103,18 @@
 ---
 
 ## QURAŞDIRMA VƏ İŞƏ SALMA
-
-(Installation and Deployment)
+## Installation and Deployment
 
 ### 1. Layihəni Klonlayın
-
-(Clone the Project)
+### Clone the Project
 
 ```bash
-git clone https://github.com/.../dovlet_qurum_qiymetlendirme.git
-cd dovlet_qurum_qiymetlendirme
+git clone https://github.com/MuradoffTehmez/Q360.git
+cd Q360
 ```
 
 ### 2. Virtual Mühit Hazırlayın
-
-(Create Virtual Environment)
+### Create Virtual Environment
 
 ```bash
 python -m venv venv
@@ -128,16 +125,14 @@ source venv/bin/activate
 ```
 
 ### 3. Asılılıqları Quraşdırın
-
-(Install Dependencies)
+### Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
 ### 4. Sistem Kitabxanaları (Windows)
-
-(System Libraries for Windows)
+### System Libraries for Windows
 
 * WeasyPrint üçün GTK3
   (GTK3 for WeasyPrint)
@@ -145,8 +140,7 @@ pip install -r requirements.txt
   (gettext for `makemessages` - add bin path to system PATH)
 
 ### 5. .env Faylı
-
-(.env File)
+### .env File
 
 * `.env.example` faylını `.env` adlandırın.
   (Rename `.env.example` to `.env`.)
@@ -154,8 +148,7 @@ pip install -r requirements.txt
   (Fill in the required parameters: `SECRET_KEY`, `DEBUG`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`.)
 
 ### 6. Miqrasiyalar və Komandalar
-
-(Migrations and Commands)
+### Migrations and Commands
 
 ```bash
 python manage.py makemigrations
@@ -167,14 +160,12 @@ python manage.py runserver
 
 ---
 
-## İstifadə Olunan Texnologiyalar
+### İstifadə Olunan Texnologiyalar
+### Technologies Used
 
-(Technologies Used)
-
-* **Backend:** Django, Python
+* **Backend:**  Django, Python
 * **Frontend:** HTML5, CSS3, Bootstrap 5, JavaScript, Chart.js
 * **Verilənlər Bazası:** SQLite3 (inkisaf), PostgreSQL (istehsalat)
-  (Database: SQLite3 for development, PostgreSQL for production)
 * **Paketlər:**
 
   * `django-crispy-forms`, `crispy-bootstrap5`
@@ -186,16 +177,23 @@ python manage.py runserver
 
 ---
 
-## Gələcək Gənişləndirilmələr (Roadmap)
-
-(Future Enhancements)
+### Gələcək Gənişləndirilmələr (Roadmap)
+### Future Enhancements
 
 * ✅ Mobil əlavə versiyası (Flutter)
-  (Mobile app version with Flutter)
+  
+  Mobile app version with Flutter
+  
 * ✅ AI dəstəkli qiymətləndirmə üsulları (machine learning əsaslı analiz)
-  (AI-supported evaluation using machine learning analysis)
-* ✅ HRMS sistemlərinə REST API vasitəsilə inteqrasiya
-  (Integration with HRMS systems via REST API)
 
-Bu sistem, istənilən dövlət və ya özəl qurumun iç strukturlarına asanlıqla uyğunlaşdırıla biləcək şəkildə qurulmuşdur.
-(This system is designed to be easily adaptable to the internal structure of any public or private organization.)
+  AI-supported evaluation using machine learning analysis
+
+* ✅ HRMS sistemlərinə REST API vasitəsilə inteqrasiya
+
+  Integration with HRMS systems via REST API
+
+## ***Bu sistem, istənilən dövlət və ya özəl qurumun iç strukturlarına asanlıqla uyğunlaşdırıla biləcək şəkildə qurulmuşdur.***
+
+## ***This system is designed to be easily adaptable to the internal structure of any public or private organization.***
+
+@MuradoffTehmez
