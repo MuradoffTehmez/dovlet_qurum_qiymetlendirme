@@ -6,7 +6,7 @@ Hazırda layihənin yalnız ən son versiyası aktiv şəkildə dəstəklənir v
 
 | Versiya | Dəstəklənir          |
 | ------- | ------------------ |
-| 1.x.x   | :white_check_mark: |
+| 1.0.0   | :white_check_mark: |
 
 ## Təhlükəsizlik Boşluğunun Bildirilməsi
 

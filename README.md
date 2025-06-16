@@ -1,5 +1,6 @@
 # 360 Dərəcə Qiymətləndirmə Sistemi
-# 360 Degree Appraisal System
+
+## 360 Degree Appraisal System
 
 **360 Dərəcə Qiymətləndirmə Sistemi** – dövlət idarələri, ictimai qurumlar və ya özəl sektor təşkilatları ücün işçilərin kompetensiyaları üzrə obyektiv qiymətləndirilməsini təmin edən, Django framework-u ilə yaradılmış tam funksional və müsasir veb-platformadır. Sistem, istinad edilən beynəlxalq qiymətləndirmə standartlarını əsas götürərək istənilən strukturda səmərəli performans idarəetməsini mümkün edir.
 
@@ -102,9 +103,11 @@
 ---
 
 ## QURAŞDIRMA VƏ İŞƏ SALMA
+
 ## Installation and Deployment
 
 ### 1. Layihəni Klonlayın
+
 ### Clone the Project
 
 ```bash
@@ -113,6 +116,7 @@ cd Q360
 ```
 
 ### 2. Virtual Mühit Hazırlayın
+
 ### Create Virtual Environment
 
 ```bash
@@ -124,6 +128,7 @@ source venv/bin/activate
 ```
 
 ### 3. Asılılıqları Quraşdırın
+
 ### Install Dependencies
 
 ```bash
@@ -131,6 +136,7 @@ pip install -r requirements.txt
 ```
 
 ### 4. Sistem Kitabxanaları (Windows)
+
 ### System Libraries for Windows
 
 * WeasyPrint üçün GTK3
@@ -139,6 +145,7 @@ pip install -r requirements.txt
   gettext for `makemessages` - add bin path to system PATH
 
 ### 5. .env Faylı
+
 ### .env File
 
 * `.env.example` faylını `.env` adlandırın.
@@ -147,6 +154,7 @@ pip install -r requirements.txt
   (Fill in the required parameters: `SECRET_KEY`, `DEBUG`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`.)
 
 ### 6. Miqrasiyalar və Komandalar
+
 ### Migrations and Commands
 
 ```bash
@@ -160,6 +168,7 @@ python manage.py runserver
 ---
 
 ### İstifadə Olunan Texnologiyalar
+
 ### Technologies Used
 
 * **Backend:**  Django, Python
@@ -177,6 +186,7 @@ python manage.py runserver
 ---
 
 ### Gələcək Gənişləndirilmələr (Roadmap)
+
 ### Future Enhancements
 
 * ✅ Mobil əlavə versiyası (Flutter)
