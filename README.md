@@ -1,5 +1,4 @@
 # 360 Dərəcə Qiymətləndirmə Sistemi
-
 # 360 Degree Appraisal System
 
 **360 Dərəcə Qiymətləndirmə Sistemi** – dövlət idarələri, ictimai qurumlar və ya özəl sektor təşkilatları ücün işçilərin kompetensiyaları üzrə obyektiv qiymətləndirilməsini təmin edən, Django framework-u ilə yaradılmış tam funksional və müsasir veb-platformadır. Sistem, istinad edilən beynəlxalq qiymətləndirmə standartlarını əsas götürərək istənilən strukturda səmərəli performans idarəetməsini mümkün edir.
