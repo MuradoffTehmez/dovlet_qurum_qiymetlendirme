@@ -7,6 +7,38 @@ from django.db.models import Avg
 from .models import Cavab, QiymetlendirmeDovru, SualKateqoriyasi
 
 
+def generate_recommendations(yazili_reyler):
+    """
+    Yazılı rəylər əsasında sadə açar sözlərə görə inkişaf tövsiyələri yaradır.
+    """
+    if not yazili_reyler:
+        return ""
+
+    recommendations = set() # Təkrarların qarşısını almaq üçün set istifadə edirik
+
+    for rey in yazili_reyler:
+        rey_lower = rey.lower()
+
+        if "gecikmə" in rey_lower or "vaxtında" in rey_lower or "gecikir" in rey_lower:
+            recommendations.add("- **Zamanın idarə edilməsi:** Tapşırıqların vaxtında təhvil verilməsi üçün Pomodoro və ya Kanban kimi planlaşdırma texnikalarını araşdırmaq tövsiyə olunur.")
+        if "ünsiyyət" in rey_lower or "əlaqə" in rey_lower or "dinlə" in rey_lower:
+            recommendations.add("- **Komanda ilə ünsiyyət:** Fikirləri daha aydın ifadə etmək və komanda yoldaşlarını aktiv dinləmək üçün effektiv kommunikasiya təlimlərində iştirak etmək faydalı olardı.")
+        if "keyfiyyət" in rey_lower or "dəqiqlik" in rey_lower or "səhv" in rey_lower:
+            recommendations.add("- **Dəqiqlik və keyfiyyət:** Təhvil verilən işlərdə detallara daha çox diqqət yetirmək və yoxlama siyahılarından (checklists) istifadə etmək tövsiyə olunur.")
+        if "liderlik" in rey_lower or "təşəbbüs" in rey_lower or "təşəbbüskar" in rey_lower:
+            recommendations.add("- **Liderlik və təşəbbüskarlıq:** Komanda daxilində daha çox məsuliyyət götürmək və yeni ideyalarla çıxış etmək üçün imkanlar axtarmaq lazımdır.")
+        if "innovasiya" in rey_lower or "yaradıcı" in rey_lower or "yeni fikir" in rey_lower:
+            recommendations.add("- **Yaradıcılıq və innovasiya:** Mövcud proseslərin təkmilləşdirilməsi üçün təkliflər vermək və beyin fırtınası sessiyalarına aktiv qatılmaq faydalı ola bilər.")
+        if "məsuliyyət" in rey_lower:
+            recommendations.add("- **Məsuliyyət:** Tapşırıqların icrasına tam sahiblənmək və nəticələr üçün cavabdehliyi dərk etmək vacibdir.")
+
+    if not recommendations:
+        return "- Ümumi peşəkar inkişaf üçün müntəzəm olaraq rəhbərdən geribildirim almaq və fərdi inkişaf planı üzərində işləmək tövsiyə olunur."
+
+    return "\n".join(recommendations)
+
+
+
 def get_performance_trend(ishchi):
     """İşçinin bütün dövrlər üzrə performans trendini hesablayır."""
     dovrler = (
