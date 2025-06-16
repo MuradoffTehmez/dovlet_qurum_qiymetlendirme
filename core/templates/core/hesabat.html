@@ -100,6 +100,16 @@
     {% endif %}
     {% endif %}
 
+    ## AI Tövsiyələri
+
+    {% if ai_recommendations %}
+    <hr class="my-4">
+    <h4><i class="bi bi-robot"></i> {% trans "AI Əsaslı İnkişaf Tövsiyələri" %}</h4>
+    <div class="alert alert-light p-4 shadow-sm">
+        {{ ai_recommendations|linebreaks }}
+    </div>
+    {% endif %}
+
     <hr class="my-4">
     <h4>{% trans "Performans Tarixçəsi (Ümumi Ortalama Bal)" %}</h4>
     <div class="card shadow-sm animate__animated animate__fadeIn">
