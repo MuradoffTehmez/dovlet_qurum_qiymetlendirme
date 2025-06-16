@@ -40,6 +40,7 @@ from .models import (Cavab, Hedef, InkishafPlani, Ishchi, OrganizationUnit,
 from .tokens import account_activation_token
 from .utils import get_detailed_report_context, get_performance_trend
 
+
 # --- ÜMUMİ VƏ QEYDİYYAT GÖRÜNÜŞLƏRİ ---
 # # İstifadəçilərin aktiv qiymətləndirmə tapşırıqlarını və inkişaf planını göstərən görünüş.
 # # Bu görünüş, istifadəçilərin öz hesabatlarını və rəhbərlərin komanda üzvlərinin hesabatlarını görməsinə imkan verir.
