@@ -1,9 +1,8 @@
 # core/views.py
-
 # --- Sistem modulları (Python-un daxili) ---
 import json
 import random
-
+# --- Django və Django modulları ---
 from django.conf import settings
 # --- Django auth modulları ---
 from django.contrib import messages
@@ -30,7 +29,7 @@ from django.views.generic import TemplateView
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font
 from weasyprint import HTML
-
+# --- core modulları ---
 from .decorators import rehber_required, superadmin_required
 from .forms import (HedefFormSet, IshchiCreationForm, IshchiPasswordChangeForm,
                     IshchiUpdateForm, YeniDovrForm)
@@ -42,7 +41,8 @@ from .tokens import account_activation_token
 from .utils import get_detailed_report_context, get_performance_trend
 
 # --- ÜMUMİ VƏ QEYDİYYAT GÖRÜNÜŞLƏRİ ---
-
+# # İstifadəçilərin aktiv qiymətləndirmə tapşırıqlarını və inkişaf planını göstərən görünüş.
+# # Bu görünüş, istifadəçilərin öz hesabatlarını və rəhbərlərin komanda üzvlərinin hesabatlarını görməsinə imkan verir.
 
 @login_required
 def dashboard(request):
@@ -66,9 +66,9 @@ def dashboard(request):
     }
     return render(request, "core/dashboard.html", context)
 
-
-# core/views.py
-
+# --- QEYDİYYAT GÖRÜNÜŞLƏRİ ---
+# # Yeni istifadəçiləri qeydiyyatdan keçirən və aktivasiya e-poçtu göndərən görünüş.
+#
 
 def qeydiyyat_sehifesi(request):
     """Yeni istifadəçiləri qeydiyyatdan keçirir və aktivasiya e-poçtu göndərir."""
@@ -166,8 +166,7 @@ def qiymetlendirme_etmek(request, qiymetlendirme_id):
 
 
 # --- HESABAT GÖRÜNÜŞLƏRİ ---
-
-# core/views.py
+## Həm işçinin öz hesabatı, həm də rəhbərin işçinin hesabatına baxması üçün ortaq, təkmilləşdirilmiş view.
 
 
 @login_required
@@ -179,14 +178,12 @@ def hesabat_gorunumu(request, ishchi_id=None):
     # 1. Hədəf işçini və icazələri müəyyən edirik
     if ishchi_id:
         hedef_ishchi = get_object_or_404(Ishchi, id=ishchi_id)
-        # Rəhbər və ya Superuser-in icazəsini yoxlayırıq
         is_allowed_to_view = request.user.is_superuser or (
             request.user.rol == "REHBER" and request.user.organization_unit == hedef_ishchi.organization_unit
         )
         if not is_allowed_to_view:
             raise PermissionDenied
     else:
-        # İstifadəçi öz hesabatına baxır
         hedef_ishchi = request.user
 
     # 2. Performans trendini və mövcud dövrləri alırıq
@@ -209,12 +206,16 @@ def hesabat_gorunumu(request, ishchi_id=None):
     # 4. Detallı hesabat məlumatlarını alırıq
     detailed_context = get_detailed_report_context(hedef_ishchi, selected_dovr)
 
+    # --- AI TÖVSİYƏLƏRİNİ GENERASİYA EDİRİK ---
+    # Şərhlər mövcuddursa, tövsiyələri avtomatik yaradıb kontekstə əlavə edirik
+    ai_recommendations = None
+    if detailed_context.get('yazili_reyler'):
+        ai_recommendations = generate_recommendations(detailed_context['yazili_reyler'])
+
     # 5. Şablon üçün əlavə məntiqi dəyərləri hazırlayırıq
-    # Rəhbər və ya superuser İnkişaf Planı yarada bilər
     can_manage_idp = request.user.is_superuser or (
         request.user.rol == "REHBER" and request.user.sektor == hedef_ishchi.sektor
     )
-    # Bu işçi və dövr üçün planın olub-olmadığını yoxlayırıq
     movcud_plan = InkishafPlani.objects.filter(
         ishchi=hedef_ishchi, dovr=selected_dovr
     ).first()
@@ -229,14 +230,16 @@ def hesabat_gorunumu(request, ishchi_id=None):
         "detailed_context": detailed_context,
         "cycles_for_template": cycles_for_template,
         "can_manage_idp": can_manage_idp,
-        "movcud_plan": movcud_plan,  # Planın olub-olmadığı barədə məlumat
+        "movcud_plan": movcud_plan,
         "trend_chart_labels": json.dumps(list(trend_data.keys())),
         "trend_chart_data": json.dumps(list(trend_data.values())),
+        "ai_recommendations": ai_recommendations, # AI tövsiyələrini əlavə edirik
     }
 
     return render(request, "core/hesabat.html", context)
 
-# core/views.py
+
+# --- SUPERADMIN GÖRÜNÜŞLƏRİ ---
 
 @login_required
 @superadmin_required
@@ -359,6 +362,8 @@ def rehber_paneli(request):
     }
     return render(request, "core/rehber_paneli.html", context)
 
+# --- SUPERADMIN GÖRÜNÜŞLƏRİ ---
+# # Superadmin paneli, bütün təşkilat üzrə statistikaları göstərir və departamentlər üzrə hesabatlar ixrac etməyə imkan verir.
 
 @login_required
 @superadmin_required
@@ -402,11 +407,8 @@ def superadmin_paneli(request):
         )
     return render(request, "core/superadmin_paneli.html", context)
 
-
-
-
-
 # --- PDF YÜKLƏMƏ GÖRÜNÜŞÜ ---
+# # Rəhbər və ya superuser, işçinin hesabatını PDF formatında yükləyə bilər.
 @login_required
 def hesabat_pdf_yukle(request, ishchi_id):
     ishchi = get_object_or_404(Ishchi, id=ishchi_id)
@@ -452,8 +454,8 @@ def hesabat_pdf_yukle(request, ishchi_id):
 
 
 # --- EXCEL İXRAÇLARI ---
-
-
+# Superadmin paneli üçün departament statistikasını Excel faylı olaraq ixrac edir.
+# Bu funksiya, superadminin departamentlər üzrə qiymətləndirmə statistikasını Excel faylı olaraq yükləməsinə imkan verir.
 @login_required
 @superadmin_required
 def export_departments_excel(request):
@@ -519,7 +521,8 @@ def export_departments_excel(request):
 
 
 # --- PDF İXRAÇLARI ---
-
+# Superadmin paneli üçün departament statistikasını PDF faylı olaraq ixrac edir.
+# Bu funksiya, superadminin departamentlər üzrə qiymətləndirmə statistikasını PDF faylı olaraq yükləməsinə imkan verir.
 
 @login_required
 @superadmin_required
@@ -572,6 +575,14 @@ def export_departments_pdf(request):
 
 
 # --- FƏRDİ İNKİŞAF PLANI YARATMA VƏ REDAKTE ETMƏ ---
+# # Rəhbərin və ya superuser-in işçi üçün İnkişaf Planı yaratması və ya redaktə etməsi üçün görünüş.
+# Bu funksiya, rəhbərin və ya superuser-in işçi üçün İnkişaf Plan
+# ı yaratmasına və ya mövcud planı redaktə etməsinə imkan verir.
+# Rəhbər yalnız öz komandasına plan yaza bilər.
+# # Əgər işçi və dövr üçün plan artıq varsa, onu tapırıq. Yoxdursa, yenisini yaradırıq.
+# # HedefFormSet istifadə edərək hədəfləri əlavə və redaktə edirik.
+# # Əgər formset düzgün doldurulubsa, hədəfləri yadda saxlayırıq və rəhbəri işçinin hesabat səhifəsinə yönləndiririk.
+# # Əgər formsetdə səhvlər varsa, səhvləri göstəririk və formu yenidən göstəririk.
 
 
 @login_required
@@ -615,6 +626,14 @@ def plan_yarat_ve_redakte_et(request, ishchi_id, dovr_id):
 
 
 # --- MÖVCUD FƏRDİ İNKİŞAF PLANINA BAXMA VƏ STATUS YENİLƏMƏ ---
+# # Rəhbərin və ya işçinin mövcud İnkişaf Planına baxması və hədəflərin statuslarını yeniləməsi üçün görünüş.
+# Bu funksiya, rəhbərin və ya işçinin mövcud İnkişaf Planına baxmasına və hədəflərin statuslarını yeniləməsinə imkan verir.
+# # Əgər istifadəçi planın sahibi deyilsə və rəhbər və ya superuser deyilsə, icazə verilməyəcək.
+# # Əgər istifadəçi planın sahibi isə, hədəflərin statuslarını yeniləyə bilər.
+# # Hədəflərin statuslarını yeniləmək üçün POST sorğusu göndərməliyik.
+# # Hədəflərin statuslarını yeniləmək üçün Hedef.Status modelindən istifadə edirik.
+# # Hədəflərin statuslarını yeniləmək üçün formdan istifadə edirik.
+# # Hədəflərin statuslarını yeniləmək üçün POST sorğusu göndərməliyik.
 
 
 @login_required
@@ -674,9 +693,9 @@ def plan_bax(request, plan_id):
 
 
 # --- XÜSUSİ GİRİŞ VƏ "MƏNİ XATIRLA" FUNKSİYASI ---
+# # Xüsusi giriş görünüşü, istifadəçilərin "Məni xatırla" funksiyasını istifadə edərək
+# # brauzer bağlanana qədər və ya 30 gün ərzində sessiyanı saxlamağa imkan verir.
 
-
-# core/views.py
 class CustomLoginView(LoginView):
     """ "Məni xatırla" funksionallığını əlavə edən xüsusi LoginView."""
 
@@ -695,6 +714,8 @@ class CustomLoginView(LoginView):
 
 
 # --- HESAB AKTİVLƏŞDİRMƏ ---
+# # İstifadəçilərin e-poçt vasitəsilə hesablarını aktivləşdirməsi üçün görünüş.
+
 def activate(request, uidb64, token):
     """E-poçtdakı link vasitəsilə hesabı aktivləşdirir."""
     try:
