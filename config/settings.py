@@ -74,6 +74,13 @@ ROOT_URLCONF = "config.urls"
 WSGI_APPLICATION = "config.wsgi.application"
 
 # ===================================================================
+# GEMINI AI KONFİQURASİYASI (GOOGLE GEMINI AI CONFIGURATION)
+# ===================================================================
+
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+
+
+# ===================================================================
 # VERİLƏNLƏR BAZASI (DATABASE)
 # ===================================================================
 
