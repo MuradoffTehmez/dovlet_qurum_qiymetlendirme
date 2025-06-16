@@ -14,7 +14,7 @@ Q360 layihəsində təhlükəsizliyi çox ciddiyə alırıq. Əgər hər hansı 
 
 Aşkar etdiyiniz boşluğu bizə bildirmək üçün, zəhmət olmasa, aşağıdakı e-poçt ünvanına detallı bir məlumat göndərin:
 
-**security@example.com** *(Qeyd: Bu ünvanı öz real təhlükəsizlik e-poçtunuzla əvəz edin)*
+**muradoffcode@gmail.com**
 
 Yaxşı bir təhlükəsizlik hesabatı aşağıdakıları ehtiva etməlidir:
 - Boşluğun ətraflı təsviri.
@@ -32,5 +32,3 @@ Q360 sistemi, Django framework-unun təqdim etdiyi bir çox daxili təhlükəsiz
 - **Həssas Məlumatların Təcrid Edilməsi:** `SECRET_KEY`, e-poçt şifrələri və digər həssas məlumatlar `.env` faylı vasitəsilə koddan kənarda saxlanılır.
 - **Rol Əsaslı İcazələr:** Sistemdəki hər bir funksiya, istifadəçinin roluna (`İşçi`, `Rəhbər`, `Superadmin`) əsaslanan sərt icazə yoxlamalarından keçir.
 - **Dəyişikliklərin Tarixçəsi (Audit Log):** `django-simple-history` paketi vasitəsilə bütün vacib məlumatlar üzərində edilən dəyişikliklər (kim, nə vaxt, nəyi dəyişdi) qeydə alınır.
-
-Bu sənədi əlavə etməklə, layihəniz GitHub və digər platformalarda daha etibarlı və peşəkar bir imic qazanacaq.
