@@ -65,7 +65,7 @@ Bu, Django web framework-u ilə yaradılmış, dövlət orqanları və ya təşk
     ```bash
     python manage.py runserver
     ```
-    İndi [http://127.0.0.1:8000/](http://127.0.0.1:8000/) ünvanına daxil ola bilərsiniz.
+    İndi [http://127.0.0.1:8000/](http://127.0.0.1:8000/) ünvanına daxil ola bilərsiniz..
 
 ## İstifadə Olunan Texnologiyalar
 - **Backend:** Django, Python
