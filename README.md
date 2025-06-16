@@ -17,61 +17,88 @@
 ### ✔️ Role-Based Management
 
 * **Superadmin**: Sistemin tam idarəetməsini aparır, qiymətləndirmə dövrlərini yaradar, orqanları idarə edər.
+
   **Superadmin**: Has full control of the system, creates evaluation periods, and manages institutions.
+
 * **Admin**: Qurum daxilində struktur, işçi qeydiyyatı və hesabatlara baxış.
+
   **Admin**: Manages internal structures, employee registration, and views reports.
+
 * **Rəhbər**: Öz strukturundaki işçiləri qiymətləndirir və hesabat alır.
+
   **Manager**: Evaluates subordinates and receives performance reports.
+
 * **Işçi**: Özünü, rəhbəri və komanda yoldaşlarını qiymətləndirir.
+
   **Employee**: Evaluates self, supervisor, and team members.
 
 ### ✔️ Dinamik Qiymətləndirmə Modulu
 
-(Dynamic Evaluation Module)
+### ✔️Dynamic Evaluation Module
 
 * Superadmin tərəfindən qiymətləndirmə kampaniyaları yaradılır.
-  (Evaluation campaigns are created by the Superadmin.)
+
+  Evaluation campaigns are created by the Superadmin.
+
 * Avtomatik algoritm vasitəsilə qiymətləndirici qruplar təyin edilir (360º model: özü, rəhbər, eyni səviyyə).
-  (Evaluator groups are assigned using an automatic algorithm (360º model: self, supervisor, peer).)
+
+  Evaluator groups are assigned using an automatic algorithm (360º model: self, supervisor, peer).
+
 * Kompetensiyalar və meyarlar ixtiyarə verilən parametrlərə görə formalaşdırılır.
-  (Competencies and criteria are defined based on configurable parameters.)
+
+  Competencies and criteria are defined based on configurable parameters.
 
 ### ✔️ Hesabatlar və Analitika
 
-(Reports and Analytics)
+### ✔️ Reports and Analytics
 
 * **Radar Chart**: Kompetensiya paylanması.
-  (Radar Chart: Competency distribution.)
+
+  **Radar Chart**: Competency distribution.
+
 * **Line Chart**: Vaxt üzrə performans dəyişiklikləri.
-  (Line Chart: Performance changes over time.)
+
+  **Line Chart**: Performance changes over time.
+
 * Şəxsi, struktur və ümumi hesabatlar PDF/Excel formatlarında.
-  (Individual, departmental, and overall reports available in PDF/Excel formats.)
+  
+  Individual, departmental, and overall reports available in PDF/Excel formats.
 
 ### ✔️ UX/UI Dizayn və Multidillilik
 
 ### ✔️ UX/UI Design and Multilingual Support
 
 * `django-jazzmin` temasi ilə admin paneli tam yenidən dizayn olunub.
-  (Admin panel redesigned with `django-jazzmin` theme.)
+
+  Admin panel redesigned with `django-jazzmin` theme.
+  
 * Bootstrap 5, `crispy-bootstrap5` ilə responsiv formalar.
-  (Responsive forms powered by Bootstrap 5 and `crispy-bootstrap5`.)
+  
+  Responsive forms powered by Bootstrap 5 and `crispy-bootstrap5`.
+  
 * Dark/Light rejim dəstəyi.
-  (Supports Dark/Light mode.)
+  
+  Supports Dark/Light mode.
+
 * Daxili çevirmə modulu (gettext .po/.mo faylları).
-  (Built-in translation engine with gettext support.)
+  
+  Built-in translation engine with gettext support.
 
 ### ✔️ Digər Funksiyalar
 
-### (Other Features)
+### ✔️ (Other Features)
 
 * **Audit Trail (Tarixçə):** Hər bir əməliyyat qeydi saxlanılır.
-  (Audit Trail: Logs every user action and system event.)
+  Audit Trail: Logs every user action and system event.
+
 * **Fayl Yükləməsə:** Qiymətləndirmə dəlillərinin yüklənməsi.
-  (File Upload: Upload evaluation evidence.)
+  File Upload: Upload evaluation evidence.
+
 * **Email Sistemi:** Bildirişlər, şifrə bərpası, qeydiyyat təsdiqi.
-  (Email System: Notifications, password reset, registration confirmation.)
+  Email System: Notifications, password reset, registration confirmation.
+
 * **Sələhiyyət Modulu:** Hər rəqib əlavə edilə bilən "qiymətləndirici" rəqəmlə kontrol edilir.
-  (Permissions Module: Evaluation weights for each evaluator can be defined.)
+  Permissions Module: Evaluation weights for each evaluator can be defined.
 
 ---
 
