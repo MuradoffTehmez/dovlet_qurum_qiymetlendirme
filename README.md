@@ -1,74 +1,173 @@
 # 360 Dərəcə Qiymətləndirmə Sistemi
 
-Bu, Django web framework-u ilə yaradılmış, dövlət orqanları və ya təşkilatlar üçün nəzərdə tutulmuş hərtərəfli 360 dərəcə performans qiymətləndirmə platformasıdır.
+(360 Degree Appraisal System)
 
-## Əsas Funksiyalar
+**360 Dərəcə Qiymətləndirmə Sistemi** – dövlət idarələri, ictimai qurumlar və ya özəl sektor təşkilatları ücün işçilərin kompetensiyaları üzrə obyektiv qiymətləndirilməsini təmin edən, Django framework-u ilə yaradılmış tam funksional və müsasir veb-platformadır. Sistem, istinad edilən beynəlxalq qiymətləndirmə standartlarını əsas götürərək istənilən strukturda səmərəli performans idarəetməsini mümkün edir.
+(360 Degree Appraisal System is a fully functional and modern web platform built with the Django framework, which provides objective assessment of employees' competencies for government agencies, public institutions or private sector organizations. The system enables effective performance management in any structure, based on referenced international assessment standards.)
 
-- **Çoxşaxəli İstifadəçi Rolları:** İşçi, Rəhbər, Superadmin və Admin üçün xüsusi panellər və icazələr.
-- **Dinamik Qiymətləndirmə Prosesi:** Superadmin tərəfindən yeni qiymətləndirmə dövrlərinin yaradılması və kimin kimi qiymətləndirəcəyinin avtomatik təyin edilməsi (özünü, rəhbəri, komanda yoldaşlarını).
-- **Analitik Hesabatlar:** Hər bir işçi üçün kompetensiyalar üzrə detallı analiz və performans tarixçəsini göstərən interaktiv qrafiklər (Radar və Line chart).
-- **Fayl İxracı:** Fərdi və ümumi hesabatların PDF və Excel formatlarında yüklənməsi.
-- **Peşəkar İstifadəçi Təcrübəsi:**
-  - Çoxdilli dəstək (Azərbaycan/İngilis).
-  - Qaranlıq/İşıqlı rejim (Dark/Light Mode).
-  - Tam Qeydiyyat, Giriş və Şifrə Bərpası axını.
-- **Təhlükəsizlik və Hesabatlılıq:** Bütün vacib məlumat dəyişikliklərini izləyən Audit Trail (Tarixçə) sistemi.
-- **Müasir Dizayn:** `Bootstrap 5`, `django-crispy-forms` və `django-jazzmin` ilə qurulmuş səliqəli və mobil uyğun interfeyslər.
+---
 
-## Quraşdırma və İşə Salma Təlimatları
+## ƏSAS FUNKSİONALLIQ
 
-1.  **Layihəni Klonlayın:**
-    ```bash
-    git clone <repository_url>
-    cd dovlet_qurum_qiymetlendirme
-    ```
+(Core Functionality)
 
-2.  **Virtual Mühit Yaradın və Aktivləşdirin:**
-    ```bash
-    python -m venv venv
-    # Windows
-    venv\Scripts\activate
-    # macOS/Linux
-    source venv/bin/activate
-    ```
+### ✔️ Rol əsaslı idarəetmə
 
-3.  **Asılılıqları Quraşdırın:**
-    ```bash
-    pip install -r requirements.txt
-    ```
+(Role-Based Management)
 
-4.  **Sistem Asılılıqlarını Quraşdırın (Windows üçün):**
-    - `WeasyPrint` üçün [GTK3](https://doc.courtbouillon.org/weasyprint/stable/first_steps.html#windows) quraşdırın.
-    - `makemessages` üçün [gettext](https://mlocati.github.io/articles/gettext-iconv-windows.html) yükləyib, `bin` qovluğunu sistemin `PATH`-ına əlavə edin.
+* **Superadmin**: Sistemin tam idarəetməsini aparır, qiymətləndirmə dövrlərini yaradar, orqanları idarə edər.
+  (Superadmin: Has full control of the system, creates evaluation periods, and manages institutions.)
+* **Admin**: Qurum daxilində struktur, işçi qeydiyyatı və hesabatlara baxış.
+  (Admin: Manages internal structures, employee registration, and views reports.)
+* **Rəhbər**: Öz strukturundaki işçiləri qiymətləndirir və hesabat alır.
+  (Manager: Evaluates subordinates and receives performance reports.)
+* **Işçi**: Özünü, rəhbəri və komanda yoldaşlarını qiymətləndirir.
+  (Employee: Evaluates self, supervisor, and team members.)
 
-5.  **`.env` Faylını Yaradın:**
-    - `.env.example` faylının adını `.env` olaraq dəyişdirin.
-    - `.env` faylını açıb, `SECRET_KEY`, `DEBUG`, `EMAIL_HOST_USER` və `EMAIL_HOST_PASSWORD` dəyərlərini öz məlumatlarınızla doldurun.
+### ✔️ Dinamik Qiymətləndirmə Modulu
 
-6.  **Miqrasiyaları Tətbiq Edin:**
-    ```bash
-    python manage.py makemigrations
-    python manage.py migrate
-    ```
+(Dynamic Evaluation Module)
 
-7.  **Tərcümə Fayllarını Kompilyasiya Edin:**
-    ```bash
-    python manage.py compilemessages
-    ```
+* Superadmin tərəfindən qiymətləndirmə kampaniyaları yaradılır.
+  (Evaluation campaigns are created by the Superadmin.)
+* Avtomatik algoritm vasitəsilə qiymətləndirici qruplar təyin edilir (360º model: özü, rəhbər, eyni səviyyə).
+  (Evaluator groups are assigned using an automatic algorithm (360º model: self, supervisor, peer).)
+* Kompetensiyalar və meyarlar ixtiyarə verilən parametrlərə görə formalaşdırılır.
+  (Competencies and criteria are defined based on configurable parameters.)
 
-8.  **Superadmin Hesabı Yaradın:**
-    ```bash
-    python manage.py createsuperuser
-    ```
+### ✔️ Hesabatlar və Analitika
 
-9.  **Serveri İşə Salın:**
-    ```bash
-    python manage.py runserver
-    ```
-    İndi [http://127.0.0.1:8000/](http://127.0.0.1:8000/) ünvanına daxil ola bilərsiniz..
+(Reports and Analytics)
+
+* **Radar Chart**: Kompetensiya paylanması.
+  (Radar Chart: Competency distribution.)
+* **Line Chart**: Vaxt üzrə performans dəyişiklikləri.
+  (Line Chart: Performance changes over time.)
+* Şəxsi, struktur və ümumi hesabatlar PDF/Excel formatlarında.
+  (Individual, departmental, and overall reports available in PDF/Excel formats.)
+
+### ✔️ UX/UI Dizayn və Multidillilik
+
+(UX/UI Design and Multilingual Support)
+
+* `django-jazzmin` temasi ilə admin paneli tam yenidən dizayn olunub.
+  (Admin panel redesigned with `django-jazzmin` theme.)
+* Bootstrap 5, `crispy-bootstrap5` ilə responsiv formalar.
+  (Responsive forms powered by Bootstrap 5 and `crispy-bootstrap5`.)
+* Dark/Light rejim dəstəyi.
+  (Supports Dark/Light mode.)
+* Daxili çevirmə modulu (Əliyev əlifbası, gettext .po/.mo faylları).
+  (Built-in translation engine with Aliyev alphabet and gettext support.)
+
+### ✔️ Digər Funksiyalar
+
+(Other Features)
+
+* **Audit Trail (Tarixçə):** Hər bir əməliyyat qeydi saxlanılır.
+  (Audit Trail: Logs every user action and system event.)
+* **Fayl Yükləməsə:** Qiymətləndirmə dəlillərinin yüklənməsi.
+  (File Upload: Upload evaluation evidence.)
+* **Email Sistemi:** Bildirişlər, şifrə bərpası, qeydiyyat təsdiqi.
+  (Email System: Notifications, password reset, registration confirmation.)
+* **Sələhiyyət Modulu:** Hər rəqib əlavə edilə bilən "qiymətləndirici" rəqəmlə kontrol edilir.
+  (Permissions Module: Evaluation weights for each evaluator can be defined.)
+
+---
+
+## QURAŞDIRMA VƏ İŞƏ SALMA
+
+(Installation and Deployment)
+
+### 1. Layihəni Klonlayın
+
+(Clone the Project)
+
+```bash
+git clone https://github.com/.../dovlet_qurum_qiymetlendirme.git
+cd dovlet_qurum_qiymetlendirme
+```
+
+### 2. Virtual Mühit Hazırlayın
+
+(Create Virtual Environment)
+
+```bash
+python -m venv venv
+# Windows
+venv\Scripts\activate
+# Linux/macOS
+source venv/bin/activate
+```
+
+### 3. Asılılıqları Quraşdırın
+
+(Install Dependencies)
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Sistem Kitabxanaları (Windows)
+
+(System Libraries for Windows)
+
+* WeasyPrint üçün GTK3
+  (GTK3 for WeasyPrint)
+* makemessages üçün gettext (bin yolunu PATH-a daxil edin)
+  (gettext for `makemessages` - add bin path to system PATH)
+
+### 5. .env Faylı
+
+(.env File)
+
+* `.env.example` faylını `.env` adlandırın.
+  (Rename `.env.example` to `.env`.)
+* Parametrləri doldurun: `SECRET_KEY`, `DEBUG`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`.
+  (Fill in the required parameters: `SECRET_KEY`, `DEBUG`, `EMAIL_HOST_USER`, `EMAIL_HOST_PASSWORD`.)
+
+### 6. Miqrasiyalar və Komandalar
+
+(Migrations and Commands)
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+python manage.py compilemessages
+python manage.py createsuperuser
+python manage.py runserver
+```
+
+---
 
 ## İstifadə Olunan Texnologiyalar
-- **Backend:** Django, Python
-- **Frontend:** HTML, CSS, Bootstrap 5, JavaScript, Chart.js
-- **Verilənlər Bazas:** SQLite3 (development), PostgreSQL
-- **Paketlər:** `django-crispy-forms`, `crispy-bootstrap5`, `django-jazzmin`, `django-simple-history`, `weasyprint`, `openpyxl`, `python-dotenv`
+
+(Technologies Used)
+
+* **Backend:** Django, Python
+* **Frontend:** HTML5, CSS3, Bootstrap 5, JavaScript, Chart.js
+* **Verilənlər Bazası:** SQLite3 (inkisaf), PostgreSQL (istehsalat)
+  (Database: SQLite3 for development, PostgreSQL for production)
+* **Paketlər:**
+
+  * `django-crispy-forms`, `crispy-bootstrap5`
+  * `django-jazzmin` (admin temasi)
+  * `django-simple-history` (tarixçə)
+  * `weasyprint` (PDF ixrac)
+  * `openpyxl` (Excel ixrac)
+  * `python-dotenv` (mühit dəyişkənləri)
+
+---
+
+## Gələcək Gənişləndirilmələr (Roadmap)
+
+(Future Enhancements)
+
+* ✅ Mobil əlavə versiyası (Flutter)
+  (Mobile app version with Flutter)
+* ✅ AI dəstəkli qiymətləndirmə üsulları (machine learning əsaslı analiz)
+  (AI-supported evaluation using machine learning analysis)
+* ✅ HRMS sistemlərinə REST API vasitəsilə inteqrasiya
+  (Integration with HRMS systems via REST API)
+
+Bu sistem, istənilən dövlət və ya özəl qurumun iç strukturlarına asanlıqla uyğunlaşdırıla biləcək şəkildə qurulmuşdur.
+(This system is designed to be easily adaptable to the internal structure of any public or private organization.)
