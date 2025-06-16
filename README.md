@@ -4,7 +4,7 @@
 
 **360 Dərəcə Qiymətləndirmə Sistemi** – dövlət idarələri, ictimai qurumlar və ya özəl sektor təşkilatları ücün işçilərin kompetensiyaları üzrə obyektiv qiymətləndirilməsini təmin edən, Django framework-u ilə yaradılmış tam funksional və müsasir veb-platformadır. Sistem, istinad edilən beynəlxalq qiymətləndirmə standartlarını əsas götürərək istənilən strukturda səmərəli performans idarəetməsini mümkün edir.
 
-**360 Degree Appraisal System**  is a fully functional and modern web platform built with the Django framework, which provides objective assessment of employees' competencies for government agencies, public institutions or private sector organizations. The system enables effective performance management in any structure, based on referenced international assessment standards.
+**360 Degree Appraisal System**  is a fully functional and modern web platform built with the Django framework, which provides objective assessment of employees' competencies for government agencies, public institutions or private sector organizations. The system enables effective performance management in any structure, based on referenced international assessment standards..
 
 ---
 
