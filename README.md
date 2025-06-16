@@ -135,9 +135,9 @@ pip install -r requirements.txt
 ### System Libraries for Windows
 
 * WeasyPrint üçün GTK3
-  (GTK3 for WeasyPrint)
-* makemessages üçün gettext (bin yolunu PATH-a daxil edin)
-  (gettext for `makemessages` - add bin path to system PATH)
+  `makemessages` üçün gettext (bin yolunu PATH-a daxil edin)
+  
+  gettext for `makemessages` - add bin path to system PATH
 
 ### 5. .env Faylı
 ### .env File
