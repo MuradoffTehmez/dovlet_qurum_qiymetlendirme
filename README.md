@@ -1,28 +1,29 @@
 # 360 Dərəcə Qiymətləndirmə Sistemi
 
-(360 Degree Appraisal System)
+# 360 Degree Appraisal System
 
 **360 Dərəcə Qiymətləndirmə Sistemi** – dövlət idarələri, ictimai qurumlar və ya özəl sektor təşkilatları ücün işçilərin kompetensiyaları üzrə obyektiv qiymətləndirilməsini təmin edən, Django framework-u ilə yaradılmış tam funksional və müsasir veb-platformadır. Sistem, istinad edilən beynəlxalq qiymətləndirmə standartlarını əsas götürərək istənilən strukturda səmərəli performans idarəetməsini mümkün edir.
-(360 Degree Appraisal System is a fully functional and modern web platform built with the Django framework, which provides objective assessment of employees' competencies for government agencies, public institutions or private sector organizations. The system enables effective performance management in any structure, based on referenced international assessment standards.)
+
+**360 Degree Appraisal System**  is a fully functional and modern web platform built with the Django framework, which provides objective assessment of employees' competencies for government agencies, public institutions or private sector organizations. The system enables effective performance management in any structure, based on referenced international assessment standards.
 
 ---
 
 ## ƏSAS FUNKSİONALLIQ
 
-(Core Functionality)
+## Core Functionality
 
 ### ✔️ Rol əsaslı idarəetmə
 
-(Role-Based Management)
+### ✔️ Role-Based Management
 
 * **Superadmin**: Sistemin tam idarəetməsini aparır, qiymətləndirmə dövrlərini yaradar, orqanları idarə edər.
-  (Superadmin: Has full control of the system, creates evaluation periods, and manages institutions.)
+  **Superadmin**: Has full control of the system, creates evaluation periods, and manages institutions.
 * **Admin**: Qurum daxilində struktur, işçi qeydiyyatı və hesabatlara baxış.
-  (Admin: Manages internal structures, employee registration, and views reports.)
+  **Admin**: Manages internal structures, employee registration, and views reports.
 * **Rəhbər**: Öz strukturundaki işçiləri qiymətləndirir və hesabat alır.
-  (Manager: Evaluates subordinates and receives performance reports.)
+  **Manager**: Evaluates subordinates and receives performance reports.
 * **Işçi**: Özünü, rəhbəri və komanda yoldaşlarını qiymətləndirir.
-  (Employee: Evaluates self, supervisor, and team members.)
+  **Employee**: Evaluates self, supervisor, and team members.
 
 ### ✔️ Dinamik Qiymətləndirmə Modulu
 
@@ -48,7 +49,7 @@
 
 ### ✔️ UX/UI Dizayn və Multidillilik
 
-(UX/UI Design and Multilingual Support)
+### ✔️ UX/UI Design and Multilingual Support
 
 * `django-jazzmin` temasi ilə admin paneli tam yenidən dizayn olunub.
   (Admin panel redesigned with `django-jazzmin` theme.)
@@ -56,12 +57,12 @@
   (Responsive forms powered by Bootstrap 5 and `crispy-bootstrap5`.)
 * Dark/Light rejim dəstəyi.
   (Supports Dark/Light mode.)
-* Daxili çevirmə modulu (Əliyev əlifbası, gettext .po/.mo faylları).
-  (Built-in translation engine with Aliyev alphabet and gettext support.)
+* Daxili çevirmə modulu (gettext .po/.mo faylları).
+  (Built-in translation engine with gettext support.)
 
 ### ✔️ Digər Funksiyalar
 
-(Other Features)
+### (Other Features)
 
 * **Audit Trail (Tarixçə):** Hər bir əməliyyat qeydi saxlanılır.
   (Audit Trail: Logs every user action and system event.)
