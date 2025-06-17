@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'simple_history',
-    # 'captcha',
 
     # Django-nun daxili tətbiqləri
     'django.contrib.admin',
