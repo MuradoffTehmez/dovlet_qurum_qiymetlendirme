@@ -33,21 +33,23 @@ AUTHENTICATION_BACKENDS = [
 # ===================================================================
 
 INSTALLED_APPS = [
-    # Üçüncü tərəf tətbiqləri
-    "jazzmin",
-    "crispy_forms",
-    "crispy_bootstrap5",
-    "simple_history",
-    # 'captcha',  # CAPTCHA üçün əlavə edirik, amma aktiv etməmişik
-    # Django daxilində olanlar
-    "django.contrib.admin",
-    "django.contrib.auth",
-    "django.contrib.contenttypes",
-    "django.contrib.sessions",
-    "django.contrib.messages",
-    "django.contrib.staticfiles",
-    # Öz tətbiqlər
-    "core.apps.CoreConfig",
+    # Xarici tətbiqlər (dizayn və s.)
+    'jazzmin',
+    'crispy_forms',
+    'crispy_bootstrap5',
+    'simple_history',
+    # 'captcha',
+
+    # Django-nun daxili tətbiqləri
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+
+    # Bizim lokal tətbiqimiz
+    'core.apps.CoreConfig',
 ]
 
 # ===================================================================
@@ -236,7 +238,7 @@ TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": [BASE_DIR / "templates"],
-        "APP_DIRS": True,
+        "APP_DIRS": False,
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.debug",
