@@ -9,7 +9,6 @@ from django.urls import include, path
 # Bizim xüsusi Login View-umuzu import edirik
 from core.views import CustomLoginView
 
-# Dilə həssas olan URL-ləri bir siyahıya yığırıq
 i18n_urlpatterns = [
     path("accounts/login/", CustomLoginView.as_view(), name="login"),
     path("accounts/", include("django.contrib.auth.urls")),
@@ -18,18 +17,15 @@ i18n_urlpatterns = [
 
 # Əsas urlpatterns siyahısını yaradırıq
 urlpatterns = [
-    # Dil prefiksi olmayan admin panelini əlavə edirik
-    path("admin/", admin.site.urls),
-    # Dilə həssas olan URL-ləri i18n_patterns ilə əlavə edirik
-    # prefix_default_language=True standart dil üçün də /az/ prefiksini təmin edir
-    *i18n_patterns(*i18n_urlpatterns, prefix_default_language=True),
-]
+    
+    path('admin/', admin.site.urls),
 
-# Development rejimində (DEBUG=True) statik və media fayllarını əlavə edirik
+    *i18n_patterns(*i18n_urlpatterns, prefix_default_language=True),
+
+]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) 
-
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Xəta handler-lərini təyin edirik
 handler400 = "django.views.defaults.bad_request"

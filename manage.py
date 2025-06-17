@@ -20,3 +20,9 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+import django
+django.setup()
+from django.apps import apps
+print([app.label for app in apps.get_app_configs()])

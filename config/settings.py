@@ -127,12 +127,12 @@ LOCALE_PATHS = [BASE_DIR / "locale"]
 # STATİK FAYLLAR (STATIC FILES)
 # ===================================================================
 
-STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
-STATICFILES_DIRS = [BASE_DIR / "static"]
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']  # Əgər static qovluğu project root-dadırsa
+STATIC_ROOT = BASE_DIR / 'staticfiles'   # collectstatic üçün
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = 'media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # ===================================================================
 # AUTHENTICATION VƏ USER MODEL
