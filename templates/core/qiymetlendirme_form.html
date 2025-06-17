@@ -1,0 +1,66 @@
+{% extends 'core/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Qiymətləndirmə Formu" %}{% endblock %}
+
+{% block content %}
+<div class="container py-4 animate__animated animate__fadeIn">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-primary display-5">{% trans "Qiymətləndirmə Formu" %}</h2>
+        <p class="text-muted fs-5">{% trans "Qiymətləndirilən şəxs:" %} <strong>{{
+                qiymetlendirme.qiymetlendirilen.get_full_name }}</strong></p>
+        <p class="text-muted fs-5">{% trans "Dövr:" %} <strong>{{ qiymetlendirme.dovr.ad }}</strong></p>
+    </div>
+
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+
+        {% for sual in suallar %}
+        <div class="card border-0 shadow-lg mb-4 animate__animated animate__fadeInUp animate__faster">
+            <div class="card-header bg-gradient-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ forloop.counter }}. {{ sual.metn }}</h5>
+                    {% if sual.kateqoriya %}<span class="badge bg-dark">{{ sual.kateqoriya.ad }}</span>{% endif %}
+                </div>
+            </div>
+            <div class="card-body bg-light">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold text-dark">{% trans "Xal (1-dən 10-a qədər):" %}</label>
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for i in "1234567891"|make_list %}
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="xal_{{ sual.id }}"
+                                id="xal_{{ sual.id }}_{{ forloop.counter }}" value="{{ forloop.counter }}" required>
+                            <label class="form-check-label" for="xal_{{ sual.id }}_{{ forloop.counter }}">{{
+                                forloop.counter }}</label>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="rey_{{ sual.id }}" class="form-label fw-semibold text-dark">{% trans "Əlavə Rəy (istəyə
+                        bağlı):" %}</label>
+                    <textarea class="form-control" id="rey_{{ sual.id }}" name="rey_{{ sual.id }}" rows="3"
+                        placeholder="{% trans 'Əlavə fikirlərinizi yaza bilərsiniz...' %}"></textarea>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="d-grid mt-4">
+            <button type="submit" class="btn btn-success btn-lg animate__animated animate__fadeInUp animate__fast">
+                {% trans "Qiymətləndirməni Təsdiqlə" %}
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #007bff, #6610f2);
+    }
+</style>
+{% endblock %}

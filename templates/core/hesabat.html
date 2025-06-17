@@ -1,0 +1,186 @@
+{% extends 'core/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Qiymətləndirmə Hesabatı" %}{% endblock %}
+
+{% block content %}
+<div class="container py-4 animate__animated animate__fadeIn animate__faster">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">
+            <i class="bi bi-graph-up"></i> {% trans "Qiymətləndirmə Hesabatı" %}
+        </h2>
+        <div class="d-flex gap-2">
+            {% if not detailed_context.error %}
+            {% if can_manage_idp %}
+            {% if movcud_plan %}
+            <a href="{% url 'plan_bax' movcud_plan.id %}" class="btn btn-outline-primary">
+                <i class="bi bi-eye-fill"></i> {% trans "Plana Bax" %}
+            </a>
+            {% else %}
+            <a href="{% url 'plan_yarat' detailed_context.ishchi.id detailed_context.dovr.id %}"
+                class="btn btn-outline-info">
+                <i class="bi bi-plus-circle-fill"></i> {% trans "İnkişaf Planı Yarat" %}
+            </a>
+            {% endif %}
+            {% endif %}
+            <a href="{% url 'hesabat_pdf_yukle' detailed_context.ishchi.id %}?dovr_id={{ detailed_context.dovr.id }}"
+                class="btn btn-outline-danger" target="_blank">
+                <i class="bi bi-file-earmark-pdf"></i> {% trans "PDF Yüklə" %}
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4 animate__animated animate__fadeInUp">
+        <div class="card-body">
+            <form method="get" class="d-flex align-items-center flex-wrap gap-2">
+                <label for="dovr_id" class="form-label mb-0">{% trans "Hesabat Dövrünü Seçin:" %}</label>
+                <select name="dovr_id" id="dovr_id" class="form-select" style="width: auto;">
+                    {% for cycle in cycles_for_template %}
+                    <option value="{{ cycle.id }}" {% if cycle.is_selected %}selected{% endif %}>
+                        {{ cycle.ad }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-secondary">{% trans "Göstər" %}</button>
+            </form>
+        </div>
+    </div>
+
+    {% if detailed_context.error %}
+    <div class="alert alert-warning animate__animated animate__shakeX">
+        {{ detailed_context.error }}
+    </div>
+    {% else %}
+    <h4 class="mb-3">{{ detailed_context.dovr.ad }} {% trans "Dövrü üçün Detallı Analiz" %}</h4>
+    <p><strong>{% trans "İşçi:" %}</strong> {{ detailed_context.ishchi.get_full_name }}</p>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <h5>{% trans "Kompetensiyalar üzrə Nəticələr" %}</h5>
+            <div style="height:400px">
+                <canvas id="radarChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <h5>{% trans "Ümumi Göstəricilər" %}</h5>
+            <table class="table table-bordered table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>{% trans "Kompetensiya (Kateqoriya)" %}</th>
+                        <th>{% trans "Ortalama Xal (10 üzərindən)" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for netice in detailed_context.kateqoriya_neticeleri %}
+                    <tr>
+                        <td>{{ netice.ad }}</td>
+                        <td><strong>{{ netice.ortalama_xal|floatformat:2 }}</strong></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2">{% trans "Bu dövr üçün göstərici tapılmadı." %}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <hr class="my-4">
+    <h4>{{ detailed_context.dovr.ad }} {% trans "Dövrü üçün Yazılı Rəylər" %}</h4>
+    {% if detailed_context.yazili_reyler %}
+    <ul class="list-group">
+        {% for rey in detailed_context.yazili_reyler %}
+        <li class="list-group-item">"{{ rey }}"</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p class="text-muted fst-italic">{% trans "Bu dövr üçün yazılı rəy qeyd edilməyib." %}</p>
+    {% endif %}
+    {% endif %}
+
+    ## AI Tövsiyələri
+
+    {% if ai_recommendations %}
+    <hr class="my-4">
+    <h4><i class="bi bi-robot"></i> {% trans "AI Əsaslı İnkişaf Tövsiyələri" %}</h4>
+    <div class="alert alert-light p-4 shadow-sm">
+        {{ ai_recommendations|linebreaks }}
+    </div>
+    {% endif %}
+
+    <hr class="my-4">
+    <h4>{% trans "Performans Tarixçəsi (Ümumi Ortalama Bal)" %}</h4>
+    <div class="card shadow-sm animate__animated animate__fadeIn">
+        <div class="card-body">
+            <div style="height:400px">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        {% if not detailed_context.error %}
+        const radarCtx = document.getElementById('radarChart');
+        if (radarCtx) {
+            new Chart(radarCtx, {
+                type: 'radar',
+                data: {
+                    labels: {{ detailed_context.chart_labels | safe }},
+        datasets: [{
+            label: '{% trans "Ortalama Xal" %}',
+            data: {{ detailed_context.chart_data | safe }},
+        fill: true,
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        borderColor: 'rgb(54, 162, 235)',
+        pointBackgroundColor: 'rgb(54, 162, 235)'
+                    }]
+                },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            r: {
+                suggestedMin: 0,
+                suggestedMax: 10
+            }
+        }
+    }
+            });
+        }
+    {% endif %}
+
+    const trendCtx = document.getElementById('trendChart');
+    if (trendCtx) {
+        new Chart(trendCtx, {
+            type: 'line',
+            data: {
+                labels: {{ trend_chart_labels | safe }},
+    datasets: [{
+        label: '{% trans "Ümumi Ortalama Bal" %}',
+        data: {{ trend_chart_data | safe }},
+        fill: false,
+        borderColor: 'rgb(255, 99, 132)',
+        tension: 0.1
+                    }]
+                },
+    options: {
+        responsive: true,
+            maintainAspectRatio: false,
+                scales: {
+            y: {
+                beginAtZero: true,
+                    suggestedMax: 10
+            }
+        }
+    }
+            });
+        }
+    });
+</script>
+{% endblock %}

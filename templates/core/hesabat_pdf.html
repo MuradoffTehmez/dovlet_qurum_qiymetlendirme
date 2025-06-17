@@ -1,0 +1,172 @@
+{% load i18n static %}
+<!doctype html>
+<html lang="az">
+
+<head>
+    <meta charset="utf-8">
+    <title>{% trans "Qiymətləndirmə Hesabatı" %} - {{ ishchi.get_full_name }}</title>
+    <style>
+        /* CSS stilləri burada yerləşir */
+        @font-face {
+            font-family: 'Roboto';
+            src: url(https://fonts.gstatic.com/s/roboto/v27/KFOmCnqEu92Fr1Mu4mxK.woff2) format('woff2');
+            font-weight: normal;
+        }
+
+        @font-face {
+            font-family: 'Roboto';
+            src: url(https://fonts.gstatic.com/s/roboto/v27/KFOlCnqEu92Fr1MmWUlfBBc4.woff2) format('woff2');
+            font-weight: bold;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.5;
+            color: #333;
+        }
+
+        .header {
+            text-align: right;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 10px;
+        }
+
+        .header img {
+            max-height: 50px;
+        }
+
+        h2 {
+            color: #0056b3;
+            margin-top: 30px;
+        }
+
+        h4 {
+            color: #444;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+            margin-top: 25px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 11px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .rey-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .rey-list li {
+            background-color: #f1f8ff;
+            border-left: 4px solid #0056b3;
+            margin-bottom: 8px;
+            padding: 12px;
+            font-style: italic;
+        }
+
+        .positive-gap {
+            color: green;
+        }
+
+        .negative-gap {
+            color: red;
+        }
+
+        /* Hər səhifənin altında görünəcək altbilgi */
+        @page {
+            size: a4;
+            margin: 1.5cm;
+
+            @bottom-center {
+                content: "{% trans 'Səhifə' %} " counter(page) " / " counter(pages);
+                font-size: 10px;
+                color: #555;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <img src="{% static 'images/logo.png' %}" alt="Logo">
+    </div>
+
+    <h2>{% trans "360° Performans Hesabatı" %}</h2>
+    <table>
+        <tr>
+            <th style="width: 25%;">{% trans "İşçi" %}:</th>
+            <td>{{ ishchi.get_full_name }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Vəzifə" %}:</th>
+            <td>{{ ishchi.vezife }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Dövr" %}:</th>
+            <td>{{ dovr.ad }}</td>
+        </tr>
+        <tr>
+            <th>{% trans "Hesabat Tarixi" %}:</th>
+            <td>{% now "d-m-Y" %}</td>
+        </tr>
+    </table>
+
+    <h4>{% trans "Boşluq Analizi (Gap Analysis)" %}</h4>
+    <p style="font-size:12px;">Bu cədvəl, sizin özünüzə verdiyiniz qiymətlərlə, başqalarının (rəhbər, komanda
+        yoldaşları) sizə verdiyi qiymətlərin ortalamasını müqayisə edir.</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Kompetensiya</th>
+                <th>Öz Qiymətim</th>
+                <th>Başqalarının Qiyməti</th>
+                <th>Fərq (Boşluq)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in gap_analysis_data %}
+            <tr>
+                <td>{{ item.kateqoriya }}</td>
+                <td>{{ item.oz_qiymeti }}</td>
+                <td>{{ item.bashqalarinin_qiymeti }}</td>
+                <td class="{% if item.ferq > 0 %}positive-gap{% elif item.ferq < 0 %}negative-gap{% endif %}">
+                    {{ item.ferq }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h4 style="page-break-before: always;">{% trans "Anonim Yazılı Rəylər" %}</h4>
+    {% if yazili_reyler %}
+    <ul class="rey-list">
+        {% for rey in yazili_reyler %}
+        <li>"{{ rey }}"</li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>{% trans "Bu dövr üçün yazılı rəy qeyd edilməyib." %}</p>
+    {% endif %}
+
+</body>
+
+</html>
