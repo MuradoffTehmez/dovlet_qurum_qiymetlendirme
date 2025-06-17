@@ -2,7 +2,7 @@
     --main-bg-color: #f8f9fa;
     --main-text-color: #212529;
     --card-bg-color: #ffffff;
-    --card-border-color: rgba(0, 0, 0, 0.1);
+    --card-border-color: rgba(63, 129, 75, 0.43);
     --navbar-bg-color: #ffffff;
     --footer-bg-color: #f8f9fa;
     --primary-color: #007BFF;
@@ -18,7 +18,7 @@ html.dark-mode {
     --main-bg-color: #212529;
     --main-text-color: #dee2e6;
     --card-bg-color: #2b3035;
-    --card-border-color: rgba(255, 255, 255, 0.125);
+    --card-border-color: rgba(57, 209, 10, 0.95);
     --navbar-bg-color: #2b3035;
     --footer-bg-color: #2b3035;
     --primary-color: #66b2ff;
