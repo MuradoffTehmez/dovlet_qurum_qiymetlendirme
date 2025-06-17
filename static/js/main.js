@@ -1,5 +1,4 @@
 // main.js - Dark mode, animations and other interactivity
-
 document.addEventListener("DOMContentLoaded", function () {
   const themeToggleBtn = document.getElementById("theme-toggle-btn");
   const htmlElement = document.documentElement;
