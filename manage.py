@@ -22,7 +22,45 @@ if __name__ == "__main__":
     main()
 
 
-import django
-django.setup()
-from django.apps import apps
-print([app.label for app in apps.get_app_configs()])
+import os
+import subprocess
+
+# Layihənin kök qovluğu
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+def run_command(description, command):
+    print(f"\n🔍 {description}")
+    print(f"📎 Komanda: {' '.join(command)}\n")
+    result = subprocess.run(command, capture_output=True, text=True)
+    print(result.stdout)
+    if result.stderr:
+        print("⚠️  Xəta/Məlumat:", result.stderr)
+
+def main():
+    print("📦 Django Layihə Kod Auditi Başladı...\n")
+
+    # Kod analizləri
+    run_command("PEP8 və sintaksis yoxlaması (flake8)", ["flake8", BASE_DIR])
+    run_command("Kod keyfiyyəti yoxlaması (pylint)", ["pylint", BASE_DIR])
+    run_command("Statik təhlükəsizlik yoxlaması (bandit)", ["bandit", "-r", BASE_DIR])
+    run_command("Tip yoxlaması (mypy)", ["mypy", BASE_DIR])
+
+    # Django checks
+    print("\n🧪 Django daxili 'checks' yoxlaması:")
+    try:
+        import django
+        from django.core import checks
+        django.setup()
+        errors = checks.run_checks()
+        if not errors:
+            print("✅ Django sistemində heç bir problem aşkar edilmədi.")
+        else:
+            for e in errors:
+                print(f"❌ {e.msg} | Level: {e.level_tag}")
+    except Exception as e:
+        print(f"❗ Django yoxlamasında xəta: {e}")
+
+    print("\n✅ Audit tamamlandı.")
+
+if __name__ == "__main__":
+    main()
