@@ -24,43 +24,65 @@ if __name__ == "__main__":
 
 import os
 import subprocess
+from django.core.management.base import BaseCommand
 
-# Layihənin kök qovluğu
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
-def run_command(description, command):
-    print(f"\n🔍 {description}")
-    print(f"📎 Komanda: {' '.join(command)}\n")
-    result = subprocess.run(command, capture_output=True, text=True)
-    print(result.stdout)
-    if result.stderr:
-        print("⚠️  Xəta/Məlumat:", result.stderr)
+class Color:
+    OK = '\033[92m'
+    WARNING = '\033[93m'
+    ERROR = '\033[91m'
+    RESET = '\033[0m'
+    HEADER = '\033[96m'
 
-def main():
-    print("📦 Django Layihə Kod Auditi Başladı...\n")
+class Command(BaseCommand):
+    help = "Layihənin bütün Python və Django kodlarını analiz edir (Prettier stilində)"
 
-    # Kod analizləri
-    run_command("PEP8 və sintaksis yoxlaması (flake8)", ["flake8", BASE_DIR])
-    run_command("Kod keyfiyyəti yoxlaması (pylint)", ["pylint", BASE_DIR])
-    run_command("Statik təhlükəsizlik yoxlaması (bandit)", ["bandit", "-r", BASE_DIR])
-    run_command("Tip yoxlaması (mypy)", ["mypy", BASE_DIR])
+    def handle(self, *args, **options):
+        self.stdout.write(f"{Color.HEADER}🚀 Django Kod Audit Başladı (Prettier Stilində){Color.RESET}\n")
 
-    # Django checks
-    print("\n🧪 Django daxili 'checks' yoxlaması:")
-    try:
-        import django
+        self.run_command("PEP8 və sintaksis yoxlaması (flake8)", ["flake8", BASE_DIR])
+        self.run_command("Kod keyfiyyəti (pylint)", ["pylint", BASE_DIR])
+        self.run_command("Tip yoxlaması (mypy)", ["mypy", BASE_DIR])
+        self.run_command("Təhlükəsizlik analizləri (bandit)", ["bandit", "-r", BASE_DIR])
+        self.run_django_checks()
+
+        self.stdout.write(f"\n{Color.OK}✅ Audit tamamlandı.{Color.RESET}")
+
+    def run_command(self, title, command):
+        self.stdout.write(f"{Color.HEADER}▶ {title}{Color.RESET}")
+        if not shutil.which(command[0]):
+            self.stdout.write(f"{Color.WARNING}⚠ Alət tapılmadı: {command[0]}{Color.RESET}")
+            return
+        result = subprocess.run(command, capture_output=True, text=True)
+        if result.stdout.strip():
+            self.stdout.write(f"{Color.OK}✔ Çıxış:\n{result.stdout}{Color.RESET}")
+        if result.stderr.strip():
+            self.stdout.write(f"{Color.ERROR}✘ Xəta:\n{result.stderr}{Color.RESET}")
+        if not result.stdout.strip() and not result.stderr.strip():
+            self.stdout.write(f"{Color.OK}✔ Heç bir problem tapılmadı.{Color.RESET}")
+        self.stdout.write("-" * 70)
+
+    def run_django_checks(self):
         from django.core import checks
-        django.setup()
-        errors = checks.run_checks()
-        if not errors:
-            print("✅ Django sistemində heç bir problem aşkar edilmədi.")
-        else:
-            for e in errors:
-                print(f"❌ {e.msg} | Level: {e.level_tag}")
-    except Exception as e:
-        print(f"❗ Django yoxlamasında xəta: {e}")
-
-    print("\n✅ Audit tamamlandı.")
-
-if __name__ == "__main__":
-    main()
+        try:
+            errors = checks.run_checks()
+            self.stdout.write(f"{Color.HEADER}▶ Django Check Analizi{Color.RESET}")
+            if not errors:
+                self.stdout.write(f"{Color.OK}✔ Django konfiqurasiyası düzgündür.{Color.RESET}")
+            else:
+                for e in errors:
+                    level = e.level_tag.upper()
+                    color = {
+                        'ERROR': Color.ERROR,
+                        'WARNING': Color.WARNING,
+                        'INFO': Color.HEADER,
+                    }.get(level, Color.RESET)
+                    self.stdout.write(f"{color}❗ {level}: {e.msg}{Color.RESET}")
+                    if e.hint:
+                        self.stdout.write(f"   💡 İpucu: {e.hint}")
+                    if e.obj:
+                        self.stdout.write(f"   📍 Obyekt: {e.obj}")
+        except Exception as e:
+            self.stdout.write(f"{Color.ERROR}✘ Django yoxlamasında xəta: {e}{Color.RESET}")
+        self.stdout.write("-" * 70)
