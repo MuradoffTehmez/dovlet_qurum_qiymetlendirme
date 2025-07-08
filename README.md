@@ -12,7 +12,7 @@ Q360 is a fully functional and modern web platform developed with the Django fra
 
 ### ✔️ Rol Əsaslı Dinamik İdarəetmə (Role-Based Dynamic Management)
 
-Sistem dörd əsas istifadəçi rolunu dəstəkləyir, hər biri konkret funksionallıqlara malikdir və sistem daxilində fərqli icazələrə sahibdir:
+//Sistem dörd əsas istifadəçi rolunu dəstəkləyir, hər biri konkret funksionallıqlara malikdir və sistem daxilində fərqli icazələrə sahibdir:
 
 * **Superadmin**: Bütün sistemin tam idarəetməsini həyata keçirir. Qiymətləndirmə dövrlərini planlaşdırır və yaradır, təşkilati struktur elementlərini (nazirlik, idarə, şöbə, sektor və s.) idarə edir, istifadəçiləri təyin edir və sistemin ümumi performansını ölçən analitik hesabatlara çıxış əldə edir.
 
