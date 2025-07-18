@@ -6,7 +6,10 @@
       "Bash(pip show:*)",
       "Bash(curl:*)",
       "Bash(pkill:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(rm:*)",
+      "Bash(del \"C:\\Q360\\locale\\az\\LC_MESSAGES\\django.po\")",
+      "Bash(sed:*)"
     ],
     "deny": []
   }

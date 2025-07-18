@@ -1,9 +1,9 @@
 # core/context_processors.py
 
-from django.utils.translation import get_language
-from django.conf import settings
-from django.utils import timezone
-from django.db.models import Count, Q
+from django.utils.translation import get_language # type: ignore
+from django.conf import settings # type: ignore
+from django.utils import timezone # type: ignore
+from django.db.models import Count, Q # type: ignore
 from .models import Qiymetlendirme, QiymetlendirmeDovru, Ishchi
 
 # dil dəyişdirmə menyusu üçün kontekst prosessoru

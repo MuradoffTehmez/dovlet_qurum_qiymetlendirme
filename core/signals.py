@@ -9,7 +9,7 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
 
-from .models import CustomUser, Qiymetlendirme
+from .models import Ishchi, Qiymetlendirme
 from .tokens import account_activation_token
 from .tasks import send_activation_email_task
 
@@ -57,7 +57,7 @@ Qiymətləndirmə Sistemi
                 print(f"E-poçt göndərilərkən xəta baş verdi: {e}")
 
 
-@receiver(post_save, sender=CustomUser)
+@receiver(post_save, sender=Ishchi)
 def send_activation_email(sender, instance, created, **kwargs):
     if created and not instance.is_active:
         # Aktivasiya linki yaradırıq

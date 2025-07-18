@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Qiymətləndirmə Sistemi 2.0\n"
 "Report-Msgid-Bugs-To: info@qiymetlendirme.az\n"
-"POT-Creation-Date: 2025-01-18 12:00+0400\n"
-"PO-Revision-Date: 2025-01-18 12:00+0400\n"
+"POT-Creation-Date: 2025-07-18 18:29+0400\n"
+"PO-Revision-Date: 2025-07-18 18:29+0400\n"
 "Last-Translator: Sistem Tərcüməçiləri <info@qiymetlendirme.az>\n"
 "Language-Team: Azərbaycan <az@qiymetlendirme.az>\n"
 "Language: az\n"
@@ -16,593 +16,687 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-
-#: .\config\settings.py:111
-msgid "Azerbaijani"
+#: .\config\settings.py:119
+msgid "Azərbaycan"
 msgstr "Azərbaycan"
 
-#: .\config\settings.py:112
+#: .\config\settings.py:120
 msgid "English"
 msgstr "İngilis"
 
-#: .\core\templates\core\base.html:8 .\core\templates\core\base.html:124
-#: .\core\templates\core\base.html:189
-msgid "Evaluation System"
-msgstr "Qiymətləndirmə Sistemi"
+#: .\core\signals.py:69
+msgid "Activate Your Account"
+msgstr "Tərcümə tələb olunur"
 
-#: .\core\templates\core\base.html:153
-msgid "Hello"
-msgstr "Salam"
+#: .\core\signals.py:71
+#, python-brace-format
+msgid ""
+"Hi {user_name},\n"
+"\n"
+"Please click the link below to activate your account:\n"
+"\n"
+"http://127.0.0.1:8000{activation_link}"
+msgstr "Tərcümə tələb olunur"
 
-#: .\core\templates\core\base.html:163
-msgid "Superadmin"
-msgstr "Superadmin"
+#: .\templates\components\notification_badge.html:9
+msgid "oxunmamış bildiriş"
+msgstr "Tərcümə tələb olunur"
 
-#: .\core\templates\core\base.html:166
-msgid "Logout"
-msgstr "Çıxış"
+#: .\templates\components\notification_badge.html:13
+msgid "Bildirişlər"
+msgstr "Tərcümə tələb olunur"
 
-#: .\core\templates\core\base.html:169 .\templates\registration\login.html:47
-msgid "Login"
-msgstr "Daxil Ol"
+#: .\templates\components\notification_badge.html:20
+msgid "Priority"
+msgstr "Tərcümə tələb olunur"
 
-# Yeni tərcümələr - Modernləşdirmə
-msgid "Yüklənir..."
-msgstr "Yüklənir..."
-
-msgid "Əsas məzmuna keç"
-msgstr "Əsas məzmuna keç"
-
-msgid "Navigasiyanı aç/bağla"
-msgstr "Navigasiyanı aç/bağla"
-
-msgid "Tema dəyişdir"
-msgstr "Tema dəyişdir"
-
-msgid "Dil seçimi"
-msgstr "Dil seçimi"
-
-msgid "İstifadəçi menyusu"
-msgstr "İstifadəçi menyusu"
-
-msgid "Avatar"
-msgstr "Avatar"
-
-msgid "Profilim"
-msgstr "Profilim"
-
-msgid "Hesabatım"
-msgstr "Hesabatım"
-
-msgid "Rəhbər Paneli"
-msgstr "Rəhbər Paneli"
-
-msgid "Superadmin Paneli"
-msgstr "Superadmin Paneli"
-
-msgid "Çıxış"
-msgstr "Çıxış"
-
-msgid "Daxil Ol"
-msgstr "Daxil Ol"
-
-msgid "Bağla"
-msgstr "Bağla"
-
-msgid "Ana Səhifə"
-msgstr "Ana Səhifə"
-
-msgid "Peşəkar işçilərin performansını qiymətləndirmək üçün müasir və etibarlı həll"
-msgstr "Peşəkar işçilərin performansını qiymətləndirmək üçün müasir və etibarlı həll"
-
-msgid "Keçidlər"
-msgstr "Keçidlər"
-
-msgid "Dəstək"
-msgstr "Dəstək"
-
-msgid "Yardım"
-msgstr "Yardım"
-
-msgid "Əlaqə"
-msgstr "Əlaqə"
-
-msgid "Gizlilik"
-msgstr "Gizlilik"
-
-msgid "Bakı, Azərbaycan"
-msgstr "Bakı, Azərbaycan"
-
-msgid "Bütün hüquqlar qorunur"
-msgstr "Bütün hüquqlar qorunur"
-
-msgid "Versiya"
-msgstr "Versiya"
-
-msgid "Son yenilik"
-msgstr "Son yenilik"
-
+#: .\templates\core\base.html:8
 msgid "Peşəkar işçilərin performansını qiymətləndirmək üçün müasir həll"
-msgstr "Peşəkar işçilərin performansını qiymətləndirmək üçün müasir həll"
+msgstr "Tərcümə tələb olunur"
 
+#: .\templates\core\base.html:9
 msgid "qiymətləndirmə, performans, işçi, HR, insan resursları"
-msgstr "qiymətləndirmə, performans, işçi, HR, insan resursları"
+msgstr "Tərcümə tələb olunur"
 
+#: .\templates\core\base.html:10 .\templates\core\base.html:20
+#: .\templates\core\base.html:61 .\templates\core\base.html:200
+#: .\templates\core\base.html:247 .\templates\errors\modern_error.html:7
 msgid "Qiymətləndirmə Sistemi"
-msgstr "Qiymətləndirmə Sistemi"
-
-msgid "İşıq temaya keç"
-msgstr "İşıq temaya keç"
-
-msgid "Qaranlıq temaya keç"
-msgstr "Qaranlıq temaya keç"
-
-msgid "Qaranlıq tema aktivləşdirildi"
-msgstr "Qaranlıq tema aktivləşdirildi"
-
-msgid "İşıq tema aktivləşdirildi"
-msgstr "İşıq tema aktivləşdirildi"
-
-msgid "Zəhmət olmasa, bütün tələb olunan sahələri doldurun"
-msgstr "Zəhmət olmasa, bütün tələb olunan sahələri doldurun"
-
-msgid "Əməliyyat uğurla tamamlandı"
-msgstr "Əməliyyat uğurla tamamlandı"
-
-msgid "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin"
-msgstr "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin"
-
-#: .\core\templates\core\dashboard.html:4
-msgid "Home"
-msgstr "Ana Səhifə"
-
-#: .\core\templates\core\dashboard.html:10
-msgid "Your Active Development Plan"
-msgstr "Aktiv İnkişaf Planınız"
-
-#: .\core\templates\core\dashboard.html:11
-msgid "For You"
-msgstr "Sizin üçün"
-
-#: .\core\templates\core\dashboard.html:14
-#: .\core\templates\core\hesabat.html:17
-msgid "View Plan"
-msgstr "Plana Bax"
-
-#: .\core\templates\core\dashboard.html:17
-msgid "Your Evaluation Tasks"
-msgstr "Qiymətləndirmə Tapşırıqlarınız"
-
-#: .\core\templates\core\dashboard.html:21
-msgid "You must complete evaluations for the following people:"
-msgstr "Aşağıdakı şəxslər üçün qiymətləndirməni tamamlamalısınız:"
-
-#: .\core\templates\core\dashboard.html:27
-msgid "Evaluation Period"
-msgstr "Qiymətləndirmə dövrü"
-
-#: .\core\templates\core\dashboard.html:33
-msgid "You currently have no evaluation tasks to complete."
-msgstr "Hal-hazırda tamamlanmalı qiymətləndirmə tapşırığınız yoxdur."
-
-#: .\core\templates\core\hesabat.html:4 .\core\templates\core\hesabat.html:10
-#: .\core\templates\core\hesabat_pdf.html:8
-#: .\core\templates\core\hesabat_pdf.html:120
-msgid "Evaluation Report"
-msgstr "Qiymətləndirmə Hesabatı"
-
-#: .\core\templates\core\hesabat.html:22
-msgid "Create Development Plan"
-msgstr "İnkişaf Planı Yarat"
-
-#: .\core\templates\core\hesabat.html:28
-msgid "Download PDF"
-msgstr "PDF Yüklə"
-
-#: .\core\templates\core\hesabat.html:37
-msgid "Select Report Period:"
-msgstr "Hesabat Dövrünü Seçin:"
-
-#: .\core\templates\core\hesabat.html:45
-msgid "Show"
-msgstr "Göstər"
-
-#: .\core\templates\core\hesabat.html:55
-msgid "Detailed Analysis for the Period"
-msgstr "Dövrü üçün Detallı Analiz"
-
-#: .\core\templates\core\hesabat.html:56
-#: .\core\templates\core\hesabat_pdf.html:122
-#: .\core\templates\core\plan_detail.html:21
-#: .\core\templates\core\plan_form.html:12
-msgid "Employee:"
-msgstr "İşçi:"
-
-#: .\core\templates\core\hesabat.html:60
-msgid "Results by Competencies"
-msgstr "Kompetensiyalar üzrə Nəticələr"
-
-#: .\core\templates\core\hesabat.html:66
-#: .\core\templates\core\hesabat_pdf.html:127
-msgid "General Indicators"
-msgstr "Ümumi Göstəricilər"
-
-#: .\core\templates\core\hesabat.html:70
-#: .\core\templates\core\hesabat_pdf.html:131
-msgid "Competency (Category)"
-msgstr "Kompetensiya (Kateqoriya)"
-
-#: .\core\templates\core\hesabat.html:71
-#: .\core\templates\core\hesabat_pdf.html:132
-msgid "Average Score (Out of 10)"
-msgstr "Ortalama Xal (10 üzərindən)"
-
-#: .\core\templates\core\hesabat.html:82
-msgid "No indicators found for this period."
-msgstr "Bu dövr üçün göstərici tapılmadı."
-
-#: .\core\templates\core\hesabat.html:91
-msgid "Written Feedback for the Period"
-msgstr "Dövrü üçün Yazılı Rəylər"
-
-#: .\core\templates\core\hesabat.html:99
-msgid "No written feedback has been recorded for this period."
-msgstr "Bu dövr üçün yazılı rəy qeyd edilməyib."
-
-#: .\core\templates\core\hesabat.html:104
-msgid "Performance History (Overall Average Score)"
-msgstr "Performans Tarixçəsi (Ümumi Ortalama Bal)"
-
-#: .\core\templates\core\hesabat.html:126
-msgid "Average Score"
-msgstr "Ortalama Xal"
-
-#: .\core\templates\core\hesabat.html:155
-msgid "Overall Average Score"
-msgstr "Ümumi Ortalama Bal"
-
-#: .\core\templates\core\hesabat_pdf.html:123
-msgid "Position:"
-msgstr "Vəzifə:"
-
-#: .\core\templates\core\hesabat_pdf.html:124
-#: .\core\templates\core\qiymetlendirme_form.html:12
-#: .\core\templates\reports\summary_departments_pdf.html:12
-msgid "Period:"
-msgstr "Dövr:"
-
-#: .\core\templates\core\hesabat_pdf.html:145
-msgid "Anonymous Written Feedback"
-msgstr "Anonim Yazılı Rəylər"
-
-#: .\core\templates\core\hesabat_pdf.html:153
-msgid "No written feedback has been recorded."
-msgstr "Yazılı rəy qeyd edilməyib."
-
-#: .\core\templates\core\plan_detail.html:5
-#: .\core\templates\core\plan_detail.html:10
-#: .\core\templates\core\plan_form.html:5
-#: .\core\templates\core\plan_form.html:10
-msgid "Individual Development Plan"
-msgstr "Fərdi İnkişaf Planı"
-
-#: .\core\templates\core\plan_detail.html:18
-msgid "Plan Information"
-msgstr "Plan Məlumatları"
-
-#: .\core\templates\core\plan_detail.html:22
-#: .\core\templates\core\plan_form.html:13
-msgid "Evaluation Period:"
-msgstr "Qiymətləndirmə Dövrü:"
-
-#: .\core\templates\core\plan_detail.html:35
-#: .\core\templates\core\plan_form.html:26
-msgid "Goals"
-msgstr "Hədəflər"
-
-#: .\core\templates\core\profil.html:5 .\core\templates\core\profil.html:9
-msgid "My Profile"
-msgstr "Profilim"
-
-#: .\core\templates\core\profil.html:10
-msgid "Here you can edit your personal information and change your password."
-msgstr "Burada şəxsi məlumatlarınızı redaktə edə və şifrənizi dəyişə bilərsiniz."
-
-#: .\core\templates\core\profil.html:19
-msgid "Profile Picture"
-msgstr "Profil Şəkli"
-
-#: .\core\templates\core\profil.html:28
-msgid "Username:"
-msgstr "İstifadəçi adı:"
-
-#: .\core\templates\core\profil.html:30
-msgid "Email:"
-msgstr "E-poçt:"
-
-#: .\core\templates\core\profil.html:32
-msgid "Phone Number:"
-msgstr "Əlaqə Nömrəsi:"
-
-#: .\core\templates\core\profil.html:34
-msgid "Date of Birth:"
-msgstr "Doğum Tarixi:"
-
-#: .\core\templates\core\profil.html:36
-msgid "Registration Date:"
-msgstr "Qeydiyyat Tarixi:"
-
-#: .\core\templates\core\profil.html:50
-msgid "Edit Information"
-msgstr "Məlumatları Dəyiş"
-
-#: .\core\templates\core\profil.html:56
-msgid "Change Password"
-msgstr "Şifrəni Dəyiş"
-
-#: .\core\templates\core\profil.html:69
-msgid "Save"
-msgstr "Yadda Saxla"
-
-#: .\core\templates\core\qiymetlendirme_form.html:4
-#: .\core\templates\core\qiymetlendirme_form.html:9
-#: .\core\templates\reports\summary_departments_pdf.html:4
-#: .\core\templates\reports\summary_departments_pdf.html:9
-msgid "Evaluation Form"
-msgstr "Qiymətləndirmə Formu"
-
-#: .\core\templates\core\qiymetlendirme_form.html:10
-#: .\core\templates\reports\summary_departments_pdf.html:10
-msgid "Person Being Evaluated:"
-msgstr "Qiymətləndirilən şəxs:"
-
-#: .\core\templates\core\qiymetlendirme_form.html:28
-#: .\core\templates\reports\summary_departments_pdf.html:28
-msgid "Score (1 to 10):"
-msgstr "Xal (1-dən 10-a qədər):"
-
-#: .\core\templates\core\qiymetlendirme_form.html:44
-#: .\core\templates\reports\summary_departments_pdf.html:44
-msgid "You can write your additional thoughts here..."
-msgstr "Əlavə fikirlərinizi yaza bilərsiniz..."
-
-#: .\core\templates\core\qiymetlendirme_form.html:52
-#: .\core\templates\reports\summary_departments_pdf.html:52
-msgid "Confirm Evaluation"
-msgstr "Qiymətləndirməni Təsdiqlə"
-
-#: .\core\templates\core\rehber_paneli.html:4
-#: .\core\templates\core\rehber_paneli.html:7
-msgid "Manager Panel"
-msgstr "Rəhbər Paneli"
-
-#: .\core\templates\core\rehber_paneli.html:13
-msgid "Team Performance by Competencies"
-msgstr "Komandanın Kompetensiyalar üzrə Performansı"
-
-#: .\core\templates\core\rehber_paneli.html:22
-msgid "Team Members"
-msgstr "Komanda Üzvləri"
-
-#: .\core\templates\core\rehber_paneli.html:23
-msgid "List of employees under your supervision:"
-msgstr "Sizin tabeliyinizdə olan işçilərin siyahısı:"
-
-#: .\core\templates\core\rehber_paneli.html:34
-msgid "View Report"
-msgstr "Hesabata Bax"
-
-#: .\core\templates\core\rehber_paneli.html:40
-msgid "No employees found under your supervision."
-msgstr "Sizin tabeliyinizdə heç bir işçi tapılmadı."
-
-#: .\core\templates\core\rehber_paneli.html:58
-msgid "Team Average Score"
-msgstr "Komandanın Ortalama Balı"
-
-#: .\core\templates\core\superadmin_paneli.html:4
-#: .\core\templates\core\superadmin_paneli.html:8
-msgid "Superadmin Panel"
-msgstr "Superadmin Paneli"
-
-#: .\core\templates\core\superadmin_paneli.html:10
-msgid "Start New Period"
-msgstr "Yeni Dövr Başlat"
-
-#: .\core\templates\core\superadmin_paneli.html:17
-msgid "No evaluation period found in the system. Please start a new period."
-msgstr "Sistemdə heç bir qiymətləndirmə dövrü tapılmadı. Zəhmət olmasa, yeni bir dövr başladın."
-
-#: .\core\templates\core\superadmin_paneli.html:20
-msgid "Active Period:"
-msgstr "Aktiv Dövr:"
-
-#: .\core\templates\core\superadmin_paneli.html:26
-msgid "Completion Rate"
-msgstr "Tamamlanma Nisbəti"
-
-#: .\core\templates\core\superadmin_paneli.html:28
-msgid "out of"
-msgstr "tapşırıqdan"
-
-#: .\core\templates\core\superadmin_paneli.html:36
-msgid "Department Count"
-msgstr "Departament Sayı"
-
-#: .\core\templates\core\superadmin_paneli.html:38
-msgid "Departments participating in the process"
-msgstr "Prosesdə iştirak edən departamentlər"
-
-#: .\core\templates\core\superadmin_paneli.html:49
-msgid "Average Performance by Departments"
-msgstr "Departamentlər üzrə Ortalama Performans"
-
-#: .\core\templates\core\superadmin_paneli.html:58
-msgid "Rating Table"
-msgstr "Reytinq Cədvəli"
-
-#: .\core\templates\core\superadmin_paneli.html:72
-msgid "Department"
-msgstr "Departament"
-
-#: .\core\templates\core\superadmin_paneli.html:73
-msgid "Average Score"
-msgstr "Ortalama Bal"
-
-#: .\core\templates\core\superadmin_paneli.html:84
-msgid "No data found for statistics."
-msgstr "Statistika üçün məlumat tapılmadı."
-
-#: .\core\templates\core\yeni_dovr_form.html:5
-#: .\core\templates\core\yeni_dovr_form.html:9
-msgid "Create New Evaluation Period"
-msgstr "Yeni Qiymətləndirmə Dövrü Yarat"
-
-#: .\templates\400.html:4
-msgid "Error"
-msgstr "Xəta"
-
-#: .\templates\400.html:7
-msgid "Bad Request"
-msgstr "Səhv Sorğu"
-
-#: .\templates\400.html:8
-msgid "Your request is invalid and could not be processed."
-msgstr "Sorğunuz düzgün deyil və emal edilə bilmədi."
-
-#: .\templates\401.html:4
-msgid "Login Required"
-msgstr "Giriş Tələb Olunur"
-
-#: .\templates\401.html:7
-msgid "Unauthorized"
-msgstr "İcazə Verilmədi"
-
-#: .\templates\401.html:8
-msgid "You must be authenticated (logged in) to view this page."
-msgstr "Bu səhifəyə baxmaq üçün autentifikasiyadan keçməlisiniz (giriş etməlisiniz)."
-
-#: .\templates\403.html:4
-msgid "Forbidden"
-msgstr "Əlçatan Deyil"
-
-#: .\templates\403.html:8
-msgid "Access Denied"
-msgstr "Giriş Rədd Edildi"
-
-#: .\templates\403.html:9
-msgid "You do not have permission to access this page."
-msgstr "Bu səhifəyə daxil olmaq üçün icazəniz yoxdur."
-
-#: .\templates\404.html:4 .\templates\404.html:8
-msgid "Page Not Found"
-msgstr "Səhifə Tapılmadı"
-
-#: .\templates\404.html:9
-msgid "The page you are looking for does not exist."
-msgstr "Axtardığınız səhifə mövcud deyil."
-
-#: .\templates\429.html:4 .\templates\429.html:7
-msgid "Too Many Requests"
-msgstr "Çoxlu Sorğu"
-
-#: .\templates\500.html:4 .\templates\500.html:7
-msgid "Server Error"
-msgstr "Server Xətası"
-
-#: .\templates\500.html:8
-msgid "An internal server error occurred. Our team is investigating the issue."
-msgstr "Daxili server xətası baş verdi. Komandamız problemi araşdırır."
-
-#: .\templates\502.html:4 .\templates\502.html:7
-msgid "Bad Gateway"
-msgstr "Keçid Xətası"
-
-#: .\templates\503.html:4 .\templates\503.html:7
-msgid "Service Unavailable"
-msgstr "Xidmət Mövcud Deyil"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:48
+msgid "Yüklənir..."
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:54
+msgid "Əsas məzmuna keç"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:65
+msgid "Navigasiyanı aç/bağla"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:75
+msgid "Tema dəyişdir"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:83
+msgid "Dil seçimi"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:108
+msgid "İstifadəçi menyusu"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:110
+msgid "Avatar"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:120
+msgid "Salam"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:123 .\templates\core\base.html:215
+#: .\templates\core\plan_form.html:4 .\templates\core\plan_form.html:8
+#: .\templates\core\profil.html:4 .\templates\core\profil.html:8
+msgid "Profilim"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:126 .\templates\core\base.html:214
+#: .\templates\core\dashboard.html:161
+msgid "Hesabatım"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:131 .\templates\core\rehber_paneli.html:4
+#: .\templates\core\rehber_paneli.html:7
+msgid "Rəhbər Paneli"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:136 .\templates\core\superadmin_paneli.html:4
+#: .\templates\core\superadmin_paneli.html:8
+msgid "Superadmin Paneli"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:144
+msgid "Çıxış"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:154 .\templates\registration\login.html:42
+msgid "Daxil Ol"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:175
+msgid "Bağla"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:186 .\templates\core\base.html:212
+#: .\templates\core\dashboard.html:4 .\templates\errors\404.html:101
+#: .\templates\errors\modern_error.html:131
+msgid "Ana Səhifə"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:201
+msgid ""
+"Peşəkar işçilərin performansını qiymətləndirmək üçün müasir və etibarlı həll"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:210
+msgid "Keçidlər"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:220
+msgid "Dəstək"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:222
+msgid "Yardım"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:223 .\templates\core\base.html:228
+msgid "Əlaqə"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:224
+msgid "Gizlilik"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:239
+msgid "Bakı, Azərbaycan"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:247
+msgid "Bütün hüquqlar qorunur"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:252
+msgid "Versiya"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\base.html:252
+msgid "Son yenilik"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\dashboard.html:7
+msgid "Dashboard"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\dashboard.html:15
+msgid "Xoş gəldiniz"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\dashboard.html:16
+msgid "Performans idarəetmə sisteminə xoş gəldiniz"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\dashboard.html:20
+msgid "Son giriş"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\dashboard.html:53
+msgid "Aktiv İnkişaf Planınız"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\dashboard.html:61
+msgid ""
+"Sizin üçün aktiv inkişaf planı mövcuddur. Hədəflərinizi izləyin və inkişaf "
+"edin."
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\dashboard.html:66 .\templates\core\hesabat.html:17
+msgid "Plana Bax"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\dashboard.html:83
+msgid "Qiymətləndirmə Tapşırıqlarınız"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\dashboard.html:89
+msgid "Aşağıdakı şəxslər üçün qiymətləndirməni tamamlamalısınız"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\dashboard.html:114 .\templates\core\hesabat_pdf.html:124
+msgid "Dövr"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\dashboard.html:119
+msgid "Gözləyir"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\dashboard.html:124
+msgid "Son tarix"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\dashboard.html:135
+msgid "Əla!"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\dashboard.html:137
+msgid "Hal-hazırda tamamlanmalı qiymətləndirmə tapşırığınız yoxdur."
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\dashboard.html:153
+msgid "Tez Əməliyyatlar"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\dashboard.html:167
+msgid "Profil Yeniləmə"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\dashboard.html:174
+msgid "Komanda İdarəsi"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat.html:4 .\templates\core\hesabat.html:10
+#: .\templates\core\hesabat_pdf.html:7
+msgid "Qiymətləndirmə Hesabatı"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat.html:22
+msgid "İnkişaf Planı Yarat"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat.html:28
+msgid "PDF Yüklə"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat.html:37
+msgid "Hesabat Dövrünü Seçin:"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat.html:45
+msgid "Göstər"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat.html:55
+msgid "Dövrü üçün Detallı Analiz"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat.html:56 .\templates\core\plan_detail.html:21
+msgid "İşçi:"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat.html:60
+msgid "Kompetensiyalar üzrə Nəticələr"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat.html:66
+msgid "Ümumi Göstəricilər"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat.html:70
+msgid "Kompetensiya (Kateqoriya)"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat.html:71
+msgid "Ortalama Xal (10 üzərindən)"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat.html:82
+msgid "Bu dövr üçün göstərici tapılmadı."
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat.html:91
+msgid "Dövrü üçün Yazılı Rəylər"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat.html:99 .\templates\core\hesabat_pdf.html:167
+msgid "Bu dövr üçün yazılı rəy qeyd edilməyib."
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat.html:107
+msgid "AI Əsaslı İnkişaf Tövsiyələri"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat.html:114
+msgid "Performans Tarixçəsi (Ümumi Ortalama Bal)"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat.html:136
+msgid "Ortalama Xal"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat.html:165
+msgid "Ümumi Ortalama Bal"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat_pdf.html:100
+msgid "Səhifə"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat_pdf.html:113
+msgid "360° Performans Hesabatı"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat_pdf.html:116
+msgid "İşçi"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat_pdf.html:120
+msgid "Vəzifə"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat_pdf.html:128
+msgid "Hesabat Tarixi"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat_pdf.html:133
+msgid "Boşluq Analizi (Gap Analysis)"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\hesabat_pdf.html:159
+msgid "Anonim Yazılı Rəylər"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\plan_detail.html:5 .\templates\core\plan_detail.html:10
+msgid "Fərdi İnkişaf Planı"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\plan_detail.html:18
+msgid "Plan Məlumatları"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\plan_detail.html:22
+msgid "Qiymətləndirmə Dövrü:"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\plan_detail.html:35
+msgid "Hədəflər"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\plan_form.html:9 .\templates\core\profil.html:9
+msgid ""
+"Burada şəxsi məlumatlarınızı redaktə edə və şifrənizi dəyişə bilərsiniz."
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\plan_form.html:15 .\templates\core\profil.html:16
+msgid "Profil Şəkli"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\plan_form.html:23 .\templates\core\profil.html:24
+msgid "İstifadəçi adı:"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\plan_form.html:24 .\templates\core\profil.html:26
+msgid "E-poçt:"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\plan_form.html:25 .\templates\core\profil.html:28
+msgid "Əlaqə Nömrəsi:"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\plan_form.html:26 .\templates\core\profil.html:30
+msgid "Doğum Tarixi:"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\plan_form.html:27 .\templates\core\profil.html:32
+msgid "Qeydiyyat Tarixi:"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\plan_form.html:37
+msgid "Məlumatları Dəyiş"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\plan_form.html:40
+msgid "Şifrəni Dəyiş"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\plan_form.html:46 .\templates\core\profil.html:56
+msgid "Profil Məlumatları"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\plan_form.html:51
+msgid "Yadda Saxla"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\plan_form.html:57 .\templates\core\profil.html:68
+msgid "Təhlükəsizlik"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\qiymetlendirme_form.html:4
+#: .\templates\core\qiymetlendirme_form.html:9
+#: .\templates\reports\summary_departments_pdf.html:4
+#: .\templates\reports\summary_departments_pdf.html:9
+msgid "Qiymətləndirmə Formu"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\qiymetlendirme_form.html:10
+#: .\templates\reports\summary_departments_pdf.html:10
+msgid "Qiymətləndirilən şəxs:"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\qiymetlendirme_form.html:12
+#: .\templates\reports\summary_departments_pdf.html:12
+msgid "Dövr:"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\qiymetlendirme_form.html:28
+#: .\templates\reports\summary_departments_pdf.html:28
+msgid "Xal (1-dən 10-a qədər):"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\qiymetlendirme_form.html:44
+#: .\templates\reports\summary_departments_pdf.html:44
+msgid "Əlavə fikirlərinizi yaza bilərsiniz..."
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\qiymetlendirme_form.html:52
+#: .\templates\reports\summary_departments_pdf.html:52
+msgid "Qiymətləndirməni Təsdiqlə"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\rehber_paneli.html:13
+msgid "Komandanın Kompetensiyalar üzrə Performansı"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\rehber_paneli.html:22
+msgid "Komanda Üzvləri"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\rehber_paneli.html:23
+msgid "Sizin tabeliyinizdə olan işçilərin siyahısı:"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\rehber_paneli.html:34
+msgid "Hesabata Bax"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\rehber_paneli.html:40
+msgid "Sizin tabeliyinizdə heç bir işçi tapılmadı."
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\rehber_paneli.html:58
+msgid "Komandanın Ortalama Balı"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\superadmin_paneli.html:10
+msgid "Yeni Dövr Başlat"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\superadmin_paneli.html:17
+msgid ""
+"Sistemdə heç bir qiymətləndirmə dövrü tapılmadı. Zəhmət olmasa, yeni bir "
+"dövr başladın."
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\superadmin_paneli.html:20
+msgid "Aktiv Dövr:"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\superadmin_paneli.html:26
+msgid "Tamamlanma Nisbəti"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\superadmin_paneli.html:28
+msgid "tapşırıqdan"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\superadmin_paneli.html:36
+msgid "Departament Sayı"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\superadmin_paneli.html:38
+msgid "Prosesdə iştirak edən departamentlər"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\superadmin_paneli.html:49
+msgid "Departamentlər üzrə Ortalama Performans"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\superadmin_paneli.html:58
+msgid "Reytinq Cədvəli"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\superadmin_paneli.html:72
+msgid "Departament"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\superadmin_paneli.html:73
+msgid "Ortalama Bal"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\superadmin_paneli.html:84
+msgid "Statistika üçün məlumat tapılmadı."
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\core\yeni_dovr_form.html:5
+#: .\templates\core\yeni_dovr_form.html:9
+msgid "Yeni Qiymətləndirmə Dövrü Yarat"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\400.html:4 .\templates\errors\modern_error.html:7
+msgid "Xəta"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\400.html:7
+msgid "Səhv Sorğu"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\400.html:8
+msgid "Sorğunuz düzgün deyil və emal edilə bilmədi."
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\401.html:4
+msgid "Giriş Tələb Olunur"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\401.html:7
+msgid "İcazə Verilmədi"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\401.html:8
+msgid ""
+"Bu səhifəyə baxmaq üçün autentifikasiyadan keçməlisiniz (giriş etməlisiniz)."
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\403.html:4
+msgid "Əlçatan Deyil"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\403.html:8
+msgid "Giriş Rədd Edildi"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\403.html:9
+msgid "Bu səhifəyə daxil olmaq üçün icazəniz yoxdur."
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\404.html:7 .\templates\errors\404.html:86
+msgid "Səhifə Tapılmadı"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\404.html:87
+msgid "Axtardığınız səhifə mövcud deyil və ya silinib."
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\404.html:90 .\templates\errors\modern_error.html:119
+msgid "Təkliflər"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\404.html:92
+msgid "URL-ni yoxlayın"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\404.html:93
+msgid "Ana səhifəyə qayıdın"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\404.html:94
+msgid "Axtarış edərək məzmunu tapın"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\404.html:105 .\templates\errors\modern_error.html:135
+msgid "Geri"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\404.html:111 .\templates\errors\modern_error.html:141
+msgid "Problemin davam etdiyi halda"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\404.html:115 .\templates\errors\modern_error.html:145
+msgid "ilə əlaqə saxlayın"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\429.html:4 .\templates\errors\429.html:7
+msgid "Çoxlu Sorğu"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\500.html:4 .\templates\errors\500.html:7
+msgid "Server Xətası"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\500.html:8
+msgid "Daxili server xətası baş verdi. Komandamız problemi araşdırır."
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\502.html:4 .\templates\errors\502.html:7
+msgid "Keçid Xətası"
+msgstr "Tərcümə tələb olunur"
+
+#: .\templates\errors\503.html:4 .\templates\errors\503.html:7
+msgid "Xidmət Mövcud Deyil"
+msgstr "Tərcümə tələb olunur"
 
 #: .\templates\errors\components\generic_error.html:10
-msgid "Return to Home"
-msgstr "Ana Səhifəyə Qayıt"
+msgid "Ana Səhifəyə Qayıt"
+msgstr "Tərcümə tələb olunur"
 
-#: .\templates\maintenance.html:4 .\templates\maintenance.html:7
-msgid "Maintenance"
-msgstr "Texniki Xidmət"
+#: .\templates\errors\maintenance.html:4 .\templates\errors\maintenance.html:7
+msgid "Texniki Xidmət"
+msgstr "Tərcümə tələb olunur"
 
-#: .\templates\maintenance.html:8
-msgid "The system is currently undergoing maintenance. We will be back shortly."
-msgstr "Hazırda sistemdə texniki xidmət aparılır. Qısa zamanda geri dönəcəyik."
+#: .\templates\errors\maintenance.html:8
+msgid "Hazırda sistemdə texniki xidmət aparılır. Qısa zamanda geri dönəcəyik."
+msgstr "Tərcümə tələb olunur"
 
 #: .\templates\registration\login.html:4 .\templates\registration\login.html:11
-msgid "Login to System"
-msgstr "Sistemə Daxil Ol"
+msgid "Sistemə Daxil Ol"
+msgstr "Tərcümə tələb olunur"
 
 #: .\templates\registration\login.html:16
-msgid "Username or password is incorrect. Please try again."
-msgstr "İstifadəçi adı və ya şifrə yanlışdır. Zəhmət olmasa, yenidən cəhd edin."
+msgid "İstifadəçi adı və ya şifrə yanlışdır. Zəhmət olmasa, yenidən cəhd edin."
+msgstr "Tərcümə tələb olunur"
 
-#: .\templates\registration\login.html:31
-msgid "Password"
-msgstr "Şifrə"
+#: .\templates\registration\login.html:28
+msgid "Şifrə"
+msgstr "Tərcümə tələb olunur"
 
-#: .\templates\registration\login.html:40
-msgid "Remember me"
-msgstr "Məni xatırla"
+#: .\templates\registration\login.html:36
+msgid "Məni xatırla"
+msgstr "Tərcümə tələb olunur"
 
-#: .\templates\registration\login.html:43
-msgid "Forgot your password?"
-msgstr "Şifrənizi unutmusunuz?"
+#: .\templates\registration\login.html:39
+msgid "Şifrənizi unutmusunuz?"
+msgstr "Tərcümə tələb olunur"
 
-#: .\templates\registration\login.html:53
-msgid "Don't have an account?"
-msgstr "Hesabınız yoxdur?"
+#: .\templates\registration\login.html:48
+msgid "Hesabınız yoxdur?"
+msgstr "Tərcümə tələb olunur"
 
-#: .\templates\registration\login.html:53
-msgid "Register"
-msgstr "Qeydiyyatdan keçin"
+#: .\templates\registration\login.html:48
+msgid "Qeydiyyatdan keçin"
+msgstr "Tərcümə tələb olunur"
 
 #: .\templates\registration\password_reset_email.html:3
 #, python-format
-msgid "Hello, %(user_full_name)s!"
-msgstr "Salam, %(user_full_name)s!"
+msgid "Salam, %(user_full_name)s!"
+msgstr "Tərcümə tələb olunur"
 
 #: .\templates\registration\password_reset_email.html:5
-msgid "We received a password reset request for your email address."
-msgstr "Biz sizin e-poçt ünvanınız üçün şifrə sıfırlama tələbi aldıq."
+msgid "Biz sizin e-poçt ünvanınız üçün şifrə sıfırlama tələbi aldıq."
+msgstr "Tərcümə tələb olunur"
 
 #: .\templates\registration\password_reset_email.html:7
-msgid "To set a new password, please click the link below:"
-msgstr "Yeni şifrə təyin etmək üçün aşağıdakı linkə daxil olun:"
+msgid "Yeni şifrə təyin etmək üçün aşağıdakı linkə daxil olun:"
+msgstr "Tərcümə tələb olunur"
 
 #: .\templates\registration\password_reset_email.html:11
-msgid "If you did not make this request, please ignore this email."
-msgstr "Əgər bu sorğunu siz etməmisinizsə, bu e-poçta məhəl qoymayın."
+msgid "Əgər bu sorğunu siz etməmisinizsə, bu e-poçta məhəl qoymayın."
+msgstr "Tərcümə tələb olunur"
 
 #: .\templates\registration\password_reset_email.html:13
-msgid "Best regards,"
-msgstr "Hörmətlə,"
+msgid "Hörmətlə,"
+msgstr "Tərcümə tələb olunur"
 
 #: .\templates\registration\password_reset_email.html:14
-msgid "Evaluation System Team"
-msgstr "Qiymətləndirmə Sistemi Komandası"
+msgid "Qiymətləndirmə Sistemi Komandası"
+msgstr "Tərcümə tələb olunur"
 
 #: .\templates\registration\qeydiyyat_form.html:5
-msgid "Registration"
-msgstr "Qeydiyyat"
+msgid "Qeydiyyat"
+msgstr "Tərcümə tələb olunur"
 
 #: .\templates\registration\qeydiyyat_form.html:12
-msgid "Create New Account"
-msgstr "Yeni Hesab Yarat"
+msgid "Yeni Hesab Yarat"
+msgstr "Tərcümə tələb olunur"
 
 #: .\templates\registration\qeydiyyat_form.html:19
-msgid "Register"
-msgstr "Qeydiyyatdan Keç"
+msgid "Qeydiyyatdan Keç"
+msgstr "Tərcümə tələb olunur"
 
 #: .\templates\registration\qeydiyyat_form.html:25
-msgid "Already have an account?"
-msgstr "Artıq hesabınız var?"
+msgid "Artıq hesabınız var?"
+msgstr "Tərcümə tələb olunur"
 
 #: .\templates\registration\qeydiyyat_form.html:25
-msgid "Login"
-msgstr "Daxil olun"
+msgid "Daxil olun"
+msgstr "Tərcümə tələb olunur"

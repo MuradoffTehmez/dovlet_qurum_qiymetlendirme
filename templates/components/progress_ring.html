@@ -3,8 +3,8 @@
 <div class="progress-ring-container text-center">
     <svg class="progress-ring" width="120" height="120">
         <circle class="progress-ring-background" cx="60" cy="60" r="50"></circle>
-        <circle class="progress-ring-progress" cx="60" cy="60" r="50"
-            style="stroke-dasharray: {{ circle_length }}; stroke-dashoffset: {{ dash_offset }}"></circle>
+        <circle class="progress-ring-progress" cx="60" cy="60" r="50" 
+                style="stroke-dasharray: 314; stroke-dashoffset: 0"></circle>
     </svg>
     <div class="progress-ring-text">
         <div class="progress-percentage">{{ percentage }}%</div>
@@ -24,13 +24,13 @@
 
     .progress-ring-background {
         fill: none;
-        stroke: rgba(var(--bs-primary-rgb), 0.1);
+        stroke: rgba(13, 110, 253, 0.1);
         stroke-width: 8;
     }
 
     .progress-ring-progress {
         fill: none;
-        stroke: var(--bs-primary);
+        stroke: #0d6efd;
         stroke-width: 8;
         stroke-linecap: round;
         transition: stroke-dashoffset 0.5s ease-in-out;
@@ -47,12 +47,12 @@
     .progress-percentage {
         font-size: 1.5rem;
         font-weight: bold;
-        color: var(--bs-primary);
+        color: #0d6efd;
     }
 
     .progress-label {
         font-size: 0.8rem;
-        color: var(--bs-secondary);
+        color: #6c757d;
         margin-top: 2px;
     }
 </style>
