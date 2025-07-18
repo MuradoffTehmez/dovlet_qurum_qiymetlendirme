@@ -134,12 +134,8 @@ def qiymetlendirme_etmek(request, qiymetlendirme_id):
         return redirect("dashboard")
 
     ishchi = qiymetlendirme.qiymetlendirilen
-    suallar = Sual.objects.filter(
-        Q(departament__isnull=True, shobe__isnull=True, sektor__isnull=True)
-        | Q(departament=ishchi.sektor.shobe.departament)
-        | Q(shobe=ishchi.sektor.shobe)
-        | Q(sektor=ishchi.sektor)
-    ).distinct()
+    # Yeni təşkilati struktura görə bütün sualları alırıq
+    suallar = Sual.objects.all().distinct()
 
     if request.method == "POST":
         for sual in suallar:
@@ -215,7 +211,7 @@ def hesabat_gorunumu(request, ishchi_id=None):
 
     # 5. Şablon üçün əlavə məntiqi dəyərləri hazırlayırıq
     can_manage_idp = request.user.is_superuser or (
-        request.user.rol == "REHBER" and request.user.sektor == hedef_ishchi.sektor
+        request.user.rol == "REHBER" and request.user.organization_unit == hedef_ishchi.organization_unit
     )
     movcud_plan = InkishafPlani.objects.filter(
         ishchi=hedef_ishchi, dovr=selected_dovr
@@ -335,7 +331,7 @@ def rehber_paneli(request):
 
     # Rəhbərin sektoru varsa, tabeliyindəki işçiləri tapırıq
     if request.user.organization_unit:
-        tabe_olan_ishchiler = Ishchi.objects.filter(organization_unit=request.user.sektor).exclude(
+        tabe_olan_ishchiler = Ishchi.objects.filter(organization_unit=request.user.organization_unit).exclude(
             id=request.user.id
         )
 
@@ -387,16 +383,21 @@ def superadmin_paneli(request):
             }
         )
 
-        departamentler = Departament.objects.all()
+        # Departament səviyyəsindəki təşkilati vahidləri alırıq
+        departamentler = OrganizationUnit.objects.filter(type=OrganizationUnit.UnitType.ALI_IDARE)
         departament_stat = []
         for dep in departamentler:
+            # Bu departamenta bağlı bütün alt vahidləri tapırıq
+            alt_vahidler = OrganizationUnit.objects.filter(
+                Q(id=dep.id) | Q(parent=dep) | Q(parent__parent=dep) | Q(parent__parent__parent=dep)
+            )
             ortalama_bal = Cavab.objects.filter(
                 qiymetlendirme__dovr=dovr,
-                qiymetlendirme__qiymetlendirilen__sektor__shobe__departament=dep,
+                qiymetlendirme__qiymetlendirilen__organization_unit__in=alt_vahidler,
             ).aggregate(ortalama=Avg("xal"))["ortalama"]
             departament_stat.append(
                 {
-                    "ad": dep.ad,
+                    "ad": dep.name,
                     "ortalama_bal": round(ortalama_bal, 2) if ortalama_bal else 0,
                 }
             )
@@ -413,7 +414,7 @@ def superadmin_paneli(request):
 @login_required
 def hesabat_pdf_yukle(request, ishchi_id):
     ishchi = get_object_or_404(Ishchi, id=ishchi_id)
-    is_rehber = request.user.rol == "REHBER" and request.user.sektor == ishchi.sektor
+    is_rehber = request.user.rol == "REHBER" and request.user.organization_unit == ishchi.organization_unit
     is_self = request.user.id == ishchi.id
     if not (request.user.is_superuser or is_rehber or is_self):
         raise PermissionDenied
@@ -471,16 +472,20 @@ def export_departments_excel(request):
         return redirect("superadmin_paneli")
 
     # Məlumatları yenidən hesablayırıq (superadmin_paneli view-undakı məntiqin təkrarı)
-    departamentler = Departament.objects.all()
+    departamentler = OrganizationUnit.objects.filter(type=OrganizationUnit.UnitType.ALI_IDARE)
     departament_stat = []
     for dep in departamentler:
+        # Bu departamenta bağlı bütün alt vahidləri tapırıq
+        alt_vahidler = OrganizationUnit.objects.filter(
+            Q(id=dep.id) | Q(parent=dep) | Q(parent__parent=dep) | Q(parent__parent__parent=dep)
+        )
         ortalama_bal = Cavab.objects.filter(
             qiymetlendirme__dovr=dovr,
-            qiymetlendirme__qiymetlendirilen__sektor__shobe__departament=dep,
+            qiymetlendirme__qiymetlendirilen__organization_unit__in=alt_vahidler,
         ).aggregate(ortalama=Avg("xal"))["ortalama"]
         departament_stat.append(
             {
-                "ad": dep.ad,
+                "ad": dep.name,
                 "ortalama_bal": round(ortalama_bal, 2) if ortalama_bal else 0,
             }
         )
@@ -538,16 +543,20 @@ def export_departments_pdf(request):
         return redirect("superadmin_paneli")
 
     # Məlumatları alırıq (bu kod Excel ixracı ilə eynidir)
-    departamentler = Departament.objects.all()
+    departamentler = OrganizationUnit.objects.filter(type=OrganizationUnit.UnitType.ALI_IDARE)
     departament_stat = []
     for dep in departamentler:
+        # Bu departamenta bağlı bütün alt vahidləri tapırıq
+        alt_vahidler = OrganizationUnit.objects.filter(
+            Q(id=dep.id) | Q(parent=dep) | Q(parent__parent=dep) | Q(parent__parent__parent=dep)
+        )
         ortalama_bal = Cavab.objects.filter(
             qiymetlendirme__dovr=dovr,
-            qiymetlendirme__qiymetlendirilen__sektor__shobe__departament=dep,
+            qiymetlendirme__qiymetlendirilen__organization_unit__in=alt_vahidler,
         ).aggregate(ortalama=Avg("xal"))["ortalama"]
         departament_stat.append(
             {
-                "ad": dep.ad,
+                "ad": dep.name,
                 "ortalama_bal": round(ortalama_bal, 2) if ortalama_bal else 0,
             }
         )
@@ -599,7 +608,7 @@ def plan_yarat_ve_redakte_et(request, ishchi_id, dovr_id):
     # Rəhbərin yalnız öz komandasına plan yaza bilməsini təmin edirik
     if not (
         request.user.is_superuser
-        or (request.user.rol == "REHBER" and request.user.sektor == ishchi.sektor)
+        or (request.user.rol == "REHBER" and request.user.organization_unit == ishchi.organization_unit)
     ):
         raise PermissionDenied
 
@@ -648,7 +657,7 @@ def plan_bax(request, plan_id):
     )
     # Rəhbərin və ya işçinin planı görmək icazəsini yoxlayırıq
     try:
-        rehber = Ishchi.objects.get(sektor=plan.ishchi.sektor, rol="REHBER")
+        rehber = Ishchi.objects.get(organization_unit=plan.ishchi.organization_unit, rol="REHBER")
     except (Ishchi.DoesNotExist, Ishchi.MultipleObjectsReturned):
         rehber = None
 
