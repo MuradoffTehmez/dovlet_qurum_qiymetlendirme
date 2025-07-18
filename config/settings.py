@@ -333,6 +333,8 @@ LOGGING = {
 # CELERY KONFİQURASİYASI
 # ===================================================================
 
+# Celery tətbiqi yalnız Redis mövcud olduqda işə salınır
+# Əgər Redis mövcud deyilsə, e-poçt göndərmə sinxron işləyəcək
 CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 CELERY_ACCEPT_CONTENT = ["json"]
@@ -341,3 +343,6 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_TIME_LIMIT = 5 * 60  # Tapşırığın maksimum icra müddəti (5 dəqiqə)
 CELERY_TASK_SOFT_TIME_LIMIT = 60  # Tapşırığın bitirilməsi üçün xəbərdarlıq (1 dəqiqə)
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+# Redis əlçatan olmadıqda Celery-ni söndürür
+CELERY_TASK_ALWAYS_EAGER = os.getenv("CELERY_TASK_ALWAYS_EAGER", "True").lower() == "true"

@@ -28,6 +28,9 @@ if settings.DEBUG:
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
     urlpatterns += staticfiles_urlpatterns()
     
+    # Static faylları STATIC_ROOT-dan da serve et
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    
     # İstifadəçilərin yüklədiyi şəkilləri və faylları 'media' qovluğundan göstərmək üçün
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

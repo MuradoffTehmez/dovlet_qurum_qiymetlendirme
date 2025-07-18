@@ -71,5 +71,14 @@ def send_activation_email(sender, instance, created, **kwargs):
             'Hi {user_name},\n\nPlease click the link below to activate your account:\n\nhttp://127.0.0.1:8000{activation_link}'
         ).format(user_name=instance.get_full_name(), activation_link=activation_link)
         
-        # Tapşırığı arxa planda işə salırıq
-        send_activation_email_task.delay(subject, message, [instance.email])
+        # Tapşırığı arxa planda işə salırıq (Redis mövcud olduqda)
+        # Əgər Redis mövcud deyilsə, birbaşa e-poçt göndəririk
+        try:
+            send_activation_email_task.delay(subject, message, [instance.email])
+        except Exception as e:
+            # Redis bağlantısı olmadıqda birbaşa e-poçt göndəririk
+            from django.core.mail import send_mail
+            try:
+                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [instance.email])
+            except Exception as mail_error:
+                print(f"E-poçt göndərilərkən xəta: {mail_error}")
