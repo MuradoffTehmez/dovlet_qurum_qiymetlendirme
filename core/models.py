@@ -28,6 +28,23 @@ class OrganizationUnit(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def get_full_path(self):
+        """Tam hierarchik yolu göstərir"""
+        path = []
+        current = self
+        while current:
+            path.append(current.name)
+            current = current.parent
+        return " → ".join(reversed(path))
+    
+    def get_children_count(self):
+        """Alt vahidlərin sayını göstərir"""
+        return self.children.count()
+    
+    def get_employees_count(self):
+        """Bu vahiddə işləyən əməkdaşların sayını göstərir"""
+        return self.ishchiler.count()
 
 
 # --- Genişləndirilmiş İstifadəçi Modeli ---
