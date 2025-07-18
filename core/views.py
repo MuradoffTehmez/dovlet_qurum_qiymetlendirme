@@ -88,7 +88,7 @@ def qeydiyyat_sehifesi(request):
                 request,
                 "Qeydiyyat uğurla tamamlandı! Zəhmət olmasa, hesabınızı aktivləşdirmək üçün e-poçtunuzu yoxlayın.",
             )
-            return redirect("login")
+            return redirect("/az/accounts/login/")
 
     else:
         form = IshchiCreationForm()
