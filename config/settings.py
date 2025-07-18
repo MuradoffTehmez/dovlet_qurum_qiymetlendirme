@@ -19,9 +19,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent  # Layihənin əsas direktoriy
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = (
-    os.getenv("DEBUG", "False").lower() == "True"
+    os.getenv("DEBUG", "False").lower() == "true"
 )  # .env faylından DEBUG dəyərini oxuyuruq
-ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "*"]
 
 AUTHENTICATION_BACKENDS = [
     "core.backends.EmailOrUsernameBackend",
@@ -267,13 +267,12 @@ RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_SECRET_KEY')
 
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": os.getenv("REDIS_URL", "redis://127.0.0.1:6379/1"),
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "unique-snowflake",
     }
 }
 
-SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-SESSION_CACHE_ALIAS = "default"
+SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
 # ===================================================================
 # LOGGING (GÜNLÜK GÖZƏTİM SİSTEMİ)
@@ -332,15 +331,15 @@ LOGGING = {
 # CELERY KONFİQURASİYASI
 # ===================================================================
 
-CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379/0")
-CELERY_RESULT_BACKEND = CELERY_BROKER_URL
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
-CELERY_TIMEZONE = TIME_ZONE
-CELERY_BEAT_SCHEDULE = {
-    "send_reminder_emails": {
-        "task": "core.tasks.send_reminder_emails",
-        "schedule": datetime.timedelta(hours=1),  # Hər saat
-    },
-}
+# CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://127.0.0.1:6379/0")
+# CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+# CELERY_ACCEPT_CONTENT = ["json"]
+# CELERY_TASK_SERIALIZER = "json"
+# CELERY_RESULT_BACKEND = "json"
+# CELERY_TIMEZONE = TIME_ZONE
+# CELERY_BEAT_SCHEDULE = {
+#     "send_reminder_emails": {
+#         "task": "core.tasks.send_reminder_emails",
+#         "schedule": datetime.timedelta(hours=1),  # Hər saat
+#     },
+# }
