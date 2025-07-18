@@ -83,32 +83,12 @@ def qeydiyyat_sehifesi(request):
             user.is_active = False  # Hesabı qeyri-aktiv edirik
             user.save()
 
-            # Aktivasiya e-poçtunu hazırlayırıq
-            mail_subject = "Hesabınızı aktivləşdirin"
-
-            # Mesajı HTML şablonundan render edirik
-            message = render_to_string(
-                "registration/activation_email.html",
-                {
-                    "user": user,
-                    "domain": request.META["HTTP_HOST"],
-                    "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-                    "token": account_activation_token.generate_token(user),
-                },
+            # Aktivasiya e-poçtu signal vasitəsilə avtomatik göndəriləcək
+            messages.success(
+                request,
+                "Qeydiyyat uğurla tamamlandı! Zəhmət olmasa, hesabınızı aktivləşdirmək üçün e-poçtunuzu yoxlayın.",
             )
-
-            to_email = form.cleaned_data.get("email")
-            email = EmailMessage(mail_subject, message, to=[to_email])
-
-            try:
-                email.send()
-                messages.success(
-                    request,
-                    "Qeydiyyat uğurla tamamlandı! Zəhmət olmasa, hesabınızı aktivləşdirmək üçün e-poçtunuzu yoxlayın.",
-                )
-                return redirect("login")
-            except Exception as e:
-                messages.error(request, f"E-poçt göndərilərkən xəta baş verdi: {e}")
+            return redirect("login")
 
     else:
         form = IshchiCreationForm()

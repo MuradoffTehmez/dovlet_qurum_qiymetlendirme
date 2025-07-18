@@ -12,11 +12,11 @@ except Exception as e:
     model = None
 
 
-def generate_recommendations(feedback_list):
+def generate_recommendations(feedback_list) -> str:
     """Verilən rəylər siyahısı əsasında Gemini AI ilə inkişaf tövsiyələri yaradır."""
     
     if not model or not feedback_list:
-        return None
+        return ""
 
     # Rəyləri vahid bir mətnə birləşdiririk
     formatted_feedback = "\n- ".join(filter(None, feedback_list))
@@ -35,7 +35,7 @@ def generate_recommendations(feedback_list):
 
     try:
         response = model.generate_content(prompt)
-        return response.text
+        return response.text.strip() if response.text else ""
     except Exception as e:
         print(f"Gemini API-dan cavab alınarkən xəta baş verdi: {e}")
-        return "Tövsiyələr yaradıla bilmədi. Zəhmət olmasa, daha sonra yenidən cəhd edin."
+        return ""

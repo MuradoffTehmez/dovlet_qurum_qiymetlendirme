@@ -22,6 +22,7 @@ crispy-bootstrap5==2025.6
 cssselect2==0.8.0
 dill==0.4.0
 Django==5.2.3
+django-celery-beat==2.5.0
 django-crispy-forms==2.4
 django-jazzmin==3.0.1
 django-ranged-response==0.2.0

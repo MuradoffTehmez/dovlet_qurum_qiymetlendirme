@@ -4,8 +4,14 @@ from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.urls import reverse
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
+from django.utils.translation import gettext_lazy as _
 
-from .models import Qiymetlendirme
+from .models import CustomUser, Qiymetlendirme
+from .tokens import account_activation_token
+from .tasks import send_activation_email_task
 
 
 @receiver(post_save, sender=Qiymetlendirme)
@@ -49,3 +55,21 @@ Qiymətləndirmə Sistemi
             except Exception as e:
                 # E-poçt göndərilərkən xəta baş verərsə, terminalda göstəririk
                 print(f"E-poçt göndərilərkən xəta baş verdi: {e}")
+
+
+@receiver(post_save, sender=CustomUser)
+def send_activation_email(sender, instance, created, **kwargs):
+    if created and not instance.is_active:
+        # Aktivasiya linki yaradırıq
+        uid = urlsafe_base64_encode(force_bytes(instance.pk))
+        token = account_activation_token.make_token(instance)
+        activation_link = reverse('activate', kwargs={'uidb64': uid, 'token': token})
+        
+        # E-poçt məzmununu hazırlayırıq
+        subject = _('Activate Your Account')
+        message = _(
+            'Hi {user_name},\n\nPlease click the link below to activate your account:\n\nhttp://127.0.0.1:8000{activation_link}'
+        ).format(user_name=instance.get_full_name(), activation_link=activation_link)
+        
+        # Tapşırığı arxa planda işə salırıq
+        send_activation_email_task.delay(subject, message, [instance.email])
