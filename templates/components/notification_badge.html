@@ -1,0 +1,30 @@
+{% load i18n %}
+<!-- Notification Badge Component -->
+{% if notification_count > 0 %}
+<div class="dropdown">
+    <button class="btn btn-outline-primary position-relative" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-bell"></i>
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            {{ notification_count }}
+            <span class="visually-hidden">{% trans "oxunmamış bildiriş" %}</span>
+        </span>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notificationDropdown" style="min-width: 300px;">
+        <li><h6 class="dropdown-header">{% trans "Bildirişlər" %}</h6></li>
+        {% for notification in notifications %}
+        <li>
+            <a class="dropdown-item d-flex align-items-center py-2" href="{{ notification.url }}">
+                <i class="{{ notification.icon }} me-2 text-{% if notification.priority == 'high' %}danger{% elif notification.priority == 'medium' %}warning{% else %}info{% endif %}"></i>
+                <div>
+                    <div class="fw-medium">{{ notification.message|truncatechars:40 }}</div>
+                    <small class="text-muted">{% trans "Priority" %}: {{ notification.priority|capfirst }}</small>
+                </div>
+            </a>
+        </li>
+        {% if not forloop.last %}
+        <li><hr class="dropdown-divider"></li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}

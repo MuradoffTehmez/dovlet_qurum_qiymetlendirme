@@ -1,0 +1,54 @@
+{% load i18n %}
+<!-- Stats Card Component -->
+<div class="card stats-card h-100 shadow-custom">
+    <div class="card-body d-flex align-items-center">
+        <div class="stats-icon me-3">
+            <i class="{{ icon }} fs-2 text-{{ color }}"></i>
+        </div>
+        <div class="flex-grow-1">
+            <h5 class="card-title mb-1">{{ title }}</h5>
+            <h2 class="card-text mb-0 text-{{ color }}">{{ value }}</h2>
+            {% if subtitle %}
+            <small class="text-muted">{{ subtitle }}</small>
+            {% endif %}
+        </div>
+        {% if trend %}
+        <div class="stats-trend text-end">
+            <i class="bi bi-arrow-{{ trend.direction }} text-{{ trend.color }}"></i>
+            <span class="text-{{ trend.color }}">{{ trend.value }}%</span>
+        </div>
+        {% endif %}
+    </div>
+    {% if footer %}
+    <div class="card-footer bg-transparent border-top-0">
+        <small class="text-muted">{{ footer }}</small>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.stats-card {
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.stats-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+.stats-trend {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+</style>

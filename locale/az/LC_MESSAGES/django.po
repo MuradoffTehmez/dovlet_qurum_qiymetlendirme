@@ -1,18 +1,17 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Azərbaycan Dili Tərcümə Faylı - Qiymətləndirmə Sistemi
+# Copyright (C) 2025 Qiymətləndirmə Sistemi
+# This file is distributed under the same license as the Qiymətləndirmə Sistemi package.
+# Sistem Tərcüməçiləri <info@qiymetlendirme.az>, 2025.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-15 01:30+0400\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"Project-Id-Version: Qiymətləndirmə Sistemi 2.0\n"
+"Report-Msgid-Bugs-To: info@qiymetlendirme.az\n"
+"POT-Creation-Date: 2025-01-18 12:00+0400\n"
+"PO-Revision-Date: 2025-01-18 12:00+0400\n"
+"Last-Translator: Sistem Tərcüməçiləri <info@qiymetlendirme.az>\n"
+"Language-Team: Azərbaycan <az@qiymetlendirme.az>\n"
+"Language: az\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -46,6 +45,112 @@ msgstr "Çıxış"
 #: .\core\templates\core\base.html:169 .\templates\registration\login.html:47
 msgid "Login"
 msgstr "Daxil Ol"
+
+# Yeni tərcümələr - Modernləşdirmə
+msgid "Yüklənir..."
+msgstr "Yüklənir..."
+
+msgid "Əsas məzmuna keç"
+msgstr "Əsas məzmuna keç"
+
+msgid "Navigasiyanı aç/bağla"
+msgstr "Navigasiyanı aç/bağla"
+
+msgid "Tema dəyişdir"
+msgstr "Tema dəyişdir"
+
+msgid "Dil seçimi"
+msgstr "Dil seçimi"
+
+msgid "İstifadəçi menyusu"
+msgstr "İstifadəçi menyusu"
+
+msgid "Avatar"
+msgstr "Avatar"
+
+msgid "Profilim"
+msgstr "Profilim"
+
+msgid "Hesabatım"
+msgstr "Hesabatım"
+
+msgid "Rəhbər Paneli"
+msgstr "Rəhbər Paneli"
+
+msgid "Superadmin Paneli"
+msgstr "Superadmin Paneli"
+
+msgid "Çıxış"
+msgstr "Çıxış"
+
+msgid "Daxil Ol"
+msgstr "Daxil Ol"
+
+msgid "Bağla"
+msgstr "Bağla"
+
+msgid "Ana Səhifə"
+msgstr "Ana Səhifə"
+
+msgid "Peşəkar işçilərin performansını qiymətləndirmək üçün müasir və etibarlı həll"
+msgstr "Peşəkar işçilərin performansını qiymətləndirmək üçün müasir və etibarlı həll"
+
+msgid "Keçidlər"
+msgstr "Keçidlər"
+
+msgid "Dəstək"
+msgstr "Dəstək"
+
+msgid "Yardım"
+msgstr "Yardım"
+
+msgid "Əlaqə"
+msgstr "Əlaqə"
+
+msgid "Gizlilik"
+msgstr "Gizlilik"
+
+msgid "Bakı, Azərbaycan"
+msgstr "Bakı, Azərbaycan"
+
+msgid "Bütün hüquqlar qorunur"
+msgstr "Bütün hüquqlar qorunur"
+
+msgid "Versiya"
+msgstr "Versiya"
+
+msgid "Son yenilik"
+msgstr "Son yenilik"
+
+msgid "Peşəkar işçilərin performansını qiymətləndirmək üçün müasir həll"
+msgstr "Peşəkar işçilərin performansını qiymətləndirmək üçün müasir həll"
+
+msgid "qiymətləndirmə, performans, işçi, HR, insan resursları"
+msgstr "qiymətləndirmə, performans, işçi, HR, insan resursları"
+
+msgid "Qiymətləndirmə Sistemi"
+msgstr "Qiymətləndirmə Sistemi"
+
+msgid "İşıq temaya keç"
+msgstr "İşıq temaya keç"
+
+msgid "Qaranlıq temaya keç"
+msgstr "Qaranlıq temaya keç"
+
+msgid "Qaranlıq tema aktivləşdirildi"
+msgstr "Qaranlıq tema aktivləşdirildi"
+
+msgid "İşıq tema aktivləşdirildi"
+msgstr "İşıq tema aktivləşdirildi"
+
+msgid "Zəhmət olmasa, bütün tələb olunan sahələri doldurun"
+msgstr "Zəhmət olmasa, bütün tələb olunan sahələri doldurun"
+
+msgid "Əməliyyat uğurla tamamlandı"
+msgstr "Əməliyyat uğurla tamamlandı"
+
+msgid "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin"
+msgstr "Xəta baş verdi. Zəhmət olmasa yenidən cəhd edin"
 
 #: .\core\templates\core\dashboard.html:4
 msgid "Home"

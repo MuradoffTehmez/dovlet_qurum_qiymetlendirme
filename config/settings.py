@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from dotenv import load_dotenv
 
 # ===================================================================
-# ƏSAS QURĞULAR VƏ YOLLAR (BASE CONFIGURATIONS & PATHS)
+# ƏSAS QURĞULAR VƏ YOLLAR (BASE  CONFIGURATIONS & PATHS)
 # ===================================================================
 
 load_dotenv()  # .env faylını yükləyirik
@@ -249,6 +249,8 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "core.context_processors.language_switcher_context",
+                "core.context_processors.global_context",
+                "core.context_processors.notification_context",
             ],
         },
     },

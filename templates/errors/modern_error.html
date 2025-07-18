@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% trans "Səhifə Tapılmadı" %} - 404</title>
+    <title>{% trans "Xəta" %} {{ error_code }} - {% trans "Qiymətləndirmə Sistemi" %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
@@ -29,7 +29,6 @@
         .error-icon {
             font-size: 6rem;
             margin-bottom: 1rem;
-            color: #667eea;
         }
         .error-code {
             font-size: 4rem;
@@ -42,6 +41,12 @@
             color: #6c757d;
             margin-bottom: 2rem;
         }
+        .error-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
         .btn-home {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
@@ -51,7 +56,6 @@
             font-weight: 600;
             text-decoration: none;
             transition: all 0.3s ease;
-            margin: 0.5rem;
         }
         .btn-home:hover {
             transform: translateY(-2px);
@@ -67,33 +71,59 @@
             font-weight: 600;
             text-decoration: none;
             transition: all 0.3s ease;
-            margin: 0.5rem;
         }
         .btn-back:hover {
             background: #667eea;
             color: white;
             transform: translateY(-2px);
         }
+        .animated-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        .animated-bg::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+        }
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(50px, 50px) rotate(360deg); }
+        }
     </style>
 </head>
 <body>
     <div class="error-container">
+        <div class="animated-bg"></div>
         <div class="error-card">
-            <div class="error-icon">
-                <i class="bi bi-search"></i>
+            <div class="error-icon text-warning">
+                <i class="bi bi-{% if error_code == '404' %}search{% elif error_code == '403' %}shield-exclamation{% elif error_code == '500' %}tools{% else %}exclamation-triangle{% endif %}"></i>
             </div>
-            <div class="error-code">404</div>
-            <h2 class="mb-3">{% trans "Səhifə Tapılmadı" %}</h2>
-            <p class="error-message">{% trans "Axtardığınız səhifə mövcud deyil və ya silinib." %}</p>
+            <div class="error-code">{{ error_code }}</div>
+            <h2 class="mb-3">{{ error_title }}</h2>
+            <p class="error-message">{{ error_message }}</p>
             
+            {% if error_suggestions %}
             <div class="alert alert-info text-start mb-4">
                 <h6>{% trans "Təkliflər" %}:</h6>
                 <ul class="mb-0">
-                    <li>{% trans "URL-ni yoxlayın" %}</li>
-                    <li>{% trans "Ana səhifəyə qayıdın" %}</li>
-                    <li>{% trans "Axtarış edərək məzmunu tapın" %}</li>
+                    {% for suggestion in error_suggestions %}
+                    <li>{{ suggestion }}</li>
+                    {% endfor %}
                 </ul>
             </div>
+            {% endif %}
             
             <div class="error-actions">
                 <a href="{% url 'dashboard' %}" class="btn-home">
@@ -130,6 +160,26 @@
                 document.querySelector('.error-card').style.color = '#c9d1d9';
             }
         })();
+        
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            const card = document.querySelector('.error-card');
+            const icon = document.querySelector('.error-icon');
+            
+            // Add hover effect to card
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+            
+            // Animate icon on load 
+            setTimeout(() => {
+                icon.classList.add('animate__animated', 'animate__pulse');
+            }, 500);
+        });
     </script>
 </body>
 </html>
