@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "mcp__ide__getDiagnostics",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(pip show:*)"
     ],
     "deny": []
   }
