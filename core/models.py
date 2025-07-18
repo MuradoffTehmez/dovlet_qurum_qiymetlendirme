@@ -215,3 +215,120 @@ class Hedef(models.Model):
         return self.tesvir[:70]
 
     history = HistoricalRecords()
+
+
+# --- Geri Bildirim və Şikayət Sistemi ---
+class Feedback(models.Model):
+    """İstifadəçilərdən gələn geri bildirimlər, təkliflər və şikayətlər"""
+    
+    class FeedbackType(models.TextChoices):
+        COMPLAINT = "COMPLAINT", "Şikayət"
+        SUGGESTION = "SUGGESTION", "Təklif"
+        BUG_REPORT = "BUG_REPORT", "Texniki Problem"
+        FEATURE_REQUEST = "FEATURE_REQUEST", "Yeni Funksiya Tələbi"
+        GENERAL = "GENERAL", "Ümumi Geri Bildirim"
+    
+    class Priority(models.TextChoices):
+        LOW = "LOW", "Aşağı"
+        MEDIUM = "MEDIUM", "Orta"
+        HIGH = "HIGH", "Yüksək"
+        URGENT = "URGENT", "Təcili"
+    
+    class Status(models.TextChoices):
+        NEW = "NEW", "Yeni"
+        IN_PROGRESS = "IN_PROGRESS", "İcrada"
+        RESOLVED = "RESOLVED", "Həll edilib"
+        CLOSED = "CLOSED", "Bağlandı"
+    
+    # Əsas sahələr
+    user = models.ForeignKey(
+        Ishchi, on_delete=models.CASCADE,
+        related_name="feedbacks", verbose_name="İstifadəçi"
+    )
+    title = models.CharField(max_length=200, verbose_name="Başlıq")
+    description = models.TextField(verbose_name="Təsvir")
+    feedback_type = models.CharField(
+        max_length=20, choices=FeedbackType.choices,
+        default=FeedbackType.GENERAL, verbose_name="Növ"
+    )
+    priority = models.CharField(
+        max_length=10, choices=Priority.choices,
+        default=Priority.MEDIUM, verbose_name="Prioritet"
+    )
+    status = models.CharField(
+        max_length=15, choices=Status.choices,
+        default=Status.NEW, verbose_name="Status"
+    )
+    
+    # Tarixlər
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaradılma Tarixi")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Yenilənmə Tarixi")
+    resolved_at = models.DateTimeField(null=True, blank=True, verbose_name="Həll Tarixi")
+    
+    # Admin cavabı
+    admin_response = models.TextField(
+        blank=True, null=True, verbose_name="Admin Cavabı"
+    )
+    responded_by = models.ForeignKey(
+        Ishchi, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="feedback_responses", verbose_name="Cavab Verən"
+    )
+    response_date = models.DateTimeField(null=True, blank=True, verbose_name="Cavab Tarixi")
+    
+    # Əlavə məlumatlar
+    attachment = models.FileField(
+        upload_to="feedback_files/", null=True, blank=True,
+        verbose_name="Əlavə Fayl"
+    )
+    ip_address = models.GenericIPAddressField(null=True, blank=True, verbose_name="IP Ünvanı")
+    user_agent = models.TextField(blank=True, verbose_name="Brauzer Məlumatı")
+    
+    class Meta:
+        verbose_name = "Geri Bildirim"
+        verbose_name_plural = "Geri Bildirimlər"
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status', 'created_at']),
+            models.Index(fields=['feedback_type', 'priority']),
+            models.Index(fields=['user', 'created_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.title[:50]}"
+    
+    def get_absolute_url(self):
+        return f"/feedback/{self.pk}/"
+    
+    def mark_as_resolved(self, admin_user, response=None):
+        """Geri bildirimi həll edilmiş kimi işarələ"""
+        from django.utils import timezone
+        
+        self.status = self.Status.RESOLVED
+        self.resolved_at = timezone.now()
+        if response:
+            self.admin_response = response
+            self.responded_by = admin_user
+            self.response_date = timezone.now()
+        self.save()
+    
+    def get_status_color(self):
+        """Status üçün rəng qaytarır"""
+        colors = {
+            self.Status.NEW: 'primary',
+            self.Status.IN_PROGRESS: 'warning',
+            self.Status.RESOLVED: 'success',
+            self.Status.CLOSED: 'secondary'
+        }
+        return colors.get(self.status, 'secondary')
+    
+    def get_priority_color(self):
+        """Prioritet üçün rəng qaytarır"""
+        colors = {
+            self.Priority.LOW: 'info',
+            self.Priority.MEDIUM: 'warning',
+            self.Priority.HIGH: 'danger',
+            self.Priority.URGENT: 'dark'
+        }
+        return colors.get(self.priority, 'secondary')
+    
+    history = HistoricalRecords()

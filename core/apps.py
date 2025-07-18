@@ -10,3 +10,5 @@ class CoreConfig(AppConfig):
     def ready(self):
         # Siqnalları import edirik ki, Django onları tanısın
         import core.signals
+        # Audit logging siqnallarını da import edirik
+        import core.audit

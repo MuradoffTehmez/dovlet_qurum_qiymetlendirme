@@ -9,7 +9,8 @@
       "Bash(taskkill:*)",
       "Bash(rm:*)",
       "Bash(del \"C:\\Q360\\locale\\az\\LC_MESSAGES\\django.po\")",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(pip install:*)"
     ],
     "deny": []
   }
