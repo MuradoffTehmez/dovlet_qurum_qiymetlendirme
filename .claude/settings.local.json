@@ -3,7 +3,10 @@
     "allow": [
       "mcp__ide__getDiagnostics",
       "Bash(python:*)",
-      "Bash(pip show:*)"
+      "Bash(pip show:*)",
+      "Bash(curl:*)",
+      "Bash(pkill:*)",
+      "Bash(taskkill:*)"
     ],
     "deny": []
   }
