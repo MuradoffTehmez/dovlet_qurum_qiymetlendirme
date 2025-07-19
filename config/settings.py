@@ -40,6 +40,12 @@ INSTALLED_APPS = [
     'simple_history',
     'django_celery_beat',  # Celery Beat üçün
     
+    # REST API tətbiqləri
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'drf_spectacular',
+    'corsheaders',
+    
     # Django-nun daxili tətbiqləri
     'django.contrib.admin',
     'django.contrib.auth',
@@ -57,6 +63,7 @@ INSTALLED_APPS = [
 # ===================================================================
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
@@ -424,3 +431,86 @@ LOGGING = {
 import os
 if not os.path.exists('logs'):
     os.makedirs('logs')
+
+# ===================================================================
+# DJANGO REST FRAMEWORK KONFİQURASİYASI
+# ===================================================================
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+    'DEFAULT_FILTER_BACKENDS': [
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+# ===================================================================
+# JWT (JSON Web Token) KONFİQURASİYASI
+# ===================================================================
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'VERIFYING_KEY': None,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
+    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+}
+
+# ===================================================================
+# API DOKUMENTASİYA KONFİQURASİYASI (drf-spectacular)
+# ===================================================================
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Q360 Performance Management API',
+    'DESCRIPTION': 'Q360 360 dərəcə performans idarəetmə sistemi üçün REST API',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SCHEMA_PATH_PREFIX': '/api/v1',
+}
+
+# ===================================================================
+# CORS KONFİQURASİYASI (Cross-Origin Resource Sharing)
+# ===================================================================
+
+# Development üçün bütün domainlərə icazə ver
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+# Production-da daha məhdud konfiqurasiya istifadə edin
+if not DEBUG:
+    CORS_ALLOWED_ORIGINS = [
+        # Production domainlərinizi burada qeyd edin
+    ]

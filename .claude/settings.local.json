@@ -20,7 +20,8 @@
       "Bash(timeout 10 python manage.py runserver:*)",
       "Bash(git add:*)",
       "Bash(tail:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(find:*)"
     ],
     "deny": []
   }

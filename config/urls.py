@@ -18,6 +18,7 @@ i18n_urlpatterns = i18n_patterns(
 # Dilə həssas olmayan URL-lər
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/v1/', include('core.api_urls')),
 ]
 urlpatterns += i18n_urlpatterns
 
