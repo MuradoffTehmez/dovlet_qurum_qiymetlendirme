@@ -435,6 +435,7 @@ class IdeaViewSet(viewsets.ModelViewSet):
 # --- Dashboard & Analytics Views ---
 class DashboardViewSet(viewsets.GenericViewSet):
     permission_classes = [IsAuthenticated]
+    serializer_class = None  # Dashboard serializer yoxdur, yalnız action-lar var
     
     @action(detail=False, methods=['get'])
     def stats(self, request):

@@ -83,17 +83,17 @@ class QiymetlendirmeDovruSerializer(serializers.ModelSerializer):
 
 
 class QiymetlendirmeSerializer(serializers.ModelSerializer):
-    qiymetlendirilecek_name = serializers.CharField(source='qiymetlendirilecek.get_full_name', read_only=True)
+    qiymetlendirilen_name = serializers.CharField(source='qiymetlendirilen.get_full_name', read_only=True)
     qiymetlendiren_name = serializers.CharField(source='qiymetlendiren.get_full_name', read_only=True)
     dovr_name = serializers.CharField(source='dovr.ad', read_only=True)
     
     class Meta:
         model = Qiymetlendirme
         fields = [
-            'id', 'qiymetlendirilecek', 'qiymetlendirilecek_name',
+            'id', 'qiymetlendirilen', 'qiymetlendirilen_name',
             'qiymetlendiren', 'qiymetlendiren_name',
             'dovr', 'dovr_name', 'status', 'yaradilma_tarixi',
-            'tamamlanma_tarixi', 'umumi_qeyd'
+            'tamamlanma_tarixi'
         ]
 
 
@@ -122,13 +122,13 @@ class CavabSerializer(serializers.ModelSerializer):
 class InkishafPlaniSerializer(serializers.ModelSerializer):
     ishchi_name = serializers.CharField(source='ishchi.get_full_name', read_only=True)
     dovr_name = serializers.CharField(source='dovr.ad', read_only=True)
+    hedefler_count = serializers.IntegerField(source='hedefler.count', read_only=True)
     
     class Meta:
         model = InkishafPlani
         fields = [
             'id', 'ishchi', 'ishchi_name', 'dovr', 'dovr_name',
-            'guclu_terefler', 'inkishaf_saheleri', 'hedefler',
-            'ai_tovsiyeler', 'yaradilma_tarixi', 'yenileme_tarixi'
+            'yaradilma_tarixi', 'status', 'hedefler_count'
         ]
 
 
@@ -150,8 +150,8 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = [
-            'id', 'user', 'title', 'message', 'notification_type',
-            'is_read', 'created_at', 'action_url'
+            'id', 'recipient', 'title', 'message', 'notification_type',
+            'is_read', 'created_at', 'action_text', 'action_url'
         ]
 
 
