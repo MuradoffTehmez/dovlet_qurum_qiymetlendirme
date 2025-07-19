@@ -62,37 +62,38 @@ def _generate_dashboard_stats(user):
         'personal': {
             'pending_evaluations': Qiymetlendirme.objects.filter(
                 qiymetlendirilen=user,
-                umumi_qiymet__isnull=True
+                status='GOZLEMEDE'
             ).count(),
             'completed_evaluations': Qiymetlendirme.objects.filter(
                 qiymetlendirilen=user,
-                umumi_qiymet__isnull=False
+                status='TAMAMLANDI'
             ).count(),
             'active_goals': Hedef.objects.filter(
                 plan__ishchi=user,
-                status__in=['BASHLANMAYIB', 'ICRADA']
+                status__in=['BASHLANMAYIB', 'DAVAM_EDIR']
             ).count(),
             'completed_goals': Hedef.objects.filter(
                 plan__ishchi=user,
-                status='TAMAMLANIB'
+                status='TAMAMLANDI'
             ).count(),
             'unread_notifications': Notification.objects.filter(
                 recipient=user,
                 is_read=False
             ).count(),
             'avg_performance': Qiymetlendirme.objects.filter(
-                qiymetlendirilen=user
-            ).aggregate(avg_score=Avg('umumi_qiymet'))['avg_score'] or 0
+                qiymetlendirilen=user,
+                status='TAMAMLANDI'
+            ).aggregate(avg_score=Avg('cavablar__xal'))['avg_score'] or 0
         },
         'trends': {
             'this_month_evaluations': Qiymetlendirme.objects.filter(
                 qiymetlendirilen=user,
-                tarix__gte=this_month
+                dovr__bashlama_tarixi__gte=this_month
             ).count(),
             'last_month_evaluations': Qiymetlendirme.objects.filter(
                 qiymetlendirilen=user,
-                tarix__gte=last_month,
-                tarix__lt=this_month
+                dovr__bashlama_tarixi__gte=last_month,
+                dovr__bashlama_tarixi__lt=this_month
             ).count(),
             'goals_completion_rate': _calculate_goal_completion_rate(user),
             'performance_trend': _get_performance_trend(user)
@@ -112,7 +113,7 @@ def _calculate_goal_completion_rate(user):
     total_goals = Hedef.objects.filter(plan__ishchi=user).count()
     completed_goals = Hedef.objects.filter(
         plan__ishchi=user,
-        status='TAMAMLANIB'
+        status='TAMAMLANDI'
     ).count()
     
     if total_goals == 0:
@@ -130,8 +131,9 @@ def _get_performance_trend(user):
         
         avg_score = Qiymetlendirme.objects.filter(
             qiymetlendirilen=user,
-            tarix__range=[month_start, month_end]
-        ).aggregate(avg=Avg('umumi_qiymet'))['avg'] or 0
+            dovr__bashlama_tarixi__range=[month_start, month_end],
+            status='TAMAMLANDI'
+        ).aggregate(avg=Avg('cavablar__xal'))['avg'] or 0
         
         trends.append({
             'month': month_start.strftime('%Y-%m'),
@@ -154,15 +156,15 @@ def _get_team_statistics(user):
     return {
         'total_members': team_members.count(),
         'avg_team_performance': team_members.aggregate(
-            avg=Avg('qiymetlendirme_qiymetlendirilen__umumi_qiymet')
+            avg=Avg('verilen_qiymetler__cavablar__xal')
         )['avg'] or 0,
         'pending_team_evaluations': Qiymetlendirme.objects.filter(
             qiymetlendirilen__in=team_members,
-            umumi_qiymet__isnull=True
+            status='GOZLEMEDE'
         ).count(),
         'active_team_goals': Hedef.objects.filter(
             plan__ishchi__in=team_members,
-            status__in=['BASHLANMAYIB', 'ICRADA']
+            status__in=['BASHLANMAYIB', 'DAVAM_EDIR']
         ).count()
     }
 
@@ -177,7 +179,7 @@ def _get_organization_statistics(user):
             bitme_tarixi__gte=timezone.now().date()
         ).count(),
         'monthly_evaluations': Qiymetlendirme.objects.filter(
-            tarix__month=timezone.now().month
+            dovr__bashlama_tarixi__month=timezone.now().month
         ).count()
     }
 
@@ -229,8 +231,9 @@ def _get_performance_chart_data(user, period):
         
         avg_score = Qiymetlendirme.objects.filter(
             qiymetlendirilen=user,
-            tarix__range=[month_start, month_end]
-        ).aggregate(avg=Avg('umumi_qiymet'))['avg'] or 0
+            dovr__bashlama_tarixi__range=[month_start, month_end],
+            status='TAMAMLANDI'
+        ).aggregate(avg=Avg('cavablar__xal'))['avg'] or 0
         
         chart_data['labels'].insert(0, month_start.strftime('%b %Y'))
         chart_data['datasets'][0]['data'].insert(0, round(avg_score, 1))
@@ -277,7 +280,7 @@ def _get_goal_progress_data(user):
 def _get_department_comparison_data():
     """Şöbələr müqayisə məlumatlarını hazırlayır"""
     departments = OrganizationUnit.objects.annotate(
-        avg_performance=Avg('ishchiler__qiymetlendirme_qiymetlendirilen__umumi_qiymet'),
+        avg_performance=Avg('ishchiler__verilen_qiymetler__cavablar__xal'),
         employee_count=Count('ishchiler', filter=Q(ishchiler__is_active=True))
     ).filter(employee_count__gt=0)
     
@@ -350,7 +353,7 @@ def _get_recent_activities_data(user):
     # Son qiymətləndirmələr
     recent_evaluations = Qiymetlendirme.objects.filter(
         Q(qiymetlendirilen=user) | Q(qiymetlendiren=user)
-    ).order_by('-tarix')[:5]
+    ).order_by('-id')[:5]
     
     for evaluation in recent_evaluations:
         if evaluation.qiymetlendirilen == user:
@@ -358,7 +361,7 @@ def _get_recent_activities_data(user):
                 'type': 'evaluation_received',
                 'title': f'Qiymətləndirmə alındı',
                 'description': f'{evaluation.qiymetlendiren.get_full_name()} tərəfindən',
-                'date': evaluation.tarix.strftime('%d.%m.%Y'),
+                'date': evaluation.dovr.bashlama_tarixi.strftime('%d.%m.%Y'),
                 'icon': 'fas fa-star',
                 'color': 'primary'
             })
@@ -367,7 +370,7 @@ def _get_recent_activities_data(user):
                 'type': 'evaluation_given',
                 'title': f'Qiymətləndirmə verildi',
                 'description': f'{evaluation.qiymetlendirilen.get_full_name()} üçün',
-                'date': evaluation.tarix.strftime('%d.%m.%Y'),
+                'date': evaluation.dovr.bashlama_tarixi.strftime('%d.%m.%Y'),
                 'icon': 'fas fa-clipboard-check',
                 'color': 'success'
             })
@@ -401,7 +404,7 @@ def _get_upcoming_deadlines_data(user):
     upcoming_goals = Hedef.objects.filter(
         plan__ishchi=user,
         son_tarix__range=[today, next_month],
-        status__in=['BASHLANMAYIB', 'ICRADA']
+        status__in=['BASHLANMAYIB', 'DAVAM_EDIR']
     ).order_by('son_tarix')
     
     deadlines = []
@@ -446,16 +449,17 @@ def _get_team_performance_data(user):
     team_data = []
     for member in team_members:
         avg_performance = Qiymetlendirme.objects.filter(
-            qiymetlendirilen=member
-        ).aggregate(avg=Avg('umumi_qiymet'))['avg'] or 0
+            qiymetlendirilen=member,
+            status='TAMAMLANDI'
+        ).aggregate(avg=Avg('cavablar__xal'))['avg'] or 0
         
         team_data.append({
             'name': member.get_full_name(),
-            'role': member.get_rol_display(),
+            'role': member.rol,
             'avg_performance': round(avg_performance, 1),
             'active_goals': Hedef.objects.filter(
                 plan__ishchi=member,
-                status__in=['BASHLANMAYIB', 'ICRADA']
+                status__in=['BASHLANMAYIB', 'DAVAM_EDIR']
             ).count()
         })
     
@@ -470,11 +474,11 @@ def _get_quick_stats_data(user):
     return {
         'this_week_evaluations': Qiymetlendirme.objects.filter(
             Q(qiymetlendirilen=user) | Q(qiymetlendiren=user),
-            tarix__gte=this_week
+            dovr__bashlama_tarixi__gte=this_week
         ).count(),
         'pending_tasks': Qiymetlendirme.objects.filter(
             qiymetlendirilen=user,
-            umumi_qiymet__isnull=True
+            status='GOZLEMEDE'
         ).count(),
         'completion_rate': _calculate_goal_completion_rate(user),
         'notification_count': Notification.objects.filter(

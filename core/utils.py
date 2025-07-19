@@ -132,8 +132,9 @@ def get_user_performance_trend(user, months=6):
         
         avg_score = Qiymetlendirme.objects.filter(
             qiymetlendirilen=user,
-            tarix__range=[month_start, month_end]
-        ).aggregate(avg=Avg('umumi_qiymet'))['avg'] or 0
+            dovr__bashlama_tarixi__range=[month_start, month_end],
+            status='TAMAMLANDI'
+        ).aggregate(avg=Avg('cavablar__xal'))['avg'] or 0
         
         trends.append({
             'month': month_start.strftime('%Y-%m'),
