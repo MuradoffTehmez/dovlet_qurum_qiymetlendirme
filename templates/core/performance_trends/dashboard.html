@@ -1,0 +1,542 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .trends-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        border: none;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+    .trends-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    }
+    .trends-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 15px 15px 0 0;
+    }
+    .metric-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        margin-bottom: 1.5rem;
+        transition: transform 0.3s ease;
+    }
+    .metric-card:hover {
+        transform: translateY(-3px);
+    }
+    .metric-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    .trend-indicator {
+        font-size: 1.1rem;
+        margin-left: 0.5rem;
+    }
+    .trend-up { color: #28a745; }
+    .trend-down { color: #dc3545; }
+    .trend-stable { color: #6c757d; }
+    .performance-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    .performance-excellent {
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+    }
+    .performance-good {
+        background: linear-gradient(135deg, #ffc107, #fd7e14);
+        color: #212529;
+    }
+    .performance-needs-improvement {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+    }
+    .chart-container {
+        position: relative;
+        height: 400px;
+        margin: 1rem 0;
+    }
+    .insights-panel {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        border-radius: 15px;
+        padding: 1.5rem;
+        color: #495057;
+        margin-bottom: 1.5rem;
+    }
+    .prediction-card {
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        border-radius: 15px;
+        padding: 1.5rem;
+        color: #495057;
+    }
+    .category-trend-item {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid #e9ecef;
+    }
+    .category-trend-item.improving {
+        border-left-color: #28a745;
+        background: #f8fff9;
+    }
+    .category-trend-item.declining {
+        border-left-color: #dc3545;
+        background: #fff8f8;
+    }
+    .category-trend-item.stable {
+        border-left-color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/date-fns@2.29.0/index.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-chart-line me-2"></i>{{ page_title }}
+                </h1>
+                <p class="text-muted mt-1">Performansınızın zamanla dəyişimi və gələcək proqnozları</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Performance Metrics -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="metric-card">
+                <div class="metric-number text-primary">{{ current_score|floatformat:1 }}</div>
+                <h6 class="text-muted">Cari Performans</h6>
+                <small class="text-muted">
+                    {% if score_trend > 0 %}
+                        <span class="trend-up">
+                            <i class="fas fa-arrow-up trend-indicator"></i>+{{ score_trend|floatformat:1 }}
+                        </span>
+                    {% elif score_trend < 0 %}
+                        <span class="trend-down">
+                            <i class="fas fa-arrow-down trend-indicator"></i>{{ score_trend|floatformat:1 }}
+                        </span>
+                    {% else %}
+                        <span class="trend-stable">
+                            <i class="fas fa-minus trend-indicator"></i>Stabil
+                        </span>
+                    {% endif %}
+                    əvvəlki dövrə nisbətən
+                </small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="metric-card">
+                <div class="metric-number text-success">{{ average_growth|floatformat:1 }}%</div>
+                <h6 class="text-muted">İllik İnkişaf</h6>
+                <small class="text-muted">Son 12 ay ərzində orta artım</small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="metric-card">
+                <div class="metric-number text-info">{{ predicted_next_score|floatformat:1 }}</div>
+                <h6 class="text-muted">Proqnoz (Növbəti Dövr)</h6>
+                <small class="text-muted">ML modeli ilə hesablanıb</small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="metric-card">
+                <div class="metric-number text-warning">{{ consistency_score|floatformat:0 }}%</div>
+                <h6 class="text-muted">Sabitlik İndeksi</h6>
+                <small class="text-muted">Performans sabitliyi</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Performance Trend Chart -->
+        <div class="col-lg-8 mb-4">
+            <div class="trends-card">
+                <div class="trends-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">
+                                <i class="fas fa-chart-area me-2"></i>Performans Trendi
+                            </h5>
+                            <small>Son 24 ay ərzində performans dəyişikliyi</small>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-filter me-1"></i>Müddət
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="?period=6m">Son 6 ay</a></li>
+                                <li><a class="dropdown-item" href="?period=12m">Son 12 ay</a></li>
+                                <li><a class="dropdown-item" href="?period=24m">Son 24 ay</a></li>
+                                <li><a class="dropdown-item" href="?period=all">Bütün Məlumatlar</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="performanceTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Status -->
+        <div class="col-lg-4 mb-4">
+            <div class="trends-card">
+                <div class="trends-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tachometer-alt me-2"></i>Performans Statusu
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        <div class="performance-badge performance-{{ performance_level }}">
+                            {% if performance_level == 'excellent' %}
+                                <i class="fas fa-star me-2"></i>Mükəmməl Performans
+                            {% elif performance_level == 'good' %}
+                                <i class="fas fa-thumbs-up me-2"></i>Yaxşı Performans
+                            {% else %}
+                                <i class="fas fa-chart-line me-2"></i>İnkişaf Sahəsi
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="row text-center mb-3">
+                        <div class="col-6">
+                            <h4 class="text-success mb-0">{{ total_evaluations }}</h4>
+                            <small class="text-muted">Ümumi Qiymətləndirmə</small>
+                        </div>
+                        <div class="col-6">
+                            <h4 class="text-info mb-0">{{ evaluation_frequency|floatformat:1 }}</h4>
+                            <small class="text-muted">Ay Başına Orta</small>
+                        </div>
+                    </div>
+
+                    <div class="progress mb-3" style="height: 10px;">
+                        <div class="progress-bar bg-success" style="width: {{ current_score|floatformat:0|add:'0' }}%"></div>
+                    </div>
+                    <small class="text-muted">{{ current_score|floatformat:1 }}/10 ({{ department_rank }}. sıra departmanınızda)</small>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="prediction-card">
+                <h6 class="mb-3">
+                    <i class="fas fa-rocket me-2"></i>Sürətli Əməliyyatlar
+                </h6>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'performance_trends:department_comparison' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-users me-1"></i>Departman Müqayisəsi
+                    </a>
+                    <a href="{% url 'self_review:dashboard' %}" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-user-check me-1"></i>Yeni Self-Review
+                    </a>
+                    <a href="{% url 'gap_analysis:dashboard' %}" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-balance-scale me-1"></i>Gap Analysis
+                    </a>
+                    <button class="btn btn-outline-warning btn-sm" onclick="downloadTrendReport()">
+                        <i class="fas fa-download me-1"></i>Trend Hesabatı
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Trends -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="trends-card">
+                <div class="trends-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-th-large me-2"></i>Kateqoriya üzrə Trend Analizi
+                    </h5>
+                    <small>Hər sahədəki performans dəyişikliyi</small>
+                </div>
+                <div class="card-body">
+                    {% for category in category_trends %}
+                    <div class="category-trend-item {{ category.trend_direction }}">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h6 class="mb-1">{{ category.name }}</h6>
+                                <small class="text-muted">{{ category.question_count }} sual</small>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <span class="badge bg-primary">{{ category.current_score|floatformat:1 }}</span>
+                                <br><small class="text-muted">Cari</small>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                {% if category.trend_direction == 'improving' %}
+                                    <span class="text-success">
+                                        <i class="fas fa-arrow-up me-1"></i>+{{ category.change|floatformat:1 }}
+                                    </span>
+                                {% elif category.trend_direction == 'declining' %}
+                                    <span class="text-danger">
+                                        <i class="fas fa-arrow-down me-1"></i>{{ category.change|floatformat:1 }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">
+                                        <i class="fas fa-minus me-1"></i>{{ category.change|floatformat:1 }}
+                                    </span>
+                                {% endif %}
+                                <br><small class="text-muted">Dəyişim</small>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <a href="{% url 'performance_trends:category_detail' category.id %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-chart-line me-1"></i>Detay
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Insights and Predictions -->
+        <div class="col-lg-4 mb-4">
+            <div class="insights-panel">
+                <h6 class="mb-3">
+                    <i class="fas fa-brain me-2"></i>AI Təhlili və Proqnozlar
+                </h6>
+                
+                <div class="mb-3">
+                    <h6 class="small">PERFORMANS TƏHLİLİ</h6>
+                    {% if score_trend > 0.5 %}
+                    <p class="small mb-2">
+                        <i class="fas fa-chart-line text-success me-2"></i>
+                        <strong>Yüksələn trend:</strong> Performansınız son dövrlərdə yaxşılaşır. Bu tendensiya davam etsə, növbəti dövrdə {{ predicted_next_score|floatformat:1 }} bal gözlənilir.
+                    </p>
+                    {% elif score_trend < -0.5 %}
+                    <p class="small mb-2">
+                        <i class="fas fa-chart-line text-warning me-2"></i>
+                        <strong>Azalan trend:</strong> Performansda azalma müşahidə olunur. Diqqət və təkmilləşdirmə addımları tövsiyə olunur.
+                    </p>
+                    {% else %}
+                    <p class="small mb-2">
+                        <i class="fas fa-balance-scale text-info me-2"></i>
+                        <strong>Stabil performans:</strong> Sabit və əngili performans. İnkişaf üçün yeni hədəflər təyin edin.
+                    </p>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <h6 class="small">ƏN YAXŞI PERFORMANS SAHƏLƏRİ</h6>
+                    {% for area in top_performing_areas %}
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small>{{ area.name }}</small>
+                        <span class="badge bg-success">{{ area.score|floatformat:1 }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    <h6 class="small">İNKİŞAF SAHƏLƏRİ</h6>
+                    {% for area in improvement_areas %}
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <small>{{ area.name }}</small>
+                        <span class="badge bg-warning">{{ area.score|floatformat:1 }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="prediction-card">
+                <h6 class="mb-3">
+                    <i class="fas fa-crystal-ball me-2"></i>6 Aylıq Proqnoz
+                </h6>
+                <div class="text-center mb-3">
+                    <h4 class="text-primary">{{ six_month_prediction|floatformat:1 }}/10</h4>
+                    <small class="text-muted">Gözlənilən performans</small>
+                </div>
+                
+                <div class="mb-3">
+                    <small class="d-block text-center">
+                        {% if six_month_prediction > current_score %}
+                            <span class="text-success">
+                                <i class="fas fa-arrow-up me-1"></i>
+                                +{{ six_month_prediction|floatformat:1|sub:current_score|floatformat:1 }} bal artım proqnozu
+                            </span>
+                        {% elif six_month_prediction < current_score %}
+                            <span class="text-warning">
+                                <i class="fas fa-arrow-down me-1"></i>
+                                {{ six_month_prediction|floatformat:1|sub:current_score|floatformat:1 }} bal azalma riski
+                            </span>
+                        {% else %}
+                            <span class="text-info">
+                                <i class="fas fa-minus me-1"></i>
+                                Stabil performans proqnozu
+                            </span>
+                        {% endif %}
+                    </small>
+                </div>
+
+                <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Bu proqnoz maşın öyrənməsi alqoritmləri ilə tarixi məlumatlar əsasında hesablanıb.
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparative Analysis -->
+    <div class="row">
+        <div class="col-12">
+            <div class="trends-card">
+                <div class="trends-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-users me-2"></i>Departman və Şirkət Müqayisəsi
+                    </h5>
+                    <small>Sizin performansınızın ortamalar ilə müqayisəsi</small>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="comparativeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Performance Trend Chart
+    const trendCtx = document.getElementById('performanceTrendChart').getContext('2d');
+    const trendData = {{ trend_chart_data|safe }};
+    
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: trendData.labels,
+            datasets: [
+                {
+                    label: 'Sizin Performansınız',
+                    data: trendData.user_scores,
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#667eea',
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
+                },
+                {
+                    label: 'Proqnoz',
+                    data: trendData.predictions,
+                    borderColor: '#28a745',
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    borderDash: [5, 5],
+                    fill: false,
+                    tension: 0.4,
+                    pointBackgroundColor: '#28a745',
+                    pointRadius: 4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 10,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            elements: {
+                point: {
+                    hoverRadius: 8
+                }
+            }
+        }
+    });
+
+    // Comparative Chart
+    const compCtx = document.getElementById('comparativeChart').getContext('2d');
+    const compData = {{ comparative_chart_data|safe }};
+    
+    new Chart(compCtx, {
+        type: 'bar',
+        data: {
+            labels: compData.labels,
+            datasets: [
+                {
+                    label: 'Sizin Performansınız',
+                    data: compData.user_scores,
+                    backgroundColor: 'rgba(102, 126, 234, 0.7)',
+                    borderColor: 'rgba(102, 126, 234, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Departman Ortalaması',
+                    data: compData.department_averages,
+                    backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                    borderColor: 'rgba(40, 167, 69, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Şirkət Ortalaması',
+                    data: compData.company_averages,
+                    backgroundColor: 'rgba(255, 193, 7, 0.7)',
+                    borderColor: 'rgba(255, 193, 7, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 10,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+});
+
+function downloadTrendReport() {
+    alert('Performans trend hesabatı tezliklə əlçatan olacaq');
+}
+</script>
+{% endblock %}

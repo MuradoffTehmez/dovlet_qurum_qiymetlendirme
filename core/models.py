@@ -905,3 +905,344 @@ class QuickFeedback(models.Model):
     history = HistoricalRecords()
 
 
+class PrivateNote(models.Model):
+    """Rəhbərlərin işçilər haqqında məxfi qeydləri"""
+    
+    class NoteType(models.TextChoices):
+        PERFORMANCE = 'PERFORMANCE', 'Performans Qeydi'
+        DEVELOPMENT = 'DEVELOPMENT', 'İnkişaf Qeydi'
+        BEHAVIOR = 'BEHAVIOR', 'Davranış Qeydi'
+        ACHIEVEMENT = 'ACHIEVEMENT', 'Nailiyyət Qeydi'
+        CONCERN = 'CONCERN', 'Narahatlıq Qeydi'
+        FEEDBACK = 'FEEDBACK', 'Geri Bildirim'
+        GENERAL = 'GENERAL', 'Ümumi Qeyd'
+    
+    class Priority(models.TextChoices):
+        LOW = 'LOW', 'Aşağı'
+        MEDIUM = 'MEDIUM', 'Orta'
+        HIGH = 'HIGH', 'Yüksək'
+        URGENT = 'URGENT', 'Təcili'
+    
+    # Əsas sahələr
+    employee = models.ForeignKey(
+        Ishchi, on_delete=models.CASCADE,
+        related_name="private_notes", verbose_name="İşçi"
+    )
+    manager = models.ForeignKey(
+        Ishchi, on_delete=models.CASCADE,
+        related_name="created_private_notes", verbose_name="Rəhbər"
+    )
+    
+    # Məzmun
+    title = models.CharField(max_length=200, verbose_name="Başlıq")
+    content = models.TextField(verbose_name="Məzmun")
+    note_type = models.CharField(
+        max_length=15, choices=NoteType.choices,
+        default=NoteType.GENERAL, verbose_name="Qeyd Növü"
+    )
+    priority = models.CharField(
+        max_length=10, choices=Priority.choices,
+        default=Priority.MEDIUM, verbose_name="Prioritet"
+    )
+    
+    # Metadata
+    related_cycle = models.ForeignKey(
+        QiymetlendirmeDovru, on_delete=models.SET_NULL, 
+        null=True, blank=True,
+        verbose_name="Əlaqəli Dövr"
+    )
+    tags = models.CharField(
+        max_length=500, blank=True,
+        help_text="Vergüllə ayrılmış etiketlər (məs: liderlik, kommunikasiya, təlim)",
+        verbose_name="Etiketlər"
+    )
+    
+    # Tarixlər
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaradılma Tarixi")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Yenilənmə Tarixi")
+    
+    # Status
+    is_archived = models.BooleanField(default=False, verbose_name="Arxivləşdirilib")
+    is_confidential = models.BooleanField(default=True, verbose_name="Məxfidir")
+    
+    class Meta:
+        verbose_name = "Məxfi Qeyd"
+        verbose_name_plural = "Məxfi Qeydlər"
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['employee', 'manager', 'created_at']),
+            models.Index(fields=['note_type', 'priority']),
+            models.Index(fields=['is_archived', 'created_at']),
+            models.Index(fields=['related_cycle']),
+        ]
+    
+    def __str__(self):
+        return f"{self.manager.get_full_name()} -> {self.employee.get_full_name()}: {self.title[:50]}"
+    
+    def get_tags_list(self):
+        """Etiketləri siyahı şəklində qaytarır"""
+        if self.tags:
+            return [tag.strip() for tag in self.tags.split(',') if tag.strip()]
+        return []
+    
+    def set_tags_list(self, tags_list):
+        """Etiket siyahısını mətinə çevirir"""
+        self.tags = ', '.join(tags_list)
+    
+    def get_color_class(self):
+        """Qeyd növünə görə CSS sinifi qaytarır"""
+        colors = {
+            self.NoteType.PERFORMANCE: 'primary',
+            self.NoteType.DEVELOPMENT: 'info',
+            self.NoteType.BEHAVIOR: 'warning',
+            self.NoteType.ACHIEVEMENT: 'success',
+            self.NoteType.CONCERN: 'danger',
+            self.NoteType.FEEDBACK: 'secondary',
+            self.NoteType.GENERAL: 'light'
+        }
+        return colors.get(self.note_type, 'light')
+    
+    def get_priority_color(self):
+        """Prioritetə görə rəng qaytarır"""
+        colors = {
+            self.Priority.LOW: 'success',
+            self.Priority.MEDIUM: 'primary',
+            self.Priority.HIGH: 'warning',
+            self.Priority.URGENT: 'danger'
+        }
+        return colors.get(self.priority, 'primary')
+
+    history = HistoricalRecords()
+
+
+class IdeaCategory(models.Model):
+    """İdeya kateqoriyaları"""
+    
+    name = models.CharField(max_length=100, verbose_name="Kateqoriya Adı")
+    description = models.TextField(blank=True, verbose_name="Təsvir")
+    icon = models.CharField(max_length=50, default="fas fa-lightbulb", verbose_name="İkon")
+    color = models.CharField(max_length=7, default="#007bff", help_text="Hex rəng kodu", verbose_name="Rəng")
+    is_active = models.BooleanField(default=True, verbose_name="Aktivdir")
+    
+    class Meta:
+        verbose_name = "İdeya Kateqoriyası"
+        verbose_name_plural = "İdeya Kateqoriyaları"
+        ordering = ['name']
+    
+    def __str__(self):
+        return self.name
+
+
+class Idea(models.Model):
+    """İşçilərin təklif və ideyaları"""
+    
+    class Status(models.TextChoices):
+        DRAFT = 'DRAFT', 'Layihə'
+        SUBMITTED = 'SUBMITTED', 'Təqdim Edilib'
+        UNDER_REVIEW = 'UNDER_REVIEW', 'Baxılır'
+        APPROVED = 'APPROVED', 'Təsdiqlənib'
+        REJECTED = 'REJECTED', 'Rədd Edilib'
+        IMPLEMENTED = 'IMPLEMENTED', 'Həyata Keçirilib'
+        ARCHIVED = 'ARCHIVED', 'Arxivləşdirilib'
+    
+    class Priority(models.TextChoices):
+        LOW = 'LOW', 'Aşağı'
+        MEDIUM = 'MEDIUM', 'Orta'
+        HIGH = 'HIGH', 'Yüksək'
+        CRITICAL = 'CRITICAL', 'Kritik'
+    
+    # Əsas məlumatlar
+    title = models.CharField(max_length=200, verbose_name="Başlıq")
+    description = models.TextField(verbose_name="Təsvir")
+    category = models.ForeignKey(
+        IdeaCategory, on_delete=models.SET_NULL, null=True,
+        related_name="ideas", verbose_name="Kateqoriya"
+    )
+    
+    # İstifadəçi məlumatları
+    author = models.ForeignKey(
+        Ishchi, on_delete=models.CASCADE,
+        related_name="ideas", verbose_name="Müəllif"
+    )
+    is_anonymous = models.BooleanField(default=False, verbose_name="Anonim")
+    
+    # Status və prioritet
+    status = models.CharField(
+        max_length=15, choices=Status.choices,
+        default=Status.DRAFT, verbose_name="Status"
+    )
+    priority = models.CharField(
+        max_length=10, choices=Priority.choices,
+        default=Priority.MEDIUM, verbose_name="Prioritet"
+    )
+    
+    # Əlavə məlumatlar
+    estimated_impact = models.TextField(blank=True, verbose_name="Gözlənilən Təsir")
+    implementation_notes = models.TextField(blank=True, verbose_name="İcra Qeydləri")
+    budget_estimate = models.DecimalField(
+        max_digits=10, decimal_places=2, null=True, blank=True,
+        verbose_name="Büdcə Təxmini"
+    )
+    
+    # Tarixlər
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaradılma Tarixi")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Yenilənmə Tarixi")
+    submitted_at = models.DateTimeField(null=True, blank=True, verbose_name="Təqdim Tarixi")
+    reviewed_at = models.DateTimeField(null=True, blank=True, verbose_name="Baxış Tarixi")
+    
+    # Moderasiya
+    reviewer = models.ForeignKey(
+        Ishchi, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="reviewed_ideas", verbose_name="Baxan"
+    )
+    review_notes = models.TextField(blank=True, verbose_name="Baxış Qeydləri")
+    
+    class Meta:
+        verbose_name = "İdeya"
+        verbose_name_plural = "İdeyalar"
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status', 'created_at']),
+            models.Index(fields=['category', 'status']),
+            models.Index(fields=['author', 'status']),
+        ]
+    
+    def __str__(self):
+        return self.title
+    
+    def get_author_display(self):
+        """Anonim olub olmadığına görə müəllifi qaytarır"""
+        if self.is_anonymous:
+            return "Anonim İşçi"
+        return self.author.get_full_name()
+    
+    def get_status_color(self):
+        """Status üçün Bootstrap rəng sinifi"""
+        colors = {
+            self.Status.DRAFT: 'secondary',
+            self.Status.SUBMITTED: 'primary',
+            self.Status.UNDER_REVIEW: 'warning',
+            self.Status.APPROVED: 'success',
+            self.Status.REJECTED: 'danger',
+            self.Status.IMPLEMENTED: 'info',
+            self.Status.ARCHIVED: 'dark'
+        }
+        return colors.get(self.status, 'secondary')
+    
+    def get_priority_color(self):
+        """Prioritet üçün Bootstrap rəng sinifi"""
+        colors = {
+            self.Priority.LOW: 'success',
+            self.Priority.MEDIUM: 'primary',
+            self.Priority.HIGH: 'warning',
+            self.Priority.CRITICAL: 'danger'
+        }
+        return colors.get(self.priority, 'primary')
+    
+    def submit(self):
+        """İdeyanı təqdim et"""
+        if self.status == self.Status.DRAFT:
+            self.status = self.Status.SUBMITTED
+            self.submitted_at = timezone.now()
+            self.save()
+    
+    def approve(self, reviewer, notes=""):
+        """İdeyanı təsdiqlə"""
+        self.status = self.Status.APPROVED
+        self.reviewer = reviewer
+        self.review_notes = notes
+        self.reviewed_at = timezone.now()
+        self.save()
+    
+    def reject(self, reviewer, notes=""):
+        """İdeyanı rədd et"""
+        self.status = self.Status.REJECTED
+        self.reviewer = reviewer
+        self.review_notes = notes
+        self.reviewed_at = timezone.now()
+        self.save()
+
+    history = HistoricalRecords()
+
+
+class IdeaVote(models.Model):
+    """İdeyalara verilən səslər"""
+    
+    class VoteType(models.TextChoices):
+        UPVOTE = 'UPVOTE', 'Müsbət'
+        DOWNVOTE = 'DOWNVOTE', 'Mənfi'
+    
+    idea = models.ForeignKey(
+        Idea, on_delete=models.CASCADE,
+        related_name="votes", verbose_name="İdeya"
+    )
+    user = models.ForeignKey(
+        Ishchi, on_delete=models.CASCADE,
+        related_name="idea_votes", verbose_name="İstifadəçi"
+    )
+    vote_type = models.CharField(
+        max_length=10, choices=VoteType.choices,
+        verbose_name="Səs Növü"
+    )
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaradılma Tarixi")
+    
+    class Meta:
+        verbose_name = "İdeya Səsi"
+        verbose_name_plural = "İdeya Səsləri"
+        unique_together = ['idea', 'user']
+        indexes = [
+            models.Index(fields=['idea', 'vote_type']),
+        ]
+    
+    def __str__(self):
+        return f"{self.user.get_full_name()} -> {self.idea.title} ({self.vote_type})"
+
+
+class IdeaComment(models.Model):
+    """İdeyalara şərhlər"""
+    
+    idea = models.ForeignKey(
+        Idea, on_delete=models.CASCADE,
+        related_name="comments", verbose_name="İdeya"
+    )
+    author = models.ForeignKey(
+        Ishchi, on_delete=models.CASCADE,
+        related_name="idea_comments", verbose_name="Müəllif"
+    )
+    content = models.TextField(verbose_name="Məzmun")
+    is_anonymous = models.BooleanField(default=False, verbose_name="Anonim")
+    
+    # Hierarchy (nested comments)
+    parent = models.ForeignKey(
+        'self', on_delete=models.CASCADE, null=True, blank=True,
+        related_name="replies", verbose_name="Ana Şərh"
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaradılma Tarixi")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Yenilənmə Tarixi")
+    
+    # Moderasiya
+    is_hidden = models.BooleanField(default=False, verbose_name="Gizlədilmiş")
+    hidden_reason = models.CharField(max_length=200, blank=True, verbose_name="Gizlətmə Səbəbi")
+    
+    class Meta:
+        verbose_name = "İdeya Şərhi"
+        verbose_name_plural = "İdeya Şərhləri"
+        ordering = ['created_at']
+        indexes = [
+            models.Index(fields=['idea', 'created_at']),
+            models.Index(fields=['parent', 'created_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.author.get_full_name()} -> {self.idea.title}"
+    
+    def get_author_display(self):
+        """Anonim olub olmadığına görə müəllifi qaytarır"""
+        if self.is_anonymous:
+            return "Anonim İşçi"
+        return self.author.get_full_name()
+
+    history = HistoricalRecords()
+
+

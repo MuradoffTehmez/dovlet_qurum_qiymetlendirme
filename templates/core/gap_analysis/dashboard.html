@@ -1,0 +1,425 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .gap-analysis-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        border: none;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+    .gap-analysis-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    }
+    .gap-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+    }
+    .gap-metric {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        margin-bottom: 1.5rem;
+    }
+    .metric-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    .gap-positive { color: #28a745; }
+    .gap-negative { color: #dc3545; }
+    .gap-neutral { color: #6c757d; }
+    .comparison-bar {
+        height: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        overflow: hidden;
+        position: relative;
+        margin: 1rem 0;
+    }
+    .self-score {
+        background: linear-gradient(90deg, #007bff, #0056b3);
+        height: 100%;
+        border-radius: 10px 0 0 10px;
+    }
+    .others-score {
+        background: linear-gradient(90deg, #28a745, #1e7e34);
+        height: 100%;
+        position: absolute;
+        top: 0;
+        opacity: 0.7;
+        border-radius: 0 10px 10px 0;
+    }
+    .category-gap-item {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+    .category-gap-item.positive {
+        border-left-color: #28a745;
+        background: #f8fff9;
+    }
+    .category-gap-item.negative {
+        border-left-color: #dc3545;
+        background: #fff8f8;
+    }
+    .category-gap-item.neutral {
+        border-left-color: #6c757d;
+        background: #f8f9fa;
+    }
+    .insights-card {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        border-radius: 15px;
+        padding: 1.5rem;
+        color: #495057;
+        margin-bottom: 1.5rem;
+    }
+    .action-card {
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        border-radius: 15px;
+        padding: 1.5rem;
+        color: #495057;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header mb-4">
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-balance-scale me-2"></i>{{ page_title }}
+                </h1>
+                <p class="text-muted mt-1">Özünü qiymətləndirmə ilə başqalarının qiymətləndirməsi arasındakı fərqlərin analizi</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="gap-metric">
+                <div class="metric-number gap-{{ overall_gap_direction }}">
+                    {% if overall_gap >= 0 %}+{% endif %}{{ overall_gap|floatformat:1 }}
+                </div>
+                <h6 class="text-muted">Ümumi Fərq</h6>
+                <small class="text-muted">
+                    {% if overall_gap > 0 %}
+                        Özünü yüksək qiymətləndirmə
+                    {% elif overall_gap < 0 %}
+                        Özünü aşağı qiymətləndirmə
+                    {% else %}
+                        Balanslaşdırılmış qiymətləndirmə
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="gap-metric">
+                <div class="metric-number text-primary">{{ self_average|floatformat:1 }}</div>
+                <h6 class="text-muted">Öz Qiymətiniz</h6>
+                <small class="text-muted">10 bal üzərindən orta</small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="gap-metric">
+                <div class="metric-number text-success">{{ others_average|floatformat:1 }}</div>
+                <h6 class="text-muted">Başqalarının Qiyməti</h6>
+                <small class="text-muted">{{ evaluators_count }} qiymətləndirici</small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="gap-metric">
+                <div class="metric-number text-info">{{ significant_gaps_count }}</div>
+                <h6 class="text-muted">Böyük Fərqlər</h6>
+                <small class="text-muted">1.5+ bal fərqi olan sahələr</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Overall Comparison Chart -->
+        <div class="col-lg-8 mb-4">
+            <div class="gap-analysis-card">
+                <div class="gap-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Kateqoriya üzrə Müqayisə
+                    </h5>
+                    <small>Hər kateqoriyada öz qiymətiniz və başqalarının qiyməti</small>
+                </div>
+                <div class="card-body">
+                    <div style="height: 400px; position: relative;">
+                        <canvas id="gapComparisonChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gap Summary -->
+        <div class="col-lg-4 mb-4">
+            <div class="gap-analysis-card">
+                <div class="gap-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list-ul me-2"></i>Fərq Xülasəsi
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% for gap in category_gaps %}
+                    <div class="category-gap-item {{ gap.direction }}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-1">{{ gap.category }}</h6>
+                            <span class="badge bg-{% if gap.direction == 'positive' %}success{% elif gap.direction == 'negative' %}danger{% else %}secondary{% endif %}">
+                                {% if gap.gap >= 0 %}+{% endif %}{{ gap.gap|floatformat:1 }}
+                            </span>
+                        </div>
+                        <div class="comparison-bar">
+                            <div class="self-score" style="width: {{ gap.self_score|floatformat:0|add:'0' }}%"></div>
+                            <div class="others-score" style="width: {{ gap.others_score|floatformat:0|add:'0' }}%; left: {{ gap.self_score|floatformat:0|add:'0' }}%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <small class="text-primary">Siz: {{ gap.self_score|floatformat:1 }}</small>
+                            <small class="text-success">Başqaları: {{ gap.others_score|floatformat:1 }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Detailed Insights -->
+        <div class="col-lg-8 mb-4">
+            <div class="gap-analysis-card">
+                <div class="gap-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-eye me-2"></i>Detallı Təhlil
+                    </h5>
+                    <small>Ən böyük fərqlər və təkmilləşdirmə sahələri</small>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-success mb-3">
+                                <i class="fas fa-arrow-up me-2"></i>Özünü Yüksək Qiymətləndirdiyiniz Sahələr
+                            </h6>
+                            {% for area in overestimated_areas %}
+                            <div class="mb-3 p-3 bg-light rounded">
+                                <h6 class="mb-1">{{ area.category }}</h6>
+                                <p class="small text-muted mb-2">{{ area.description }}</p>
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-primary">Siz: {{ area.self_score|floatformat:1 }}</span>
+                                    <span class="text-success">Başqaları: {{ area.others_score|floatformat:1 }}</span>
+                                    <span class="text-warning">Fərq: +{{ area.gap|floatformat:1 }}</span>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="text-muted">Özünüzü həddindən artıq yüksək qiymətləndirdiyiniz sahə yoxdur.</p>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-danger mb-3">
+                                <i class="fas fa-arrow-down me-2"></i>Özünü Aşağı Qiymətləndirdiyiniz Sahələr
+                            </h6>
+                            {% for area in underestimated_areas %}
+                            <div class="mb-3 p-3 bg-light rounded">
+                                <h6 class="mb-1">{{ area.category }}</h6>
+                                <p class="small text-muted mb-2">{{ area.description }}</p>
+                                <div class="d-flex justify-content-between">
+                                    <span class="text-primary">Siz: {{ area.self_score|floatformat:1 }}</span>
+                                    <span class="text-success">Başqaları: {{ area.others_score|floatformat:1 }}</span>
+                                    <span class="text-info">Fərq: {{ area.gap|floatformat:1 }}</span>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="text-muted">Özünüzü həddindən artıq aşağı qiymətləndirdiyiniz sahə yoxdur.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions and Recommendations -->
+        <div class="col-lg-4 mb-4">
+            <div class="insights-card">
+                <h6 class="mb-3">
+                    <i class="fas fa-lightbulb me-2"></i>Təhlil Nəticələri
+                </h6>
+                <ul class="list-unstyled">
+                    {% if overall_gap > 1 %}
+                    <li class="mb-2">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                        <strong>Özünə inamla bağlı işləmək:</strong> Özünüzü həddindən artıq yüksək qiymətləndirmə meylindəsiniz.
+                    </li>
+                    {% elif overall_gap < -1 %}
+                    <li class="mb-2">
+                        <i class="fas fa-heart text-danger me-2"></i>
+                        <strong>Özgüvəni artırmaq:</strong> Güclü tərəflərinizi daha çox qiymətləndirin.
+                    </li>
+                    {% else %}
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <strong>Balanslaşdırılmış perspektiv:</strong> Realistik öz-qiymətləndirmə.
+                    </li>
+                    {% endif %}
+
+                    {% if significant_gaps_count > 3 %}
+                    <li class="mb-2">
+                        <i class="fas fa-search me-2"></i>
+                        <strong>Diqqət:</strong> Çoxlu sahələrdə böyük fərqlər var.
+                    </li>
+                    {% endif %}
+
+                    <li class="mb-2">
+                        <i class="fas fa-users me-2"></i>
+                        <strong>360° perspektiv:</strong> Müntəzəm geri bildirim almaq faydalı olacaq.
+                    </li>
+                </ul>
+            </div>
+
+            <div class="action-card">
+                <h6 class="mb-3">
+                    <i class="fas fa-tasks me-2"></i>Tövsiyə Edilən Addımlar
+                </h6>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'gap_analysis:detail' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-chart-line me-1"></i>Detallı Analiz
+                    </a>
+                    <a href="{% url 'gap_analysis:team' %}" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-users me-1"></i>Komanda Müqayisəsi
+                    </a>
+                    <a href="{% url 'quick_feedback:send' %}" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-comment me-1"></i>Geri Bildirim İstə
+                    </a>
+                    <button class="btn btn-outline-warning btn-sm" onclick="downloadReport()">
+                        <i class="fas fa-download me-1"></i>Hesabat Yüklə
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Historical Trend -->
+    {% if historical_data %}
+    <div class="row">
+        <div class="col-12">
+            <div class="gap-analysis-card">
+                <div class="gap-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>Fərq Trendi
+                    </h5>
+                    <small>Zamanla fərqlərin dəyişimi</small>
+                </div>
+                <div class="card-body">
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="gapTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gap Comparison Chart
+    const comparisonCtx = document.getElementById('gapComparisonChart').getContext('2d');
+    const comparisonData = {{ comparison_chart_data|safe }};
+    
+    new Chart(comparisonCtx, {
+        type: 'bar',
+        data: {
+            labels: comparisonData.categories,
+            datasets: [
+                {
+                    label: 'Öz Qiymətiniz',
+                    data: comparisonData.self_scores,
+                    backgroundColor: 'rgba(0, 123, 255, 0.7)',
+                    borderColor: 'rgba(0, 123, 255, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Başqalarının Qiyməti',
+                    data: comparisonData.others_scores,
+                    backgroundColor: 'rgba(40, 167, 69, 0.7)',
+                    borderColor: 'rgba(40, 167, 69, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 10,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+
+    // Gap Trend Chart (if historical data exists)
+    {% if historical_data %}
+    const trendCtx = document.getElementById('gapTrendChart').getContext('2d');
+    const trendData = {{ historical_chart_data|safe }};
+    
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: trendData.labels,
+            datasets: [{
+                label: 'Fərq Trendi',
+                data: trendData.gaps,
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: false
+                }
+            }
+        }
+    });
+    {% endif %}
+});
+
+function downloadReport() {
+    alert('Gap Analysis hesabatı tezliklə əlçatan olacaq');
+}
+</script>
+{% endblock %}

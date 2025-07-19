@@ -1,0 +1,507 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .team-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        border: none;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+    .team-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+    }
+    .team-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 15px 15px 0 0;
+    }
+    .member-row {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background-color 0.3s ease;
+    }
+    .member-row:hover {
+        background-color: #f8f9fa;
+    }
+    .member-row:last-child {
+        border-bottom: none;
+        border-radius: 0 0 15px 15px;
+    }
+    .gap-badge {
+        font-size: 0.9rem;
+        font-weight: 600;
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
+        display: inline-block;
+        min-width: 60px;
+        text-align: center;
+    }
+    .gap-high-positive {
+        background: rgba(220, 53, 69, 0.15);
+        color: #dc3545;
+        border: 1px solid rgba(220, 53, 69, 0.3);
+    }
+    .gap-low-positive {
+        background: rgba(255, 193, 7, 0.15);
+        color: #856404;
+        border: 1px solid rgba(255, 193, 7, 0.3);
+    }
+    .gap-balanced {
+        background: rgba(40, 167, 69, 0.15);
+        color: #155724;
+        border: 1px solid rgba(40, 167, 69, 0.3);
+    }
+    .gap-negative {
+        background: rgba(23, 162, 184, 0.15);
+        color: #0c5460;
+        border: 1px solid rgba(23, 162, 184, 0.3);
+    }
+    .gap-high-negative {
+        background: rgba(102, 16, 242, 0.15);
+        color: #4c1d95;
+        border: 1px solid rgba(102, 16, 242, 0.3);
+    }
+    .department-summary {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        color: #495057;
+    }
+    .benchmark-card {
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        border-radius: 15px;
+        padding: 1.5rem;
+        color: #495057;
+    }
+    .performance-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+    .performance-excellent { background: #28a745; }
+    .performance-good { background: #ffc107; }
+    .performance-needs-improvement { background: #dc3545; }
+    .comparison-chart {
+        height: 300px;
+        margin: 1rem 0;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'gap_analysis:dashboard' %}">Gap Analysis</a>
+                    </li>
+                    <li class="breadcrumb-item active">{{ page_title }}</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Department Summary -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="department-summary">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h5 class="mb-2">
+                            <i class="fas fa-building me-2"></i>{{ user.organization_unit.name }} Departamenti Gap Analysis
+                        </h5>
+                        <p class="mb-0">
+                            Departmanınızdakı {{ team_members|length }} nəfərin self-review və başqalarının qiymətləndirməsi arasındakı fərqlərin müqayisəsi
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div class="text-center">
+                            <h4 class="mb-1">{{ department_average_gap|floatformat:1 }}</h4>
+                            <small>Departman Orta Fərqi</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Team Members Comparison -->
+        <div class="col-lg-8 mb-4">
+            <div class="team-card">
+                <div class="team-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0">
+                                <i class="fas fa-users me-2"></i>Komanda Üzvləri Gap Analysis
+                            </h5>
+                            <small>Her üzvün özü və başqalarının qiyməti arasındakı fərq</small>
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-light btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-sort me-1"></i>Sırala
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="?sort=gap_desc">Ən Böyük Fərq</a></li>
+                                <li><a class="dropdown-item" href="?sort=gap_asc">Ən Kiçik Fərq</a></li>
+                                <li><a class="dropdown-item" href="?sort=name">Ad</a></li>
+                                <li><a class="dropdown-item" href="?sort=self_score">Öz Qiyməti</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                {% for member in team_members %}
+                <div class="member-row">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    {% if member.is_current_user %}
+                                        <i class="fas fa-user-circle fa-2x text-primary"></i>
+                                    {% else %}
+                                        <i class="fas fa-user-circle fa-2x text-muted"></i>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h6 class="mb-0">
+                                        {{ member.name }}
+                                        {% if member.is_current_user %}
+                                            <span class="badge bg-primary ms-1">Siz</span>
+                                        {% endif %}
+                                    </h6>
+                                    <small class="text-muted">{{ member.position|default:"İşçi" }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-2 text-center">
+                            <div class="mb-1">
+                                <span class="badge bg-primary">{{ member.self_score|floatformat:1 }}</span>
+                            </div>
+                            <small class="text-muted">Öz Qiyməti</small>
+                        </div>
+                        
+                        <div class="col-md-2 text-center">
+                            <div class="mb-1">
+                                <span class="badge bg-success">{{ member.others_score|floatformat:1 }}</span>
+                            </div>
+                            <small class="text-muted">Başqaları</small>
+                        </div>
+                        
+                        <div class="col-md-2 text-center">
+                            <span class="gap-badge gap-{{ member.gap_category }}">
+                                {% if member.gap >= 0 %}+{% endif %}{{ member.gap|floatformat:1 }}
+                            </span>
+                        </div>
+                        
+                        <div class="col-md-2 text-center">
+                            <span class="performance-indicator performance-{{ member.performance_level }}"></span>
+                            <small class="text-muted">
+                                {% if member.performance_level == 'excellent' %}
+                                    Mükəmməl
+                                {% elif member.performance_level == 'good' %}
+                                    Yaxşı
+                                {% else %}
+                                    İnkişaf Tələb Edir
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-4">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <h6 class="text-muted">Komanda məlumatı yoxdur</h6>
+                    <p class="text-muted">Departmanınızda başqa işçi tapılmadı.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Benchmarks and Insights -->
+        <div class="col-lg-4 mb-4">
+            <div class="benchmark-card mb-3">
+                <h6 class="mb-3">
+                    <i class="fas fa-chart-bar me-2"></i>Departman Benchmark
+                </h6>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>Orta Self-Review</span>
+                        <span class="fw-bold">{{ department_avg_self|floatformat:1 }}/10</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Orta Başqalarının Qiyməti</span>
+                        <span class="fw-bold">{{ department_avg_others|floatformat:1 }}/10</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Orta Fərq</span>
+                        <span class="fw-bold">{{ department_average_gap|floatformat:1 }}</span>
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="mb-3">
+                    <h6 class="small">FƏRQ PAYLANMASI</h6>
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between">
+                            <span class="small">Yüksək Özgüvən</span>
+                            <span class="badge bg-danger">{{ high_positive_count }}</span>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between">
+                            <span class="small">Balanslaşdırılmış</span>
+                            <span class="badge bg-success">{{ balanced_count }}</span>
+                        </div>
+                    </div>
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between">
+                            <span class="small">Təvazökar</span>
+                            <span class="badge bg-info">{{ underconfident_count }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="benchmark-card">
+                <h6 class="mb-3">
+                    <i class="fas fa-lightbulb me-2"></i>Komanda Təhlili
+                </h6>
+                
+                <ul class="list-unstyled">
+                    {% if department_average_gap > 1 %}
+                    <li class="mb-2">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                        <small><strong>Özgüvən çox yüksək:</strong> Komanda olaraq özünüzü yüksək qiymətləndirirsiniz.</small>
+                    </li>
+                    {% elif department_average_gap < -1 %}
+                    <li class="mb-2">
+                        <i class="fas fa-arrow-up text-primary me-2"></i>
+                        <small><strong>Özgüvən artırmaq:</strong> Komada güclü tərəflərini daha çox qiymətləndirməlidir.</small>
+                    </li>
+                    {% else %}
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        <small><strong>Balanslaşdırılmış komanda:</strong> Realistik öz-qiymətləndirmə.</small>
+                    </li>
+                    {% endif %}
+
+                    {% if high_positive_count > balanced_count %}
+                    <li class="mb-2">
+                        <i class="fas fa-users text-warning me-2"></i>
+                        <small>Çox sayda üzv özünü yüksək qiymətləndirir.</small>
+                    </li>
+                    {% endif %}
+
+                    {% if underconfident_count > 2 %}
+                    <li class="mb-2">
+                        <i class="fas fa-heart text-info me-2"></i>
+                        <small>Bəzi üzvlər özgüvən artırmalıdır.</small>
+                    </li>
+                    {% endif %}
+
+                    <li class="mb-2">
+                        <i class="fas fa-target text-primary me-2"></i>
+                        <small>Komanda mentorluq proqramı təşkil edin.</small>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Gap Comparison Chart -->
+    <div class="row">
+        <div class="col-12">
+            <div class="team-card">
+                <div class="team-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Komanda Gap Müqayisəsi
+                    </h5>
+                    <small>Hər komanda üzvünün fərq göstəricisi</small>
+                </div>
+                <div class="card-body">
+                    <div class="comparison-chart">
+                        <canvas id="teamGapChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Breakdown -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="team-card">
+                <div class="team-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-th-large me-2"></i>Kateqoriya üzrə Komanda Performansı
+                    </h5>
+                    <small>Hər kateqoriyada komandanın orta fərqi</small>
+                </div>
+                <div class="card-body">
+                    <div class="comparison-chart">
+                        <canvas id="categoryTeamChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Items -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="team-card">
+                <div class="team-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tasks me-2"></i>Komanda İnkişaf Hədəfləri
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for member in action_needed_members %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-warning">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ member.name }}</h6>
+                                    <p class="card-text small">
+                                        {% if member.gap > 1.5 %}
+                                            Özgüvən kalibrasyonu və daha çox geri bildirim almaq.
+                                        {% elif member.gap < -1.5 %}
+                                            Özgüvən artırmaq və nailiyyətləri qeyd etmək.
+                                        {% else %}
+                                            Cari performansı saxlamaq və davamlı təkmilləşdirmə.
+                                        {% endif %}
+                                    </p>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-calendar me-1"></i>1-1 Görüş
+                                        </button>
+                                        <button class="btn btn-outline-info btn-sm">
+                                            <i class="fas fa-comments me-1"></i>Mentorluq
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Team Gap Comparison Chart
+    const teamCtx = document.getElementById('teamGapChart').getContext('2d');
+    const teamData = {{ team_chart_data|safe }};
+    
+    new Chart(teamCtx, {
+        type: 'bar',
+        data: {
+            labels: teamData.names,
+            datasets: [{
+                label: 'Gap (Öz Qiyməti - Başqalarının)',
+                data: teamData.gaps,
+                backgroundColor: teamData.gaps.map(gap => {
+                    if (gap > 1.5) return 'rgba(220, 53, 69, 0.7)';
+                    if (gap > 0.5) return 'rgba(255, 193, 7, 0.7)';
+                    if (gap > -0.5) return 'rgba(40, 167, 69, 0.7)';
+                    if (gap > -1.5) return 'rgba(23, 162, 184, 0.7)';
+                    return 'rgba(102, 16, 242, 0.7)';
+                }),
+                borderColor: teamData.gaps.map(gap => {
+                    if (gap > 1.5) return 'rgba(220, 53, 69, 1)';
+                    if (gap > 0.5) return 'rgba(255, 193, 7, 1)';
+                    if (gap > -0.5) return 'rgba(40, 167, 69, 1)';
+                    if (gap > -1.5) return 'rgba(23, 162, 184, 1)';
+                    return 'rgba(102, 16, 242, 1)';
+                }),
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    grid: {
+                        color: function(context) {
+                            if (context.tick.value === 0) {
+                                return 'rgba(0, 0, 0, 0.3)';
+                            }
+                            return 'rgba(0, 0, 0, 0.1)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Category Team Chart
+    const categoryCtx = document.getElementById('categoryTeamChart').getContext('2d');
+    const categoryData = {{ category_chart_data|safe }};
+    
+    new Chart(categoryCtx, {
+        type: 'radar',
+        data: {
+            labels: categoryData.categories,
+            datasets: [{
+                label: 'Komanda Orta Gap',
+                data: categoryData.gaps,
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                pointBackgroundColor: '#667eea',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    beginAtZero: false,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    },
+                    pointLabels: {
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

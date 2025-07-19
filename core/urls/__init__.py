@@ -122,4 +122,7 @@ urlpatterns = [
     
     # === QUICK FEEDBACK URL-LƏRİ ===
     path("quick-feedback/", include('core.urls.quick_feedback')),
+    
+    # === PRIVATE NOTES URL-LƏRİ ===
+    path("private-notes/", include('core.urls.private_notes')),
 ]
