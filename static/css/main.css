@@ -152,6 +152,39 @@ html.dark-mode #loading-spinner {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Ensure navbar text is visible in light mode */
+.navbar .navbar-text,
+.navbar .nav-item .nav-link {
+    color: var(--main-text-color) !important;
+}
+
+html.dark-mode .navbar {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Fix navbar button colors */
+.navbar .btn-outline-light {
+    color: var(--main-text-color);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+html.dark-mode .navbar .btn-outline-light {
+    color: var(--main-text-color);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar .btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: var(--main-text-color);
+}
+
+html.dark-mode .navbar .btn-outline-light:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: var(--main-text-color);
+}
+
 .navbar-brand {
     color: var(--primary-color) !important;
     font-weight: var(--font-weight-bold);
@@ -378,6 +411,277 @@ html.dark-mode .card {
 
 html.dark-mode .footer {
     border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Fix text-muted and other text colors in dark mode */
+html.dark-mode .text-muted {
+    color: #8b949e !important;
+}
+
+html.dark-mode .text-dark {
+    color: var(--main-text-color) !important;
+}
+
+html.dark-mode .text-black {
+    color: var(--main-text-color) !important;
+}
+
+/* Fix breadcrumb text colors */
+html.dark-mode .breadcrumb-item {
+    color: var(--main-text-color);
+}
+
+html.dark-mode .breadcrumb-item.active {
+    color: #8b949e;
+}
+
+/* Fix list group items in dark mode */
+html.dark-mode .list-group-item {
+    background-color: var(--card-bg-color);
+    color: var(--main-text-color);
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+html.dark-mode .list-group-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Fix badge colors in dark mode */
+html.dark-mode .badge.bg-warning {
+    background-color: var(--warning-color) !important;
+    color: #000 !important;
+}
+
+/* Fix footer text colors */
+html.dark-mode .footer .text-muted {
+    color: #8b949e !important;
+}
+
+html.dark-mode .footer a.text-muted {
+    color: #8b949e !important;
+}
+
+html.dark-mode .footer a.text-muted:hover {
+    color: var(--primary-color) !important;
+}
+
+/* Fix small text in dark mode */
+html.dark-mode small {
+    color: #8b949e;
+}
+
+html.dark-mode .small {
+    color: #8b949e;
+}
+
+/* Fix lead text in dark mode */
+html.dark-mode .lead {
+    color: var(--main-text-color);
+}
+
+/* Fix text colors for stats cards */
+html.dark-mode .stats-card h5,
+html.dark-mode .stats-card h2 {
+    color: var(--main-text-color);
+}
+
+/* Fix alert text colors in dark mode */
+html.dark-mode .alert {
+    background-color: var(--card-bg-color);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--main-text-color);
+}
+
+/* Fix notification text colors */
+html.dark-mode .toast {
+    background-color: var(--card-bg-color) !important;
+    color: var(--main-text-color) !important;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Fix placeholder text in dark mode */
+html.dark-mode .form-control::placeholder,
+html.dark-mode .form-select::placeholder {
+    color: #6c757d;
+    opacity: 1;
+}
+
+/* Fix borders in dark mode */
+html.dark-mode .border {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+html.dark-mode .border-top {
+    border-top-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+html.dark-mode .border-bottom {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Fix check/radio inputs in dark mode */
+html.dark-mode .form-check-input {
+    background-color: var(--card-bg-color);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+html.dark-mode .form-check-input:checked {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+html.dark-mode .form-check-label {
+    color: var(--main-text-color);
+}
+
+/* Fix dropdown dividers in dark mode */
+html.dark-mode .dropdown-divider {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Fix spinner colors in dark mode */
+html.dark-mode .spinner-border {
+    color: var(--primary-color);
+}
+
+/* Fix progress bars in dark mode */
+html.dark-mode .progress {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Fix btn-link in dark mode */
+html.dark-mode .btn-link {
+    color: var(--primary-color);
+}
+
+html.dark-mode .btn-link:hover {
+    color: var(--primary-hover);
+}
+
+/* Fix header elements in dark mode */
+html.dark-mode h1, html.dark-mode h2, html.dark-mode h3,
+html.dark-mode h4, html.dark-mode h5, html.dark-mode h6 {
+    color: var(--main-text-color);
+}
+
+/* Fix strong/bold text in dark mode */
+html.dark-mode strong, html.dark-mode b {
+    color: var(--main-text-color);
+}
+
+/* Fix card headers with bg-white in dark mode */
+html.dark-mode .card-header.bg-white {
+    background-color: var(--card-bg-color) !important;
+    color: var(--main-text-color);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Fix default card header background in dark mode */
+html.dark-mode .card-header {
+    background-color: rgba(255, 255, 255, 0.02);
+    color: var(--main-text-color);
+}
+
+/* Fix loading spinner background in dark mode */
+html.dark-mode #loading-spinner.bg-opacity-75 {
+    background-color: rgba(13, 17, 23, 0.75) !important;
+}
+
+/* Fix general loading overlays in dark mode */
+html.dark-mode .bg-opacity-75 {
+    background-color: rgba(13, 17, 23, 0.75) !important;
+}
+
+/* Fix table headers in dark mode */
+html.dark-mode .table thead th {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--main-text-color);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Fix modal content in dark mode */
+html.dark-mode .modal-content {
+    background-color: var(--card-bg-color);
+    color: var(--main-text-color);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+html.dark-mode .modal-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+html.dark-mode .modal-footer {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Fix pagination in dark mode */
+html.dark-mode .page-link {
+    background-color: var(--card-bg-color);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--main-text-color);
+}
+
+html.dark-mode .page-item.active .page-link {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+/* Fix offcanvas in dark mode */
+html.dark-mode .offcanvas {
+    background-color: var(--card-bg-color);
+    color: var(--main-text-color);
+}
+
+/* Fix tooltip in dark mode */
+html.dark-mode .tooltip .tooltip-inner {
+    background-color: var(--card-bg-color);
+    color: var(--main-text-color);
+}
+
+/* Fix popover in dark mode */
+html.dark-mode .popover {
+    background-color: var(--card-bg-color);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+html.dark-mode .popover-body {
+    color: var(--main-text-color);
+}
+
+/* Fix accordion in dark mode */
+html.dark-mode .accordion-item {
+    background-color: var(--card-bg-color);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+html.dark-mode .accordion-button {
+    background-color: var(--card-bg-color);
+    color: var(--main-text-color);
+}
+
+/* Fix navbar brand and text visibility */
+html.dark-mode .navbar-brand {
+    color: var(--primary-color) !important;
+}
+
+/* Ensure all link colors are visible in dark mode */
+html.dark-mode a {
+    color: var(--primary-color);
+}
+
+html.dark-mode a:hover {
+    color: var(--primary-hover);
+}
+
+/* Fix text selection colors in dark mode */
+html.dark-mode ::selection {
+    background-color: rgba(88, 166, 255, 0.3);
+    color: var(--main-text-color);
+}
+
+/* Fix focus outline colors in dark mode */
+html.dark-mode :focus-visible {
+    outline-color: var(--primary-color);
 }
 
 /* Animations */

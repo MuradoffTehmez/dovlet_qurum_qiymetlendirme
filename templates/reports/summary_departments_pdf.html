@@ -23,9 +23,9 @@
                     {% if sual.kateqoriya %}<span class="badge bg-dark">{{ sual.kateqoriya.ad }}</span>{% endif %}
                 </div>
             </div>
-            <div class="card-body bg-light">
+            <div class="card-body">
                 <div class="mb-3">
-                    <label class="form-label fw-semibold text-dark">{% trans "Xal (1-dən 10-a qədər):" %}</label>
+                    <label class="form-label fw-semibold">{% trans "Xal (1-dən 10-a qədər):" %}</label>
                     <div class="d-flex flex-wrap gap-2">
                         {% for i in "12345678910"|make_list %}
                         <div class="form-check">
@@ -38,7 +38,7 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="rey_{{ sual.id }}" class="form-label fw-semibold text-dark">{% trans "Əlavə Rəy (istəyə
+                    <label for="rey_{{ sual.id }}" class="form-label fw-semibold">{% trans "Əlavə Rəy (istəyə
                         bağlı):" %}</label>
                     <textarea class="form-control" id="rey_{{ sual.id }}" name="rey_{{ sual.id }}" rows="3"
                         placeholder="{% trans 'Əlavə fikirlərinizi yaza bilərsiniz...' %}"></textarea>

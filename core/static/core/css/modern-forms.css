@@ -289,35 +289,83 @@
 }
 
 /* === DARK MODE DƏSTƏYİ === */
-@media (prefers-color-scheme: dark) {
-    .modern-form {
-        background: #1f2937;
-        color: #f9fafb;
-    }
+html.dark-mode .modern-form {
+    background: var(--card-bg-color);
+    color: var(--main-text-color);
+}
 
-    .form-control,
-    .form-select {
-        background-color: #374151;
-        border-color: #4b5563;
-        color: #f9fafb;
-    }
+html.dark-mode .form-control,
+html.dark-mode .form-select {
+    background-color: var(--card-bg-color);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--main-text-color);
+}
 
-    .form-control:focus,
-    .form-select:focus {
-        border-color: #667eea;
-        background-color: #374151;
-    }
+html.dark-mode .form-control:focus,
+html.dark-mode .form-select:focus {
+    border-color: var(--primary-color);
+    background-color: var(--card-bg-color);
+    box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
+}
 
-    .card {
-        background: #374151;
-    }
+html.dark-mode .card {
+    background: var(--card-bg-color);
+    color: var(--main-text-color);
+}
 
-    .form-header {
-        border-bottom-color: #4b5563;
-    }
+html.dark-mode .form-header {
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    background: var(--card-bg-color);
+}
 
-    .section-title {
-        color: #f9fafb;
-        border-bottom-color: #4b5563;
-    }
+html.dark-mode .form-header h3,
+html.dark-mode .form-header h4 {
+    color: var(--main-text-color);
+}
+
+html.dark-mode .form-header p {
+    color: #8b949e;
+}
+
+html.dark-mode .section-title {
+    color: var(--main-text-color);
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+html.dark-mode .form-group label {
+    color: var(--main-text-color);
+}
+
+html.dark-mode .card-title {
+    color: var(--main-text-color);
+}
+
+html.dark-mode .form-text {
+    color: #8b949e;
+}
+
+html.dark-mode .profile-image-section {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+html.dark-mode .profile-image-section:hover {
+    border-color: var(--primary-color);
+    background: rgba(88, 166, 255, 0.1);
+}
+
+html.dark-mode .input-icon {
+    color: #8b949e;
+}
+
+html.dark-mode .feedback-form {
+    background: var(--main-bg-color);
+}
+
+html.dark-mode .feedback-header {
+    background: var(--card-bg-color);
+}
+
+html.dark-mode .feedback-header h3 {
+    color: var(--main-text-color);
 }

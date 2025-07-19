@@ -34,10 +34,10 @@
             <div class="card-header bg-gradient-primary text-white">
                 <h5 class="mb-0">{% trans "Hədəflər" %}</h5>
             </div>
-            <div class="card-body bg-light">
+            <div class="card-body">
                 {% for form in formset %}
                 <div
-                    class="row align-items-center mb-3 p-3 border rounded bg-white animate__animated animate__fadeInUp animate__faster">
+                    class="row align-items-center mb-3 p-3 border rounded animate__animated animate__fadeInUp animate__faster">
                     <div class="col-md-5">
                         {{ form.tesvir|as_crispy_field }}
                     </div>
