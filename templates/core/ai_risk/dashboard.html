@@ -1,0 +1,734 @@
+{% extends 'core/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "AI Risk Detection Dashboard" %}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans "Ana Səhifə" %}</a></li>
+<li class="breadcrumb-item active">{% trans "AI Risk Dashboard" %}</li>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'core/css/modern-forms.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0 text-gradient">
+                    <i class="bi bi-shield-exclamation me-2"></i>
+                    {% trans "AI Risk Detection Dashboard" %}
+                </h1>
+                <p class="text-muted">{% trans "Real-time risk monitoring and analysis" %}</p>
+            </div>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary" id="refreshBtn">
+                    <i class="bi bi-arrow-clockwise me-1"></i>{% trans "Refresh" %}
+                </button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                    <i class="bi bi-gear me-1"></i>{% trans "Settings" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Risk Statistics Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="p-3 rounded-circle bg-danger bg-opacity-10">
+                            <i class="bi bi-flag-fill text-danger fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted text-uppercase fw-bold">{% trans "Active Flags" %}</div>
+                        <div class="h4 fw-bold mb-0" id="activeFlagsCount">-</div>
+                        <div class="small text-danger" id="activeFlagsChange">
+                            <i class="bi bi-arrow-up"></i> <span>-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="p-3 rounded-circle bg-warning bg-opacity-10">
+                            <i class="bi bi-exclamation-triangle-fill text-warning fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted text-uppercase fw-bold">{% trans "High Risk" %}</div>
+                        <div class="h4 fw-bold mb-0" id="highRiskCount">-</div>
+                        <div class="small text-warning" id="highRiskChange">
+                            <i class="bi bi-arrow-up"></i> <span>-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="p-3 rounded-circle bg-success bg-opacity-10">
+                            <i class="bi bi-check-circle-fill text-success fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted text-uppercase fw-bold">{% trans "Resolved" %}</div>
+                        <div class="h4 fw-bold mb-0" id="resolvedCount">-</div>
+                        <div class="small text-success" id="resolvedChange">
+                            <i class="bi bi-arrow-up"></i> <span>-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="p-3 rounded-circle bg-info bg-opacity-10">
+                            <i class="bi bi-graph-up text-info fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted text-uppercase fw-bold">{% trans "Risk Score" %}</div>
+                        <div class="h4 fw-bold mb-0" id="avgRiskScore">-</div>
+                        <div class="small text-info" id="riskScoreChange">
+                            <i class="bi bi-arrow-down"></i> <span>-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Area -->
+<div class="row g-4">
+    <!-- Risk Flags Panel -->
+    <div class="col-xl-8">
+        <div class="card border-0 shadow-sm animate__animated animate__fadeInLeft">
+            <div class="card-header bg-transparent border-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-flag me-2"></i>{% trans "Active Risk Flags" %}
+                    </h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <input type="radio" class="btn-check" name="flagFilter" id="allFlags" autocomplete="off" checked>
+                        <label class="btn btn-outline-secondary" for="allFlags">{% trans "All" %}</label>
+
+                        <input type="radio" class="btn-check" name="flagFilter" id="criticalFlags" autocomplete="off">
+                        <label class="btn btn-outline-danger" for="criticalFlags">{% trans "Critical" %}</label>
+
+                        <input type="radio" class="btn-check" name="flagFilter" id="highFlags" autocomplete="off">
+                        <label class="btn btn-outline-warning" for="highFlags">{% trans "High" %}</label>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="riskFlagsTable">
+                        <thead>
+                            <tr>
+                                <th>{% trans "Employee" %}</th>
+                                <th>{% trans "Risk Type" %}</th>
+                                <th>{% trans "Severity" %}</th>
+                                <th>{% trans "Score" %}</th>
+                                <th>{% trans "Date" %}</th>
+                                <th>{% trans "Actions" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody id="riskFlagsBody">
+                            <!-- Dynamic content will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="d-flex justify-content-center mt-3">
+                    <div class="spinner-border text-primary" role="status" id="riskFlagsSpinner">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Risk Analytics Panel -->
+    <div class="col-xl-4">
+        <div class="card border-0 shadow-sm animate__animated animate__fadeInRight">
+            <div class="card-header bg-transparent border-0">
+                <h5 class="mb-0">
+                    <i class="bi bi-pie-chart me-2"></i>{% trans "Risk Distribution" %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="position-relative" style="height: 250px;">
+                    <canvas id="riskDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="card border-0 shadow-sm mt-4 animate__animated animate__fadeInRight" style="animation-delay: 0.2s;">
+            <div class="card-header bg-transparent border-0">
+                <h5 class="mb-0">
+                    <i class="bi bi-clock-history me-2"></i>{% trans "Recent Activity" %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline" id="recentActivity">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border spinner-border-sm text-primary" role="status" id="activitySpinner">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Risk Trends Chart -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm animate__animated animate__fadeInUp">
+            <div class="card-header bg-transparent border-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-graph-up-arrow me-2"></i>{% trans "Risk Trends" %}
+                    </h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <input type="radio" class="btn-check" name="trendPeriod" id="week" autocomplete="off" checked>
+                        <label class="btn btn-outline-secondary" for="week">{% trans "7 Days" %}</label>
+
+                        <input type="radio" class="btn-check" name="trendPeriod" id="month" autocomplete="off">
+                        <label class="btn btn-outline-secondary" for="month">{% trans "30 Days" %}</label>
+
+                        <input type="radio" class="btn-check" name="trendPeriod" id="quarter" autocomplete="off">
+                        <label class="btn btn-outline-secondary" for="quarter">{% trans "90 Days" %}</label>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="position-relative" style="height: 300px;">
+                    <canvas id="riskTrendsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal fade" id="settingsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-gear me-2"></i>{% trans "Dashboard Settings" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="settingsForm">
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Auto Refresh Interval" %}</label>
+                        <select class="form-select" id="refreshInterval">
+                            <option value="0">{% trans "Disabled" %}</option>
+                            <option value="30">30 {% trans "seconds" %}</option>
+                            <option value="60" selected>1 {% trans "minute" %}</option>
+                            <option value="300">5 {% trans "minutes" %}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="soundAlerts" checked>
+                            <label class="form-check-label" for="soundAlerts">
+                                {% trans "Sound Alerts" %}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="browserNotifications">
+                            <label class="form-check-label" for="browserNotifications">
+                                {% trans "Browser Notifications" %}
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    {% trans "Cancel" %}
+                </button>
+                <button type="button" class="btn btn-primary" id="saveSettings">
+                    {% trans "Save Settings" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Risk Flag Detail Modal -->
+<div class="modal fade" id="flagDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-flag me-2"></i>{% trans "Risk Flag Details" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="flagDetailContent">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'core/js/modern-forms.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize dashboard
+    const dashboard = new RiskDashboard();
+    dashboard.init();
+});
+
+class RiskDashboard {
+    constructor() {
+        this.refreshInterval = null;
+        this.charts = {};
+        this.settings = {
+            autoRefresh: 60,
+            soundAlerts: true,
+            browserNotifications: false
+        };
+    }
+
+    init() {
+        this.loadSettings();
+        this.initializeCharts();
+        this.loadDashboardData();
+        this.setupEventListeners();
+        this.startAutoRefresh();
+    }
+
+    loadSettings() {
+        const saved = localStorage.getItem('riskDashboardSettings');
+        if (saved) {
+            this.settings = { ...this.settings, ...JSON.parse(saved) };
+        }
+        this.applySettings();
+    }
+
+    saveSettings() {
+        localStorage.setItem('riskDashboardSettings', JSON.stringify(this.settings));
+    }
+
+    applySettings() {
+        document.getElementById('refreshInterval').value = this.settings.autoRefresh;
+        document.getElementById('soundAlerts').checked = this.settings.soundAlerts;
+        document.getElementById('browserNotifications').checked = this.settings.browserNotifications;
+    }
+
+    async loadDashboardData() {
+        try {
+            const response = await fetch('/api/ai-risk-detection/dashboard/');
+            const data = await response.json();
+            
+            this.updateStatistics(data.stats);
+            this.updateRiskFlags(data.risk_flags);
+            this.updateCharts(data);
+            this.updateRecentActivity(data.recent_activity);
+        } catch (error) {
+            console.error('Error loading dashboard data:', error);
+            this.showError('Failed to load dashboard data');
+        }
+    }
+
+    updateStatistics(stats) {
+        document.getElementById('activeFlagsCount').textContent = stats.active_flags || 0;
+        document.getElementById('highRiskCount').textContent = stats.high_risk || 0;
+        document.getElementById('resolvedCount').textContent = stats.resolved || 0;
+        document.getElementById('avgRiskScore').textContent = (stats.avg_risk_score || 0).toFixed(1);
+    }
+
+    updateRiskFlags(flags) {
+        const tbody = document.getElementById('riskFlagsBody');
+        const spinner = document.getElementById('riskFlagsSpinner');
+        
+        if (!flags || flags.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">{% trans "No active risk flags found" %}</td></tr>';
+        } else {
+            tbody.innerHTML = flags.map(flag => this.renderRiskFlagRow(flag)).join('');
+        }
+        
+        spinner.style.display = 'none';
+    }
+
+    renderRiskFlagRow(flag) {
+        const severityClass = {
+            'CRITICAL': 'danger',
+            'HIGH': 'warning',
+            'MEDIUM': 'info',
+            'LOW': 'secondary'
+        }[flag.severity] || 'secondary';
+
+        return `
+            <tr data-flag-id="${flag.id}" class="risk-flag-row">
+                <td>
+                    <div class="d-flex align-items-center">
+                        <img src="${flag.employee.profile_image || '/static/media/profil_sekilleri/default.png'}" 
+                             alt="" class="rounded-circle me-2" width="32" height="32">
+                        <div>
+                            <div class="fw-semibold">${flag.employee.full_name}</div>
+                            <small class="text-muted">${flag.employee.department}</small>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge bg-${severityClass} bg-opacity-10 text-${severityClass}">
+                        ${flag.flag_type_display}
+                    </span>
+                </td>
+                <td>
+                    <span class="badge bg-${severityClass}">${flag.severity}</span>
+                </td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="progress me-2" style="width: 60px; height: 8px;">
+                            <div class="progress-bar bg-${severityClass}" style="width: ${flag.risk_score * 10}%"></div>
+                        </div>
+                        <span class="small">${flag.risk_score}/10</span>
+                    </div>
+                </td>
+                <td>
+                    <small class="text-muted">${new Date(flag.created_at).toLocaleDateString()}</small>
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary btn-sm view-flag" data-flag-id="${flag.id}">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-outline-success btn-sm resolve-flag" data-flag-id="${flag.id}">
+                            <i class="bi bi-check"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+
+    initializeCharts() {
+        // Risk Distribution Chart
+        const ctx1 = document.getElementById('riskDistributionChart').getContext('2d');
+        this.charts.distribution = new Chart(ctx1, {
+            type: 'doughnut',
+            data: {
+                labels: ['Low', 'Medium', 'High', 'Critical'],
+                datasets: [{
+                    data: [0, 0, 0, 0],
+                    backgroundColor: ['#198754', '#0dcaf0', '#ffc107', '#dc3545']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+
+        // Risk Trends Chart
+        const ctx2 = document.getElementById('riskTrendsChart').getContext('2d');
+        this.charts.trends = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Risk Score',
+                    data: [],
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10
+                    }
+                }
+            }
+        });
+    }
+
+    updateCharts(data) {
+        // Update distribution chart
+        if (data.distribution) {
+            this.charts.distribution.data.datasets[0].data = [
+                data.distribution.LOW || 0,
+                data.distribution.MEDIUM || 0,
+                data.distribution.HIGH || 0,
+                data.distribution.CRITICAL || 0
+            ];
+            this.charts.distribution.update();
+        }
+
+        // Update trends chart
+        if (data.trends) {
+            this.charts.trends.data.labels = data.trends.labels;
+            this.charts.trends.data.datasets[0].data = data.trends.data;
+            this.charts.trends.update();
+        }
+    }
+
+    updateRecentActivity(activities) {
+        const container = document.getElementById('recentActivity');
+        const spinner = document.getElementById('activitySpinner');
+        
+        if (!activities || activities.length === 0) {
+            container.innerHTML = '<p class="text-muted text-center">{% trans "No recent activity" %}</p>';
+        } else {
+            container.innerHTML = activities.map(activity => `
+                <div class="timeline-item">
+                    <div class="timeline-marker bg-${activity.type}"></div>
+                    <div class="timeline-content">
+                        <h6 class="mb-1">${activity.title}</h6>
+                        <p class="text-muted small mb-1">${activity.description}</p>
+                        <small class="text-muted">${new Date(activity.timestamp).toLocaleString()}</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        spinner.style.display = 'none';
+    }
+
+    setupEventListeners() {
+        // Refresh button
+        document.getElementById('refreshBtn').addEventListener('click', () => {
+            this.loadDashboardData();
+        });
+
+        // Settings form
+        document.getElementById('saveSettings').addEventListener('click', () => {
+            this.settings.autoRefresh = parseInt(document.getElementById('refreshInterval').value);
+            this.settings.soundAlerts = document.getElementById('soundAlerts').checked;
+            this.settings.browserNotifications = document.getElementById('browserNotifications').checked;
+            
+            this.saveSettings();
+            this.startAutoRefresh();
+            
+            const modal = bootstrap.Modal.getInstance(document.getElementById('settingsModal'));
+            modal.hide();
+        });
+
+        // Flag filters
+        document.querySelectorAll('input[name="flagFilter"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                this.filterRiskFlags(e.target.id);
+            });
+        });
+
+        // Trend period
+        document.querySelectorAll('input[name="trendPeriod"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                this.updateTrendsPeriod(e.target.id);
+            });
+        });
+
+        // Table actions
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.view-flag')) {
+                const flagId = e.target.closest('.view-flag').dataset.flagId;
+                this.viewRiskFlag(flagId);
+            }
+            
+            if (e.target.closest('.resolve-flag')) {
+                const flagId = e.target.closest('.resolve-flag').dataset.flagId;
+                this.resolveRiskFlag(flagId);
+            }
+        });
+    }
+
+    startAutoRefresh() {
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
+        }
+        
+        if (this.settings.autoRefresh > 0) {
+            this.refreshInterval = setInterval(() => {
+                this.loadDashboardData();
+            }, this.settings.autoRefresh * 1000);
+        }
+    }
+
+    async viewRiskFlag(flagId) {
+        try {
+            const response = await fetch(`/api/risk-flags/${flagId}/`);
+            const flag = await response.json();
+            
+            document.getElementById('flagDetailContent').innerHTML = this.renderFlagDetail(flag);
+            
+            const modal = new bootstrap.Modal(document.getElementById('flagDetailModal'));
+            modal.show();
+        } catch (error) {
+            console.error('Error loading flag details:', error);
+            this.showError('Failed to load flag details');
+        }
+    }
+
+    renderFlagDetail(flag) {
+        return `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>{% trans "Employee Information" %}</h6>
+                    <p><strong>{% trans "Name" %}:</strong> ${flag.employee.full_name}</p>
+                    <p><strong>{% trans "Department" %}:</strong> ${flag.employee.department}</p>
+                    <p><strong>{% trans "Position" %}:</strong> ${flag.employee.position}</p>
+                </div>
+                <div class="col-md-6">
+                    <h6>{% trans "Risk Details" %}</h6>
+                    <p><strong>{% trans "Type" %}:</strong> ${flag.flag_type_display}</p>
+                    <p><strong>{% trans "Severity" %}:</strong> <span class="badge bg-danger">${flag.severity}</span></p>
+                    <p><strong>{% trans "Risk Score" %}:</strong> ${flag.risk_score}/10</p>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <h6>{% trans "Description" %}</h6>
+                    <p>${flag.description || '{% trans "No description available" %}'}</p>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <h6>{% trans "AI Analysis" %}</h6>
+                    <div class="bg-light p-3 rounded">
+                        ${flag.ai_analysis || '{% trans "No AI analysis available" %}'}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    async resolveRiskFlag(flagId) {
+        if (!confirm('{% trans "Are you sure you want to resolve this risk flag?" %}')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/risk-flags/${flagId}/resolve/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            });
+
+            if (response.ok) {
+                this.showSuccess('{% trans "Risk flag resolved successfully" %}');
+                this.loadDashboardData();
+            } else {
+                throw new Error('Failed to resolve flag');
+            }
+        } catch (error) {
+            console.error('Error resolving flag:', error);
+            this.showError('{% trans "Failed to resolve risk flag" %}');
+        }
+    }
+
+    filterRiskFlags(filter) {
+        const rows = document.querySelectorAll('.risk-flag-row');
+        rows.forEach(row => {
+            const severity = row.querySelector('.badge').textContent.trim();
+            let show = true;
+            
+            switch (filter) {
+                case 'criticalFlags':
+                    show = severity === 'CRITICAL';
+                    break;
+                case 'highFlags':
+                    show = severity === 'HIGH';
+                    break;
+                case 'allFlags':
+                default:
+                    show = true;
+            }
+            
+            row.style.display = show ? '' : 'none';
+        });
+    }
+
+    async updateTrendsPeriod(period) {
+        try {
+            const response = await fetch(`/api/ai-risk-detection/trends/?period=${period}`);
+            const data = await response.json();
+            
+            this.charts.trends.data.labels = data.labels;
+            this.charts.trends.data.datasets[0].data = data.data;
+            this.charts.trends.update();
+        } catch (error) {
+            console.error('Error updating trends:', error);
+        }
+    }
+
+    showSuccess(message) {
+        this.showToast(message, 'success');
+    }
+
+    showError(message) {
+        this.showToast(message, 'danger');
+    }
+
+    showToast(message, type) {
+        const toastContainer = document.querySelector('.toast-container');
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-white bg-${type} border-0`;
+        toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        `;
+        
+        toastContainer.appendChild(toast);
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+        
+        toast.addEventListener('hidden.bs.toast', () => {
+            toast.remove();
+        });
+    }
+}
+</script>
+{% endblock %}
