@@ -1,0 +1,953 @@
+{% extends 'core/base.html' %}
+{% load i18n static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<!-- Chart.js CSS -->
+<link href="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.css" rel="stylesheet">
+<style>
+.dashboard-widget {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-widget:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.widget-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f8f9fa;
+}
+
+.widget-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.widget-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: white;
+}
+
+.metric-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+    padding: 25px;
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.metric-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transform: rotate(45deg);
+}
+
+.metric-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    position: relative;
+    z-index: 1;
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+
+.metric-change {
+    font-size: 0.8rem;
+    margin-top: 5px;
+    position: relative;
+    z-index: 1;
+}
+
+.chart-container {
+    position: relative;
+    height: 300px;
+    margin: 20px 0;
+}
+
+.activity-item {
+    padding: 15px;
+    border-left: 4px solid #667eea;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+}
+
+.activity-item:hover {
+    background: #e9ecef;
+    transform: translateX(5px);
+}
+
+.activity-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    margin-right: 12px;
+}
+
+.deadline-item {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #e3e6f0;
+    transition: all 0.3s ease;
+}
+
+.deadline-item.critical {
+    border-left: 4px solid #dc3545;
+    background: rgba(220, 53, 69, 0.05);
+}
+
+.deadline-item.urgent {
+    border-left: 4px solid #ffc107;
+    background: rgba(255, 193, 7, 0.05);
+}
+
+.deadline-item.normal {
+    border-left: 4px solid #28a745;
+    background: rgba(40, 167, 69, 0.05);
+}
+
+.loading-widget {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    color: #6c757d;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.widget-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.refresh-btn {
+    background: none;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.refresh-btn:hover {
+    background: #f8f9fa;
+    color: #495057;
+    transform: rotate(180deg);
+}
+
+.team-member-card {
+    background: white;
+    border: 1px solid #e3e6f0;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 12px;
+    transition: all 0.3s ease;
+}
+
+.team-member-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.performance-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.performance-excellent {
+    background: rgba(40, 167, 69, 0.1);
+    color: #28a745;
+}
+
+.performance-good {
+    background: rgba(23, 162, 184, 0.1);
+    color: #17a2b8;
+}
+
+.performance-average {
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+
+.performance-poor {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+@media (max-width: 768px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-container {
+        height: 250px;
+    }
+    
+    .metric-number {
+        font-size: 2rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-gradient mb-1">{{ title }}</h2>
+            <p class="text-muted mb-0">Real-time məlumatlar və interaktiv analitika</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary btn-sm" onclick="refreshAllWidgets()">
+                <i class="fas fa-sync-alt me-2"></i>Yenilə
+            </button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="toggleAutoRefresh()">
+                <i class="fas fa-play me-2" id="autoRefreshIcon"></i>
+                <span id="autoRefreshText">Avtomatik Yenilə</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div class="stats-grid" id="quickStatsGrid">
+        <!-- Stats will be loaded here -->
+    </div>
+
+    <!-- Main Dashboard Grid -->
+    <div class="row">
+        <!-- Sol Panel - Charts və Performance -->
+        <div class="col-lg-8">
+            <!-- Performance Trend Chart -->
+            <div class="dashboard-widget">
+                <div class="widget-header">
+                    <div class="d-flex align-items-center">
+                        <div class="widget-icon bg-primary me-3">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <h5 class="widget-title">Performans Trendi</h5>
+                    </div>
+                    <div class="widget-controls">
+                        <select class="form-select form-select-sm" id="performancePeriod" onchange="updatePerformanceChart()">
+                            <option value="6_months">Son 6 ay</option>
+                            <option value="12_months">Son 12 ay</option>
+                        </select>
+                        <button class="refresh-btn" onclick="updatePerformanceChart()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Goal Progress Chart -->
+            <div class="dashboard-widget">
+                <div class="widget-header">
+                    <div class="d-flex align-items-center">
+                        <div class="widget-icon bg-success me-3">
+                            <i class="fas fa-bullseye"></i>
+                        </div>
+                        <h5 class="widget-title">Hədəf İrəliləyişi</h5>
+                    </div>
+                    <div class="widget-controls">
+                        <button class="refresh-btn" onclick="updateGoalChart()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="goalChart"></canvas>
+                </div>
+            </div>
+
+            {% if is_manager %}
+            <!-- Department Comparison (Manager only) -->
+            <div class="dashboard-widget">
+                <div class="widget-header">
+                    <div class="d-flex align-items-center">
+                        <div class="widget-icon bg-info me-3">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h5 class="widget-title">Şöbələr Müqayisəsi</h5>
+                    </div>
+                    <div class="widget-controls">
+                        <button class="refresh-btn" onclick="updateDepartmentChart()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="departmentChart"></canvas>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sağ Panel - Activities və Notifications -->
+        <div class="col-lg-4">
+            <!-- Recent Activities -->
+            <div class="dashboard-widget">
+                <div class="widget-header">
+                    <div class="d-flex align-items-center">
+                        <div class="widget-icon bg-warning me-3">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h5 class="widget-title">Son Fəaliyyətlər</h5>
+                    </div>
+                    <div class="widget-controls">
+                        <button class="refresh-btn" onclick="updateRecentActivities()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="recentActivities">
+                    <div class="loading-widget">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Yüklənir...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upcoming Deadlines -->
+            <div class="dashboard-widget">
+                <div class="widget-header">
+                    <div class="d-flex align-items-center">
+                        <div class="widget-icon bg-danger me-3">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <h5 class="widget-title">Yaxınlaşan Son Tarixlər</h5>
+                    </div>
+                    <div class="widget-controls">
+                        <button class="refresh-btn" onclick="updateUpcomingDeadlines()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="upcomingDeadlines">
+                    <div class="loading-widget">
+                        <div class="spinner-border text-danger" role="status">
+                            <span class="visually-hidden">Yüklənir...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if is_manager %}
+            <!-- Team Performance (Manager only) -->
+            <div class="dashboard-widget">
+                <div class="widget-header">
+                    <div class="d-flex align-items-center">
+                        <div class="widget-icon bg-purple me-3">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h5 class="widget-title">Komanda Performansı</h5>
+                    </div>
+                    <div class="widget-controls">
+                        <button class="refresh-btn" onclick="updateTeamPerformance()">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="teamPerformance">
+                    <div class="loading-widget">
+                        <div class="spinner-border text-info" role="status">
+                            <span class="visually-hidden">Yüklənir...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Quick Actions -->
+            <div class="dashboard-widget">
+                <div class="widget-header">
+                    <div class="d-flex align-items-center">
+                        <div class="widget-icon bg-secondary me-3">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h5 class="widget-title">Tez Əməliyyatlar</h5>
+                    </div>
+                </div>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'calendar_view' %}" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-calendar-alt me-2"></i>Təqvimi Aç
+                    </a>
+                    <a href="{% url 'notification_center' %}" class="btn btn-outline-info btn-sm">
+                        <i class="fas fa-bell me-2"></i>Bildirişlər
+                    </a>
+                    <a href="{% url 'report_center' %}" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-chart-bar me-2"></i>Hesabatlar
+                    </a>
+                    {% if is_manager %}
+                    <a href="{% url 'rehber_paneli' %}" class="btn btn-outline-purple btn-sm">
+                        <i class="fas fa-users-cog me-2"></i>Rəhbər Paneli
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="position-fixed top-0 start-0 w-100 h-100 bg-white bg-opacity-75 d-flex align-items-center justify-content-center" 
+     style="z-index: 9999; display: none !important;" id="loadingOverlay">
+    <div class="text-center">
+        <div class="spinner-border text-primary mb-3" style="width: 3rem; height: 3rem;" role="status">
+            <span class="visually-hidden">Yüklənir...</span>
+        </div>
+        <h5>Məlumatlar yüklənir...</h5>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.min.js"></script>
+
+<script>
+// Global variables
+let performanceChart = null;
+let goalChart = null;
+let departmentChart = null;
+let autoRefreshInterval = null;
+let isAutoRefresh = false;
+
+// Chart color scheme
+const chartColors = {
+    primary: 'rgb(102, 126, 234)',
+    primaryAlpha: 'rgba(102, 126, 234, 0.1)',
+    success: 'rgb(40, 167, 69)',
+    warning: 'rgb(255, 193, 7)',
+    danger: 'rgb(220, 53, 69)',
+    info: 'rgb(23, 162, 184)',
+    purple: 'rgb(111, 66, 193)'
+};
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeDashboard();
+});
+
+function initializeDashboard() {
+    // Load initial data
+    loadQuickStats();
+    loadPerformanceChart();
+    loadGoalChart();
+    loadRecentActivities();
+    loadUpcomingDeadlines();
+    
+    {% if is_manager %}
+    loadDepartmentChart();
+    loadTeamPerformance();
+    {% endif %}
+    
+    // Setup periodic refresh (every 5 minutes)
+    setInterval(function() {
+        if (isAutoRefresh) {
+            refreshAllWidgets();
+        }
+    }, 300000); // 5 dəqiqə
+}
+
+function loadQuickStats() {
+    fetch('{% url "dashboard_stats_api" %}', {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        renderQuickStats(data);
+    })
+    .catch(error => {
+        console.error('Quick stats yüklənmədi:', error);
+        showError('Statistikalar yüklənərkən xəta baş verdi');
+    });
+}
+
+function renderQuickStats(data) {
+    const container = document.getElementById('quickStatsGrid');
+    
+    let html = `
+        <div class="metric-card">
+            <div class="metric-number">${data.personal.pending_evaluations}</div>
+            <div class="metric-label">Gözləyən Qiymətləndirmə</div>
+            <div class="metric-change">
+                <i class="fas fa-clock"></i> Tamamlanmalı
+            </div>
+        </div>
+        
+        <div class="metric-card" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+            <div class="metric-number">${data.personal.completed_evaluations}</div>
+            <div class="metric-label">Tamamlanmış Qiymətləndirmə</div>
+            <div class="metric-change">
+                <i class="fas fa-check-circle"></i> Bu ay: ${data.trends.this_month_evaluations}
+            </div>
+        </div>
+        
+        <div class="metric-card" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);">
+            <div class="metric-number">${data.personal.active_goals}</div>
+            <div class="metric-label">Aktiv Hədəflər</div>
+            <div class="metric-change">
+                <i class="fas fa-percentage"></i> ${data.trends.goals_completion_rate}% tamamlanıb
+            </div>
+        </div>
+        
+        <div class="metric-card" style="background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);">
+            <div class="metric-number">${Math.round(data.personal.avg_performance)}</div>
+            <div class="metric-label">Orta Performans</div>
+            <div class="metric-change">
+                <i class="fas fa-chart-line"></i> Son qiymətləndirmələr
+            </div>
+        </div>
+    `;
+    
+    {% if is_manager %}
+    if (data.team) {
+        html += `
+            <div class="metric-card" style="background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);">
+                <div class="metric-number">${data.team.total_members}</div>
+                <div class="metric-label">Komanda Üzvləri</div>
+                <div class="metric-change">
+                    <i class="fas fa-users"></i> Orta: ${Math.round(data.team.avg_team_performance)}
+                </div>
+            </div>
+        `;
+    }
+    {% endif %}
+    
+    container.innerHTML = html;
+}
+
+function loadPerformanceChart() {
+    const period = document.getElementById('performancePeriod').value;
+    
+    fetch(`{% url "performance_chart_api" %}?type=performance_trend&period=${period}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        renderPerformanceChart(data);
+    })
+    .catch(error => {
+        console.error('Performance chart yüklənmədi:', error);
+    });
+}
+
+function renderPerformanceChart(data) {
+    const ctx = document.getElementById('performanceChart').getContext('2d');
+    
+    if (performanceChart) {
+        performanceChart.destroy();
+    }
+    
+    performanceChart = new Chart(ctx, {
+        type: 'line',
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + ' bal';
+                        }
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.parsed.y + ' bal';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function loadGoalChart() {
+    fetch(`{% url "performance_chart_api" %}?type=goal_progress`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        renderGoalChart(data);
+    })
+    .catch(error => {
+        console.error('Goal chart yüklənmədi:', error);
+    });
+}
+
+function renderGoalChart(data) {
+    const ctx = document.getElementById('goalChart').getContext('2d');
+    
+    if (goalChart) {
+        goalChart.destroy();
+    }
+    
+    goalChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+}
+
+{% if is_manager %}
+function loadDepartmentChart() {
+    fetch(`{% url "performance_chart_api" %}?type=department_comparison`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        renderDepartmentChart(data);
+    })
+    .catch(error => {
+        console.error('Department chart yüklənmədi:', error);
+    });
+}
+
+function renderDepartmentChart(data) {
+    const ctx = document.getElementById('departmentChart').getContext('2d');
+    
+    if (departmentChart) {
+        departmentChart.destroy();
+    }
+    
+    departmentChart = new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+}
+{% endif %}
+
+function loadRecentActivities() {
+    fetch('{% url "dashboard_widget_data" "recent_activities" %}', {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        renderRecentActivities(data.activities);
+    })
+    .catch(error => {
+        console.error('Recent activities yüklənmədi:', error);
+        document.getElementById('recentActivities').innerHTML = 
+            '<div class="text-center text-muted py-4">Məlumat yüklənmədi</div>';
+    });
+}
+
+function renderRecentActivities(activities) {
+    const container = document.getElementById('recentActivities');
+    
+    if (activities.length === 0) {
+        container.innerHTML = '<div class="text-center text-muted py-4">Son fəaliyyət yoxdur</div>';
+        return;
+    }
+    
+    let html = '';
+    activities.forEach(activity => {
+        html += `
+            <div class="activity-item">
+                <div class="d-flex align-items-start">
+                    <div class="activity-icon bg-${activity.color} text-white">
+                        <i class="${activity.icon}"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h6 class="mb-1">${activity.title}</h6>
+                        <p class="text-muted small mb-1">${activity.description}</p>
+                        <small class="text-muted">${activity.date}</small>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+function loadUpcomingDeadlines() {
+    fetch('{% url "dashboard_widget_data" "upcoming_deadlines" %}', {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        renderUpcomingDeadlines(data.deadlines);
+    })
+    .catch(error => {
+        console.error('Upcoming deadlines yüklənmədi:', error);
+        document.getElementById('upcomingDeadlines').innerHTML = 
+            '<div class="text-center text-muted py-4">Məlumat yüklənmədi</div>';
+    });
+}
+
+function renderUpcomingDeadlines(deadlines) {
+    const container = document.getElementById('upcomingDeadlines');
+    
+    if (deadlines.length === 0) {
+        container.innerHTML = '<div class="text-center text-muted py-4">Yaxın son tarix yoxdur</div>';
+        return;
+    }
+    
+    let html = '';
+    deadlines.forEach(deadline => {
+        const urgencyText = deadline.days_left < 0 ? 'Gecikib' : 
+                           deadline.days_left === 0 ? 'Bu gün' : 
+                           `${deadline.days_left} gün qalıb`;
+        
+        html += `
+            <div class="deadline-item ${deadline.urgency}">
+                <h6 class="mb-1">${deadline.title}</h6>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">${deadline.deadline}</small>
+                    <span class="badge bg-${deadline.color}">${urgencyText}</span>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+{% if is_manager %}
+function loadTeamPerformance() {
+    fetch('{% url "dashboard_widget_data" "team_performance" %}', {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        renderTeamPerformance(data.team_members);
+    })
+    .catch(error => {
+        console.error('Team performance yüklənmədi:', error);
+        document.getElementById('teamPerformance').innerHTML = 
+            '<div class="text-center text-muted py-4">Məlumat yüklənmədi</div>';
+    });
+}
+
+function renderTeamPerformance(teamMembers) {
+    const container = document.getElementById('teamPerformance');
+    
+    if (teamMembers.length === 0) {
+        container.innerHTML = '<div class="text-center text-muted py-4">Komanda üzvü tapılmadı</div>';
+        return;
+    }
+    
+    let html = '';
+    teamMembers.forEach(member => {
+        const performanceClass = member.avg_performance >= 90 ? 'excellent' :
+                               member.avg_performance >= 70 ? 'good' :
+                               member.avg_performance >= 50 ? 'average' : 'poor';
+        
+        html += `
+            <div class="team-member-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h6 class="mb-1">${member.name}</h6>
+                        <small class="text-muted">${member.role}</small>
+                    </div>
+                    <div class="text-end">
+                        <div class="performance-badge performance-${performanceClass}">
+                            ${member.avg_performance} bal
+                        </div>
+                        <small class="text-muted d-block mt-1">${member.active_goals} aktiv hədəf</small>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+{% endif %}
+
+// Control functions
+function updatePerformanceChart() {
+    loadPerformanceChart();
+}
+
+function updateGoalChart() {
+    loadGoalChart();
+}
+
+{% if is_manager %}
+function updateDepartmentChart() {
+    loadDepartmentChart();
+}
+
+function updateTeamPerformance() {
+    loadTeamPerformance();
+}
+{% endif %}
+
+function updateRecentActivities() {
+    loadRecentActivities();
+}
+
+function updateUpcomingDeadlines() {
+    loadUpcomingDeadlines();
+}
+
+function refreshAllWidgets() {
+    showLoading();
+    
+    // Refresh all components
+    loadQuickStats();
+    loadPerformanceChart();
+    loadGoalChart();
+    loadRecentActivities();
+    loadUpcomingDeadlines();
+    
+    {% if is_manager %}
+    loadDepartmentChart();
+    loadTeamPerformance();
+    {% endif %}
+    
+    setTimeout(hideLoading, 1000);
+}
+
+function toggleAutoRefresh() {
+    isAutoRefresh = !isAutoRefresh;
+    const icon = document.getElementById('autoRefreshIcon');
+    const text = document.getElementById('autoRefreshText');
+    
+    if (isAutoRefresh) {
+        icon.className = 'fas fa-pause me-2';
+        text.textContent = 'Avtomatik Dayandır';
+    } else {
+        icon.className = 'fas fa-play me-2';
+        text.textContent = 'Avtomatik Yenilə';
+    }
+}
+
+function showLoading() {
+    document.getElementById('loadingOverlay').style.display = 'flex';
+}
+
+function hideLoading() {
+    document.getElementById('loadingOverlay').style.display = 'none';
+}
+
+function showError(message) {
+    // Toast notification
+    const toast = document.createElement('div');
+    toast.className = 'toast align-items-center text-white bg-danger border-0 position-fixed top-0 end-0 m-3';
+    toast.style.zIndex = '9999';
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-exclamation-circle me-2"></i>${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+    document.body.appendChild(toast);
+    
+    const bsToast = new bootstrap.Toast(toast);
+    bsToast.show();
+    
+    toast.addEventListener('hidden.bs.toast', () => {
+        document.body.removeChild(toast);
+    });
+}
+</script>
+{% endblock %}

@@ -117,3 +117,28 @@ def get_detailed_report_context(ishchi, dovr):
         'chart_data': json.dumps([item['ortalama_xal'] for item in radar_chart_data]),
         'error': None
     }
+
+
+def get_user_performance_trend(user, months=6):
+    """İstifadəçinin son N ayının performans trendini qaytarır"""
+    from django.utils import timezone
+    from datetime import timedelta
+    from .models import Qiymetlendirme
+    
+    trends = []
+    for i in range(months):
+        month_start = (timezone.now().date().replace(day=1) - timedelta(days=i*30)).replace(day=1)
+        month_end = (month_start + timedelta(days=32)).replace(day=1) - timedelta(days=1)
+        
+        avg_score = Qiymetlendirme.objects.filter(
+            qiymetlendirilen=user,
+            tarix__range=[month_start, month_end]
+        ).aggregate(avg=Avg('umumi_qiymet'))['avg'] or 0
+        
+        trends.append({
+            'month': month_start.strftime('%Y-%m'),
+            'month_name': month_start.strftime('%b %Y'),
+            'score': round(avg_score, 1)
+        })
+    
+    return list(reversed(trends))

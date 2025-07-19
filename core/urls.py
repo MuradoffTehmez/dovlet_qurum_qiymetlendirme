@@ -6,6 +6,7 @@ from . import views
 from . import notification_views
 from . import report_views
 from . import calendar_views
+from . import dashboard_views
 
 urlpatterns = [
     path("", views.dashboard, name="dashboard"),
@@ -88,6 +89,17 @@ urlpatterns = [
              path("api/stats/", calendar_views.calendar_stats, name="calendar_stats"),
              path("api/reminder/", calendar_views.create_reminder, name="create_reminder"),
              path("event-detail/<str:event_type>/<int:event_id>/", calendar_views.event_detail, name="event_detail"),
+         ])
+    ),
+    
+    # === İNTERAKTİV DASHBOARD URL-LƏRİ ===
+    path("interactive-dashboard/",
+         include([
+             path("", dashboard_views.interactive_dashboard, name="interactive_dashboard"),
+             path("api/stats/", dashboard_views.dashboard_stats_api, name="dashboard_stats_api"),
+             path("api/chart/", dashboard_views.performance_chart_api, name="performance_chart_api"),
+             path("api/widget/<str:widget_type>/", dashboard_views.dashboard_widget_data, name="dashboard_widget_data"),
+             path("api/preferences/", dashboard_views.dashboard_widget_preferences, name="dashboard_widget_preferences"),
          ])
     ),
 ]

@@ -15,6 +15,19 @@
         </a>
     </div>
 
+    <!-- Interactive Dashboard -->
+    <div class="col-lg-2 col-md-4 col-sm-6">
+        <a href="{% url 'interactive_dashboard' %}" class="card h-100 text-decoration-none quick-nav-card">
+            <div class="card-body text-center p-3">
+                <div class="quick-nav-icon bg-gradient text-white rounded-circle mx-auto mb-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h6 class="card-title mb-1">{% trans "İnteraktiv Panel" %}</h6>
+                <small class="text-muted">Analytics</small>
+            </div>
+        </a>
+    </div>
+
     <!-- Calendar -->
     <div class="col-lg-2 col-md-4 col-sm-6">
         <a href="{% url 'calendar_view' %}" class="card h-100 text-decoration-none quick-nav-card">
@@ -108,6 +121,17 @@
 
 .bg-purple {
     background-color: #6f42c1 !important;
+}
+
+.btn-outline-purple {
+    color: #6f42c1;
+    border-color: #6f42c1;
+}
+
+.btn-outline-purple:hover {
+    color: #fff;
+    background-color: #6f42c1;
+    border-color: #6f42c1;
 }
 
 .quick-nav-card .card-title {
