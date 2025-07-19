@@ -1,0 +1,254 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .feedback-card {
+        border-left: 4px solid #007bff;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .feedback-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+    .feedback-card.unread {
+        background-color: #f8f9fa;
+        border-left-color: #28a745;
+    }
+    .feedback-type-positive { border-left-color: #28a745; }
+    .feedback-type-constructive { border-left-color: #ffc107; }
+    .feedback-type-neutral { border-left-color: #6c757d; }
+    .stats-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+    }
+    .quick-actions .btn {
+        border-radius: 20px;
+        padding: 8px 20px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-comments me-2"></i>{{ page_title }}
+                    </h1>
+                    <p class="text-muted mt-1">Dövr arası sürətli əks əlaqə sistemi</p>
+                </div>
+                <div class="quick-actions">
+                    <a href="{% url 'quick_feedback:send' %}" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-1"></i>Yeni Geri Bildirim
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistika Kartları -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stats-card">
+                <div class="card-body text-center">
+                    <div class="display-6 fw-bold">{{ stats.total_received }}</div>
+                    <div class="small">Ümumi Alınan</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stats-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="card-body text-center">
+                    <div class="display-6 fw-bold">{{ stats.total_given }}</div>
+                    <div class="small">Ümumi Verilən</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stats-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="card-body text-center">
+                    <div class="display-6 fw-bold">{{ stats.unread_count }}</div>
+                    <div class="small">Oxunmamış</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stats-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <div class="card-body text-center">
+                    <div class="display-6 fw-bold">{{ stats.this_week_received }}</div>
+                    <div class="small">Bu Həftə</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Son Alınan Geri Bildirimlər -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-inbox me-2"></i>Son Alınan Geri Bildirimlər
+                    </h5>
+                    <a href="{% url 'quick_feedback:inbox' %}" class="btn btn-sm btn-outline-primary">
+                        Hamısını Gör
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    {% if received_feedbacks %}
+                        {% for feedback in received_feedbacks %}
+                        <div class="feedback-card p-3 border-bottom feedback-type-{{ feedback.feedback_type.lower }} {% if not feedback.is_read %}unread{% endif %}"
+                             onclick="window.location.href='{% url 'quick_feedback:view' feedback.id %}'">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ feedback.title }}</h6>
+                                    <p class="text-muted small mb-1">
+                                        {% if feedback.is_anonymous %}
+                                            <i class="fas fa-user-secret me-1"></i>Anonim İşçi
+                                        {% else %}
+                                            <i class="fas fa-user me-1"></i>{{ feedback.from_user.get_full_name }}
+                                        {% endif %}
+                                    </p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>{{ feedback.created_at|date:"d.m.Y H:i" }}
+                                    </small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge badge-{{ feedback.feedback_type.lower }}">
+                                        {{ feedback.get_feedback_type_display }}
+                                    </span>
+                                    {% if not feedback.is_read %}
+                                        <div class="mt-1">
+                                            <span class="badge bg-success">Yeni</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Hələ geri bildirim almamısınız.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Son Verilən Geri Bildirimlər -->
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="fas fa-paper-plane me-2"></i>Son Verilən Geri Bildirimlər
+                    </h5>
+                    <a href="{% url 'quick_feedback:sent' %}" class="btn btn-sm btn-outline-primary">
+                        Hamısını Gör
+                    </a>
+                </div>
+                <div class="card-body p-0">
+                    {% if given_feedbacks %}
+                        {% for feedback in given_feedbacks %}
+                        <div class="feedback-card p-3 border-bottom feedback-type-{{ feedback.feedback_type.lower }}">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-1">{{ feedback.title }}</h6>
+                                    <p class="text-muted small mb-1">
+                                        <i class="fas fa-user me-1"></i>{{ feedback.to_user.get_full_name }}
+                                    </p>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>{{ feedback.created_at|date:"d.m.Y H:i" }}
+                                    </small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge badge-{{ feedback.feedback_type.lower }}">
+                                        {{ feedback.get_feedback_type_display }}
+                                    </span>
+                                    {% if feedback.is_anonymous %}
+                                        <div class="mt-1">
+                                            <span class="badge bg-secondary">Anonim</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-paper-plane fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">Hələ geri bildirim verməmişsiniz.</p>
+                            <a href="{% url 'quick_feedback:send' %}" class="btn btn-primary">
+                                İlk Geri Bildirimi Göndər
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kateqoriyalar -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tags me-2"></i>Mövcud Kateqoriyalar
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for category in categories %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100 border-0 bg-light">
+                                <div class="card-body text-center">
+                                    <i class="{{ category.icon }} fa-2x text-primary mb-2"></i>
+                                    <h6 class="card-title">{{ category.name }}</h6>
+                                    <p class="card-text small text-muted">{{ category.description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.badge-positive { background-color: #28a745; }
+.badge-constructive { background-color: #ffc107; color: #212529; }
+.badge-neutral { background-color: #6c757d; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Real-time unread count update
+function updateUnreadCount() {
+    fetch('{% url "quick_feedback:api" %}?action=unread_count')
+        .then(response => response.json())
+        .then(data => {
+            // Update any notification badges
+            const badges = document.querySelectorAll('.unread-count-badge');
+            badges.forEach(badge => {
+                badge.textContent = data.unread_count;
+                badge.style.display = data.unread_count > 0 ? 'inline' : 'none';
+            });
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+// Update count every 30 seconds
+setInterval(updateUnreadCount, 30000);
+</script>
+{% endblock %}

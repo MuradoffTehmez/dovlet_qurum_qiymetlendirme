@@ -1,0 +1,389 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .review-container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 4px 25px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    .review-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+    }
+    .review-content {
+        padding: 2rem;
+    }
+    .category-section {
+        border-left: 4px solid #007bff;
+        margin-bottom: 2rem;
+        border-radius: 0 8px 8px 0;
+        background: #f8f9fa;
+    }
+    .category-header {
+        background: #e3f2fd;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .question-item {
+        padding: 1.5rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .question-item:last-child {
+        border-bottom: none;
+    }
+    .score-display {
+        display: inline-flex;
+        align-items: center;
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    .score-bar {
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 0.5rem 0;
+    }
+    .score-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #28a745, #20c997);
+        transition: width 0.8s ease;
+    }
+    .summary-card {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    .insights-card {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        border-radius: 15px;
+        padding: 1.5rem;
+        border: none;
+    }
+    .text-answer {
+        background: white;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1rem;
+        font-style: italic;
+        color: #495057;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'self_review:dashboard' %}">Self-Review</a>
+                    </li>
+                    <li class="breadcrumb-item active">{{ evaluation.dovr.basliq }}</li>
+                </ol>
+            </nav>
+
+            <div class="review-container">
+                <!-- Header -->
+                <div class="review-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="mb-2">Self-Review Nəticələri</h2>
+                            <h4 class="mb-3">{{ evaluation.dovr.basliq }}</h4>
+                            <p class="mb-0">
+                                <i class="fas fa-calendar me-2"></i>
+                                {{ evaluation.dovr.bashlama_tarixi|date:"d F Y" }} - {{ evaluation.dovr.bitme_tarixi|date:"d F Y" }}
+                            </p>
+                            {% if evaluation.tamamlanma_tarixi %}
+                            <p class="mb-0">
+                                <i class="fas fa-check-circle me-2"></i>
+                                Tamamlanma: {{ evaluation.tamamlanma_tarixi|date:"d F Y, H:i" }}
+                            </p>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4 text-end">
+                            {% if evaluation.final_score %}
+                            <div class="text-center">
+                                <div class="display-4 fw-bold mb-2">{{ evaluation.final_score|floatformat:1 }}</div>
+                                <div class="h6">Ümumi Bal (10-dan)</div>
+                                <div class="score-bar">
+                                    <div class="score-fill" style="width: {{ evaluation.final_score|floatformat:0|add:'0' }}%"></div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                {% if category_scores %}
+                <div class="review-content">
+                    <div class="summary-card">
+                        <h5 class="mb-3">
+                            <i class="fas fa-chart-bar me-2"></i>Kateqoriya üzrə Nəticələr
+                        </h5>
+                        <div class="row">
+                            {% for category, score in category_scores.items %}
+                            <div class="col-md-4 mb-3">
+                                <div class="text-center">
+                                    <h4 class="mb-1">{{ score|floatformat:1 }}</h4>
+                                    <p class="mb-0">{{ category }}</p>
+                                    <div class="score-bar bg-white bg-opacity-25">
+                                        <div class="score-fill bg-white" style="width: {{ score|floatformat:0|add:'0' }}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Detailed Results -->
+                <div class="review-content">
+                    {% for category_data in categories_with_answers %}
+                    <div class="category-section">
+                        <div class="category-header">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-folder-open me-2"></i>{{ category_data.category.ad }}
+                                    </h5>
+                                    {% if category_data.category.tesvir %}
+                                    <small class="text-muted">{{ category_data.category.tesvir }}</small>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    {% if category_data.average_score %}
+                                    <span class="score-display">
+                                        {{ category_data.average_score|floatformat:1 }}/10
+                                    </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        {% for question_data in category_data.questions %}
+                        <div class="question-item">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <h6 class="question-text mb-2">
+                                        <span class="badge bg-primary me-2">{{ forloop.counter }}</span>
+                                        {{ question_data.question.metn }}
+                                    </h6>
+                                    
+                                    {% if question_data.question.tip == 'RATING' %}
+                                        {% if question_data.answer %}
+                                        <div class="mt-2">
+                                            <div class="d-flex align-items-center">
+                                                <span class="me-3">Cavab:</span>
+                                                <span class="score-display">{{ question_data.answer }}/10</span>
+                                            </div>
+                                            <div class="score-bar mt-2">
+                                                <div class="score-fill" style="width: {{ question_data.answer|add:'0' }}%"></div>
+                                            </div>
+                                        </div>
+                                        {% else %}
+                                        <div class="text-muted">
+                                            <i class="fas fa-minus-circle me-1"></i>Cavablanmayıb
+                                        </div>
+                                        {% endif %}
+                                    {% elif question_data.question.tip == 'TEXT' %}
+                                        {% if question_data.answer %}
+                                        <div class="text-answer mt-2">
+                                            "{{ question_data.answer }}"
+                                        </div>
+                                        {% else %}
+                                        <div class="text-muted">
+                                            <i class="fas fa-minus-circle me-1"></i>Cavab verilməyib
+                                        </div>
+                                        {% endif %}
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    {% if question_data.question.tip == 'RATING' and question_data.answer %}
+                                    <div class="text-center">
+                                        {% if question_data.answer >= 8 %}
+                                            <i class="fas fa-smile-beam fa-2x text-success"></i>
+                                            <br><small class="text-success">Mükəmməl</small>
+                                        {% elif question_data.answer >= 6 %}
+                                            <i class="fas fa-smile fa-2x text-warning"></i>
+                                            <br><small class="text-warning">Yaxşı</small>
+                                        {% elif question_data.answer >= 4 %}
+                                            <i class="fas fa-meh fa-2x text-info"></i>
+                                            <br><small class="text-info">Orta</small>
+                                        {% else %}
+                                            <i class="fas fa-frown fa-2x text-danger"></i>
+                                            <br><small class="text-danger">İnkişaf tələb edir</small>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Insights and Action Items -->
+                <div class="review-content">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="insights-card">
+                                <h6 class="text-dark mb-3">
+                                    <i class="fas fa-lightbulb me-2"></i>Güclü Tərəflər
+                                </h6>
+                                <ul class="list-unstyled text-dark">
+                                    {% for category, score in category_scores.items %}
+                                        {% if score >= 7 %}
+                                        <li class="mb-2">
+                                            <i class="fas fa-check-circle text-success me-2"></i>
+                                            {{ category }} - {{ score|floatformat:1 }}/10
+                                        </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="insights-card">
+                                <h6 class="text-dark mb-3">
+                                    <i class="fas fa-chart-line me-2"></i>İnkişaf Sahələri
+                                </h6>
+                                <ul class="list-unstyled text-dark">
+                                    {% for category, score in category_scores.items %}
+                                        {% if score < 6 %}
+                                        <li class="mb-2">
+                                            <i class="fas fa-arrow-up text-warning me-2"></i>
+                                            {{ category }} - {{ score|floatformat:1 }}/10
+                                        </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="review-content">
+                    <div class="d-flex justify-content-between flex-wrap">
+                        <div>
+                            <a href="{% url 'self_review:dashboard' %}" class="btn btn-outline-secondary me-2 mb-2">
+                                <i class="fas fa-arrow-left me-2"></i>Dashboard
+                            </a>
+                            <a href="{% url 'self_review:analytics' %}" class="btn btn-outline-info me-2 mb-2">
+                                <i class="fas fa-chart-line me-2"></i>Analitika
+                            </a>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-outline-primary me-2 mb-2" onclick="downloadPDF()">
+                                <i class="fas fa-file-pdf me-2"></i>PDF Yüklə
+                            </button>
+                            <button type="button" class="btn btn-success mb-2" onclick="createDevelopmentPlan()">
+                                <i class="fas fa-route me-2"></i>İnkişaf Planı Yarat
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison with Previous Reviews -->
+            {% if previous_reviews %}
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-history me-2"></i>Əvvəlki Self-Review-lərlə Müqayisə
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Dövr</th>
+                                            <th>Tarix</th>
+                                            <th>Ümumi Bal</th>
+                                            <th>Trend</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for review in previous_reviews %}
+                                        <tr>
+                                            <td>{{ review.dovr.basliq }}</td>
+                                            <td>{{ review.tamamlanma_tarixi|date:"d.m.Y" }}</td>
+                                            <td>
+                                                <span class="badge bg-primary">{{ review.final_score|floatformat:1 }}/10</span>
+                                            </td>
+                                            <td>
+                                                {% if forloop.counter > 1 %}
+                                                    {% with prev_score=review.final_score current_score=evaluation.final_score %}
+                                                        {% if current_score > prev_score %}
+                                                            <i class="fas fa-arrow-up text-success"></i>
+                                                            <span class="text-success">+{{ current_score|floatformat:1|sub:prev_score|floatformat:1 }}</span>
+                                                        {% elif current_score < prev_score %}
+                                                            <i class="fas fa-arrow-down text-danger"></i>
+                                                            <span class="text-danger">{{ current_score|floatformat:1|sub:prev_score|floatformat:1 }}</span>
+                                                        {% else %}
+                                                            <i class="fas fa-minus text-muted"></i>
+                                                            <span class="text-muted">Dəyişməz</span>
+                                                        {% endif %}
+                                                    {% endwith %}
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function downloadPDF() {
+    // Implement PDF download functionality
+    alert('PDF yükləmə funksiyası tezliklə əlçatan olacaq');
+}
+
+function createDevelopmentPlan() {
+    // Redirect to development plan creation
+    alert('İnkişaf planı yaratma funksiyası tezliklə əlçatan olacaq');
+}
+
+// Animate score bars on page load
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(() => {
+        document.querySelectorAll('.score-fill').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 100);
+        });
+    }, 500);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,361 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .feedback-item {
+        border-left: 4px solid #e9ecef;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .feedback-item:hover {
+        background-color: #f8f9fa;
+        transform: translateX(5px);
+    }
+    .feedback-item.unread {
+        border-left-color: #28a745;
+        background-color: #f8fff9;
+    }
+    .feedback-item.positive { border-left-color: #28a745; }
+    .feedback-item.constructive { border-left-color: #ffc107; }
+    .feedback-item.neutral { border-left-color: #6c757d; }
+    .filter-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+    }
+    .pagination-wrapper {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'quick_feedback:dashboard' %}">Quick Feedback</a>
+                            </li>
+                            <li class="breadcrumb-item active">{{ page_title }}</li>
+                        </ol>
+                    </nav>
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-inbox me-2"></i>{{ page_title }}
+                    </h1>
+                </div>
+                <div>
+                    <a href="{% url 'quick_feedback:send' %}" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-2"></i>Yeni Geri Bildirim
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <!-- Filters -->
+        <div class="col-12">
+            <div class="card filter-card">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label small">Kateqoriya</label>
+                            <select name="category" class="form-select">
+                                <option value="">Bütün Kateqoriyalar</option>
+                                {% for category in categories %}
+                                <option value="{{ category.id }}" {% if current_category == category.id %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Növ</label>
+                            <select name="type" class="form-select">
+                                <option value="">Bütün Növlər</option>
+                                <option value="POSITIVE" {% if current_type == 'POSITIVE' %}selected{% endif %}>Müsbət</option>
+                                <option value="CONSTRUCTIVE" {% if current_type == 'CONSTRUCTIVE' %}selected{% endif %}>Konstruktiv</option>
+                                <option value="NEUTRAL" {% if current_type == 'NEUTRAL' %}selected{% endif %}>Neytral</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">Status</label>
+                            <select name="is_read" class="form-select">
+                                <option value="">Hamısı</option>
+                                <option value="unread" {% if current_is_read == 'unread' %}selected{% endif %}>Oxunmamış</option>
+                                <option value="read" {% if current_is_read == 'read' %}selected{% endif %}>Oxunmuş</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-light me-2">
+                                <i class="fas fa-filter me-1"></i>Filtrələ
+                            </button>
+                            <a href="{% url 'quick_feedback:inbox' %}" class="btn btn-outline-light">
+                                <i class="fas fa-times me-1"></i>Təmizlə
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        Geri Bildirimlər 
+                        {% if page_obj.paginator.count %}
+                            <span class="badge bg-primary">{{ page_obj.paginator.count }}</span>
+                        {% endif %}
+                    </h5>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="markAllAsRead()">
+                            <i class="fas fa-check-double me-1"></i>Hamısını Oxunmuş Et
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    {% if page_obj.object_list %}
+                        {% for feedback in page_obj.object_list %}
+                        <div class="feedback-item p-3 border-bottom {{ feedback.feedback_type.lower }} {% if not feedback.is_read %}unread{% endif %}"
+                             onclick="viewFeedback({{ feedback.id }})">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            {% if feedback.category %}
+                                                <i class="{{ feedback.category.icon }} fa-lg text-primary"></i>
+                                            {% else %}
+                                                <i class="fas fa-comment fa-lg text-muted"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">
+                                                {{ feedback.title }}
+                                                {% if not feedback.is_read %}
+                                                    <span class="badge bg-success ms-2">Yeni</span>
+                                                {% endif %}
+                                            </h6>
+                                            <p class="text-muted small mb-1">
+                                                {% if feedback.is_anonymous %}
+                                                    <i class="fas fa-user-secret me-1"></i>Anonim İşçi
+                                                {% else %}
+                                                    <i class="fas fa-user me-1"></i>{{ feedback.from_user.get_full_name }}
+                                                {% endif %}
+                                                {% if feedback.category %}
+                                                    <span class="mx-2">•</span>
+                                                    <i class="fas fa-tag me-1"></i>{{ feedback.category.name }}
+                                                {% endif %}
+                                            </p>
+                                            <div class="text-truncate">
+                                                {{ feedback.message|truncatechars:100 }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <div class="mb-2">
+                                        <span class="badge badge-{{ feedback.feedback_type.lower }}">
+                                            {{ feedback.get_feedback_type_display }}
+                                        </span>
+                                        <span class="badge bg-secondary">
+                                            {{ feedback.get_priority_display }}
+                                        </span>
+                                    </div>
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>{{ feedback.created_at|date:"d.m.Y H:i" }}
+                                    </small>
+                                    <div class="mt-2">
+                                        <button class="btn btn-sm btn-outline-primary me-1" onclick="event.stopPropagation(); viewFeedback({{ feedback.id }})">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-success me-1" onclick="event.stopPropagation(); markAsRead({{ feedback.id }})" {% if feedback.is_read %}style="display:none"{% endif %}>
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); archiveFeedback({{ feedback.id }})">
+                                            <i class="fas fa-archive"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                            <h5 class="text-muted">Geri bildirim tapılmadı</h5>
+                            <p class="text-muted">Filtrlənmiş nəticələrə görə geri bildirim yoxdur.</p>
+                            <a href="{% url 'quick_feedback:inbox' %}" class="btn btn-outline-primary">
+                                Bütün Geri Bildirimlər
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="pagination-wrapper p-3">
+                <nav aria-label="Səhifələmə">
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.is_read %}&is_read={{ request.GET.is_read }}{% endif %}">İlk</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.is_read %}&is_read={{ request.GET.is_read }}{% endif %}">Əvvəlki</a>
+                            </li>
+                        {% endif %}
+
+                        <li class="page-item active">
+                            <span class="page-link">
+                                {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                            </span>
+                        </li>
+
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.is_read %}&is_read={{ request.GET.is_read }}{% endif %}">Sonrakı</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}{% if request.GET.is_read %}&is_read={{ request.GET.is_read }}{% endif %}">Son</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.badge-positive { background-color: #28a745; }
+.badge-constructive { background-color: #ffc107; color: #212529; }
+.badge-neutral { background-color: #6c757d; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function viewFeedback(feedbackId) {
+    window.location.href = `/quick-feedback/${feedbackId}/`;
+}
+
+function markAsRead(feedbackId) {
+    fetch(`/quick-feedback/${feedbackId}/mark-read/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Remove unread styling
+            const feedbackItem = document.querySelector(`[onclick*="${feedbackId}"]`);
+            feedbackItem.classList.remove('unread');
+            
+            // Hide mark as read button
+            const markReadBtn = feedbackItem.querySelector('.btn-outline-success');
+            if (markReadBtn) markReadBtn.style.display = 'none';
+            
+            // Remove "Yeni" badge
+            const newBadge = feedbackItem.querySelector('.badge.bg-success');
+            if (newBadge) newBadge.remove();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Xəta baş verdi');
+    });
+}
+
+function archiveFeedback(feedbackId) {
+    if (!confirm('Bu geri bildirimi arxivləşdirmək istədiyinizə əminsiniz?')) {
+        return;
+    }
+    
+    fetch(`/quick-feedback/${feedbackId}/archive/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Remove feedback item from list
+            const feedbackItem = document.querySelector(`[onclick*="${feedbackId}"]`);
+            feedbackItem.style.transition = 'all 0.3s ease';
+            feedbackItem.style.opacity = '0';
+            feedbackItem.style.transform = 'translateX(-100%)';
+            
+            setTimeout(() => {
+                feedbackItem.remove();
+                
+                // Check if no more items
+                const remainingItems = document.querySelectorAll('.feedback-item');
+                if (remainingItems.length === 0) {
+                    location.reload();
+                }
+            }, 300);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Xəta baş verdi');
+    });
+}
+
+function markAllAsRead() {
+    const unreadItems = document.querySelectorAll('.feedback-item.unread');
+    if (unreadItems.length === 0) {
+        alert('Oxunmamış geri bildirim yoxdur');
+        return;
+    }
+    
+    if (!confirm(`${unreadItems.length} oxunmamış geri bildirimi oxunmuş kimi işarələmək istəyirsiniz?`)) {
+        return;
+    }
+    
+    unreadItems.forEach(item => {
+        const feedbackId = item.getAttribute('onclick').match(/\d+/)[0];
+        markAsRead(feedbackId);
+    });
+}
+
+// Get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,324 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .feedback-item {
+        border-left: 4px solid #e9ecef;
+        transition: all 0.3s ease;
+        border-radius: 0 8px 8px 0;
+    }
+    .feedback-item:hover {
+        background-color: #f8f9fa;
+        transform: translateX(5px);
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .feedback-item.positive { border-left-color: #28a745; }
+    .feedback-item.constructive { border-left-color: #ffc107; }
+    .feedback-item.neutral { border-left-color: #6c757d; }
+    .filter-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+    }
+    .stats-row {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="{% url 'quick_feedback:dashboard' %}">Quick Feedback</a>
+                            </li>
+                            <li class="breadcrumb-item active">{{ page_title }}</li>
+                        </ol>
+                    </nav>
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-paper-plane me-2"></i>{{ page_title }}
+                    </h1>
+                </div>
+                <div>
+                    <a href="{% url 'quick_feedback:send' %}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Yeni Geri Bildirim
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="stats-row">
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <h4 class="mb-0">{{ page_obj.paginator.count }}</h4>
+                        <small>Ümumi Göndərilən</small>
+                    </div>
+                    <div class="col-md-3">
+                        <h4 class="mb-0">{{ page_obj.paginator.count|add:"-10" }}</h4>
+                        <small>Bu Ay</small>
+                    </div>
+                    <div class="col-md-3">
+                        <h4 class="mb-0">{{ page_obj.paginator.count|add:"-20" }}</h4>
+                        <small>Bu Həftə</small>
+                    </div>
+                    <div class="col-md-3">
+                        <h4 class="mb-0">{{ page_obj.paginator.count|add:"-25" }}</h4>
+                        <small>Bu Gün</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card filter-card">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label small">Kateqoriya</label>
+                            <select name="category" class="form-select">
+                                <option value="">Bütün Kateqoriyalar</option>
+                                {% for category in categories %}
+                                <option value="{{ category.id }}" {% if current_category == category.id %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small">Növ</label>
+                            <select name="type" class="form-select">
+                                <option value="">Bütün Növlər</option>
+                                <option value="POSITIVE" {% if current_type == 'POSITIVE' %}selected{% endif %}>Müsbət</option>
+                                <option value="CONSTRUCTIVE" {% if current_type == 'CONSTRUCTIVE' %}selected{% endif %}>Konstruktiv</option>
+                                <option value="NEUTRAL" {% if current_type == 'NEUTRAL' %}selected{% endif %}>Neytral</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-light me-2">
+                                <i class="fas fa-filter me-1"></i>Filtrələ
+                            </button>
+                            <a href="{% url 'quick_feedback:sent' %}" class="btn btn-outline-light">
+                                <i class="fas fa-times me-1"></i>Təmizlə
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback List -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        Göndərilən Geri Bildirimlər
+                        {% if page_obj.paginator.count %}
+                            <span class="badge bg-primary">{{ page_obj.paginator.count }}</span>
+                        {% endif %}
+                    </h5>
+                    <div class="btn-group" role="group">
+                        <a href="{% url 'quick_feedback:analytics' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-chart-line me-1"></i>Analitika
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    {% if page_obj.object_list %}
+                        {% for feedback in page_obj.object_list %}
+                        <div class="feedback-item p-3 border-bottom {{ feedback.feedback_type.lower }}">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <div class="d-flex align-items-start">
+                                        <div class="me-3">
+                                            {% if feedback.category %}
+                                                <i class="{{ feedback.category.icon }} fa-lg text-primary"></i>
+                                            {% else %}
+                                                <i class="fas fa-comment fa-lg text-muted"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">{{ feedback.title }}</h6>
+                                            <p class="text-muted small mb-1">
+                                                <i class="fas fa-user me-1"></i>{{ feedback.to_user.get_full_name }}
+                                                {% if feedback.category %}
+                                                    <span class="mx-2">•</span>
+                                                    <i class="fas fa-tag me-1"></i>{{ feedback.category.name }}
+                                                {% endif %}
+                                                {% if feedback.is_anonymous %}
+                                                    <span class="mx-2">•</span>
+                                                    <i class="fas fa-user-secret me-1"></i>Anonim
+                                                {% endif %}
+                                            </p>
+                                            <div class="text-truncate">
+                                                {{ feedback.message|truncatechars:120 }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <div class="mb-2">
+                                        <span class="badge badge-{{ feedback.feedback_type.lower }}">
+                                            {{ feedback.get_feedback_type_display }}
+                                        </span>
+                                        <span class="badge bg-secondary">
+                                            {{ feedback.get_priority_display }}
+                                        </span>
+                                    </div>
+                                    {% if feedback.rating %}
+                                    <div class="mb-2">
+                                        <div class="rating-display">
+                                            {% for i in "12345" %}
+                                                <span class="star text-warning {% if forloop.counter <= feedback.rating %}active{% else %}text-muted{% endif %}">★</span>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    <small class="text-muted">
+                                        <i class="fas fa-clock me-1"></i>{{ feedback.created_at|date:"d.m.Y H:i" }}
+                                    </small>
+                                    <div class="mt-2">
+                                        {% if feedback.is_read %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>Oxunub
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock me-1"></i>Gözləyir
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-paper-plane fa-4x text-muted mb-3"></i>
+                            <h5 class="text-muted">Göndərilən geri bildirim yoxdur</h5>
+                            {% if current_category or current_type %}
+                                <p class="text-muted">Filtrlənmiş nəticələrə görə geri bildirim tapılmadı.</p>
+                                <a href="{% url 'quick_feedback:sent' %}" class="btn btn-outline-primary me-2">
+                                    Bütün Geri Bildirimlər
+                                </a>
+                            {% else %}
+                                <p class="text-muted">İlk geri bildiriminizi göndərin və əməkdaşlığınızı gücləndirin.</p>
+                            {% endif %}
+                            <a href="{% url 'quick_feedback:send' %}" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>İlk Geri Bildirimi Göndər
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <nav aria-label="Səhifələmə">
+                        <ul class="pagination justify-content-center mb-0">
+                            {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}">İlk</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}">Əvvəlki</a>
+                                </li>
+                            {% endif %}
+
+                            <li class="page-item active">
+                                <span class="page-link">
+                                    {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                                </span>
+                            </li>
+
+                            {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}">Sonrakı</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}">Son</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Quick Tips -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h6 class="card-title">
+                        <i class="fas fa-lightbulb text-warning me-2"></i>Məsləhətlər
+                    </h6>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-check-circle text-success me-2 mt-1"></i>
+                                <small>Müsbət geri bildirimlər motivasiyani artırır</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-lightbulb text-warning me-2 mt-1"></i>
+                                <small>Konstruktiv təkliflər inkişafa kömək edir</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-start">
+                                <i class="fas fa-clock text-info me-2 mt-1"></i>
+                                <small>Vaxtında verilən geri bildirim daha təsirlidir</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.badge-positive { background-color: #28a745; }
+.badge-constructive { background-color: #ffc107; color: #212529; }
+.badge-neutral { background-color: #6c757d; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Auto-refresh stats every 5 minutes
+setInterval(function() {
+    // You can add AJAX call here to refresh stats if needed
+}, 300000);
+</script>
+{% endblock %}

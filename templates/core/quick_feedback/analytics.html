@@ -1,0 +1,392 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .analytics-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        border: none;
+        overflow: hidden;
+    }
+    .stats-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem;
+    }
+    .chart-container {
+        position: relative;
+        height: 300px;
+        padding: 1rem;
+    }
+    .stat-item {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease;
+    }
+    .stat-item:hover {
+        transform: translateY(-5px);
+    }
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    .category-bar {
+        height: 8px;
+        border-radius: 4px;
+        background: #e9ecef;
+        margin: 0.5rem 0;
+        overflow: hidden;
+    }
+    .category-progress {
+        height: 100%;
+        background: linear-gradient(90deg, #28a745, #20c997);
+        transition: width 0.8s ease;
+    }
+    .trend-up { color: #28a745; }
+    .trend-down { color: #dc3545; }
+    .trend-stable { color: #6c757d; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header mb-4">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'quick_feedback:dashboard' %}">Quick Feedback</a>
+                        </li>
+                        <li class="breadcrumb-item active">{{ page_title }}</li>
+                    </ol>
+                </nav>
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-chart-line me-2"></i>{{ page_title }}
+                </h1>
+                <p class="text-muted mt-1">Son 6 ay ərzində geri bildirim analitikanız</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-item text-center">
+                <div class="stat-number text-primary">{{ received_stats.total }}</div>
+                <h6 class="text-muted">Ümumi Alınan</h6>
+                <small class="text-success">
+                    <i class="fas fa-arrow-up me-1"></i>{{ received_stats.last_6_months }} son 6 ay
+                </small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-item text-center">
+                <div class="stat-number text-success">{{ given_stats.total }}</div>
+                <h6 class="text-muted">Ümumi Verilən</h6>
+                <small class="text-info">
+                    <i class="fas fa-arrow-up me-1"></i>{{ given_stats.last_6_months }} son 6 ay
+                </small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-item text-center">
+                <div class="stat-number text-warning">{{ received_stats.by_type|length }}</div>
+                <h6 class="text-muted">Fərqli Növ</h6>
+                <small class="text-muted">Qəbul edilən növlər</small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-item text-center">
+                <div class="stat-number text-info">{{ received_stats.by_category|length }}</div>
+                <h6 class="text-muted">Kateqoriya</h6>
+                <small class="text-muted">Fəal kateqoriyalar</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Monthly Trend Chart -->
+        <div class="col-lg-8 mb-4">
+            <div class="analytics-card">
+                <div class="stats-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Aylıq Trend
+                    </h5>
+                    <small>Son 6 ay ərzində alınan və verilən geri bildirimlər</small>
+                </div>
+                <div class="chart-container">
+                    <canvas id="monthlyTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Type Distribution -->
+        <div class="col-lg-4 mb-4">
+            <div class="analytics-card">
+                <div class="stats-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>Növ Paylanması
+                    </h5>
+                    <small>Alınan geri bildirimlər növünə görə</small>
+                </div>
+                <div class="chart-container">
+                    <canvas id="typeDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Top Categories -->
+        <div class="col-lg-6 mb-4">
+            <div class="analytics-card">
+                <div class="stats-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tags me-2"></i>Ən Çox İstifadə Olunan Kateqoriyalar
+                    </h5>
+                    <small>Alınan geri bildirimlər üzrə</small>
+                </div>
+                <div class="card-body">
+                    {% for category in received_stats.by_category %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-1">{{ category.category__name }}</h6>
+                            <span class="badge bg-primary">{{ category.count }}</span>
+                        </div>
+                        <div class="category-bar">
+                            <div class="category-progress" style="width: {% widthratio category.count received_stats.total 100 %}%"></div>
+                        </div>
+                        <small class="text-muted">
+                            {% widthratio category.count received_stats.total 100 %}% bütün geri bildirimlərindən
+                        </small>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-chart-bar fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">Kateqoriyaya görə məlumat yoxdur</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Insights -->
+        <div class="col-lg-6 mb-4">
+            <div class="analytics-card">
+                <div class="stats-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>Performans Təhlili
+                    </h5>
+                    <small>Geri bildirim fəaliyyət ümumiləşdirməsi</small>
+                </div>
+                <div class="card-body">
+                    <!-- Feedback Activity Score -->
+                    <div class="mb-4">
+                        <h6>Geri Bildirim Aktivlik Hesabı</h6>
+                        <div class="progress mb-2" style="height: 10px;">
+                            {% with activity_score=received_stats.total|add:given_stats.total %}
+                            <div class="progress-bar bg-success" style="width: {% if activity_score > 50 %}100{% else %}{% widthratio activity_score 50 100 %}{% endif %}%"></div>
+                            {% endwith %}
+                        </div>
+                        <small class="text-muted">
+                            {% with activity_score=received_stats.total|add:given_stats.total %}
+                                {% if activity_score > 50 %}
+                                    Çox Aktiv - Mükəmməl geri bildirim fəaliyyəti!
+                                {% elif activity_score > 20 %}
+                                    Orta Aktiv - Yaxşı geri bildirim alışverişi
+                                {% else %}
+                                    Az Aktiv - Daha çox geri bildirim verib almağı düşünün
+                                {% endif %}
+                            {% endwith %}
+                        </small>
+                    </div>
+
+                    <!-- Insights -->
+                    <div>
+                        <h6>Məsləhətlər</h6>
+                        <ul class="list-unstyled">
+                            {% if received_stats.total > given_stats.total %}
+                            <li class="mb-2">
+                                <i class="fas fa-arrow-up text-success me-2"></i>
+                                <small>Çox geri bildirim alırsınız - bu əladır!</small>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-paper-plane text-info me-2"></i>
+                                <small>Daha çox geri bildirim verməyi düşünün</small>
+                            </li>
+                            {% elif given_stats.total > received_stats.total %}
+                            <li class="mb-2">
+                                <i class="fas fa-heart text-danger me-2"></i>
+                                <small>Aktiv geri bildirim vericisiniz!</small>
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-handshake text-warning me-2"></i>
+                                <small>Başqalarından daha çox geri bildirim istəyin</small>
+                            </li>
+                            {% else %}
+                            <li class="mb-2">
+                                <i class="fas fa-balance-scale text-success me-2"></i>
+                                <small>Balanslaşdırılmış geri bildirim alışverişi</small>
+                            </li>
+                            {% endif %}
+                            <li class="mb-2">
+                                <i class="fas fa-calendar text-primary me-2"></i>
+                                <small>Müntəzəm geri bildirim vermək daha təsirlidir</small>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Cards -->
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-paper-plane fa-2x mb-3"></i>
+                    <h6>Yeni Geri Bildirim</h6>
+                    <p class="small">Komanda üzvlərinə geri bildirim göndərin</p>
+                    <a href="{% url 'quick_feedback:send' %}" class="btn btn-light btn-sm">
+                        Göndər
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-inbox fa-2x mb-3"></i>
+                    <h6>Gələn Qutusu</h6>
+                    <p class="small">Alınan geri bildirimlərə baxın</p>
+                    <a href="{% url 'quick_feedback:inbox' %}" class="btn btn-light btn-sm">
+                        Bax
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-chart-line fa-2x mb-3"></i>
+                    <h6>Performans Trendi</h6>
+                    <p class="small">Ümumi performans təhlilini görün</p>
+                    <a href="{% url 'performance_trends:dashboard' %}" class="btn btn-light btn-sm">
+                        Bax
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Monthly Trend Chart
+    const monthlyCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+    const monthlyTrendData = {{ monthly_trend|safe }};
+    
+    new Chart(monthlyCtx, {
+        type: 'line',
+        data: {
+            labels: monthlyTrendData.labels,
+            datasets: [
+                {
+                    label: 'Alınan',
+                    data: monthlyTrendData.received,
+                    borderColor: '#28a745',
+                    backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                },
+                {
+                    label: 'Verilən',
+                    data: monthlyTrendData.given,
+                    borderColor: '#007bff',
+                    backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+
+    // Type Distribution Chart
+    const typeCtx = document.getElementById('typeDistributionChart').getContext('2d');
+    const receivedByType = [
+        {% for type in received_stats.by_type %}
+            {{ type.count }}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    const typeLabels = [
+        {% for type in received_stats.by_type %}
+            '{% if type.feedback_type == "POSITIVE" %}Müsbət{% elif type.feedback_type == "CONSTRUCTIVE" %}Konstruktiv{% else %}Neytral{% endif %}'{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    new Chart(typeCtx, {
+        type: 'doughnut',
+        data: {
+            labels: typeLabels,
+            datasets: [{
+                data: receivedByType,
+                backgroundColor: [
+                    '#28a745',  // Positive - Green
+                    '#ffc107',  // Constructive - Yellow
+                    '#6c757d'   // Neutral - Gray
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Animate progress bars
+    setTimeout(() => {
+        document.querySelectorAll('.category-progress').forEach(bar => {
+            bar.style.width = bar.getAttribute('style').split('width: ')[1];
+        });
+    }, 500);
+});
+</script>
+{% endblock %}

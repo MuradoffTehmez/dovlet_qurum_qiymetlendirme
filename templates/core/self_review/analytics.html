@@ -1,0 +1,467 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .analytics-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        border: none;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+    .analytics-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem;
+    }
+    .chart-container {
+        position: relative;
+        height: 300px;
+        padding: 1rem;
+    }
+    .stat-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    .trend-indicator {
+        font-size: 1.2rem;
+        margin-left: 0.5rem;
+    }
+    .trend-up { color: #28a745; }
+    .trend-down { color: #dc3545; }
+    .trend-stable { color: #6c757d; }
+    .category-performance {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    .performance-bar {
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+        margin: 0.5rem 0;
+    }
+    .performance-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #28a745, #20c997);
+        transition: width 0.8s ease;
+    }
+    .insights-card {
+        background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        border-radius: 15px;
+        padding: 1.5rem;
+        color: #495057;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header mb-4">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'self_review:dashboard' %}">Self-Review</a>
+                        </li>
+                        <li class="breadcrumb-item active">{{ page_title }}</li>
+                    </ol>
+                </nav>
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-chart-line me-2"></i>{{ page_title }}
+                </h1>
+                <p class="text-muted mt-1">Self-review performansınızın detaylı analizi</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-number text-primary">{{ total_reviews }}</div>
+                <h6 class="text-muted">Ümumi Self-Review</h6>
+                {% if review_trend %}
+                <small class="text-muted">
+                    {% if review_trend > 0 %}
+                        <span class="trend-up">
+                            <i class="fas fa-arrow-up trend-indicator"></i>{{ review_trend }}
+                        </span>
+                    {% elif review_trend < 0 %}
+                        <span class="trend-down">
+                            <i class="fas fa-arrow-down trend-indicator"></i>{{ review_trend }}
+                        </span>
+                    {% else %}
+                        <span class="trend-stable">
+                            <i class="fas fa-minus trend-indicator"></i>Stabil
+                        </span>
+                    {% endif %}
+                    son dövrə nisbətən
+                </small>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-number text-success">{{ average_score|floatformat:1 }}</div>
+                <h6 class="text-muted">Orta Bal</h6>
+                {% if score_trend %}
+                <small class="text-muted">
+                    {% if score_trend > 0 %}
+                        <span class="trend-up">
+                            <i class="fas fa-arrow-up trend-indicator"></i>+{{ score_trend|floatformat:1 }}
+                        </span>
+                    {% elif score_trend < 0 %}
+                        <span class="trend-down">
+                            <i class="fas fa-arrow-down trend-indicator"></i>{{ score_trend|floatformat:1 }}
+                        </span>
+                    {% else %}
+                        <span class="trend-stable">
+                            <i class="fas fa-minus trend-indicator"></i>Stabil
+                        </span>
+                    {% endif %}
+                    son dövrə nisbətən
+                </small>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-number text-info">{{ completion_rate|floatformat:0 }}%</div>
+                <h6 class="text-muted">Tamamlanma Faizi</h6>
+                <small class="text-muted">
+                    {% if completion_rate >= 90 %}
+                        <span class="text-success">Mükəmməl</span>
+                    {% elif completion_rate >= 70 %}
+                        <span class="text-warning">Yaxşı</span>
+                    {% else %}
+                        <span class="text-danger">İnkişaf tələb edir</span>
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="stat-number text-warning">{{ strongest_category_score|floatformat:1 }}</div>
+                <h6 class="text-muted">Ən Güclü Sahə</h6>
+                <small class="text-muted">{{ strongest_category }}</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Performance Trend Chart -->
+        <div class="col-lg-8 mb-4">
+            <div class="analytics-card">
+                <div class="analytics-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Performans Trendi
+                    </h5>
+                    <small>Son self-review-lərdə ümumi performans dəyişikliyi</small>
+                </div>
+                <div class="chart-container">
+                    <canvas id="performanceTrendChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Breakdown -->
+        <div class="col-lg-4 mb-4">
+            <div class="analytics-card">
+                <div class="analytics-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>Kateqoriya Paylanması
+                    </h5>
+                    <small>Ən son self-review-dəki nəticələr</small>
+                </div>
+                <div class="chart-container">
+                    <canvas id="categoryBreakdownChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Category Performance Details -->
+        <div class="col-lg-8 mb-4">
+            <div class="analytics-card">
+                <div class="analytics-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bars me-2"></i>Kateqoriya üzrə Performans
+                    </h5>
+                    <small>Hər kateqoriyada orta performansınız</small>
+                </div>
+                <div class="card-body">
+                    {% for category_data in category_performance %}
+                    <div class="category-performance">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-1">{{ category_data.category }}</h6>
+                            <span class="badge bg-primary">{{ category_data.average_score|floatformat:1 }}/10</span>
+                        </div>
+                        <div class="performance-bar">
+                            <div class="performance-fill" style="width: {{ category_data.average_score|floatformat:0|add:'0' }}%"></div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <small class="text-muted">{{ category_data.question_count }} sual</small>
+                            <small class="text-muted">
+                                {% if category_data.trend > 0 %}
+                                    <i class="fas fa-arrow-up text-success"></i> +{{ category_data.trend|floatformat:1 }}
+                                {% elif category_data.trend < 0 %}
+                                    <i class="fas fa-arrow-down text-danger"></i> {{ category_data.trend|floatformat:1 }}
+                                {% else %}
+                                    <i class="fas fa-minus text-muted"></i> Stabil
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Insights and Recommendations -->
+        <div class="col-lg-4 mb-4">
+            <div class="insights-card mb-3">
+                <h6 class="mb-3">
+                    <i class="fas fa-lightbulb me-2"></i>Performans Təhlili
+                </h6>
+                <ul class="list-unstyled">
+                    {% if average_score >= 8 %}
+                    <li class="mb-2">
+                        <i class="fas fa-star text-warning me-2"></i>
+                        <strong>Mükəmməl performans!</strong> Yüksək standartlarınızı saxlayın.
+                    </li>
+                    {% elif average_score >= 7 %}
+                    <li class="mb-2">
+                        <i class="fas fa-thumbs-up text-success me-2"></i>
+                        <strong>Yaxşı performans.</strong> Bəzi sahələrdə təkmilləşdirmə imkanları var.
+                    </li>
+                    {% elif average_score >= 5 %}
+                    <li class="mb-2">
+                        <i class="fas fa-chart-line text-info me-2"></i>
+                        <strong>Orta performans.</strong> İnkişaf üçün ciddi planlaşdırma tələb olunur.
+                    </li>
+                    {% else %}
+                    <li class="mb-2">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                        <strong>İnkişaf tələb edir.</strong> Fokuslanmış təkmilləşdirmə strategiyası lazımdır.
+                    </li>
+                    {% endif %}
+
+                    {% if improvement_areas %}
+                    <li class="mb-2">
+                        <i class="fas fa-target text-primary me-2"></i>
+                        Ən çox diqqət tələb edən sahə: <strong>{{ improvement_areas.0 }}</strong>
+                    </li>
+                    {% endif %}
+
+                    {% if strength_areas %}
+                    <li class="mb-2">
+                        <i class="fas fa-medal text-success me-2"></i>
+                        Ən güclü sahəniz: <strong>{{ strength_areas.0 }}</strong>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <div class="insights-card">
+                <h6 class="mb-3">
+                    <i class="fas fa-route me-2"></i>Təkmilləşdirmə Təklifləri
+                </h6>
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-check-circle text-success me-2"></i>
+                        Müntəzəm self-reflection təcrübələri həyata keçirin
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-users text-info me-2"></i>
+                        Komanda üzvlərindən geri bildirim istəyin
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-book text-primary me-2"></i>
+                        Zəif sahələr üçün təlim proqramlarına qatılın
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-calendar text-warning me-2"></i>
+                        Hər dövr üçün spesifik hədəflər müəyyən edin
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Items -->
+    <div class="row">
+        <div class="col-12">
+            <div class="analytics-card">
+                <div class="analytics-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-tasks me-2"></i>Təkmilləşdirmə Hədəfləri
+                    </h5>
+                    <small>Self-review nəticələrinə əsasən tövsiyə edilən addımlar</small>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for area in improvement_areas %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-warning">
+                                <div class="card-body">
+                                    <h6 class="card-title text-warning">
+                                        <i class="fas fa-arrow-up me-2"></i>{{ area }}
+                                    </h6>
+                                    <p class="card-text small">
+                                        Bu sahədə performansınızı artırmaq üçün spesifik hədəflər təyin edin və müntəzəm olaraq nəticələri ölçün.
+                                    </p>
+                                    <button class="btn btn-outline-warning btn-sm">
+                                        <i class="fas fa-plus me-1"></i>Hədəf Əlavə Et
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        {% for area in strength_areas %}
+                        <div class="col-md-6 mb-3">
+                            <div class="card border-success">
+                                <div class="card-body">
+                                    <h6 class="card-title text-success">
+                                        <i class="fas fa-star me-2"></i>{{ area }}
+                                    </h6>
+                                    <p class="card-text small">
+                                        Bu güclü sahənizi mentor rolunda digər komanda üzvlərinə kömək etmək üçün istifadə edin.
+                                    </p>
+                                    <button class="btn btn-outline-success btn-sm">
+                                        <i class="fas fa-share me-1"></i>Bilikləri Paylaş
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Performance Trend Chart
+    const trendCtx = document.getElementById('performanceTrendChart').getContext('2d');
+    const trendData = {{ performance_trend_data|safe }};
+    
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: trendData.labels,
+            datasets: [{
+                label: 'Ümumi Bal',
+                data: trendData.scores,
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: '#667eea',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 10,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            elements: {
+                point: {
+                    hoverRadius: 8
+                }
+            }
+        }
+    });
+
+    // Category Breakdown Chart  
+    const categoryCtx = document.getElementById('categoryBreakdownChart').getContext('2d');
+    const categoryData = {{ category_breakdown_data|safe }};
+    
+    new Chart(categoryCtx, {
+        type: 'doughnut',
+        data: {
+            labels: categoryData.labels,
+            datasets: [{
+                data: categoryData.scores,
+                backgroundColor: [
+                    '#667eea',
+                    '#764ba2', 
+                    '#f093fb',
+                    '#f5576c',
+                    '#4facfe',
+                    '#00f2fe'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20,
+                        usePointStyle: true
+                    }
+                }
+            }
+        }
+    });
+
+    // Animate performance bars
+    setTimeout(() => {
+        document.querySelectorAll('.performance-fill').forEach(bar => {
+            const width = bar.style.width;
+            bar.style.width = '0%';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 100);
+        });
+    }, 500);
+});
+</script>
+{% endblock %}

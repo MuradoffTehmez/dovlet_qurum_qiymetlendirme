@@ -1,0 +1,386 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    .user-select-card {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .user-select-card:hover, .user-select-card.selected {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+    .category-card {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        text-align: center;
+    }
+    .category-card:hover, .category-card.selected {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+    .rating-stars {
+        font-size: 1.5rem;
+        color: #ffc107;
+    }
+    .rating-stars .star {
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+    .rating-stars .star:hover,
+    .rating-stars .star.active {
+        color: #ffb400;
+    }
+    .feedback-type-radio {
+        display: none;
+    }
+    .feedback-type-label {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 15px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    .feedback-type-radio:checked + .feedback-type-label {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+    .priority-radio {
+        display: none;
+    }
+    .priority-label {
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+    }
+    .priority-radio:checked + .priority-label {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="page-header mb-4">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            <a href="{% url 'quick_feedback:dashboard' %}">Quick Feedback</a>
+                        </li>
+                        <li class="breadcrumb-item active">{{ page_title }}</li>
+                    </ol>
+                </nav>
+                <h1 class="h3 mb-0">
+                    <i class="fas fa-paper-plane me-2"></i>{{ page_title }}
+                </h1>
+                <p class="text-muted mt-1">Sürətli və səmərəli geri bildirim göndərin</p>
+            </div>
+
+            <div class="form-container p-4">
+                <form method="post" id="feedbackForm">
+                    {% csrf_token %}
+                    
+                    <!-- İstifadəçi seçimi -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-user me-2"></i>Kimə göndərilir? *
+                        </label>
+                        <div class="row" id="userSelection">
+                            {% for user in users %}
+                            <div class="col-md-6 mb-3">
+                                <div class="user-select-card p-3" onclick="selectUser({{ user.id }}, '{{ user.get_full_name }}')">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <i class="fas fa-user-circle fa-2x text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0">{{ user.get_full_name }}</h6>
+                                            <small class="text-muted">
+                                                {% if user.organization_unit %}
+                                                    {{ user.organization_unit.name }}
+                                                {% endif %}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" name="to_user" id="selectedUser" required>
+                        <div class="mt-2">
+                            <input type="text" class="form-control" placeholder="İstifadəçi axtarın..." id="userSearch" onkeyup="searchUsers()">
+                        </div>
+                    </div>
+
+                    <!-- Kateqoriya seçimi -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-tags me-2"></i>Kateqoriya
+                        </label>
+                        <div class="row">
+                            {% for category in categories %}
+                            <div class="col-md-4 mb-3">
+                                <div class="category-card p-3" onclick="selectCategory({{ category.id }})">
+                                    <i class="{{ category.icon }} fa-2x text-primary mb-2"></i>
+                                    <h6 class="mb-1">{{ category.name }}</h6>
+                                    <small class="text-muted">{{ category.description }}</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" name="category" id="selectedCategory">
+                    </div>
+
+                    <!-- Geri bildirim növü -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-comment-alt me-2"></i>Geri Bildirim Növü *
+                        </label>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <input type="radio" name="feedback_type" value="POSITIVE" id="type_positive" class="feedback-type-radio" checked>
+                                <label for="type_positive" class="feedback-type-label w-100">
+                                    <i class="fas fa-thumbs-up text-success fa-2x mb-2"></i>
+                                    <h6>Müsbət</h6>
+                                    <small class="text-muted">Təşviq və dəstək</small>
+                                </label>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="radio" name="feedback_type" value="CONSTRUCTIVE" id="type_constructive" class="feedback-type-radio">
+                                <label for="type_constructive" class="feedback-type-label w-100">
+                                    <i class="fas fa-lightbulb text-warning fa-2x mb-2"></i>
+                                    <h6>Konstruktiv</h6>
+                                    <small class="text-muted">İnkişaf təklifi</small>
+                                </label>
+                            </div>
+                            <div class="col-md-4">
+                                <input type="radio" name="feedback_type" value="NEUTRAL" id="type_neutral" class="feedback-type-radio">
+                                <label for="type_neutral" class="feedback-type-label w-100">
+                                    <i class="fas fa-info-circle text-info fa-2x mb-2"></i>
+                                    <h6>Neytral</h6>
+                                    <small class="text-muted">Ümumi məlumat</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Prioritet -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Prioritet
+                        </label>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <input type="radio" name="priority" value="LOW" id="priority_low" class="priority-radio">
+                                <label for="priority_low" class="priority-label w-100">
+                                    <i class="fas fa-arrow-down text-success"></i> Aşağı
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="radio" name="priority" value="MEDIUM" id="priority_medium" class="priority-radio" checked>
+                                <label for="priority_medium" class="priority-label w-100">
+                                    <i class="fas fa-minus text-warning"></i> Orta
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="radio" name="priority" value="HIGH" id="priority_high" class="priority-radio">
+                                <label for="priority_high" class="priority-label w-100">
+                                    <i class="fas fa-arrow-up text-danger"></i> Yüksək
+                                </label>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="radio" name="priority" value="URGENT" id="priority_urgent" class="priority-radio">
+                                <label for="priority_urgent" class="priority-label w-100">
+                                    <i class="fas fa-exclamation text-danger"></i> Təcili
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Başlıq -->
+                    <div class="mb-4">
+                        <label for="title" class="form-label fw-bold">
+                            <i class="fas fa-heading me-2"></i>Başlıq *
+                        </label>
+                        <input type="text" class="form-control" name="title" id="title" required maxlength="200" placeholder="Geri bildirimin başlığını yazın...">
+                    </div>
+
+                    <!-- Mesaj -->
+                    <div class="mb-4">
+                        <label for="message" class="form-label fw-bold">
+                            <i class="fas fa-comment me-2"></i>Mesaj *
+                        </label>
+                        <textarea class="form-control" name="message" id="message" rows="5" required placeholder="Detaylı geri bildiriminizi yazın..."></textarea>
+                    </div>
+
+                    <!-- Rating (opsional) -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-star me-2"></i>Qiymət (opsional)
+                        </label>
+                        <div class="rating-stars" id="ratingStars">
+                            <span class="star" data-rating="1">★</span>
+                            <span class="star" data-rating="2">★</span>
+                            <span class="star" data-rating="3">★</span>
+                            <span class="star" data-rating="4">★</span>
+                            <span class="star" data-rating="5">★</span>
+                        </div>
+                        <input type="hidden" name="rating" id="selectedRating">
+                        <small class="text-muted">İxtiyari: 1-5 ulduz arasında qiymət verin</small>
+                    </div>
+
+                    <!-- Anonimlik -->
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="is_anonymous" id="isAnonymous">
+                            <label class="form-check-label fw-bold" for="isAnonymous">
+                                <i class="fas fa-user-secret me-2"></i>Anonim göndər
+                            </label>
+                            <div class="form-text">Seçildikdə adınız gizli qalacaq</div>
+                        </div>
+                    </div>
+
+                    <!-- Düymələr -->
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'quick_feedback:dashboard' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Geri
+                        </a>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <i class="fas fa-paper-plane me-2"></i>Göndər
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedUserId = null;
+let selectedCategoryId = null;
+let selectedRating = null;
+
+function selectUser(userId, userName) {
+    selectedUserId = userId;
+    document.getElementById('selectedUser').value = userId;
+    
+    // Remove selection from all cards
+    document.querySelectorAll('.user-select-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // Add selection to clicked card
+    event.currentTarget.classList.add('selected');
+}
+
+function selectCategory(categoryId) {
+    selectedCategoryId = categoryId;
+    document.getElementById('selectedCategory').value = categoryId;
+    
+    // Remove selection from all cards
+    document.querySelectorAll('.category-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // Add selection to clicked card
+    event.currentTarget.classList.add('selected');
+}
+
+function searchUsers() {
+    const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+    const userCards = document.querySelectorAll('.user-select-card');
+    
+    userCards.forEach(card => {
+        const userName = card.querySelector('h6').textContent.toLowerCase();
+        if (userName.includes(searchTerm)) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+// Rating system
+document.querySelectorAll('.star').forEach(star => {
+    star.addEventListener('click', function() {
+        const rating = parseInt(this.getAttribute('data-rating'));
+        selectedRating = rating;
+        document.getElementById('selectedRating').value = rating;
+        
+        // Update star display
+        document.querySelectorAll('.star').forEach((s, index) => {
+            if (index < rating) {
+                s.classList.add('active');
+            } else {
+                s.classList.remove('active');
+            }
+        });
+    });
+    
+    star.addEventListener('mouseover', function() {
+        const rating = parseInt(this.getAttribute('data-rating'));
+        document.querySelectorAll('.star').forEach((s, index) => {
+            if (index < rating) {
+                s.style.color = '#ffb400';
+            } else {
+                s.style.color = '#ffc107';
+            }
+        });
+    });
+});
+
+document.getElementById('ratingStars').addEventListener('mouseleave', function() {
+    document.querySelectorAll('.star').forEach((s, index) => {
+        if (selectedRating && index < selectedRating) {
+            s.style.color = '#ffb400';
+        } else {
+            s.style.color = '#ffc107';
+        }
+    });
+});
+
+// Form validation
+document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+    if (!selectedUserId) {
+        e.preventDefault();
+        alert('Zəhmət olmasa geri bildirim göndərəcəyiniz şəxsi seçin.');
+        return;
+    }
+    
+    const title = document.getElementById('title').value.trim();
+    const message = document.getElementById('message').value.trim();
+    
+    if (!title || !message) {
+        e.preventDefault();
+        alert('Başlıq və mesaj sahələri mütləqdir.');
+        return;
+    }
+    
+    // Show loading state
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Göndərilir...';
+    submitBtn.disabled = true;
+});
+</script>
+{% endblock %}

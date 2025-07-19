@@ -1,0 +1,299 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .feedback-card {
+        border-radius: 15px;
+        box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    .feedback-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem;
+    }
+    .feedback-type-positive { 
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+    }
+    .feedback-type-constructive { 
+        background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); 
+    }
+    .feedback-type-neutral { 
+        background: linear-gradient(135deg, #6c757d 0%, #495057 100%); 
+    }
+    .feedback-content {
+        padding: 2rem;
+        background: white;
+    }
+    .rating-display .star {
+        color: #ffc107;
+        font-size: 1.2rem;
+    }
+    .rating-display .star.empty {
+        color: #e9ecef;
+    }
+    .sender-info {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .message-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #495057;
+    }
+    .metadata {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1rem;
+    }
+    .action-buttons .btn {
+        border-radius: 25px;
+        padding: 10px 25px;
+        font-weight: 600;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'quick_feedback:dashboard' %}">Quick Feedback</a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'quick_feedback:inbox' %}">Gələn Qutusu</a>
+                    </li>
+                    <li class="breadcrumb-item active">{{ feedback.title }}</li>
+                </ol>
+            </nav>
+
+            <div class="feedback-card">
+                <!-- Header -->
+                <div class="feedback-header feedback-type-{{ feedback.feedback_type.lower }}">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="h3 mb-2">
+                                {% if feedback.category %}
+                                    <i class="{{ feedback.category.icon }} me-2"></i>
+                                {% endif %}
+                                {{ feedback.title }}
+                            </h1>
+                            <div class="d-flex align-items-center flex-wrap">
+                                <span class="badge bg-white text-dark me-2 mb-1">
+                                    {{ feedback.get_feedback_type_display }}
+                                </span>
+                                <span class="badge bg-white text-dark me-2 mb-1">
+                                    {{ feedback.get_priority_display }}
+                                </span>
+                                {% if feedback.category %}
+                                <span class="badge bg-white text-dark me-2 mb-1">
+                                    {{ feedback.category.name }}
+                                </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="text-white-50 small">
+                                <i class="fas fa-clock me-1"></i>{{ feedback.created_at|date:"d.m.Y H:i" }}
+                            </div>
+                            {% if feedback.rating %}
+                            <div class="rating-display mt-2">
+                                {% for i in "12345" %}
+                                    <span class="star {% if forloop.counter <= feedback.rating %}active{% else %}empty{% endif %}">★</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content -->
+                <div class="feedback-content">
+                    <!-- Sender Info -->
+                    <div class="sender-info">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="mb-1">
+                                    {% if feedback.is_anonymous %}
+                                        <i class="fas fa-user-secret text-primary me-2"></i>Anonim İşçi
+                                    {% else %}
+                                        <i class="fas fa-user text-primary me-2"></i>{{ feedback.from_user.get_full_name }}
+                                    {% endif %}
+                                </h6>
+                                {% if not feedback.is_anonymous and feedback.from_user.organization_unit %}
+                                <p class="text-muted small mb-0">
+                                    <i class="fas fa-building me-1"></i>{{ feedback.from_user.organization_unit.name }}
+                                </p>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 text-end">
+                                {% if not feedback.is_anonymous %}
+                                <a href="{% url 'quick_feedback:send' %}?to_user={{ feedback.from_user.id }}" 
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-reply me-1"></i>Cavab Ver
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Message -->
+                    <div class="message-content">
+                        {{ feedback.message|linebreaks }}
+                    </div>
+
+                    <!-- Metadata -->
+                    <div class="metadata mt-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="small text-muted mb-2">GÖNDƏRMƏ TARİXİ</h6>
+                                <p class="mb-0">{{ feedback.created_at|date:"d F Y, l" }}</p>
+                                <p class="text-muted small">{{ feedback.created_at|date:"H:i" }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="small text-muted mb-2">STATUS</h6>
+                                <p class="mb-0">
+                                    {% if feedback.is_read %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-check me-1"></i>Oxunub
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-clock me-1"></i>Yeni
+                                        </span>
+                                    {% endif %}
+                                </p>
+                                {% if feedback.read_at %}
+                                <p class="text-muted small">{{ feedback.read_at|date:"d.m.Y H:i" }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons mt-4 d-flex justify-content-between flex-wrap">
+                        <div>
+                            <a href="{% url 'quick_feedback:inbox' %}" class="btn btn-outline-secondary me-2 mb-2">
+                                <i class="fas fa-arrow-left me-2"></i>Gələn Qutusu
+                            </a>
+                        </div>
+                        <div>
+                            {% if not feedback.is_anonymous %}
+                            <a href="{% url 'quick_feedback:send' %}?to_user={{ feedback.from_user.id }}" 
+                               class="btn btn-primary me-2 mb-2">
+                                <i class="fas fa-reply me-2"></i>Cavab Ver
+                            </a>
+                            {% endif %}
+                            <button type="button" class="btn btn-outline-danger mb-2" onclick="archiveFeedback()">
+                                <i class="fas fa-archive me-2"></i>Arxivləşdir
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Actions -->
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <i class="fas fa-chart-line fa-2x text-primary mb-3"></i>
+                            <h6>Analitika</h6>
+                            <p class="small text-muted">Geri bildirim analitikanızı görün</p>
+                            <a href="{% url 'quick_feedback:analytics' %}" class="btn btn-sm btn-outline-primary">
+                                Analitikaya Get
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card bg-light">
+                        <div class="card-body text-center">
+                            <i class="fas fa-paper-plane fa-2x text-success mb-3"></i>
+                            <h6>Yeni Geri Bildirim</h6>
+                            <p class="small text-muted">Başqa birinə geri bildirim göndərin</p>
+                            <a href="{% url 'quick_feedback:send' %}" class="btn btn-sm btn-outline-success">
+                                Yeni Göndər
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function archiveFeedback() {
+    if (!confirm('Bu geri bildirimi arxivləşdirmək istədiyinizə əminsiniz?')) {
+        return;
+    }
+    
+    fetch(`/quick-feedback/{{ feedback.id }}/archive/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success message
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+            alertDiv.style.top = '20px';
+            alertDiv.style.right = '20px';
+            alertDiv.style.zIndex = '9999';
+            alertDiv.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>Geri bildirim arxivləşdirildi
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            // Redirect after 2 seconds
+            setTimeout(() => {
+                window.location.href = '{% url "quick_feedback:inbox" %}';
+            }, 2000);
+        } else {
+            alert('Xəta baş verdi: ' + (data.error || 'Bilinməyən xəta'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Şəbəkə xətası baş verdi');
+    });
+}
+
+// Get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Auto-scroll to top on page load
+window.addEventListener('load', () => {
+    window.scrollTo(0, 0);
+});
+</script>
+{% endblock %}
