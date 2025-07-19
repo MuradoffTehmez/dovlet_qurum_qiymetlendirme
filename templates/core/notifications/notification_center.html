@@ -304,7 +304,46 @@
     }
 
     function refreshNotifications() {
-        location.reload();
+        // Show loading indicator
+        const refreshBtn = document.querySelector('[onclick="refreshNotifications()"]');
+        const originalIcon = refreshBtn.innerHTML;
+        refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Yenilənir...';
+        refreshBtn.disabled = true;
+
+        // Use AJAX to refresh notifications instead of full page reload
+        fetch(window.location.href, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(html => {
+                // Parse the response and update the notifications list
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newNotificationsList = doc.querySelector('#notifications-list');
+                const currentNotificationsList = document.querySelector('#notifications-list');
+
+                if (newNotificationsList && currentNotificationsList) {
+                    currentNotificationsList.innerHTML = newNotificationsList.innerHTML;
+                }
+
+                showToast('Bildirişlər yeniləndi', 'success');
+            })
+            .catch(error => {
+                console.error('Refresh error:', error);
+                showToast('Bildirişlər yenilənərkən xəta baş verdi', 'danger');
+            })
+            .finally(() => {
+                // Restore button state
+                refreshBtn.innerHTML = originalIcon;
+                refreshBtn.disabled = false;
+            });
     }
 
     function markAsRead(notificationId) {

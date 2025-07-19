@@ -88,6 +88,11 @@ urlpatterns = [
              path("api/events/", calendar_views.calendar_events_api, name="calendar_events_api"),
              path("api/stats/", calendar_views.calendar_stats, name="calendar_stats"),
              path("api/reminder/", calendar_views.create_reminder, name="create_reminder"),
+             path("api/event/create/", calendar_views.create_event, name="create_event"),
+             path("api/event/update/<int:event_id>/", calendar_views.update_event, name="update_event"),
+             path("api/event/delete/<int:event_id>/", calendar_views.delete_event, name="delete_event"),
+             path("api/event/form/", calendar_views.event_form_modal, name="event_form_modal"),
+             path("api/event/form/<int:event_id>/", calendar_views.event_form_modal, name="event_form_modal_edit"),
              path("event-detail/<str:event_type>/<int:event_id>/", calendar_views.event_detail, name="event_detail"),
          ])
     ),

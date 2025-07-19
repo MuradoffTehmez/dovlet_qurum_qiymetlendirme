@@ -5,86 +5,86 @@
 
 {% block extra_css %}
 <style>
-.report-card {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 15px;
-    padding: 25px;
-    margin-bottom: 25px;
-    transition: all 0.3s ease;
-    border: 1px solid #dee2e6;
-    height: 100%;
-}
+    .report-card {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+        transition: all 0.3s ease;
+        border: 1px solid #dee2e6;
+        height: 100%;
+    }
 
-.report-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    border-color: #667eea;
-}
+    .report-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        border-color: #667eea;
+    }
 
-.report-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-}
+    .report-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
 
-.report-formats {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-}
+    .report-formats {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
 
-.format-badge {
-    background: rgba(102, 126, 234, 0.1);
-    color: #667eea;
-    border: 1px solid #667eea;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 0.7rem;
-    font-weight: 600;
-}
+    .format-badge {
+        background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+        border: 1px solid #667eea;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
 
-.recent-reports-card {
-    background: white;
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
+    .recent-reports-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
 
-.recent-report-item {
-    padding: 12px;
-    border-left: 4px solid #667eea;
-    background: #f8f9fa;
-    border-radius: 8px;
-    margin-bottom: 10px;
-}
+    .recent-report-item {
+        padding: 12px;
+        border-left: 4px solid #667eea;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
 
-.stats-overview {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 15px;
-    padding: 30px;
-    margin-bottom: 30px;
-}
+    .stats-overview {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+    }
 
-.stat-item {
-    text-align: center;
-}
+    .stat-item {
+        text-align: center;
+    }
 
-.stat-number {
-    font-size: 2.5rem;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
 
-.stat-label {
-    font-size: 0.9rem;
-    opacity: 0.9;
-}
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
 </style>
 {% endblock %}
 
@@ -128,6 +128,9 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4>Mövcud Hesabatlar</h4>
                 <div class="btn-group">
+                    <button onclick="refreshReports()" class="btn btn-outline-secondary">
+                        <i class="fas fa-sync-alt me-2"></i>Yenilə
+                    </button>
                     <a href="{% url 'schedule_report' %}" class="btn btn-outline-primary">
                         <i class="fas fa-clock me-2"></i>Planlanmış Hesabat
                     </a>
@@ -148,21 +151,20 @@
                             <div class="flex-1">
                                 <h5 class="mb-2">{{ report_info.name }}</h5>
                                 <p class="text-muted small mb-3">{{ report_info.description }}</p>
-                                
+
                                 <div class="report-formats">
                                     {% for format in report_info.formats %}
-                                        <span class="format-badge">{{ format|upper }}</span>
+                                    <span class="format-badge">{{ format|upper }}</span>
                                     {% endfor %}
                                 </div>
-                                
+
                                 <div class="mt-3">
                                     <div class="btn-group w-100" role="group">
-                                        <a href="{% url 'generate_report' report_id %}" 
-                                           class="btn btn-primary btn-sm">
+                                        <a href="{% url 'generate_report' report_id %}" class="btn btn-primary btn-sm">
                                             <i class="fas fa-play me-1"></i>Generasiya Et
                                         </a>
-                                        <a href="{% url 'download_sample_report' report_id %}" 
-                                           class="btn btn-outline-secondary btn-sm">
+                                        <a href="{% url 'download_sample_report' report_id %}"
+                                            class="btn btn-outline-secondary btn-sm">
                                             <i class="fas fa-download me-1"></i>Nümunə
                                         </a>
                                     </div>
@@ -181,24 +183,24 @@
             <div class="recent-reports-card mb-4">
                 <h6><i class="fas fa-history me-2"></i>Son Hesabatlar</h6>
                 <hr>
-                
+
                 {% if recent_reports %}
-                    {% for report in recent_reports %}
-                    <div class="recent-report-item">
-                        <h6 class="mb-1">{{ report.title }}</h6>
-                        <small class="text-muted">
-                            <i class="fas fa-clock me-1"></i>{{ report.generated_at|timesince }} əvvəl
-                            <span class="ms-2">
-                                <i class="fas fa-file me-1"></i>{{ report.format|upper }}
-                            </span>
-                        </small>
-                    </div>
-                    {% endfor %}
+                {% for report in recent_reports %}
+                <div class="recent-report-item">
+                    <h6 class="mb-1">{{ report.title }}</h6>
+                    <small class="text-muted">
+                        <i class="fas fa-clock me-1"></i>{{ report.generated_at|timesince }} əvvəl
+                        <span class="ms-2">
+                            <i class="fas fa-file me-1"></i>{{ report.format|upper }}
+                        </span>
+                    </small>
+                </div>
+                {% endfor %}
                 {% else %}
-                    <div class="text-center py-3">
-                        <i class="fas fa-file-alt fa-2x text-muted mb-2"></i>
-                        <p class="text-muted">Hələ hesabat generasiya etməmisiniz</p>
-                    </div>
+                <div class="text-center py-3">
+                    <i class="fas fa-file-alt fa-2x text-muted mb-2"></i>
+                    <p class="text-muted">Hələ hesabat generasiya etməmisiniz</p>
+                </div>
                 {% endif %}
             </div>
 
@@ -218,17 +220,17 @@
                             <option value="last_year">Son il</option>
                         </select>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label class="form-label small">Şöbə</label>
                         <select class="form-select form-select-sm" id="quick-department-filter">
                             <option value="">Hamısı</option>
                             {% for dept_id, dept_name in filter_options.departments %}
-                                <option value="{{ dept_id }}">{{ dept_name }}</option>
+                            <option value="{{ dept_id }}">{{ dept_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
-                    
+
                     <button class="btn btn-primary btn-sm w-100" onclick="applyQuickFilters()">
                         <i class="fas fa-search me-2"></i>Filtrlə və Aç
                     </button>
@@ -260,49 +262,145 @@
 
 {% block extra_js %}
 <script>
-function applyQuickFilters() {
-    const dateRange = document.getElementById('quick-date-filter').value;
-    const department = document.getElementById('quick-department-filter').value;
-    
-    // İlk hesabat növünü seç və filtrləri tətbiq et
-    const firstReportType = '{{ available_reports|first.0 }}';
-    
-    let url = `/hesabatlar/generate/${firstReportType}/?date_range=${dateRange}`;
-    if (department) {
-        url += `&department=${department}`;
-    }
-    
-    window.location.href = url;
-}
+    function applyQuickFilters() {
+        const dateRange = document.getElementById('quick-date-filter').value;
+        const department = document.getElementById('quick-department-filter').value;
 
-// Hesabat kartlarına hover effekti
-document.addEventListener('DOMContentLoaded', function() {
-    const reportCards = document.querySelectorAll('.report-card');
-    
-    reportCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.background = 'linear-gradient(135deg, #fff 0%, #f8f9fa 100%)';
+        // İlk hesabat növünü seç və filtrləri tətbiq et
+        const firstReportType = '{{ available_reports|first.0 }}';
+
+        let url = `/hesabatlar/generate/${firstReportType}/?date_range=${dateRange}`;
+        if (department) {
+            url += `&department=${department}`;
+        }
+
+        window.location.href = url;
+    }
+
+    function refreshReports() {
+        const refreshBtn = document.querySelector('[onclick="refreshReports()"]');
+        const originalContent = refreshBtn.innerHTML;
+
+        // Show loading state
+        refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Yenilənir...';
+        refreshBtn.disabled = true;
+
+        // Use fetch to check for new data and refresh specific sections
+        fetch(window.location.href, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.text();
+            })
+            .then(html => {
+                // Parse the response and update the stats
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+
+                // Update stats overview
+                const newStatsOverview = doc.querySelector('.stats-overview');
+                const currentStatsOverview = document.querySelector('.stats-overview');
+                if (newStatsOverview && currentStatsOverview) {
+                    currentStatsOverview.innerHTML = newStatsOverview.innerHTML;
+                }
+
+                // Update recent reports
+                const newRecentReports = doc.querySelector('.recent-reports-card');
+                const currentRecentReports = document.querySelector('.recent-reports-card');
+                if (newRecentReports && currentRecentReports) {
+                    currentRecentReports.innerHTML = newRecentReports.innerHTML;
+                }
+
+                showToast('Hesabatlar yeniləndi', 'success');
+            })
+            .catch(error => {
+                console.error('Refresh error:', error);
+                showToast('Hesabatlar yenilənərkən xəta baş verdi', 'danger');
+            })
+            .finally(() => {
+                // Restore button state
+                refreshBtn.innerHTML = originalContent;
+                refreshBtn.disabled = false;
+            });
+    }
+
+    function showToast(message, type = 'info') {
+        // Create toast notification
+        const toast = document.createElement('div');
+        toast.className = `toast align-items-center text-white bg-${type} border-0 position-fixed top-0 end-0 m-3`;
+        toast.style.zIndex = '9999';
+
+        toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'} me-2"></i>${message}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    `;
+
+        document.body.appendChild(toast);
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+
+        toast.addEventListener('hidden.bs.toast', () => {
+            if (document.body.contains(toast)) {
+                document.body.removeChild(toast);
+            }
         });
-        
-        card.addEventListener('mouseleave', function() {
-            this.style.background = 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)';
+    }
+
+    // Hesabat kartlarına hover effekti
+    document.addEventListener('DOMContentLoaded', function () {
+        const reportCards = document.querySelectorAll('.report-card');
+
+        reportCards.forEach(card => {
+            card.addEventListener('mouseenter', function () {
+                this.style.background = 'linear-gradient(135deg, #fff 0%, #f8f9fa 100%)';
+            });
+
+            card.addEventListener('mouseleave', function () {
+                this.style.background = 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)';
+            });
         });
     });
-});
 
-// Real-time hesabat sayğacları (simulasiya)
-setInterval(() => {
-    const recentCount = document.querySelector('.stat-number');
-    if (recentCount && Math.random() > 0.95) {
-        let current = parseInt(recentCount.textContent);
-        recentCount.textContent = current + 1;
-        
-        // Animasiya effekti
-        recentCount.style.transform = 'scale(1.1)';
-        setTimeout(() => {
-            recentCount.style.transform = 'scale(1)';
-        }, 200);
+    // Real-time hesabat sayğacları (simulasiya) - Fixed with proper cleanup
+    let reportCounterInterval = null;
+
+    function startReportCounter() {
+        if (reportCounterInterval) {
+            clearInterval(reportCounterInterval);
+        }
+
+        reportCounterInterval = setInterval(() => {
+            const recentCount = document.querySelector('.stat-number');
+            if (recentCount && Math.random() > 0.95) {
+                let current = parseInt(recentCount.textContent);
+                recentCount.textContent = current + 1;
+
+                // Animasiya effekti
+                recentCount.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    recentCount.style.transform = 'scale(1)';
+                }, 200);
+            }
+        }, 5000);
     }
-}, 5000);
+
+    // Start counter
+    startReportCounter();
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        if (reportCounterInterval) {
+            clearInterval(reportCounterInterval);
+        }
+    });
 </script>
 {% endblock %}

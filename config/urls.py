@@ -21,17 +21,13 @@ urlpatterns = [
 ]
 urlpatterns += i18n_urlpatterns
 
-# --- YENİ VƏ VACİB HİSSƏ ---
+# --- STATİK FAYLLAR ÜÇün URL KONFİQURASİYASI ---
 # Yalnız DEVELOPMENT rejimində (DEBUG=True) statik və media faylları üçün URL-lər
 if settings.DEBUG:
-    # Static faylları STATICFILES_DIRS-dən serve et
-    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-    urlpatterns += staticfiles_urlpatterns()
-    
-    # Static faylları STATIC_ROOT-dan da serve et
+    # Static faylları serve et (STATIC_ROOT-dan)
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     
-    # İstifadəçilərin yüklədiyi şəkilləri və faylları 'media' qovluğundan göstərmək üçün
+    # İstifadəçilərin yüklədiyi şəkilləri və faylları serve et
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 

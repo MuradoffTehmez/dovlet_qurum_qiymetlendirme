@@ -1,5 +1,6 @@
 {% extends 'core/base.html' %}
 {% load i18n %}
+{% csrf_token %}
 
 {% block title %}{{ title }}{% endblock %}
 
@@ -7,121 +8,121 @@
 <!-- FullCalendar CSS -->
 <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
 <style>
-.calendar-container {
-    background: white;
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
-}
+    .calendar-container {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+    }
 
-.calendar-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 15px;
-    padding: 25px;
-    margin-bottom: 30px;
-}
+    .calendar-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+    }
 
-.calendar-stats {
-    display: flex;
-    justify-content: space-around;
-    text-align: center;
-}
+    .calendar-stats {
+        display: flex;
+        justify-content: space-around;
+        text-align: center;
+    }
 
-.stat-item {
-    flex: 1;
-}
+    .stat-item {
+        flex: 1;
+    }
 
-.stat-number {
-    font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
 
-.stat-label {
-    font-size: 0.9rem;
-    opacity: 0.9;
-}
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
 
-.fc-toolbar-title {
-    font-size: 1.5rem !important;
-    font-weight: bold !important;
-}
+    .fc-toolbar-title {
+        font-size: 1.5rem !important;
+        font-weight: bold !important;
+    }
 
-.fc-button {
-    background: #667eea !important;
-    border-color: #667eea !important;
-}
+    .fc-button {
+        background: #667eea !important;
+        border-color: #667eea !important;
+    }
 
-.fc-button:hover {
-    background: #764ba2 !important;
-    border-color: #764ba2 !important;
-}
+    .fc-button:hover {
+        background: #764ba2 !important;
+        border-color: #764ba2 !important;
+    }
 
-.fc-button:disabled {
-    background: #6c757d !important;
-    border-color: #6c757d !important;
-}
+    .fc-button:disabled {
+        background: #6c757d !important;
+        border-color: #6c757d !important;
+    }
 
-.fc-today-button {
-    background: #28a745 !important;
-    border-color: #28a745 !important;
-}
+    .fc-today-button {
+        background: #28a745 !important;
+        border-color: #28a745 !important;
+    }
 
-.calendar-legend {
-    background: #f8f9fa;
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
+    .calendar-legend {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
 
-.legend-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-}
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
 
-.legend-color {
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-    margin-right: 10px;
-}
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        margin-right: 10px;
+    }
 
-.quick-actions {
-    background: white;
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
+    .quick-actions {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
 
-.reminder-form {
-    background: #f8f9fa;
-    border-radius: 10px;
-    padding: 15px;
-    margin-top: 15px;
-}
+    .reminder-form {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+    }
 
-.event-modal .modal-content {
-    border-radius: 15px;
-}
+    .event-modal .modal-content {
+        border-radius: 15px;
+    }
 
-.event-modal .modal-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 15px 15px 0 0;
-}
+    .event-modal .modal-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px 15px 0 0;
+    }
 
-.loading-spinner {
-    display: none;
-    text-align: center;
-    padding: 20px;
-}
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        padding: 20px;
+    }
 
-.spinner-border {
-    color: #667eea;
-}
+    .spinner-border {
+        color: #667eea;
+    }
 </style>
 {% endblock %}
 
@@ -167,42 +168,42 @@
             <div class="calendar-legend">
                 <h6><i class="fas fa-palette me-2"></i>Hadisə Növləri</h6>
                 <hr>
-                
+
                 <div class="legend-item">
                     <div class="legend-color" style="background-color: #667eea;"></div>
                     <span>Qiymətləndirmə Dövrləri</span>
                 </div>
-                
+
                 <div class="legend-item">
                     <div class="legend-color" style="background-color: #28a745;"></div>
                     <span>Hədəflər (Vaxt var)</span>
                 </div>
-                
+
                 <div class="legend-item">
                     <div class="legend-color" style="background-color: #ffc107;"></div>
                     <span>Yaxın Hədəflər (1 həftə)</span>
                 </div>
-                
+
                 <div class="legend-item">
                     <div class="legend-color" style="background-color: #fd7e14;"></div>
                     <span>Təcili Hədəflər (3 gün)</span>
                 </div>
-                
+
                 <div class="legend-item">
                     <div class="legend-color" style="background-color: #dc3545;"></div>
                     <span>Gecikmiş Hədəflər</span>
                 </div>
-                
+
                 <div class="legend-item">
                     <div class="legend-color" style="background-color: #6f42c1;"></div>
                     <span>Komanda Hədəfləri</span>
                 </div>
-                
+
                 <div class="legend-item">
                     <div class="legend-color" style="background-color: #17a2b8;"></div>
                     <span>Vacib Bildirişlər</span>
                 </div>
-                
+
                 <div class="legend-item">
                     <div class="legend-color" style="background-color: #20c997;"></div>
                     <span>Performans Qiymətləndirmələri</span>
@@ -213,20 +214,24 @@
             <div class="quick-actions">
                 <h6><i class="fas fa-bolt me-2"></i>Tez Əməliyyatlar</h6>
                 <hr>
-                
+
                 <div class="d-grid gap-2">
                     <button class="btn btn-primary btn-sm" onclick="showReminderForm()">
                         <i class="fas fa-bell me-2"></i>Xatırlatma Əlavə Et
                     </button>
-                    
+
+                    <button class="btn btn-success btn-sm" onclick="showEventForm()">
+                        <i class="fas fa-plus me-2"></i>Yeni Hadisə
+                    </button>
+
                     <a href="{% url 'plan_yarat' user.id 1 %}" class="btn btn-outline-primary btn-sm">
                         <i class="fas fa-target me-2"></i>Yeni Hədəf
                     </a>
-                    
+
                     <a href="{% url 'notification_center' %}" class="btn btn-outline-info btn-sm">
                         <i class="fas fa-envelope me-2"></i>Bildirişlər
                     </a>
-                    
+
                     <a href="{% url 'report_center' %}" class="btn btn-outline-success btn-sm">
                         <i class="fas fa-chart-bar me-2"></i>Hesabatlar
                     </a>
@@ -240,17 +245,17 @@
                             <label class="form-label small">Başlıq</label>
                             <input type="text" class="form-control form-control-sm" id="reminderTitle" required>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label class="form-label small">Tarix</label>
                             <input type="date" class="form-control form-control-sm" id="reminderDate" required>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label class="form-label small">Təsvir</label>
                             <textarea class="form-control form-control-sm" id="reminderDescription" rows="2"></textarea>
                         </div>
-                        
+
                         <div class="btn-group w-100">
                             <button type="submit" class="btn btn-primary btn-sm">
                                 <i class="fas fa-save me-1"></i>Saxla
@@ -314,6 +319,36 @@
         </div>
     </div>
 </div>
+
+<!-- Hadisə Yaratma/Redaktə Modal -->
+<div class="modal fade" id="eventFormModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eventFormModalTitle">
+                    <i class="fas fa-calendar-plus me-2"></i>Yeni Hadisə
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="eventFormModalBody">
+                <div class="text-center">
+                    <div class="spinner-border text-primary"></div>
+                    <p class="mt-2">Forma yüklənir...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İmtina</button>
+                <button type="button" class="btn btn-primary" id="saveEventBtn" onclick="saveEvent()">
+                    <i class="fas fa-save me-2"></i>Saxla
+                </button>
+                <button type="button" class="btn btn-danger" id="deleteEventBtn" onclick="deleteEvent()"
+                    style="display: none;">
+                    <i class="fas fa-trash me-2"></i>Sil
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -321,251 +356,258 @@
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const calendarEl = document.getElementById('calendar');
-    const loadingSpinner = document.getElementById('loadingSpinner');
+    document.addEventListener('DOMContentLoaded', function () {
+        const calendarEl = document.getElementById('calendar');
+        const loadingSpinner = document.getElementById('loadingSpinner');
 
-    // FullCalendar təqvimini initialize et
-    const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        locale: 'az',
-        height: 'auto',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,listWeek'
-        },
-        buttonText: {
-            today: 'Bu gün',
-            month: 'Ay',
-            week: 'Həftə',
-            list: 'Siyahı'
-        },
-        events: {
-            url: '{% url "calendar_events_api" %}',
-            method: 'GET',
-            extraParams: function() {
-                return {
-                    'X-Requested-With': 'XMLHttpRequest'
-                };
+        // FullCalendar təqvimini initialize et
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            locale: 'az',
+            height: 'auto',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,listWeek'
             },
-            failure: function(error) {
-                console.error('Təqvim məlumatları yüklənmədi:', error);
-                showError('Təqvim məlumatları yüklənərkən xəta baş verdi');
+            buttonText: {
+                today: 'Bu gün',
+                month: 'Ay',
+                week: 'Həftə',
+                list: 'Siyahı'
+            },
+            events: {
+                url: '{% url "calendar_events_api" %}',
+                method: 'GET',
+                extraParams: function () {
+                    return {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    };
+                },
+                failure: function (error) {
+                    console.error('Təqvim məlumatları yüklənmədi:', error);
+                    showError('Təqvim məlumatları yüklənərkən xəta baş verdi');
+                }
+            },
+            loading: function (isLoading) {
+                if (isLoading) {
+                    loadingSpinner.style.display = 'block';
+                    calendarEl.style.opacity = '0.5';
+                } else {
+                    loadingSpinner.style.display = 'none';
+                    calendarEl.style.opacity = '1';
+                }
+            },
+            eventClick: function (info) {
+                showEventDetail(info.event);
+            },
+            eventDidMount: function (info) {
+                // Tooltip əlavə et
+                info.el.setAttribute('title', info.event.title);
+
+                // Extended props ilə məlumat əlavə et
+                if (info.event.extendedProps.description) {
+                    info.el.setAttribute('data-bs-toggle', 'tooltip');
+                    info.el.setAttribute('data-bs-placement', 'top');
+                    info.el.setAttribute('title', info.event.extendedProps.description);
+                }
+            },
+            eventMouseEnter: function (info) {
+                // Hover effekti
+                info.el.style.transform = 'scale(1.05)';
+                info.el.style.zIndex = '999';
+            },
+            eventMouseLeave: function (info) {
+                info.el.style.transform = 'scale(1)';
+                info.el.style.zIndex = 'auto';
             }
-        },
-        loading: function(isLoading) {
-            if (isLoading) {
-                loadingSpinner.style.display = 'block';
-                calendarEl.style.opacity = '0.5';
-            } else {
-                loadingSpinner.style.display = 'none';
-                calendarEl.style.opacity = '1';
-            }
-        },
-        eventClick: function(info) {
-            showEventDetail(info.event);
-        },
-        eventDidMount: function(info) {
-            // Tooltip əlavə et
-            info.el.setAttribute('title', info.event.title);
-            
-            // Extended props ilə məlumat əlavə et
-            if (info.event.extendedProps.description) {
-                info.el.setAttribute('data-bs-toggle', 'tooltip');
-                info.el.setAttribute('data-bs-placement', 'top');
-                info.el.setAttribute('title', info.event.extendedProps.description);
-            }
-        },
-        eventMouseEnter: function(info) {
-            // Hover effekti
-            info.el.style.transform = 'scale(1.05)';
-            info.el.style.zIndex = '999';
-        },
-        eventMouseLeave: function(info) {
-            info.el.style.transform = 'scale(1)';
-            info.el.style.zIndex = 'auto';
-        }
-    });
-
-    calendar.render();
-
-    // Statistikaları yüklə
-    loadCalendarStats();
-
-    // Tooltips-ləri aktivləşdir
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-
-    // Real-time yenilənmə (30 saniyədə bir)
-    setInterval(function() {
-        calendar.refetchEvents();
-        loadCalendarStats();
-    }, 30000);
-});
-
-function loadCalendarStats() {
-    fetch('{% url "calendar_stats" %}', {
-        method: 'GET',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('upcomingDeadlines').textContent = data.upcoming_deadlines?.this_week || 0;
-        document.getElementById('activePeriods').textContent = data.active_periods || 0;
-        document.getElementById('pendingEvaluations').textContent = data.evaluations?.pending || 0;
-    })
-    .catch(error => {
-        console.error('Statistika yüklənmədi:', error);
-    });
-}
-
-function showEventDetail(event) {
-    const modal = new bootstrap.Modal(document.getElementById('eventDetailModal'));
-    const modalTitle = document.getElementById('eventModalTitle');
-    const modalBody = document.getElementById('eventModalBody');
-    const modalActions = document.getElementById('eventModalActions');
-
-    modalTitle.innerHTML = `<i class="fas fa-info-circle me-2"></i>${event.title}`;
-    
-    // Loading content
-    modalBody.innerHTML = '<div class="text-center"><div class="spinner-border text-primary"></div><p class="mt-2">Yüklənir...</p></div>';
-    modalActions.innerHTML = '';
-
-    // Event type-a görə detail fetch et
-    const eventType = event.extendedProps.type;
-    const eventId = event.id.split('_')[1]; // "goal_123" -> "123"
-
-    if (eventType && eventId) {
-        fetch(`/event-detail/${eventType}/${eventId}/`, {
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                modalBody.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
-            } else {
-                // Detail content yaradırıq
-                let content = `<div class="row">`;
-                
-                if (data.description) {
-                    content += `<div class="col-12 mb-3"><strong>Təsvir:</strong> ${data.description}</div>`;
-                }
-                
-                if (data.deadline) {
-                    content += `<div class="col-md-6"><strong>Son tarix:</strong> ${data.deadline}</div>`;
-                }
-                
-                if (data.days_left !== undefined) {
-                    const daysText = data.days_left > 0 ? `${data.days_left} gün qalıb` : 
-                                   data.days_left === 0 ? 'Bu gün' : `${Math.abs(data.days_left)} gün gecikib`;
-                    const badgeClass = data.days_left > 7 ? 'bg-success' : 
-                                     data.days_left > 3 ? 'bg-warning' : 
-                                     data.days_left >= 0 ? 'bg-danger' : 'bg-dark';
-                    content += `<div class="col-md-6"><strong>Qalan vaxt:</strong> <span class="badge ${badgeClass}">${daysText}</span></div>`;
-                }
-                
-                if (data.score) {
-                    content += `<div class="col-md-6"><strong>Performans:</strong> ${data.score} bal</div>`;
-                }
-                
-                if (data.plan_owner) {
-                    content += `<div class="col-md-6"><strong>Plan sahibi:</strong> ${data.plan_owner}</div>`;
-                }
-                
-                content += `</div>`;
-                
-                modalBody.innerHTML = content;
-                
-                // Actions əlavə et
-                if (data.actions && data.actions.length > 0) {
-                    let actionsHtml = '';
-                    data.actions.forEach(action => {
-                        actionsHtml += `<a href="${action.url}" class="btn ${action.class} me-2">${action.text}</a>`;
-                    });
-                    modalActions.innerHTML = actionsHtml;
-                }
-            }
-        })
-        .catch(error => {
-            modalBody.innerHTML = `<div class="alert alert-danger">Məlumat yüklənərkən xəta: ${error.message}</div>`;
         });
-    } else {
-        // Basic event information
-        let content = `<div class="row">`;
-        if (event.extendedProps.description) {
-            content += `<div class="col-12">${event.extendedProps.description}</div>`;
-        }
-        content += `</div>`;
-        modalBody.innerHTML = content;
+
+        calendar.render();
+
+        // Statistikaları yüklə
+        loadCalendarStats();
+
+        // Tooltips-ləri aktivləşdir
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Real-time yenilənmə (30 saniyədə bir)
+        setInterval(function () {
+            calendar.refetchEvents();
+            loadCalendarStats();
+        }, 30000);
+    });
+
+    // Get CSRF token
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]')?.value ||
+            document.querySelector('input[name="csrfmiddlewaretoken"]')?.value ||
+            '{{ csrf_token }}';
     }
 
-    modal.show();
-}
+    function loadCalendarStats() {
+        fetch('{% url "calendar_stats" %}', {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCSRFToken()
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('upcomingDeadlines').textContent = data.upcoming_deadlines?.this_week || 0;
+                document.getElementById('activePeriods').textContent = data.active_periods || 0;
+                document.getElementById('pendingEvaluations').textContent = data.evaluations?.pending || 0;
+            })
+            .catch(error => {
+                console.error('Statistika yüklənmədi:', error);
+            });
+    }
 
-function showReminderForm() {
-    document.getElementById('reminderForm').style.display = 'block';
-    document.getElementById('reminderDate').value = new Date().toISOString().split('T')[0];
-}
+    function showEventDetail(event) {
+        const modal = new bootstrap.Modal(document.getElementById('eventDetailModal'));
+        const modalTitle = document.getElementById('eventModalTitle');
+        const modalBody = document.getElementById('eventModalBody');
+        const modalActions = document.getElementById('eventModalActions');
 
-function hideReminderForm() {
-    document.getElementById('reminderForm').style.display = 'none';
-    document.getElementById('createReminderForm').reset();
-}
+        modalTitle.innerHTML = `<i class="fas fa-info-circle me-2"></i>${event.title}`;
 
-// Xatırlatma yaratma formu
-document.getElementById('createReminderForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const formData = {
-        title: document.getElementById('reminderTitle').value,
-        date: document.getElementById('reminderDate').value,
-        description: document.getElementById('reminderDescription').value
-    };
-    
-    fetch('{% url "create_reminder" %}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-            'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: JSON.stringify(formData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Təqvimi yenilə
-            const calendar = FullCalendar.getApi();
-            calendar.addEvent(data.event);
-            
-            // Formu gizlət
-            hideReminderForm();
-            
-            // Success mesajı
-            showSuccess('Xatırlatma uğurla yaradıldı!');
+        // Loading content
+        modalBody.innerHTML = '<div class="text-center"><div class="spinner-border text-primary"></div><p class="mt-2">Yüklənir...</p></div>';
+        modalActions.innerHTML = '';
+
+        // Event type-a görə detail fetch et
+        const eventType = event.extendedProps.type;
+        const eventId = event.id.split('_')[1]; // "goal_123" -> "123"
+
+        if (eventType && eventId) {
+            fetch(`/event-detail/${eventType}/${eventId}/`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        modalBody.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                    } else {
+                        // Detail content yaradırıq
+                        let content = `<div class="row">`;
+
+                        if (data.description) {
+                            content += `<div class="col-12 mb-3"><strong>Təsvir:</strong> ${data.description}</div>`;
+                        }
+
+                        if (data.deadline) {
+                            content += `<div class="col-md-6"><strong>Son tarix:</strong> ${data.deadline}</div>`;
+                        }
+
+                        if (data.days_left !== undefined) {
+                            const daysText = data.days_left > 0 ? `${data.days_left} gün qalıb` :
+                                data.days_left === 0 ? 'Bu gün' : `${Math.abs(data.days_left)} gün gecikib`;
+                            const badgeClass = data.days_left > 7 ? 'bg-success' :
+                                data.days_left > 3 ? 'bg-warning' :
+                                    data.days_left >= 0 ? 'bg-danger' : 'bg-dark';
+                            content += `<div class="col-md-6"><strong>Qalan vaxt:</strong> <span class="badge ${badgeClass}">${daysText}</span></div>`;
+                        }
+
+                        if (data.score) {
+                            content += `<div class="col-md-6"><strong>Performans:</strong> ${data.score} bal</div>`;
+                        }
+
+                        if (data.plan_owner) {
+                            content += `<div class="col-md-6"><strong>Plan sahibi:</strong> ${data.plan_owner}</div>`;
+                        }
+
+                        content += `</div>`;
+
+                        modalBody.innerHTML = content;
+
+                        // Actions əlavə et
+                        if (data.actions && data.actions.length > 0) {
+                            let actionsHtml = '';
+                            data.actions.forEach(action => {
+                                actionsHtml += `<a href="${action.url}" class="btn ${action.class} me-2">${action.text}</a>`;
+                            });
+                            modalActions.innerHTML = actionsHtml;
+                        }
+                    }
+                })
+                .catch(error => {
+                    modalBody.innerHTML = `<div class="alert alert-danger">Məlumat yüklənərkən xəta: ${error.message}</div>`;
+                });
         } else {
-            showError(data.error || 'Xəta baş verdi');
+            // Basic event information
+            let content = `<div class="row">`;
+            if (event.extendedProps.description) {
+                content += `<div class="col-12">${event.extendedProps.description}</div>`;
+            }
+            content += `</div>`;
+            modalBody.innerHTML = content;
         }
-    })
-    .catch(error => {
-        showError('Şəbəkə xətası: ' + error.message);
-    });
-});
 
-function showSuccess(message) {
-    // Toast notification
-    const toast = document.createElement('div');
-    toast.className = 'toast align-items-center text-white bg-success border-0 position-fixed top-0 end-0 m-3';
-    toast.style.zIndex = '9999';
-    toast.innerHTML = `
+        modal.show();
+    }
+
+    function showReminderForm() {
+        document.getElementById('reminderForm').style.display = 'block';
+        document.getElementById('reminderDate').value = new Date().toISOString().split('T')[0];
+    }
+
+    function hideReminderForm() {
+        document.getElementById('reminderForm').style.display = 'none';
+        document.getElementById('createReminderForm').reset();
+    }
+
+    // Xatırlatma yaratma formu
+    document.getElementById('createReminderForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const formData = {
+            title: document.getElementById('reminderTitle').value,
+            date: document.getElementById('reminderDate').value,
+            description: document.getElementById('reminderDescription').value
+        };
+
+        fetch('{% url "create_reminder" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Təqvimi yenilə
+                    const calendar = FullCalendar.getApi();
+                    calendar.addEvent(data.event);
+
+                    // Formu gizlət
+                    hideReminderForm();
+
+                    // Success mesajı
+                    showSuccess('Xatırlatma uğurla yaradıldı!');
+                } else {
+                    showError(data.error || 'Xəta baş verdi');
+                }
+            })
+            .catch(error => {
+                showError('Şəbəkə xətası: ' + error.message);
+            });
+    });
+
+    function showSuccess(message) {
+        // Toast notification
+        const toast = document.createElement('div');
+        toast.className = 'toast align-items-center text-white bg-success border-0 position-fixed top-0 end-0 m-3';
+        toast.style.zIndex = '9999';
+        toast.innerHTML = `
         <div class="d-flex">
             <div class="toast-body">
                 <i class="fas fa-check-circle me-2"></i>${message}
@@ -573,22 +615,22 @@ function showSuccess(message) {
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
         </div>
     `;
-    document.body.appendChild(toast);
-    
-    const bsToast = new bootstrap.Toast(toast);
-    bsToast.show();
-    
-    toast.addEventListener('hidden.bs.toast', () => {
-        document.body.removeChild(toast);
-    });
-}
+        document.body.appendChild(toast);
 
-function showError(message) {
-    // Toast notification
-    const toast = document.createElement('div');
-    toast.className = 'toast align-items-center text-white bg-danger border-0 position-fixed top-0 end-0 m-3';
-    toast.style.zIndex = '9999';
-    toast.innerHTML = `
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+
+        toast.addEventListener('hidden.bs.toast', () => {
+            document.body.removeChild(toast);
+        });
+    }
+
+    function showError(message) {
+        // Toast notification
+        const toast = document.createElement('div');
+        toast.className = 'toast align-items-center text-white bg-danger border-0 position-fixed top-0 end-0 m-3';
+        toast.style.zIndex = '9999';
+        toast.innerHTML = `
         <div class="d-flex">
             <div class="toast-body">
                 <i class="fas fa-exclamation-circle me-2"></i>${message}
@@ -596,14 +638,248 @@ function showError(message) {
             <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
         </div>
     `;
-    document.body.appendChild(toast);
-    
-    const bsToast = new bootstrap.Toast(toast);
-    bsToast.show();
-    
-    toast.addEventListener('hidden.bs.toast', () => {
-        document.body.removeChild(toast);
+        document.body.appendChild(toast);
+
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+
+        toast.addEventListener('hidden.bs.toast', () => {
+            document.body.removeChild(toast);
+        });
+    }
+
+    // Event management functions
+    let currentEventId = null;
+
+    function showEventForm(eventId = null, date = null) {
+        currentEventId = eventId;
+        const modal = new bootstrap.Modal(document.getElementById('eventFormModal'));
+        const modalTitle = document.getElementById('eventFormModalTitle');
+        const modalBody = document.getElementById('eventFormModalBody');
+        const deleteBtn = document.getElementById('deleteEventBtn');
+
+        // Loading content
+        modalBody.innerHTML = '<div class="text-center"><div class="spinner-border text-primary"></div><p class="mt-2">Forma yüklənir...</p></div>';
+
+        // Show/hide delete button
+        deleteBtn.style.display = eventId ? 'block' : 'none';
+
+        let url = '{% url "event_form_modal" %}';
+        if (eventId) {
+            url = `/{% url "event_form_modal" 999 %}`.replace('999', eventId);
+        }
+
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    modalBody.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                } else {
+                    modalTitle.innerHTML = `<i class="fas fa-calendar-plus me-2"></i>${data.title}`;
+                    modalBody.innerHTML = data.form_html;
+
+                    // Set default date if provided
+                    if (date && !eventId) {
+                        document.getElementById('eventStartDate').value = date;
+                    }
+
+                    // Setup form event handlers
+                    setupEventFormHandlers();
+                }
+            })
+            .catch(error => {
+                modalBody.innerHTML = `<div class="alert alert-danger">Forma yüklənərkən xəta: ${error.message}</div>`;
+            });
+
+        modal.show();
+    }
+
+    function setupEventFormHandlers() {
+        const allDayCheckbox = document.getElementById('eventAllDay');
+        const timeFields = document.getElementById('timeFields');
+
+        if (allDayCheckbox && timeFields) {
+            allDayCheckbox.addEventListener('change', function () {
+                timeFields.style.display = this.checked ? 'none' : '';
+            });
+        }
+
+        // Setup color change based on event type
+        const eventTypeSelect = document.getElementById('eventType');
+        const colorInput = document.getElementById('eventColor');
+
+        if (eventTypeSelect && colorInput) {
+            eventTypeSelect.addEventListener('change', function () {
+                const colors = {
+                    'PERSONAL': '#6f42c1',
+                    'MEETING': '#667eea',
+                    'TASK': '#fd7e14',
+                    'REMINDER': '#ffc107',
+                    'DEADLINE': '#dc3545',
+                    'TRAINING': '#20c997',
+                    'EVALUATION': '#e83e8c',
+                    'OTHER': '#6c757d'
+                };
+                colorInput.value = colors[this.value] || '#3788d8';
+            });
+        }
+    }
+
+    function saveEvent() {
+        const form = document.getElementById('eventForm');
+        if (!form) return;
+
+        // Validate required fields
+        const title = document.getElementById('eventTitle').value.trim();
+        const startDate = document.getElementById('eventStartDate').value;
+
+        if (!title || !startDate) {
+            showError('Başlıq və başlama tarixi mütləqdir');
+            return;
+        }
+
+        // Collect form data
+        const formData = {
+            title: title,
+            start_date: startDate,
+            end_date: document.getElementById('eventEndDate').value,
+            description: document.getElementById('eventDescription').value,
+            event_type: document.getElementById('eventType').value,
+            priority: document.getElementById('eventPriority').value,
+            color: document.getElementById('eventColor').value,
+            location: document.getElementById('eventLocation').value,
+            is_all_day: document.getElementById('eventAllDay').checked,
+            is_private: document.getElementById('eventPrivate').checked,
+            reminder_minutes: document.getElementById('eventReminder').value || null
+        };
+
+        // Add time fields if not all day
+        if (!formData.is_all_day) {
+            formData.start_time = document.getElementById('eventStartTime').value;
+            formData.end_time = document.getElementById('eventEndTime').value;
+        }
+
+        const saveBtn = document.getElementById('saveEventBtn');
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saxlanır...';
+
+        const url = currentEventId ?
+            `/{% url "update_event" 999 %}`.replace('999', currentEventId) :
+            '{% url "create_event" %}';
+
+        const method = currentEventId ? 'PUT' : 'POST';
+
+        fetch(url, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken(),
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(formData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Refresh calendar
+                    const calendar = FullCalendar.getApi();
+                    calendar.refetchEvents();
+
+                    // Close modal
+                    bootstrap.Modal.getInstance(document.getElementById('eventFormModal')).hide();
+
+                    // Show success message
+                    showSuccess(data.message);
+                } else {
+                    showError(data.error || 'Xəta baş verdi');
+                }
+            })
+            .catch(error => {
+                showError('Şəbəkə xətası: ' + error.message);
+            })
+            .finally(() => {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fas fa-save me-2"></i>Saxla';
+            });
+    }
+
+    function deleteEvent() {
+        if (!currentEventId) return;
+
+        if (!confirm('Hadisəni silmək istədiyinizə əminsiniz?')) {
+            return;
+        }
+
+        const deleteBtn = document.getElementById('deleteEventBtn');
+        deleteBtn.disabled = true;
+        deleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Silinir...';
+
+        fetch(`/{% url "delete_event" 999 %}`.replace('999', currentEventId), {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': getCSRFToken(),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Refresh calendar
+                    const calendar = FullCalendar.getApi();
+                    calendar.refetchEvents();
+
+                    // Close modal
+                    bootstrap.Modal.getInstance(document.getElementById('eventFormModal')).hide();
+
+                    // Show success message
+                    showSuccess(data.message);
+                } else {
+                    showError(data.error || 'Silmə xətası');
+                }
+            })
+            .catch(error => {
+                showError('Şəbəkə xətası: ' + error.message);
+            })
+            .finally(() => {
+                deleteBtn.disabled = false;
+                deleteBtn.innerHTML = '<i class="fas fa-trash me-2"></i>Sil';
+            });
+    }
+
+    // Add event creation by date click
+    document.addEventListener('DOMContentLoaded', function () {
+        // Update calendar configuration for date clicks
+        const calendar = FullCalendar.getApi();
+        if (calendar) {
+            calendar.setOption('dateClick', function (info) {
+                showEventForm(null, info.dateStr);
+            });
+
+            // Add right-click context menu for events
+            calendar.setOption('eventClick', function (info) {
+                // Check if it's a custom event that can be edited
+                if (info.event.extendedProps.type === 'custom_event') {
+                    const eventIdStr = info.event.id; // e.g., "event_123"
+                    const eventId = eventIdStr.split('_')[1];
+
+                    // Show context menu or directly edit
+                    if (info.jsEvent.button === 2) { // Right click
+                        info.jsEvent.preventDefault();
+                        // Could show context menu here
+                    } else {
+                        // Left click - show edit form
+                        showEventForm(eventId);
+                    }
+                } else {
+                    // Handle other event types (existing functionality)
+                    showEventDetail(info.event);
+                }
+            });
+        }
     });
-}
 </script>
 {% endblock %}

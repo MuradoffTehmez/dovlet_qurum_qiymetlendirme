@@ -5,7 +5,7 @@ from simple_history.admin import SimpleHistoryAdmin
 from .models import (
     Cavab, Ishchi, Qiymetlendirme, QiymetlendirmeDovru,
     Sual, SualKateqoriyasi, Hedef, InkishafPlani, OrganizationUnit,
-    Notification, Feedback
+    Notification, Feedback, CalendarEvent
 )
 
 # --- Ishchi modeli üçün admin ---
@@ -296,3 +296,62 @@ class FeedbackAdmin(SimpleHistoryAdmin):
         updated = queryset.update(status='CLOSED')
         self.message_user(request, f"{updated} geri bildirim bağlandı.")
     mark_as_closed.short_description = "Seçilmiş geri bildirişləri bağla"
+
+
+# === TƏQVİM HADİSƏLƏRİ ADMİN ===
+
+@admin.register(CalendarEvent)
+class CalendarEventAdmin(SimpleHistoryAdmin):
+    list_display = (
+        'title', 'created_by', 'event_type', 'priority', 'start_date', 
+        'end_date', 'is_all_day', 'is_private', 'is_active'
+    )
+    list_filter = (
+        'event_type', 'priority', 'is_all_day', 'is_private', 'is_active',
+        'start_date', 'created_by__organization_unit'
+    )
+    search_fields = ('title', 'description', 'location', 'created_by__username', 'created_by__first_name', 'created_by__last_name')
+    readonly_fields = ('created_at', 'updated_at')
+    
+    fieldsets = (
+        ('Əsas Məlumatlar', {
+            'fields': ('created_by', 'title', 'description', 'event_type', 'priority')
+        }),
+        ('Vaxt Məlumatları', {
+            'fields': ('start_date', 'end_date', 'start_time', 'end_time', 'is_all_day')
+        }),
+        ('Görünüş və Status', {
+            'fields': ('color', 'is_private', 'is_active')
+        }),
+        ('Əlavə Məlumatlar', {
+            'fields': ('location', 'reminder_minutes')
+        }),
+        ('Tarixlər', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        })
+    )
+    
+    filter_horizontal = ('attendees',)
+    
+    actions = ['make_public', 'make_private', 'activate_events', 'deactivate_events']
+    
+    def make_public(self, request, queryset):
+        updated = queryset.update(is_private=False)
+        self.message_user(request, f"{updated} hadisə ictimai edildi.")
+    make_public.short_description = "Seçilmiş hadisələri ictimai et"
+    
+    def make_private(self, request, queryset):
+        updated = queryset.update(is_private=True)
+        self.message_user(request, f"{updated} hadisə şəxsi edildi.")
+    make_private.short_description = "Seçilmiş hadisələri şəxsi et"
+    
+    def activate_events(self, request, queryset):
+        updated = queryset.update(is_active=True)
+        self.message_user(request, f"{updated} hadisə aktivləşdirildi.")
+    activate_events.short_description = "Seçilmiş hadisələri aktivləşdir"
+    
+    def deactivate_events(self, request, queryset):
+        updated = queryset.update(is_active=False)
+        self.message_user(request, f"{updated} hadisə deaktivləşdirildi.")
+    deactivate_events.short_description = "Seçilmiş hadisələri deaktivləşdir"

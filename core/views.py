@@ -61,11 +61,35 @@ def dashboard(request):
         .first()
     )
 
+    # Clean template üçün statistika məlumatları
+    pending_evaluations_count = qiymetlendirmeler.count()
+    completed_evaluations_count = Qiymetlendirme.objects.filter(
+        qiymetlendiren=request.user, status="TAMAMLANMIS"
+    ).count()
+    total_evaluations_count = Qiymetlendirme.objects.filter(
+        qiymetlendiren=request.user
+    ).count()
+    
+    # Manager üçün əlavə məlumatlar
+    team_members_count = 0
+    is_manager = False
+    if hasattr(request.user, 'rol') and request.user.rol in ['REHBER', 'ADMIN']:
+        is_manager = True
+        if hasattr(request.user, 'organization_unit') and request.user.organization_unit:
+            team_members_count = Ishchi.objects.filter(
+                organization_unit=request.user.organization_unit
+            ).exclude(id=request.user.id).count()
+
     context = {
         "qiymetlendirmeler": qiymetlendirmeler,
         "aktiv_plan": aktiv_plan,
+        "pending_evaluations_count": pending_evaluations_count,
+        "completed_evaluations_count": completed_evaluations_count,
+        "total_evaluations_count": total_evaluations_count,
+        "team_members_count": team_members_count,
+        "is_manager": is_manager,
     }
-    return render(request, "core/dashboard.html", context)
+    return render(request, "core/dashboard_clean.html", context)
 
 # --- QEYDİYYAT GÖRÜNÜŞLƏRİ ---
 # # Yeni istifadəçiləri qeydiyyatdan keçirən və aktivasiya e-poçtu göndərən görünüş.

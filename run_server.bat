@@ -23,7 +23,7 @@ python manage.py collectstatic --noinput
 REM Start development server
 echo =====================================================
 echo Starting Django Development Server...
-echo Server will be available at: http://127.0.0.1:8000/
+echo Server will be available at: http://127.0.0.1:8001/
 echo Press Ctrl+C to stop the server
 echo =====================================================
-python manage.py runserver 127.0.0.1:8000
+python manage.py runserver 127.0.0.1:8001

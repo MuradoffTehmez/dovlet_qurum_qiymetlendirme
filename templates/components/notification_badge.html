@@ -1,34 +1,35 @@
 {% load i18n %}
 
 <div class="dropdown">
-    <button class="btn btn-outline-light position-relative" type="button" 
-            id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-            onclick="loadRecentNotifications()">
+    <button class="btn btn-outline-light position-relative" type="button" id="notificationDropdown"
+        data-bs-toggle="dropdown" aria-expanded="false" onclick="loadRecentNotifications()">
         <i class="fas fa-bell"></i>
-        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge" 
-              id="unread-count" style="display: none;">
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-badge"
+            id="unread-count" style="display: none;">
             0
         </span>
     </button>
-    
-    <div class="dropdown-menu dropdown-menu-end notification-dropdown" 
-         aria-labelledby="notificationDropdown" style="width: 350px; max-height: 400px; overflow-y: auto;">
-        
+
+    <div class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationDropdown"
+        style="width: 350px; max-height: 400px; overflow-y: auto;">
+
         <!-- Header -->
         <div class="dropdown-header d-flex justify-content-between align-items-center">
             <h6 class="mb-0">{% trans "Bildirişlər" %}</h6>
             <div class="btn-group btn-group-sm">
-                <button class="btn btn-link btn-sm p-0 me-2" onclick="markAllNotificationsRead()" title="{% trans 'Hamısını oxu' %}">
+                <button class="btn btn-link btn-sm p-0 me-2" onclick="markAllNotificationsRead()"
+                    title="{% trans 'Hamısını oxu' %}">
                     <i class="fas fa-check-double"></i>
                 </button>
-                <a href="{% url 'notification_center' %}" class="btn btn-link btn-sm p-0" title="{% trans 'Hamısını gör' %}">
+                <a href="{% url 'notification_center' %}" class="btn btn-link btn-sm p-0"
+                    title="{% trans 'Hamısını gör' %}">
                     <i class="fas fa-external-link-alt"></i>
                 </a>
             </div>
         </div>
-        
+
         <div class="dropdown-divider"></div>
-        
+
         <!-- Notifications List -->
         <div id="recent-notifications-list">
             <div class="text-center py-3">
@@ -37,7 +38,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Footer -->
         <div class="dropdown-divider"></div>
         <div class="dropdown-item-text text-center">
@@ -49,114 +50,122 @@
 </div>
 
 <style>
-.notification-dropdown {
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    border: none;
-    border-radius: 10px;
-}
+    .notification-dropdown {
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        border: none;
+        border-radius: 10px;
+    }
 
-.notification-item-mini {
-    padding: 10px 15px;
-    border-bottom: 1px solid #f1f1f1;
-    transition: background-color 0.2s;
-    cursor: pointer;
-}
+    .notification-item-mini {
+        padding: 10px 15px;
+        border-bottom: 1px solid #f1f1f1;
+        transition: background-color 0.2s;
+        cursor: pointer;
+    }
 
-.notification-item-mini:hover {
-    background-color: #f8f9fa;
-}
+    .notification-item-mini:hover {
+        background-color: #f8f9fa;
+    }
 
-.notification-item-mini.unread {
-    background-color: #fff3cd;
-    border-left: 3px solid #ffc107;
-}
+    .notification-item-mini.unread {
+        background-color: #fff3cd;
+        border-left: 3px solid #ffc107;
+    }
 
-.notification-icon-mini {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.8rem;
-}
+    .notification-icon-mini {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+    }
 
-.notification-badge {
-    animation: pulse 1.5s infinite;
-}
+    .notification-badge {
+        animation: pulse 1.5s infinite;
+    }
 
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
 </style>
 
 <script>
-let notificationPollingInterval;
+    let notificationPollingInterval;
 
-document.addEventListener('DOMContentLoaded', function() {
-    // İlk yükləmə zamanı unread count-u al
-    updateNotificationCount();
-    
-    // Hər 30 saniyədə bir polling et
-    notificationPollingInterval = setInterval(updateNotificationCount, 30000);
-    
-    // Səhifə görünməyəndə polling-i dayandır
-    document.addEventListener('visibilitychange', function() {
-        if (document.hidden) {
-            clearInterval(notificationPollingInterval);
-        } else {
-            updateNotificationCount();
-            notificationPollingInterval = setInterval(updateNotificationCount, 30000);
-        }
+    document.addEventListener('DOMContentLoaded', function () {
+        // İlk yükləmə zamanı unread count-u al
+        updateNotificationCount();
+
+        // Hər 30 saniyədə bir polling et
+        notificationPollingInterval = setInterval(updateNotificationCount, 30000);
+
+        // Səhifə görünməyəndə polling-i dayandır
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) {
+                clearInterval(notificationPollingInterval);
+            } else {
+                updateNotificationCount();
+                notificationPollingInterval = setInterval(updateNotificationCount, 30000);
+            }
+        });
     });
-});
 
-function updateNotificationCount() {
-    fetch('/bildirisler/api/?action=get_unread_count', {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        const badge = document.getElementById('unread-count');
-        if (data.unread_count > 0) {
-            badge.textContent = data.unread_count;
-            badge.style.display = 'inline';
-        } else {
-            badge.style.display = 'none';
-        }
-    })
-    .catch(error => {
-        console.error('Bildiriş sayısı yüklənə bilmədi:', error);
-    });
-}
+    function updateNotificationCount() {
+        fetch('/bildirisler/api/?action=get_unread_count', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                const badge = document.getElementById('unread-count');
+                if (data.unread_count > 0) {
+                    badge.textContent = data.unread_count;
+                    badge.style.display = 'inline';
+                } else {
+                    badge.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Bildiriş sayısı yüklənə bilmədi:', error);
+            });
+    }
 
-function loadRecentNotifications() {
-    const listContainer = document.getElementById('recent-notifications-list');
-    
-    fetch('/bildirisler/api/?action=get_recent', {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.notifications.length === 0) {
-            listContainer.innerHTML = `
+    function loadRecentNotifications() {
+        const listContainer = document.getElementById('recent-notifications-list');
+
+        fetch('/bildirisler/api/?action=get_recent', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.notifications.length === 0) {
+                    listContainer.innerHTML = `
                 <div class="text-center py-3">
                     <i class="fas fa-bell-slash text-muted"></i>
                     <p class="text-muted mb-0 mt-2">{% trans "Yeni bildiriş yoxdur" %}</p>
                 </div>
             `;
-            return;
-        }
-        
-        let html = '';
-        data.notifications.slice(0, 5).forEach(notification => {
-            html += `
+                    return;
+                }
+
+                let html = '';
+                data.notifications.slice(0, 5).forEach(notification => {
+                    html += `
                 <div class="notification-item-mini d-flex align-items-start ${!notification.is_read ? 'unread' : ''}" 
                      onclick="handleNotificationClick(${notification.id}, '${notification.action_url}')">
                     <div class="notification-icon-mini bg-${notification.color_class} text-white me-2">
@@ -169,95 +178,95 @@ function loadRecentNotifications() {
                     </div>
                 </div>
             `;
-        });
-        
-        listContainer.innerHTML = html;
-    })
-    .catch(error => {
-        console.error('Bildirişlər yüklənə bilmədi:', error);
-        listContainer.innerHTML = `
+                });
+
+                listContainer.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Bildirişlər yüklənə bilmədi:', error);
+                listContainer.innerHTML = `
             <div class="text-center py-3">
                 <i class="fas fa-exclamation-triangle text-warning"></i>
                 <p class="text-muted mb-0 mt-2">{% trans "Bildirişlər yüklənə bilmədi" %}</p>
             </div>
         `;
-    });
-}
+            });
+    }
 
-function handleNotificationClick(notificationId, actionUrl) {
-    // Bildirişi oxunmuş kimi işarələ
-    fetch(`/bildirisler/oxu/${notificationId}/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(() => {
-        updateNotificationCount();
-        
-        // Action URL varsa ora yönləndir
-        if (actionUrl && actionUrl !== 'null' && actionUrl !== '') {
-            window.location.href = actionUrl;
-        } else {
-            window.location.href = '{% url "notification_center" %}';
-        }
-    });
-}
+    function handleNotificationClick(notificationId, actionUrl) {
+        // Bildirişi oxunmuş kimi işarələ
+        fetch(`/bildirisler/oxu/${notificationId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(() => {
+                updateNotificationCount();
 
-function markAllNotificationsRead() {
-    fetch('/bildirisler/hamisi-oxu/', {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            updateNotificationCount();
-            loadRecentNotifications();
-            
-            // Toast göstər
-            showToast(data.message, 'success');
-        }
-    });
-}
+                // Action URL varsa ora yönləndir
+                if (actionUrl && actionUrl !== 'null' && actionUrl !== '') {
+                    window.location.href = actionUrl;
+                } else {
+                    window.location.href = '{% url "notification_center" %}';
+                }
+            });
+    }
 
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+    function markAllNotificationsRead() {
+        fetch('/bildirisler/hamisi-oxu/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    updateNotificationCount();
+                    loadRecentNotifications();
+
+                    // Toast göstər
+                    showToast(data.message, 'success');
+                }
+            });
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
+        return cookieValue;
     }
-    return cookieValue;
-}
 
-function showToast(message, type) {
-    // Toast yaratmaq üçün köməkçi funksiya
-    const toastContainer = document.querySelector('.toast-container') || document.body;
-    
-    const toast = document.createElement('div');
-    toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
-    toast.style.top = '20px';
-    toast.style.right = '20px';
-    toast.style.zIndex = '9999';
-    toast.innerHTML = `
+    function showToast(message, type) {
+        // Toast yaratmaq üçün köməkçi funksiya
+        const toastContainer = document.querySelector('.toast-container') || document.body;
+
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        toast.style.top = '20px';
+        toast.style.right = '20px';
+        toast.style.zIndex = '9999';
+        toast.innerHTML = `
         ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
-    
-    toastContainer.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.remove();
-    }, 5000);
-}
+
+        toastContainer.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 5000);
+    }
 </script>

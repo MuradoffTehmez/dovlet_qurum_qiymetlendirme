@@ -31,8 +31,8 @@ python manage.py collectstatic --noinput --clear
 # Display system info
 Write-Host "=====================================================" -ForegroundColor Yellow
 Write-Host "Django Server Information:" -ForegroundColor Green
-Write-Host "  Server URL: http://127.0.0.1:8000/" -ForegroundColor White
-Write-Host "  Admin URL:  http://127.0.0.1:8000/admin/" -ForegroundColor White
+Write-Host "  Server URL: http://127.0.0.1:8001/" -ForegroundColor White
+Write-Host "  Admin URL:  http://127.0.0.1:8001/admin/" -ForegroundColor White
 Write-Host "  Debug Mode: ON (Development)" -ForegroundColor Yellow
 Write-Host ""
 Write-Host "Available Modules:" -ForegroundColor Green
@@ -45,4 +45,4 @@ Write-Host "Press Ctrl+C to stop the server" -ForegroundColor Red
 Write-Host "=====================================================" -ForegroundColor Yellow
 
 # Start Django development server
-python manage.py runserver 127.0.0.1:8000
+python manage.py runserver 127.0.0.1:8001

@@ -1,0 +1,279 @@
+{% extends 'core/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Ana Səhifə" %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .welcome-section {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .clean-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border-left: 4px solid #667eea;
+    }
+
+    .dark-mode .clean-card {
+        background: #2d3748;
+        color: #e2e8f0;
+        border-left-color: #667eea;
+    }
+
+    .clean-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #667eea;
+        margin-bottom: 0.5rem;
+    }
+
+    .dark-mode .stat-number {
+        color: #90cdf4;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin: 0;
+    }
+
+    .dark-mode .stat-label {
+        color: #a0aec0;
+    }
+
+    .quick-action-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .action-card {
+        background: white;
+        border: 2px solid #f1f5f9;
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.3s ease;
+    }
+
+    .dark-mode .action-card {
+        background: #374151;
+        border-color: #4b5563;
+        color: #e5e7eb;
+    }
+
+    .action-card:hover {
+        border-color: #667eea;
+        transform: translateY(-3px);
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .action-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin: 0 auto 1rem;
+    }
+
+    .minimal-section {
+        margin-bottom: 3rem;
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: #2d3748;
+    }
+
+    .dark-mode .section-title {
+        color: #f7fafc;
+    }
+
+    .activity-item {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.5rem;
+        background: #f8f9fa;
+        border-left: 3px solid #667eea;
+    }
+
+    .dark-mode .activity-item {
+        background: #374151;
+        color: #e5e7eb;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2 class="mb-2">{% trans "Xoş gəldiniz" %}, {{ user.get_full_name|default:user.username }}!</h2>
+                <p class="mb-0 opacity-90">{% trans "Q360 Performans İdarəetmə Sistemi" %}</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="d-flex flex-column align-items-end">
+                    <small class="opacity-75">{% trans "Son giriş" %}</small>
+                    <strong>{{ user.last_login|date:"d M Y, H:i"|default:"İlk giriş" }}</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Overview -->
+    <div class="minimal-section">
+        <h3 class="section-title">📊 {% trans "Statistikalar" %}</h3>
+        <div class="stats-grid">
+            <div class="clean-card">
+                <div class="stat-number">{{ pending_evaluations_count|default:0 }}</div>
+                <p class="stat-label">{% trans "Gözləyən Qiymətləndirmə" %}</p>
+            </div>
+            <div class="clean-card">
+                <div class="stat-number">{{ completed_evaluations_count|default:0 }}</div>
+                <p class="stat-label">{% trans "Tamamlanmış Qiymətləndirmə" %}</p>
+            </div>
+            <div class="clean-card">
+                <div class="stat-number">{{ total_evaluations_count|default:0 }}</div>
+                <p class="stat-label">{% trans "Ümumi Qiymətləndirmə" %}</p>
+            </div>
+            {% if is_manager %}
+            <div class="clean-card">
+                <div class="stat-number">{{ team_members_count|default:0 }}</div>
+                <p class="stat-label">{% trans "Komanda Üzvləri" %}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Active Plan Section -->
+    {% if aktiv_plan %}
+    <div class="minimal-section">
+        <h3 class="section-title">🎯 {% trans "Aktiv Planınız" %}</h3>
+        <div class="clean-card">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="mb-2">{{ aktiv_plan.dovr.ad }}</h5>
+                    <p class="text-muted mb-0">{% trans "Hədəflərinizi izləyin və inkişaf edin" %}</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="{% url 'plan_bax' aktiv_plan.id %}" class="btn btn-primary">
+                        <i class="bi bi-arrow-right me-2"></i>{% trans "Plana Bax" %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Quick Actions -->
+    <div class="minimal-section">
+        <h3 class="section-title">⚡ {% trans "Tez Əməliyyatlar" %}</h3>
+        <div class="quick-action-grid">
+            <a href="{% url 'interactive_dashboard' %}" class="action-card">
+                <div class="action-icon">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <h6>{% trans "İnteraktiv Panel" %}</h6>
+                <small class="text-muted">Real-time analitika</small>
+            </a>
+
+            <a href="{% url 'calendar_view' %}" class="action-card">
+                <div class="action-icon">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+                <h6>{% trans "Təqvim" %}</h6>
+                <small class="text-muted">Hadisələr və tarixlər</small>
+            </a>
+
+            <a href="{% url 'notification_center' %}" class="action-card">
+                <div class="action-icon">
+                    <i class="bi bi-bell"></i>
+                </div>
+                <h6>{% trans "Bildirişlər" %}</h6>
+                <small class="text-muted">Məlumatlar və xəbərlər</small>
+            </a>
+
+            <a href="{% url 'report_center' %}" class="action-card">
+                <div class="action-icon">
+                    <i class="bi bi-file-bar-graph"></i>
+                </div>
+                <h6>{% trans "Hesabatlar" %}</h6>
+                <small class="text-muted">PDF, Excel, CSV</small>
+            </a>
+
+            {% if user.rol == 'REHBER' or user.is_superuser %}
+            <a href="{% url 'rehber_paneli' %}" class="action-card">
+                <div class="action-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <h6>{% trans "Rəhbər Paneli" %}</h6>
+                <small class="text-muted">Komanda idarəsi</small>
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Recent Activities -->
+    {% if qiymetlendirmeler %}
+    <div class="minimal-section">
+        <h3 class="section-title">📋 {% trans "Son Fəaliyyətlər" %}</h3>
+        <div class="clean-card">
+            <h6 class="mb-3">{% trans "Sizin üçün gözləyən qiymətləndirmələr" %}</h6>
+            {% for q in qiymetlendirmeler|slice:":3" %}
+            <div class="activity-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ q.qiymetlendirilen.get_full_name }}</strong>
+                        <small class="text-muted d-block">{{ q.dovr.ad }}</small>
+                    </div>
+                    <a href="{% url 'qiymetlendirme_etmek' q.id %}" class="btn btn-sm btn-outline-primary">
+                        {% trans "Qiymətləndir" %}
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+
+            {% if qiymetlendirmeler|length > 3 %}
+            <div class="text-center mt-3">
+                <small class="text-muted">+{{ qiymetlendirmeler|length|add:"-3" }} {% trans "digər qiymətləndirmə"
+                    %}</small>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

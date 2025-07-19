@@ -42,12 +42,12 @@ python manage.py runserver 127.0.0.1:8000
 
 Ana server başladıqdan sonra browser-də açın:
 
-- **Ana Səhifə**: http://127.0.0.1:8000/
-- **Admin Panel**: http://127.0.0.1:8000/admin/
-- **İnteraktiv Dashboard**: http://127.0.0.1:8000/interactive-dashboard/
-- **Təqvim**: http://127.0.0.1:8000/teqvim/
-- **Bildirişlər**: http://127.0.0.1:8000/bildirisler/
-- **Hesabatlar**: http://127.0.0.1:8000/hesabatlar/
+- **Ana Səhifə**: http://127.0.0.1:8001/
+- **Admin Panel**: http://127.0.0.1:8001/admin/
+- **İnteraktiv Dashboard**: http://127.0.0.1:8001/interactive-dashboard/
+- **Təqvim**: http://127.0.0.1:8001/teqvim/
+- **Bildirişlər**: http://127.0.0.1:8001/bildirisler/
+- **Hesabatlar**: http://127.0.0.1:8001/hesabatlar/
 
 ## 📋 Əsas Modullar
 

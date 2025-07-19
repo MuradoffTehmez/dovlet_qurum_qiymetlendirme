@@ -525,3 +525,189 @@ class Notification(models.Model):
         return notification
     
     history = HistoricalRecords()
+
+
+# --- Calendar Event Model ---
+class CalendarEvent(models.Model):
+    """İstifadəçi yaratdığı təqvim hadisələri"""
+    
+    class EventType(models.TextChoices):
+        MEETING = "MEETING", "Görüş"
+        TASK = "TASK", "Tapşırıq"
+        REMINDER = "REMINDER", "Xatırlatma"
+        DEADLINE = "DEADLINE", "Son Tarix"
+        PERSONAL = "PERSONAL", "Şəxsi"
+        TRAINING = "TRAINING", "Təlim"
+        EVALUATION = "EVALUATION", "Qiymətləndirmə"
+        OTHER = "OTHER", "Digər"
+    
+    class Priority(models.TextChoices):
+        LOW = "LOW", "Aşağı"
+        MEDIUM = "MEDIUM", "Orta"
+        HIGH = "HIGH", "Yüksək"
+        URGENT = "URGENT", "Təcili"
+    
+    # Əsas sahələr
+    created_by = models.ForeignKey(
+        Ishchi, on_delete=models.CASCADE,
+        related_name="created_events", verbose_name="Yaradan"
+    )
+    title = models.CharField(max_length=200, verbose_name="Başlıq")
+    description = models.TextField(blank=True, verbose_name="Təsvir")
+    
+    # Vaxt sahələri
+    start_date = models.DateField(verbose_name="Başlama Tarixi")
+    end_date = models.DateField(null=True, blank=True, verbose_name="Bitmə Tarixi")
+    start_time = models.TimeField(null=True, blank=True, verbose_name="Başlama Vaxtı")
+    end_time = models.TimeField(null=True, blank=True, verbose_name="Bitmə Vaxtı")
+    is_all_day = models.BooleanField(default=False, verbose_name="Bütün Gün")
+    
+    # Kategoriya və prioritet
+    event_type = models.CharField(
+        max_length=15, choices=EventType.choices,
+        default=EventType.PERSONAL, verbose_name="Hadisə Növü"
+    )
+    priority = models.CharField(
+        max_length=10, choices=Priority.choices,
+        default=Priority.MEDIUM, verbose_name="Prioritet"
+    )
+    
+    # Görünürlük və status
+    is_private = models.BooleanField(default=True, verbose_name="Şəxsi")
+    is_active = models.BooleanField(default=True, verbose_name="Aktiv")
+    
+    # Rəng (HEX format)
+    color = models.CharField(max_length=7, default="#3788d8", verbose_name="Rəng")
+    
+    # Xatırlatma
+    reminder_minutes = models.PositiveIntegerField(
+        null=True, blank=True, verbose_name="Xatırlatma (dəqiqə əvvəl)"
+    )
+    
+    # Metadata
+    location = models.CharField(max_length=255, blank=True, verbose_name="Yer")
+    attendees = models.ManyToManyField(
+        Ishchi, blank=True, 
+        related_name="attending_events", verbose_name="İştirakçılar"
+    )
+    
+    # Tarixlər
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaradılma Tarixi")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Yenilənmə Tarixi")
+    
+    class Meta:
+        verbose_name = "Təqvim Hadisəsi"
+        verbose_name_plural = "Təqvim Hadisələri"
+        ordering = ['-start_date', '-start_time']
+        indexes = [
+            models.Index(fields=['created_by', 'start_date']),
+            models.Index(fields=['event_type', 'priority']),
+            models.Index(fields=['is_active', 'is_private']),
+        ]
+    
+    def __str__(self):
+        return f"{self.title} - {self.start_date}"
+    
+    def get_absolute_url(self):
+        return f"/teqvim/hadise/{self.pk}/"
+    
+    def get_duration(self):
+        """Hadisənin müddətini qaytarır"""
+        if self.is_all_day or not self.start_time or not self.end_time:
+            if self.end_date:
+                return (self.end_date - self.start_date).days + 1
+            return 1
+        
+        from datetime import datetime, timedelta
+        start_datetime = datetime.combine(self.start_date, self.start_time)
+        end_datetime = datetime.combine(self.end_date or self.start_date, self.end_time)
+        
+        if end_datetime < start_datetime:
+            end_datetime += timedelta(days=1)
+        
+        duration = end_datetime - start_datetime
+        return duration.total_seconds() / 3600  # hours
+    
+    def get_color_for_type(self):
+        """Hadisə növünə görə rəng qaytarır"""
+        colors = {
+            self.EventType.MEETING: '#667eea',
+            self.EventType.TASK: '#fd7e14',
+            self.EventType.REMINDER: '#ffc107',
+            self.EventType.DEADLINE: '#dc3545',
+            self.EventType.PERSONAL: '#6f42c1',
+            self.EventType.TRAINING: '#20c997',
+            self.EventType.EVALUATION: '#e83e8c',
+            self.EventType.OTHER: '#6c757d',
+        }
+        return colors.get(self.event_type, self.color)
+    
+    def get_priority_badge(self):
+        """Prioritet badge-i qaytarır"""
+        badges = {
+            self.Priority.LOW: 'secondary',
+            self.Priority.MEDIUM: 'primary',
+            self.Priority.HIGH: 'warning',
+            self.Priority.URGENT: 'danger'
+        }
+        return badges.get(self.priority, 'secondary')
+    
+    def to_fullcalendar_event(self):
+        """FullCalendar üçün event obyekti qaytarır"""
+        event = {
+            'id': f'event_{self.id}',
+            'title': self.title,
+            'start': self.start_date.isoformat(),
+            'backgroundColor': self.get_color_for_type(),
+            'borderColor': self.get_color_for_type(),
+            'textColor': 'white',
+            'extendedProps': {
+                'type': 'custom_event',
+                'description': self.description,
+                'event_type': self.get_event_type_display(),
+                'priority': self.get_priority_display(),
+                'location': self.location,
+                'created_by': self.created_by.get_full_name(),
+                'is_all_day': self.is_all_day,
+                'duration': self.get_duration(),
+            }
+        }
+        
+        # Bitmə tarixi əlavə et
+        if self.end_date:
+            event['end'] = self.end_date.isoformat()
+        
+        # Vaxt məlumatları əlavə et
+        if not self.is_all_day and self.start_time:
+            event['start'] = f"{self.start_date}T{self.start_time}"
+            if self.end_time:
+                end_date = self.end_date or self.start_date
+                event['end'] = f"{end_date}T{self.end_time}"
+        
+        return event
+    
+    @classmethod
+    def get_events_for_period(cls, user, start_date, end_date, include_private=True):
+        """Müəyyən dövr üçün hadisələri qaytarır"""
+        queryset = cls.objects.filter(
+            start_date__lte=end_date,
+            is_active=True
+        ).filter(
+            models.Q(start_date__gte=start_date) |
+            models.Q(end_date__gte=start_date) |
+            models.Q(end_date__isnull=True, start_date__lte=end_date)
+        )
+        
+        # İstifadəçiyə görə filter
+        if include_private:
+            queryset = queryset.filter(
+                models.Q(created_by=user) |
+                models.Q(attendees=user) |
+                models.Q(is_private=False)
+            )
+        else:
+            queryset = queryset.filter(is_private=False)
+        
+        return queryset.distinct()
+    
+    history = HistoricalRecords()

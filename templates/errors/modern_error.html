@@ -1,6 +1,7 @@
 {% load i18n static %}
 <!DOCTYPE html>
 <html lang="{{ request.LANGUAGE_CODE }}" class="h-100">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,6 +17,7 @@
             align-items: center;
             justify-content: center;
         }
+
         .error-card {
             max-width: 600px;
             width: 100%;
@@ -26,27 +28,32 @@
             text-align: center;
             padding: 3rem;
         }
+
         .error-icon {
             font-size: 6rem;
             margin-bottom: 1rem;
         }
+
         .error-code {
             font-size: 4rem;
             font-weight: 700;
             color: #667eea;
             margin-bottom: 1rem;
         }
+
         .error-message {
             font-size: 1.2rem;
             color: #6c757d;
             margin-bottom: 2rem;
         }
+
         .error-actions {
             display: flex;
             gap: 1rem;
             justify-content: center;
             flex-wrap: wrap;
         }
+
         .btn-home {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             border: none;
@@ -57,11 +64,13 @@
             text-decoration: none;
             transition: all 0.3s ease;
         }
+
         .btn-home:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
             color: white;
         }
+
         .btn-back {
             background: transparent;
             border: 2px solid #667eea;
@@ -72,11 +81,13 @@
             text-decoration: none;
             transition: all 0.3s ease;
         }
+
         .btn-back:hover {
             background: #667eea;
             color: white;
             transform: translateY(-2px);
         }
+
         .animated-bg {
             position: absolute;
             top: 0;
@@ -86,6 +97,7 @@
             overflow: hidden;
             z-index: -1;
         }
+
         .animated-bg::before {
             content: '';
             position: absolute;
@@ -97,23 +109,31 @@
             background-size: 50px 50px;
             animation: moveBackground 20s linear infinite;
         }
+
         @keyframes moveBackground {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            100% { transform: translate(50px, 50px) rotate(360deg); }
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(50px, 50px) rotate(360deg);
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="error-container">
         <div class="animated-bg"></div>
         <div class="error-card">
             <div class="error-icon text-warning">
-                <i class="bi bi-{% if error_code == '404' %}search{% elif error_code == '403' %}shield-exclamation{% elif error_code == '500' %}tools{% else %}exclamation-triangle{% endif %}"></i>
+                <i
+                    class="bi bi-{% if error_code == '404' %}search{% elif error_code == '403' %}shield-exclamation{% elif error_code == '500' %}tools{% else %}exclamation-triangle{% endif %}"></i>
             </div>
             <div class="error-code">{{ error_code }}</div>
             <h2 class="mb-3">{{ error_title }}</h2>
             <p class="error-message">{{ error_message }}</p>
-            
+
             {% if error_suggestions %}
             <div class="alert alert-info text-start mb-4">
                 <h6>{% trans "Təkliflər" %}:</h6>
@@ -124,7 +144,7 @@
                 </ul>
             </div>
             {% endif %}
-            
+
             <div class="error-actions">
                 <a href="{% url 'dashboard' %}" class="btn-home">
                     <i class="bi bi-house-door me-2"></i>
@@ -135,23 +155,23 @@
                     {% trans "Geri" %}
                 </a>
             </div>
-            
+
             <div class="mt-4 pt-3 border-top">
                 <small class="text-muted">
-                    {% trans "Problemin davam etdiyi halda" %} 
+                    {% trans "Problemin davam etdiyi halda" %}
                     <a href="mailto:support@qiymetlendirme.az" class="text-decoration-none">
                         support@qiymetlendirme.az
-                    </a> 
+                    </a>
                     {% trans "ilə əlaqə saxlayın" %}
                 </small>
             </div>
         </div>
     </div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Theme detection
-        (function() {
+        (function () {
             'use strict';
             const theme = localStorage.getItem('theme');
             if (theme === 'dark') {
@@ -160,21 +180,21 @@
                 document.querySelector('.error-card').style.color = '#c9d1d9';
             }
         })();
-        
+
         // Add some interactive effects
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const card = document.querySelector('.error-card');
             const icon = document.querySelector('.error-icon');
-            
+
             // Add hover effect to card
-            card.addEventListener('mouseenter', function() {
+            card.addEventListener('mouseenter', function () {
                 this.style.transform = 'scale(1.02)';
             });
-            
-            card.addEventListener('mouseleave', function() {
+
+            card.addEventListener('mouseleave', function () {
                 this.style.transform = 'scale(1)';
             });
-            
+
             // Animate icon on load 
             setTimeout(() => {
                 icon.classList.add('animate__animated', 'animate__pulse');
@@ -182,4 +202,5 @@
         });
     </script>
 </body>
+
 </html>
