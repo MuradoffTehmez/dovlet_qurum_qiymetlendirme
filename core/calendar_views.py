@@ -337,8 +337,8 @@ def event_detail(request, event_type, event_id):
         elif event_type == 'evaluation':
             evaluation = get_object_or_404(
                 Qiymetlendirme, 
-                id=event_id,
-                Q(qiymetlendirilen=request.user) | Q(qiymetlendiren=request.user)
+                Q(qiymetlendirilen=request.user) | Q(qiymetlendiren=request.user),
+                id=event_id
             )
             
             return JsonResponse({

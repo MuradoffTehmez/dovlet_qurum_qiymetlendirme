@@ -10,7 +10,8 @@
       "Bash(rm:*)",
       "Bash(del \"C:\\Q360\\locale\\az\\LC_MESSAGES\\django.po\")",
       "Bash(sed:*)",
-      "Bash(pip install:*)"
+      "Bash(pip install:*)",
+      "Bash(set DJANGO_SETTINGS_MODULE=config.settings)"
     ],
     "deny": []
   }
