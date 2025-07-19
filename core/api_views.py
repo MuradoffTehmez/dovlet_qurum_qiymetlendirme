@@ -202,7 +202,7 @@ class QiymetlendirmeViewSet(viewsets.ModelViewSet):
         user = self.request.user
         if not user.rol in ['ADMIN', 'SUPERADMIN']:
             queryset = queryset.filter(
-                Q(qiymetlendirilecek=user) | Q(qiymetlendiren=user)
+                Q(qiymetlendirilen=user) | Q(qiymetlendiren=user)
             )
         
         # Dövrə görə filtr
@@ -215,12 +215,12 @@ class QiymetlendirmeViewSet(viewsets.ModelViewSet):
         if status_filter:
             queryset = queryset.filter(status=status_filter)
         
-        return queryset.select_related('qiymetlendirilecek', 'qiymetlendiren', 'dovr')
+        return queryset.select_related('qiymetlendirilen', 'qiymetlendiren', 'dovr')
     
     @action(detail=False, methods=['get'])
     def my_evaluations(self, request):
         """Mənim qiymətləndirmələrim"""
-        evaluations = self.queryset.filter(qiymetlendirilecek=request.user)
+        evaluations = self.queryset.filter(qiymetlendirilen=request.user)
         serializer = self.get_serializer(evaluations, many=True)
         return Response(serializer.data)
     
@@ -493,7 +493,7 @@ class DashboardViewSet(viewsets.GenericViewSet):
         
         # Son feedback-lər
         recent_feedback = QuickFeedback.objects.filter(
-            Q(sender=request.user) | Q(receiver=request.user)
+            Q(from_user=request.user) | Q(to_user=request.user)
         ).order_by('-created_at')[:5]
         
         for feedback in recent_feedback:

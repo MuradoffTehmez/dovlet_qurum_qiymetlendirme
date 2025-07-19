@@ -22,7 +22,10 @@
       "Bash(tail:*)",
       "Bash(mkdir:*)",
       "Bash(find:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(copy:*)",
+      "Bash(cp:*)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }

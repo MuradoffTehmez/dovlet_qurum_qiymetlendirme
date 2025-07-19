@@ -1,0 +1,867 @@
+{% extends 'core/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Risk Flags Management" %}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans "Ana Səhifə" %}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'ai_risk_dashboard' %}">{% trans "AI Risk Dashboard" %}</a></li>
+<li class="breadcrumb-item active">{% trans "Risk Flags" %}</li>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'core/css/modern-forms.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0 text-gradient">
+                    <i class="bi bi-flag-fill me-2"></i>
+                    {% trans "Risk Flags Management" %}
+                </h1>
+                <p class="text-muted">{% trans "Monitor and manage employee risk indicators" %}</p>
+            </div>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary" id="exportBtn">
+                    <i class="bi bi-download me-1"></i>{% trans "Export" %}
+                </button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createFlagModal">
+                    <i class="bi bi-plus-lg me-1"></i>{% trans "Create Flag" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Panel -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <form id="filterForm" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">{% trans "Employee" %}</label>
+                        <select class="form-select" id="employeeFilter" name="employee">
+                            <option value="">{% trans "All Employees" %}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">{% trans "Risk Type" %}</label>
+                        <select class="form-select" id="riskTypeFilter" name="risk_type">
+                            <option value="">{% trans "All Types" %}</option>
+                            <option value="LOW_PERFORMANCE">{% trans "Low Performance" %}</option>
+                            <option value="HIGH_SCORE_VARIANCE">{% trans "Score Variance" %}</option>
+                            <option value="HIGH_NEGATIVE_FEEDBACK">{% trans "Negative Feedback" %}</option>
+                            <option value="STATISTICAL_ANOMALY">{% trans "Statistical Anomaly" %}</option>
+                            <option value="BEHAVIORAL_ANOMALY">{% trans "Behavioral Anomaly" %}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">{% trans "Severity" %}</label>
+                        <select class="form-select" id="severityFilter" name="severity">
+                            <option value="">{% trans "All Levels" %}</option>
+                            <option value="LOW">{% trans "Low" %}</option>
+                            <option value="MEDIUM">{% trans "Medium" %}</option>
+                            <option value="HIGH">{% trans "High" %}</option>
+                            <option value="CRITICAL">{% trans "Critical" %}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">{% trans "Status" %}</label>
+                        <select class="form-select" id="statusFilter" name="status">
+                            <option value="">{% trans "All Status" %}</option>
+                            <option value="ACTIVE">{% trans "Active" %}</option>
+                            <option value="RESOLVED">{% trans "Resolved" %}</option>
+                            <option value="REVIEWING">{% trans "Under Review" %}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search me-1"></i>{% trans "Filter" %}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Risk Flags Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-table me-2"></i>{% trans "Risk Flags" %}
+                    </h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-secondary" id="bulkResolve">
+                            <i class="bi bi-check-all me-1"></i>{% trans "Bulk Resolve" %}
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" id="bulkDelete">
+                            <i class="bi bi-trash me-1"></i>{% trans "Bulk Delete" %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="riskFlagsTable">
+                        <thead>
+                            <tr>
+                                <th width="30">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="selectAll">
+                                    </div>
+                                </th>
+                                <th>{% trans "Employee" %}</th>
+                                <th>{% trans "Risk Type" %}</th>
+                                <th>{% trans "Severity" %}</th>
+                                <th>{% trans "Score" %}</th>
+                                <th>{% trans "Date Created" %}</th>
+                                <th>{% trans "Status" %}</th>
+                                <th>{% trans "Actions" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody id="riskFlagsBody">
+                            <!-- Dynamic content will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Loading Spinner -->
+                <div class="d-flex justify-content-center mt-3" id="loadingSpinner">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <nav id="paginationNav" class="mt-3" style="display: none;">
+                    <ul class="pagination justify-content-center" id="pagination">
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Flag Modal -->
+<div class="modal fade" id="createFlagModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-flag me-2"></i>{% trans "Create Risk Flag" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createFlagForm">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">{% trans "Employee" %} <span class="text-danger">*</span></label>
+                            <select class="form-select" name="employee" required>
+                                <option value="">{% trans "Select Employee" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{% trans "Risk Type" %} <span class="text-danger">*</span></label>
+                            <select class="form-select" name="flag_type" required>
+                                <option value="">{% trans "Select Risk Type" %}</option>
+                                <option value="LOW_PERFORMANCE">{% trans "Low Performance" %}</option>
+                                <option value="HIGH_SCORE_VARIANCE">{% trans "High Score Variance" %}</option>
+                                <option value="HIGH_NEGATIVE_FEEDBACK">{% trans "High Negative Feedback" %}</option>
+                                <option value="LOW_PEER_INTERACTION">{% trans "Low Peer Interaction" %}</option>
+                                <option value="LONG_ABSENCE">{% trans "Long Absence" %}</option>
+                                <option value="NO_DEVELOPMENT_PLAN">{% trans "No Development Plan" %}</option>
+                                <option value="STATISTICAL_ANOMALY">{% trans "Statistical Anomaly" %}</option>
+                                <option value="BEHAVIORAL_ANOMALY">{% trans "Behavioral Anomaly" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{% trans "Severity" %} <span class="text-danger">*</span></label>
+                            <select class="form-select" name="severity" required>
+                                <option value="">{% trans "Select Severity" %}</option>
+                                <option value="LOW">{% trans "Low" %}</option>
+                                <option value="MEDIUM">{% trans "Medium" %}</option>
+                                <option value="HIGH">{% trans "High" %}</option>
+                                <option value="CRITICAL">{% trans "Critical" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">{% trans "Risk Score" %} <span
+                                    class="text-danger">*</span></label>
+                            <input type="range" class="form-range" id="riskScoreRange" name="risk_score" min="0"
+                                max="10" value="5">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">0</small>
+                                <strong id="riskScoreValue">5</strong>
+                                <small class="text-muted">10</small>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">{% trans "Description" %}</label>
+                            <textarea class="form-control" name="description" rows="3"
+                                placeholder="{% trans 'Enter detailed description of the risk...' %}"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">{% trans "HR Notes" %}</label>
+                            <textarea class="form-control" name="hr_notes" rows="2"
+                                placeholder="{% trans 'Internal HR notes and observations...' %}"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        {% trans "Cancel" %}
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-plus-lg me-1"></i>{% trans "Create Flag" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Flag Detail Modal -->
+<div class="modal fade" id="flagDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-flag me-2"></i>{% trans "Risk Flag Details" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="flagDetailContent">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'core/js/modern-forms.js' %}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const flagManager = new RiskFlagManager();
+        flagManager.init();
+    });
+
+    class RiskFlagManager {
+        constructor() {
+            this.currentPage = 1;
+            this.itemsPerPage = 20;
+            this.selectedFlags = new Set();
+        }
+
+        init() {
+            this.loadEmployees();
+            this.loadRiskFlags();
+            this.setupEventListeners();
+        }
+
+        async loadEmployees() {
+            try {
+                const response = await fetch('/api/v1/users/?is_active=true');
+                const data = await response.json();
+
+                const employeeSelects = document.querySelectorAll('select[name="employee"]');
+                employeeSelects.forEach(select => {
+                    select.innerHTML = '<option value="">{% trans "Select Employee" %}</option>';
+                    data.results.forEach(employee => {
+                        const option = document.createElement('option');
+                        option.value = employee.id;
+                        option.textContent = employee.full_name;
+                        select.appendChild(option);
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading employees:', error);
+            }
+        }
+
+        async loadRiskFlags() {
+            try {
+                const formData = new FormData(document.getElementById('filterForm'));
+                const params = new URLSearchParams();
+
+                for (const [key, value] of formData.entries()) {
+                    if (value) params.append(key, value);
+                }
+
+                params.append('page', this.currentPage);
+                params.append('page_size', this.itemsPerPage);
+
+                const response = await fetch(`/api/v1/risk-flags/?${params}`);
+                const data = await response.json();
+
+                this.renderRiskFlags(data.results);
+                this.renderPagination(data);
+
+            } catch (error) {
+                console.error('Error loading risk flags:', error);
+                this.showError('Failed to load risk flags');
+            } finally {
+                document.getElementById('loadingSpinner').style.display = 'none';
+            }
+        }
+
+        renderRiskFlags(flags) {
+            const tbody = document.getElementById('riskFlagsBody');
+
+            if (!flags || flags.length === 0) {
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="text-center text-muted py-4">
+                        <i class="bi bi-inbox display-1 d-block mb-3"></i>
+                        {% trans "No risk flags found" %}
+                    </td>
+                </tr>
+            `;
+                return;
+            }
+
+            tbody.innerHTML = flags.map(flag => this.renderFlagRow(flag)).join('');
+        }
+
+        renderFlagRow(flag) {
+            const severityClass = {
+                'CRITICAL': 'danger',
+                'HIGH': 'warning',
+                'MEDIUM': 'info',
+                'LOW': 'secondary'
+            }[flag.severity] || 'secondary';
+
+            const statusClass = {
+                'ACTIVE': 'warning',
+                'RESOLVED': 'success',
+                'REVIEWING': 'info'
+            }[flag.status] || 'secondary';
+
+            return `
+            <tr data-flag-id="${flag.id}">
+                <td>
+                    <div class="form-check">
+                        <input class="form-check-input flag-checkbox" type="checkbox" 
+                               value="${flag.id}" data-flag-id="${flag.id}">
+                    </div>
+                </td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <img src="${flag.employee.profile_image || '/static/media/profil_sekilleri/default.png'}" 
+                             alt="" class="rounded-circle me-2" width="32" height="32">
+                        <div>
+                            <div class="fw-semibold">${flag.employee.full_name}</div>
+                            <small class="text-muted">${flag.employee.organization_unit || '—'}</small>
+                        </div>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge bg-${severityClass} bg-opacity-10 text-${severityClass}">
+                        ${flag.flag_type_display}
+                    </span>
+                </td>
+                <td>
+                    <span class="badge bg-${severityClass}">${flag.severity}</span>
+                </td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="progress me-2" style="width: 60px; height: 8px;">
+                            <div class="progress-bar bg-${severityClass}" 
+                                 style="width: ${(flag.risk_score || 0) * 10}%"></div>
+                        </div>
+                        <span class="small">${flag.risk_score || 0}/10</span>
+                    </div>
+                </td>
+                <td>
+                    <small class="text-muted">
+                        ${new Date(flag.detected_at).toLocaleDateString()}
+                    </small>
+                </td>
+                <td>
+                    <span class="badge bg-${statusClass}">${flag.status}</span>
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary btn-sm view-flag" 
+                                data-flag-id="${flag.id}" title="{% trans 'View Details' %}">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        ${flag.status === 'ACTIVE' ? `
+                            <button class="btn btn-outline-success btn-sm resolve-flag" 
+                                    data-flag-id="${flag.id}" title="{% trans 'Resolve' %}">
+                                <i class="bi bi-check"></i>
+                            </button>
+                        ` : ''}
+                        <button class="btn btn-outline-danger btn-sm delete-flag" 
+                                data-flag-id="${flag.id}" title="{% trans 'Delete' %}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+        }
+
+        renderPagination(data) {
+            const nav = document.getElementById('paginationNav');
+            const pagination = document.getElementById('pagination');
+
+            if (data.count <= this.itemsPerPage) {
+                nav.style.display = 'none';
+                return;
+            }
+
+            nav.style.display = 'block';
+            const totalPages = Math.ceil(data.count / this.itemsPerPage);
+
+            let paginationHTML = '';
+
+            // Previous button
+            paginationHTML += `
+            <li class="page-item ${this.currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" data-page="${this.currentPage - 1}">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+        `;
+
+            // Page numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || Math.abs(i - this.currentPage) <= 2) {
+                    paginationHTML += `
+                    <li class="page-item ${i === this.currentPage ? 'active' : ''}">
+                        <a class="page-link" href="#" data-page="${i}">${i}</a>
+                    </li>
+                `;
+                } else if (Math.abs(i - this.currentPage) === 3) {
+                    paginationHTML += '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                }
+            }
+
+            // Next button
+            paginationHTML += `
+            <li class="page-item ${this.currentPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" data-page="${this.currentPage + 1}">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+        `;
+
+            pagination.innerHTML = paginationHTML;
+        }
+
+        setupEventListeners() {
+            // Filter form
+            document.getElementById('filterForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.currentPage = 1;
+                this.loadRiskFlags();
+            });
+
+            // Create flag form
+            document.getElementById('createFlagForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.createRiskFlag();
+            });
+
+            // Risk score range input
+            document.getElementById('riskScoreRange').addEventListener('input', (e) => {
+                document.getElementById('riskScoreValue').textContent = e.target.value;
+            });
+
+            // Select all checkbox
+            document.getElementById('selectAll').addEventListener('change', (e) => {
+                const checkboxes = document.querySelectorAll('.flag-checkbox');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = e.target.checked;
+                    if (e.target.checked) {
+                        this.selectedFlags.add(checkbox.value);
+                    } else {
+                        this.selectedFlags.delete(checkbox.value);
+                    }
+                });
+            });
+
+            // Individual checkboxes
+            document.addEventListener('change', (e) => {
+                if (e.target.classList.contains('flag-checkbox')) {
+                    if (e.target.checked) {
+                        this.selectedFlags.add(e.target.value);
+                    } else {
+                        this.selectedFlags.delete(e.target.value);
+                    }
+                }
+            });
+
+            // Table actions
+            document.addEventListener('click', (e) => {
+                const flagId = e.target.closest('[data-flag-id]')?.dataset.flagId;
+
+                if (e.target.closest('.view-flag')) {
+                    this.viewRiskFlag(flagId);
+                } else if (e.target.closest('.resolve-flag')) {
+                    this.resolveRiskFlag(flagId);
+                } else if (e.target.closest('.delete-flag')) {
+                    this.deleteRiskFlag(flagId);
+                }
+            });
+
+            // Pagination
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.page-link') && e.target.closest('.page-link').dataset.page) {
+                    e.preventDefault();
+                    this.currentPage = parseInt(e.target.closest('.page-link').dataset.page);
+                    this.loadRiskFlags();
+                }
+            });
+
+            // Bulk actions
+            document.getElementById('bulkResolve').addEventListener('click', () => {
+                this.bulkResolveFlags();
+            });
+
+            document.getElementById('bulkDelete').addEventListener('click', () => {
+                this.bulkDeleteFlags();
+            });
+
+            // Export button
+            document.getElementById('exportBtn').addEventListener('click', () => {
+                this.exportRiskFlags();
+            });
+        }
+
+        async createRiskFlag() {
+            try {
+                const formData = new FormData(document.getElementById('createFlagForm'));
+
+                const response = await fetch('/api/v1/risk-flags/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                });
+
+                if (response.ok) {
+                    this.showSuccess('{% trans "Risk flag created successfully" %}');
+                    bootstrap.Modal.getInstance(document.getElementById('createFlagModal')).hide();
+                    document.getElementById('createFlagForm').reset();
+                    this.loadRiskFlags();
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to create risk flag');
+                }
+            } catch (error) {
+                console.error('Error creating risk flag:', error);
+                this.showError(error.message);
+            }
+        }
+
+        async viewRiskFlag(flagId) {
+            try {
+                const response = await fetch(`/api/v1/risk-flags/${flagId}/`);
+                const flag = await response.json();
+
+                document.getElementById('flagDetailContent').innerHTML = this.renderFlagDetail(flag);
+
+                const modal = new bootstrap.Modal(document.getElementById('flagDetailModal'));
+                modal.show();
+            } catch (error) {
+                console.error('Error loading flag details:', error);
+                this.showError('Failed to load flag details');
+            }
+        }
+
+        renderFlagDetail(flag) {
+            return `
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body text-center">
+                            <img src="${flag.employee.profile_image || '/static/media/profil_sekilleri/default.png'}" 
+                                 alt="" class="rounded-circle mb-3" width="80" height="80">
+                            <h5 class="card-title">${flag.employee.full_name}</h5>
+                            <p class="text-muted">${flag.employee.organization_unit || '—'}</p>
+                            <p class="text-muted">${flag.employee.position || '—'}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">{% trans "Risk Type" %}</label>
+                            <p>${flag.flag_type_display}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">{% trans "Severity" %}</label>
+                            <p><span class="badge bg-danger">${flag.severity}</span></p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">{% trans "Risk Score" %}</label>
+                            <p>${flag.risk_score}/10</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">{% trans "Status" %}</label>
+                            <p><span class="badge bg-warning">${flag.status}</span></p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">{% trans "Created Date" %}</label>
+                            <p>${new Date(flag.detected_at).toLocaleString()}</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">{% trans "AI Confidence" %}</label>
+                            <p>${(flag.ai_confidence * 100).toFixed(1)}%</p>
+                        </div>
+                    </div>
+                    
+                    ${flag.description ? `
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">{% trans "Description" %}</label>
+                            <p>${flag.description}</p>
+                        </div>
+                    ` : ''}
+                    
+                    ${flag.hr_notes ? `
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">{% trans "HR Notes" %}</label>
+                            <div class="bg-light p-3 rounded">
+                                ${flag.hr_notes}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${flag.details && Object.keys(flag.details).length ? `
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">{% trans "Technical Details" %}</label>
+                            <div class="bg-light p-3 rounded">
+                                <pre class="mb-0">${JSON.stringify(flag.details, null, 2)}</pre>
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${flag.resolved_at ? `
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">{% trans "Resolved By" %}</label>
+                                <p>${flag.resolved_by?.full_name || '—'}</p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">{% trans "Resolved Date" %}</label>
+                                <p>${new Date(flag.resolved_at).toLocaleString()}</p>
+                            </div>
+                            ${flag.resolution_action ? `
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">{% trans "Resolution Action" %}</label>
+                                    <div class="bg-success bg-opacity-10 p-3 rounded">
+                                        ${flag.resolution_action}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+        }
+
+        async resolveRiskFlag(flagId) {
+            if (!confirm('{% trans "Are you sure you want to resolve this risk flag?" %}')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/v1/risk-flags/${flagId}/resolve/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                });
+
+                if (response.ok) {
+                    this.showSuccess('{% trans "Risk flag resolved successfully" %}');
+                    this.loadRiskFlags();
+                } else {
+                    throw new Error('Failed to resolve flag');
+                }
+            } catch (error) {
+                console.error('Error resolving flag:', error);
+                this.showError('{% trans "Failed to resolve risk flag" %}');
+            }
+        }
+
+        async deleteRiskFlag(flagId) {
+            if (!confirm('{% trans "Are you sure you want to delete this risk flag?" %}')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/v1/risk-flags/${flagId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                });
+
+                if (response.ok) {
+                    this.showSuccess('{% trans "Risk flag deleted successfully" %}');
+                    this.loadRiskFlags();
+                } else {
+                    throw new Error('Failed to delete flag');
+                }
+            } catch (error) {
+                console.error('Error deleting flag:', error);
+                this.showError('{% trans "Failed to delete risk flag" %}');
+            }
+        }
+
+        async bulkResolveFlags() {
+            if (this.selectedFlags.size === 0) {
+                this.showError('{% trans "Please select flags to resolve" %}');
+                return;
+            }
+
+            if (!confirm(`{% trans "Are you sure you want to resolve" %} ${this.selectedFlags.size} {% trans "selected flags?" %}`)) {
+                return;
+            }
+
+            try {
+                const promises = Array.from(this.selectedFlags).map(flagId =>
+                    fetch(`/api/v1/risk-flags/${flagId}/resolve/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        }
+                    })
+                );
+
+                await Promise.all(promises);
+
+                this.showSuccess(`{% trans "Successfully resolved" %} ${this.selectedFlags.size} {% trans "flags" %}`);
+                this.selectedFlags.clear();
+                document.getElementById('selectAll').checked = false;
+                this.loadRiskFlags();
+            } catch (error) {
+                console.error('Error bulk resolving flags:', error);
+                this.showError('{% trans "Failed to resolve some flags" %}');
+            }
+        }
+
+        async bulkDeleteFlags() {
+            if (this.selectedFlags.size === 0) {
+                this.showError('{% trans "Please select flags to delete" %}');
+                return;
+            }
+
+            if (!confirm(`{% trans "Are you sure you want to delete" %} ${this.selectedFlags.size} {% trans "selected flags?" %}`)) {
+                return;
+            }
+
+            try {
+                const promises = Array.from(this.selectedFlags).map(flagId =>
+                    fetch(`/api/v1/risk-flags/${flagId}/`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                        }
+                    })
+                );
+
+                await Promise.all(promises);
+
+                this.showSuccess(`{% trans "Successfully deleted" %} ${this.selectedFlags.size} {% trans "flags" %}`);
+                this.selectedFlags.clear();
+                document.getElementById('selectAll').checked = false;
+                this.loadRiskFlags();
+            } catch (error) {
+                console.error('Error bulk deleting flags:', error);
+                this.showError('{% trans "Failed to delete some flags" %}');
+            }
+        }
+
+        async exportRiskFlags() {
+            try {
+                const formData = new FormData(document.getElementById('filterForm'));
+                const params = new URLSearchParams();
+
+                for (const [key, value] of formData.entries()) {
+                    if (value) params.append(key, value);
+                }
+
+                params.append('export', 'csv');
+
+                const response = await fetch(`/api/v1/risk-flags/export/?${params}`);
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `risk-flags-${new Date().toISOString().split('T')[0]}.csv`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+
+                    this.showSuccess('{% trans "Export completed successfully" %}');
+                } else {
+                    throw new Error('Export failed');
+                }
+            } catch (error) {
+                console.error('Error exporting flags:', error);
+                this.showError('{% trans "Failed to export risk flags" %}');
+            }
+        }
+
+        showSuccess(message) {
+            this.showToast(message, 'success');
+        }
+
+        showError(message) {
+            this.showToast(message, 'danger');
+        }
+
+        showToast(message, type) {
+            // Create toast container if it doesn't exist
+            let toastContainer = document.querySelector('.toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+                document.body.appendChild(toastContainer);
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0`;
+            toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        `;
+
+            toastContainer.appendChild(toast);
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+        }
+    }
+</script>
+{% endblock %}

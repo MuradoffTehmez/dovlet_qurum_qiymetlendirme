@@ -1,0 +1,1265 @@
+{% extends 'core/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Psychological Risk Surveys" %}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans "Ana Səhifə" %}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'ai_risk_dashboard' %}">{% trans "AI Risk Dashboard" %}</a></li>
+<li class="breadcrumb-item active">{% trans "Psychological Surveys" %}</li>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'core/css/modern-forms.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0 text-gradient">
+                    <i class="bi bi-clipboard2-pulse me-2"></i>
+                    {% trans "Psychological Risk Surveys" %}
+                </h1>
+                <p class="text-muted">{% trans "Create and manage psychological wellbeing assessments" %}</p>
+            </div>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-success" id="generateReportBtn">
+                    <i class="bi bi-file-earmark-text me-1"></i>{% trans "Generate Report" %}
+                </button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#createSurveyModal">
+                    <i class="bi bi-plus-lg me-1"></i>{% trans "Create Survey" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="p-3 rounded-circle bg-primary bg-opacity-10">
+                            <i class="bi bi-clipboard2-check text-primary fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted text-uppercase fw-bold">{% trans "Active Surveys" %}</div>
+                        <div class="h4 fw-bold mb-0" id="activeSurveysCount">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="p-3 rounded-circle bg-success bg-opacity-10">
+                            <i class="bi bi-people-fill text-success fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted text-uppercase fw-bold">{% trans "Total Responses" %}</div>
+                        <div class="h4 fw-bold mb-0" id="totalResponsesCount">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="p-3 rounded-circle bg-warning bg-opacity-10">
+                            <i class="bi bi-exclamation-triangle text-warning fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted text-uppercase fw-bold">{% trans "High Risk" %}</div>
+                        <div class="h4 fw-bold mb-0" id="highRiskResponsesCount">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="p-3 rounded-circle bg-info bg-opacity-10">
+                            <i class="bi bi-graph-up text-info fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted text-uppercase fw-bold">{% trans "Completion Rate" %}</div>
+                        <div class="h4 fw-bold mb-0" id="completionRate">-</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Tabs -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-0">
+                <ul class="nav nav-tabs card-header-tabs" id="mainTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="surveys-tab" data-bs-toggle="tab"
+                            data-bs-target="#surveys-pane" type="button" role="tab">
+                            <i class="bi bi-clipboard2-check me-2"></i>{% trans "Surveys" %}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="responses-tab" data-bs-toggle="tab"
+                            data-bs-target="#responses-pane" type="button" role="tab">
+                            <i class="bi bi-chat-square-text me-2"></i>{% trans "Responses" %}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="analytics-tab" data-bs-toggle="tab"
+                            data-bs-target="#analytics-pane" type="button" role="tab">
+                            <i class="bi bi-bar-chart me-2"></i>{% trans "Analytics" %}
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="mainTabContent">
+                    <!-- Surveys Tab -->
+                    <div class="tab-pane fade show active" id="surveys-pane" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">{% trans "Survey Management" %}</h5>
+                            <div class="btn-group btn-group-sm" role="group">
+                                <input type="radio" class="btn-check" name="surveyFilter" id="allSurveys"
+                                    autocomplete="off" checked>
+                                <label class="btn btn-outline-secondary" for="allSurveys">{% trans "All" %}</label>
+
+                                <input type="radio" class="btn-check" name="surveyFilter" id="activeSurveys"
+                                    autocomplete="off">
+                                <label class="btn btn-outline-success" for="activeSurveys">{% trans "Active" %}</label>
+
+                                <input type="radio" class="btn-check" name="surveyFilter" id="inactiveSurveys"
+                                    autocomplete="off">
+                                <label class="btn btn-outline-secondary" for="inactiveSurveys">{% trans "Inactive"
+                                    %}</label>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>{% trans "Survey Title" %}</th>
+                                        <th>{% trans "Type" %}</th>
+                                        <th>{% trans "Created By" %}</th>
+                                        <th>{% trans "Responses" %}</th>
+                                        <th>{% trans "Status" %}</th>
+                                        <th>{% trans "Created" %}</th>
+                                        <th>{% trans "Actions" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="surveysTableBody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Responses Tab -->
+                    <div class="tab-pane fade" id="responses-pane" role="tabpanel">
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <select class="form-select" id="surveyResponseFilter">
+                                    <option value="">{% trans "All Surveys" %}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select class="form-select" id="riskLevelFilter">
+                                    <option value="">{% trans "All Risk Levels" %}</option>
+                                    <option value="VERY_LOW">{% trans "Very Low" %}</option>
+                                    <option value="LOW">{% trans "Low" %}</option>
+                                    <option value="MODERATE">{% trans "Moderate" %}</option>
+                                    <option value="HIGH">{% trans "High" %}</option>
+                                    <option value="VERY_HIGH">{% trans "Very High" %}</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" id="attentionRequiredFilter">
+                                    <label class="form-check-label" for="attentionRequiredFilter">
+                                        {% trans "Requires Attention Only" %}
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-primary w-100" id="filterResponsesBtn">
+                                    <i class="bi bi-funnel me-1"></i>{% trans "Filter" %}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>{% trans "Employee" %}</th>
+                                        <th>{% trans "Survey" %}</th>
+                                        <th>{% trans "Score" %}</th>
+                                        <th>{% trans "Risk Level" %}</th>
+                                        <th>{% trans "Attention" %}</th>
+                                        <th>{% trans "Date" %}</th>
+                                        <th>{% trans "Actions" %}</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="responsesTableBody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Analytics Tab -->
+                    <div class="tab-pane fade" id="analytics-pane" role="tabpanel">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-header bg-transparent">
+                                        <h6 class="mb-0">{% trans "Risk Level Distribution" %}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="riskDistributionChart" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-header bg-transparent">
+                                        <h6 class="mb-0">{% trans "Survey Response Trends" %}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="responseTrendsChart" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-header bg-transparent">
+                                        <h6 class="mb-0">{% trans "Department-wise Risk Analysis" %}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="departmentRiskChart" height="200"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Survey Modal -->
+<div class="modal fade" id="createSurveyModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-clipboard2-plus me-2"></i>{% trans "Create Psychological Survey" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="createSurveyForm">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label">{% trans "Survey Title" %} <span
+                                    class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="title" required
+                                placeholder="{% trans 'Enter survey title...' %}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">{% trans "Survey Type" %} <span
+                                    class="text-danger">*</span></label>
+                            <select class="form-select" name="survey_type" required>
+                                <option value="">{% trans "Select Type" %}</option>
+                                <option value="WHO5">{% trans "WHO-5 Wellbeing Index" %}</option>
+                                <option value="BURNOUT">{% trans "Burnout Assessment" %}</option>
+                                <option value="STRESS">{% trans "Stress Level" %}</option>
+                                <option value="ENGAGEMENT">{% trans "Work Engagement" %}</option>
+                                <option value="SATISFACTION">{% trans "Job Satisfaction" %}</option>
+                                <option value="MENTAL_HEALTH">{% trans "Mental Health Check" %}</option>
+                                <option value="CUSTOM">{% trans "Custom Survey" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">{% trans "Description" %}</label>
+                            <textarea class="form-control" name="description" rows="3"
+                                placeholder="{% trans 'Describe the purpose and scope of this survey...' %}"></textarea>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="is_active" checked>
+                                <label class="form-check-label">{% trans "Active Survey" %}</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="is_anonymous" checked>
+                                <label class="form-check-label">{% trans "Anonymous Responses" %}</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 class="mb-0">{% trans "Survey Questions" %}</h6>
+                        <button type="button" class="btn btn-sm btn-outline-primary" id="addQuestionBtn">
+                            <i class="bi bi-plus-lg me-1"></i>{% trans "Add Question" %}
+                        </button>
+                    </div>
+
+                    <div id="questionsContainer">
+                        <!-- Questions will be added dynamically -->
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>{% trans "Note:" %}</strong> {% trans "For standardized surveys like WHO-5, questions
+                        will be automatically populated. For custom surveys, you can add your own questions." %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        {% trans "Cancel" %}
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg me-1"></i>{% trans "Create Survey" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Take Survey Modal -->
+<div class="modal fade" id="takeSurveyModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-clipboard2-check me-2"></i>{% trans "Take Survey" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="takeSurveyForm">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div id="surveyContent">
+                        <!-- Survey questions will be loaded here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        {% trans "Cancel" %}
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-send me-1"></i>{% trans "Submit Response" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- View Response Modal -->
+<div class="modal fade" id="viewResponseModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-clipboard2-data me-2"></i>{% trans "Survey Response Details" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="responseDetailContent">
+                <!-- Response details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'core/js/modern-forms.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const surveyManager = new PsychologicalSurveyManager();
+        surveyManager.init();
+    });
+
+    class PsychologicalSurveyManager {
+        constructor() {
+            this.currentSurvey = null;
+            this.charts = {};
+            this.questionCounter = 0;
+        }
+
+        init() {
+            this.loadStatistics();
+            this.loadSurveys();
+            this.loadResponses();
+            this.setupEventListeners();
+            this.initializeCharts();
+        }
+
+        async loadStatistics() {
+            try {
+                const response = await fetch('/api/v1/psych-surveys/statistics/');
+                const stats = await response.json();
+
+                document.getElementById('activeSurveysCount').textContent = stats.active_surveys || 0;
+                document.getElementById('totalResponsesCount').textContent = stats.total_responses || 0;
+                document.getElementById('highRiskResponsesCount').textContent = stats.high_risk_responses || 0;
+                document.getElementById('completionRate').textContent = `${stats.completion_rate || 0}%`;
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
+
+        async loadSurveys() {
+            try {
+                const response = await fetch('/api/v1/psych-surveys/');
+                const data = await response.json();
+
+                this.renderSurveys(data.results || data);
+            } catch (error) {
+                console.error('Error loading surveys:', error);
+            }
+        }
+
+        renderSurveys(surveys) {
+            const tbody = document.getElementById('surveysTableBody');
+
+            if (!surveys || surveys.length === 0) {
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                        <i class="bi bi-clipboard2-x display-1 d-block mb-3"></i>
+                        {% trans "No surveys found" %}
+                    </td>
+                </tr>
+            `;
+                return;
+            }
+
+            tbody.innerHTML = surveys.map(survey => this.renderSurveyRow(survey)).join('');
+        }
+
+        renderSurveyRow(survey) {
+            const statusClass = survey.is_active ? 'success' : 'secondary';
+            const statusText = survey.is_active ? '{% trans "Active" %}' : '{% trans "Inactive" %}';
+
+            return `
+            <tr data-survey-id="${survey.id}">
+                <td>
+                    <div>
+                        <div class="fw-semibold">${survey.title}</div>
+                        <small class="text-muted">${survey.description || '—'}</small>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge bg-info bg-opacity-10 text-info">
+                        ${survey.survey_type_display || survey.survey_type}
+                    </span>
+                </td>
+                <td>${survey.created_by_name || '—'}</td>
+                <td>
+                    <span class="badge bg-primary">${survey.responses_count || 0}</span>
+                </td>
+                <td>
+                    <span class="badge bg-${statusClass}">${statusText}</span>
+                </td>
+                <td>
+                    <small class="text-muted">
+                        ${new Date(survey.created_at).toLocaleDateString()}
+                    </small>
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary view-survey" 
+                                data-survey-id="${survey.id}" title="{% trans 'View Details' %}">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-outline-success take-survey" 
+                                data-survey-id="${survey.id}" title="{% trans 'Take Survey' %}">
+                            <i class="bi bi-clipboard2-check"></i>
+                        </button>
+                        <button class="btn btn-outline-warning edit-survey" 
+                                data-survey-id="${survey.id}" title="{% trans 'Edit' %}">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-outline-danger delete-survey" 
+                                data-survey-id="${survey.id}" title="{% trans 'Delete' %}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `;
+        }
+
+        async loadResponses() {
+            try {
+                const response = await fetch('/api/v1/psych-responses/');
+                const data = await response.json();
+
+                this.renderResponses(data.results || data);
+
+                // Populate survey filter dropdown
+                const surveys = await fetch('/api/v1/psych-surveys/').then(r => r.json());
+                const surveySelect = document.getElementById('surveyResponseFilter');
+                surveySelect.innerHTML = '<option value="">{% trans "All Surveys" %}</option>';
+                (surveys.results || surveys).forEach(survey => {
+                    const option = document.createElement('option');
+                    option.value = survey.id;
+                    option.textContent = survey.title;
+                    surveySelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading responses:', error);
+            }
+        }
+
+        renderResponses(responses) {
+            const tbody = document.getElementById('responsesTableBody');
+
+            if (!responses || responses.length === 0) {
+                tbody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                        <i class="bi bi-chat-square-x display-1 d-block mb-3"></i>
+                        {% trans "No responses found" %}
+                    </td>
+                </tr>
+            `;
+                return;
+            }
+
+            tbody.innerHTML = responses.map(response => this.renderResponseRow(response)).join('');
+        }
+
+        renderResponseRow(response) {
+            const riskClass = {
+                'VERY_LOW': 'success',
+                'LOW': 'info',
+                'MODERATE': 'warning',
+                'HIGH': 'danger',
+                'VERY_HIGH': 'dark'
+            }[response.risk_level] || 'secondary';
+
+            const employeeName = response.is_anonymous_response ?
+                '{% trans "Anonymous" %}' :
+                response.employee_name;
+
+            return `
+            <tr data-response-id="${response.id}">
+                <td>
+                    <div class="d-flex align-items-center">
+                        ${!response.is_anonymous_response ? `
+                            <img src="${response.employee?.profile_image || '/static/media/profil_sekilleri/default.png'}" 
+                                 alt="" class="rounded-circle me-2" width="32" height="32">
+                        ` : '<i class="bi bi-person-fill-slash me-2 fs-4 text-muted"></i>'}
+                        <div>
+                            <div class="fw-semibold">${employeeName}</div>
+                            <small class="text-muted">${response.employee?.department || '—'}</small>
+                        </div>
+                    </div>
+                </td>
+                <td>${response.survey_title}</td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="progress me-2" style="width: 60px; height: 8px;">
+                            <div class="progress-bar bg-${riskClass}" 
+                                 style="width: ${(response.total_score / 100) * 100}%"></div>
+                        </div>
+                        <span class="small">${response.total_score}/100</span>
+                    </div>
+                </td>
+                <td>
+                    <span class="badge bg-${riskClass}">${response.risk_level_display || response.risk_level}</span>
+                </td>
+                <td>
+                    ${response.requires_attention ?
+                    '<i class="bi bi-exclamation-triangle text-warning"></i>' :
+                    '<i class="bi bi-check-circle text-success"></i>'}
+                </td>
+                <td>
+                    <small class="text-muted">
+                        ${new Date(response.responded_at).toLocaleString()}
+                    </small>
+                </td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <button class="btn btn-outline-primary view-response" 
+                                data-response-id="${response.id}" title="{% trans 'View Details' %}">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        ${response.requires_attention ? `
+                            <button class="btn btn-outline-warning follow-up-response" 
+                                    data-response-id="${response.id}" title="{% trans 'Follow Up' %}">
+                                <i class="bi bi-person-plus"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                </td>
+            </tr>
+        `;
+        }
+
+        setupEventListeners() {
+            // Tab switching
+            document.querySelectorAll('#mainTabs button[data-bs-toggle="tab"]').forEach(tab => {
+                tab.addEventListener('shown.bs.tab', (e) => {
+                    if (e.target.id === 'analytics-tab') {
+                        this.loadAnalytics();
+                    }
+                });
+            });
+
+            // Survey filters
+            document.querySelectorAll('input[name="surveyFilter"]').forEach(radio => {
+                radio.addEventListener('change', () => {
+                    this.filterSurveys();
+                });
+            });
+
+            // Create survey form
+            document.getElementById('createSurveyForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.createSurvey();
+            });
+
+            // Survey type change
+            document.querySelector('select[name="survey_type"]').addEventListener('change', (e) => {
+                this.loadSurveyTemplate(e.target.value);
+            });
+
+            // Add question button
+            document.getElementById('addQuestionBtn').addEventListener('click', () => {
+                this.addQuestion();
+            });
+
+            // Take survey form
+            document.getElementById('takeSurveyForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.submitSurveyResponse();
+            });
+
+            // Filter responses
+            document.getElementById('filterResponsesBtn').addEventListener('click', () => {
+                this.filterResponses();
+            });
+
+            // Table actions
+            document.addEventListener('click', (e) => {
+                const surveyId = e.target.closest('[data-survey-id]')?.dataset.surveyId;
+                const responseId = e.target.closest('[data-response-id]')?.dataset.responseId;
+
+                if (e.target.closest('.view-survey')) {
+                    this.viewSurvey(surveyId);
+                } else if (e.target.closest('.take-survey')) {
+                    this.takeSurvey(surveyId);
+                } else if (e.target.closest('.edit-survey')) {
+                    this.editSurvey(surveyId);
+                } else if (e.target.closest('.delete-survey')) {
+                    this.deleteSurvey(surveyId);
+                } else if (e.target.closest('.view-response')) {
+                    this.viewResponse(responseId);
+                } else if (e.target.closest('.follow-up-response')) {
+                    this.followUpResponse(responseId);
+                }
+            });
+
+            // Generate report
+            document.getElementById('generateReportBtn').addEventListener('click', () => {
+                this.generateReport();
+            });
+        }
+
+        async loadSurveyTemplate(surveyType) {
+            if (!surveyType || surveyType === 'CUSTOM') {
+                document.getElementById('questionsContainer').innerHTML = '';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/v1/psych-surveys/templates/${surveyType}/`);
+                const template = await response.json();
+
+                this.renderSurveyQuestions(template.questions);
+            } catch (error) {
+                console.error('Error loading survey template:', error);
+                // Show custom questions section for fallback
+                document.getElementById('questionsContainer').innerHTML = '';
+            }
+        }
+
+        renderSurveyQuestions(questions) {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            questions.forEach((question, index) => {
+                const questionDiv = this.createQuestionElement(question, index);
+                container.appendChild(questionDiv);
+            });
+        }
+
+        createQuestionElement(question, index) {
+            const div = document.createElement('div');
+            div.className = 'card mb-3';
+            div.innerHTML = `
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h6 class="mb-0">{% trans "Question" %} ${index + 1}</h6>
+                    <button type="button" class="btn btn-sm btn-outline-danger remove-question">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">{% trans "Question Text" %}</label>
+                        <textarea class="form-control" name="questions[${index}][text]" rows="2" required>
+                            ${question.text || ''}
+                        </textarea>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">{% trans "Question Type" %}</label>
+                        <select class="form-select" name="questions[${index}][type]" required>
+                            <option value="scale" ${question.type === 'scale' ? 'selected' : ''}>{% trans "Rating Scale" %}</option>
+                            <option value="multiple_choice" ${question.type === 'multiple_choice' ? 'selected' : ''}>{% trans "Multiple Choice" %}</option>
+                            <option value="text" ${question.type === 'text' ? 'selected' : ''}>{% trans "Text Response" %}</option>
+                            <option value="yes_no" ${question.type === 'yes_no' ? 'selected' : ''}>{% trans "Yes/No" %}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">{% trans "Weight" %}</label>
+                        <input type="number" class="form-control" name="questions[${index}][weight]" 
+                               min="1" max="10" value="${question.weight || 1}">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">{% trans "Options (for multiple choice)" %}</label>
+                        <textarea class="form-control" name="questions[${index}][options]" rows="2"
+                                  placeholder="{% trans 'Enter options separated by new lines' %}">
+                            ${question.options ? question.options.join('\n') : ''}
+                        </textarea>
+                    </div>
+                </div>
+            </div>
+        `;
+
+            // Remove question handler
+            div.querySelector('.remove-question').addEventListener('click', () => {
+                div.remove();
+            });
+
+            return div;
+        }
+
+        addQuestion() {
+            const question = {
+                text: '',
+                type: 'scale',
+                weight: 1,
+                options: []
+            };
+
+            const questionElement = this.createQuestionElement(question, this.questionCounter++);
+            document.getElementById('questionsContainer').appendChild(questionElement);
+        }
+
+        async createSurvey() {
+            try {
+                const formData = new FormData(document.getElementById('createSurveyForm'));
+
+                const response = await fetch('/api/v1/psych-surveys/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                });
+
+                if (response.ok) {
+                    this.showSuccess('{% trans "Survey created successfully" %}');
+                    bootstrap.Modal.getInstance(document.getElementById('createSurveyModal')).hide();
+                    document.getElementById('createSurveyForm').reset();
+                    this.loadSurveys();
+                    this.loadStatistics();
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to create survey');
+                }
+            } catch (error) {
+                console.error('Error creating survey:', error);
+                this.showError(error.message);
+            }
+        }
+
+        async takeSurvey(surveyId) {
+            try {
+                const response = await fetch(`/api/v1/psych-surveys/${surveyId}/`);
+                const survey = await response.json();
+
+                this.currentSurvey = survey;
+                this.renderSurveyForm(survey);
+
+                const modal = new bootstrap.Modal(document.getElementById('takeSurveyModal'));
+                modal.show();
+            } catch (error) {
+                console.error('Error loading survey:', error);
+                this.showError('Failed to load survey');
+            }
+        }
+
+        renderSurveyForm(survey) {
+            const content = document.getElementById('surveyContent');
+            content.innerHTML = `
+            <input type="hidden" name="survey" value="${survey.id}">
+            <div class="mb-4">
+                <h5>${survey.title}</h5>
+                <p class="text-muted">${survey.description || ''}</p>
+            </div>
+            ${survey.questions_data.questions.map((question, index) =>
+                this.renderSurveyQuestion(question, index)
+            ).join('')}
+        `;
+        }
+
+        renderSurveyQuestion(question, index) {
+            let optionsHtml = '';
+
+            switch (question.type) {
+                case 'scale':
+                    optionsHtml = `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <small class="text-muted">{% trans "Never" %}</small>
+                        <small class="text-muted">{% trans "Always" %}</small>
+                    </div>
+                    <div class="btn-group w-100" role="group">
+                        ${[0, 1, 2, 3, 4, 5].map(value => `
+                            <input type="radio" class="btn-check" name="answers[${index}]" 
+                                   id="q${index}_${value}" value="${value}" required>
+                            <label class="btn btn-outline-primary" for="q${index}_${value}">${value}</label>
+                        `).join('')}
+                    </div>
+                `;
+                    break;
+                case 'multiple_choice':
+                    optionsHtml = question.options.map((option, optIndex) => `
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="answers[${index}]" 
+                               id="q${index}_${optIndex}" value="${optIndex}" required>
+                        <label class="form-check-label" for="q${index}_${optIndex}">
+                            ${option}
+                        </label>
+                    </div>
+                `).join('');
+                    break;
+                case 'yes_no':
+                    optionsHtml = `
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="answers[${index}]" 
+                               id="q${index}_yes" value="1" required>
+                        <label class="btn btn-outline-success" for="q${index}_yes">{% trans "Yes" %}</label>
+                        
+                        <input type="radio" class="btn-check" name="answers[${index}]" 
+                               id="q${index}_no" value="0" required>
+                        <label class="btn btn-outline-danger" for="q${index}_no">{% trans "No" %}</label>
+                    </div>
+                `;
+                    break;
+                case 'text':
+                    optionsHtml = `
+                    <textarea class="form-control" name="answers[${index}]" rows="3" 
+                              placeholder="{% trans 'Enter your response...' %}"></textarea>
+                `;
+                    break;
+            }
+
+            return `
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h6 class="card-title">{% trans "Question" %} ${index + 1}</h6>
+                    <p class="card-text">${question.text}</p>
+                    ${optionsHtml}
+                </div>
+            </div>
+        `;
+        }
+
+        async submitSurveyResponse() {
+            try {
+                const formData = new FormData(document.getElementById('takeSurveyForm'));
+
+                const response = await fetch('/api/v1/psych-responses/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                });
+
+                if (response.ok) {
+                    this.showSuccess('{% trans "Survey response submitted successfully" %}');
+                    bootstrap.Modal.getInstance(document.getElementById('takeSurveyModal')).hide();
+                    this.loadResponses();
+                    this.loadStatistics();
+                } else {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Failed to submit response');
+                }
+            } catch (error) {
+                console.error('Error submitting response:', error);
+                this.showError(error.message);
+            }
+        }
+
+        async viewResponse(responseId) {
+            try {
+                const response = await fetch(`/api/v1/psych-responses/${responseId}/`);
+                const responseData = await response.json();
+
+                document.getElementById('responseDetailContent').innerHTML = this.renderResponseDetail(responseData);
+
+                const modal = new bootstrap.Modal(document.getElementById('viewResponseModal'));
+                modal.show();
+            } catch (error) {
+                console.error('Error loading response details:', error);
+                this.showError('Failed to load response details');
+            }
+        }
+
+        renderResponseDetail(response) {
+            return `
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card border-0 bg-light">
+                        <div class="card-body text-center">
+                            ${!response.is_anonymous_response ? `
+                                <img src="${response.employee?.profile_image || '/static/media/profil_sekilleri/default.png'}" 
+                                     alt="" class="rounded-circle mb-3" width="80" height="80">
+                                <h5 class="card-title">${response.employee_name}</h5>
+                                <p class="text-muted">${response.employee?.department || '—'}</p>
+                            ` : `
+                                <i class="bi bi-person-fill-slash display-1 text-muted mb-3"></i>
+                                <h5 class="card-title">{% trans "Anonymous Response" %}</h5>
+                            `}
+                            <div class="mt-3">
+                                <div class="h4 text-primary">${response.total_score}/100</div>
+                                <small class="text-muted">{% trans "Total Score" %}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <h6>{% trans "Survey Information" %}</h6>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>{% trans "Survey:" %}</strong> ${response.survey_title}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>{% trans "Date:" %}</strong> ${new Date(response.responded_at).toLocaleString()}
+                        </div>
+                        <div class="col-md-6">
+                            <strong>{% trans "Risk Level:" %}</strong> 
+                            <span class="badge bg-warning">${response.risk_level}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>{% trans "Requires Attention:" %}</strong> 
+                            ${response.requires_attention ?
+                    '<i class="bi bi-exclamation-triangle text-warning"></i> {% trans "Yes" %}' :
+                    '<i class="bi bi-check-circle text-success"></i> {% trans "No" %}'}
+                        </div>
+                    </div>
+                    
+                    <h6>{% trans "Detailed Responses" %}</h6>
+                    <div class="bg-light p-3 rounded mb-3" style="max-height: 300px; overflow-y: auto;">
+                        ${Object.entries(response.answers).map(([questionIndex, answer]) => `
+                            <div class="mb-2">
+                                <strong>{% trans "Question" %} ${parseInt(questionIndex) + 1}:</strong> ${answer}
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    ${response.ai_analysis && Object.keys(response.ai_analysis).length ? `
+                        <h6>{% trans "AI Analysis" %}</h6>
+                        <div class="bg-info bg-opacity-10 p-3 rounded">
+                            <pre class="mb-0">${JSON.stringify(response.ai_analysis, null, 2)}</pre>
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+        }
+
+        initializeCharts() {
+            // Risk Distribution Chart
+            const ctx1 = document.getElementById('riskDistributionChart').getContext('2d');
+            this.charts.riskDistribution = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Very Low', 'Low', 'Moderate', 'High', 'Very High'],
+                    datasets: [{
+                        data: [0, 0, 0, 0, 0],
+                        backgroundColor: ['#198754', '#20c997', '#ffc107', '#fd7e14', '#dc3545']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Response Trends Chart
+            const ctx2 = document.getElementById('responseTrendsChart').getContext('2d');
+            this.charts.responseTrends = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Responses',
+                        data: [],
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // Department Risk Chart
+            const ctx3 = document.getElementById('departmentRiskChart').getContext('2d');
+            this.charts.departmentRisk = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Average Risk Score',
+                        data: [],
+                        backgroundColor: 'rgba(255, 193, 7, 0.6)',
+                        borderColor: '#ffc107',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        async loadAnalytics() {
+            try {
+                const response = await fetch('/api/v1/psych-surveys/analytics/');
+                const analytics = await response.json();
+
+                // Update charts with real data
+                this.updateCharts(analytics);
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+            }
+        }
+
+        updateCharts(analytics) {
+            // Update risk distribution chart
+            if (analytics.risk_distribution) {
+                this.charts.riskDistribution.data.datasets[0].data = [
+                    analytics.risk_distribution.VERY_LOW || 0,
+                    analytics.risk_distribution.LOW || 0,
+                    analytics.risk_distribution.MODERATE || 0,
+                    analytics.risk_distribution.HIGH || 0,
+                    analytics.risk_distribution.VERY_HIGH || 0
+                ];
+                this.charts.riskDistribution.update();
+            }
+
+            // Update response trends chart
+            if (analytics.response_trends) {
+                this.charts.responseTrends.data.labels = analytics.response_trends.labels;
+                this.charts.responseTrends.data.datasets[0].data = analytics.response_trends.data;
+                this.charts.responseTrends.update();
+            }
+
+            // Update department risk chart
+            if (analytics.department_risk) {
+                this.charts.departmentRisk.data.labels = analytics.department_risk.labels;
+                this.charts.departmentRisk.data.datasets[0].data = analytics.department_risk.data;
+                this.charts.departmentRisk.update();
+            }
+        }
+
+        filterSurveys() {
+            const activeFilter = document.querySelector('input[name="surveyFilter"]:checked').id;
+            const rows = document.querySelectorAll('#surveysTableBody tr');
+
+            rows.forEach(row => {
+                const statusBadge = row.querySelector('.badge');
+                if (!statusBadge) return;
+
+                const isActive = statusBadge.textContent.trim() === 'Active';
+                let show = true;
+
+                switch (activeFilter) {
+                    case 'activeSurveys':
+                        show = isActive;
+                        break;
+                    case 'inactiveSurveys':
+                        show = !isActive;
+                        break;
+                    case 'allSurveys':
+                    default:
+                        show = true;
+                }
+
+                row.style.display = show ? '' : 'none';
+            });
+        }
+
+        async filterResponses() {
+            const surveyId = document.getElementById('surveyResponseFilter').value;
+            const riskLevel = document.getElementById('riskLevelFilter').value;
+            const attentionRequired = document.getElementById('attentionRequiredFilter').checked;
+
+            const params = new URLSearchParams();
+            if (surveyId) params.append('survey', surveyId);
+            if (riskLevel) params.append('risk_level', riskLevel);
+            if (attentionRequired) params.append('requires_attention', 'true');
+
+            try {
+                const response = await fetch(`/api/v1/psych-responses/?${params}`);
+                const data = await response.json();
+                this.renderResponses(data.results || data);
+            } catch (error) {
+                console.error('Error filtering responses:', error);
+            }
+        }
+
+        async generateReport() {
+            try {
+                const response = await fetch('/api/v1/psych-surveys/report/', {
+                    method: 'GET'
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `psychological-survey-report-${new Date().toISOString().split('T')[0]}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+
+                    this.showSuccess('{% trans "Report generated successfully" %}');
+                } else {
+                    throw new Error('Report generation failed');
+                }
+            } catch (error) {
+                console.error('Error generating report:', error);
+                this.showError('{% trans "Failed to generate report" %}');
+            }
+        }
+
+        async deleteSurvey(surveyId) {
+            if (!confirm('{% trans "Are you sure you want to delete this survey?" %}')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/v1/psych-surveys/${surveyId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                });
+
+                if (response.ok) {
+                    this.showSuccess('{% trans "Survey deleted successfully" %}');
+                    this.loadSurveys();
+                    this.loadStatistics();
+                } else {
+                    throw new Error('Failed to delete survey');
+                }
+            } catch (error) {
+                console.error('Error deleting survey:', error);
+                this.showError('{% trans "Failed to delete survey" %}');
+            }
+        }
+
+        showSuccess(message) {
+            this.showToast(message, 'success');
+        }
+
+        showError(message) {
+            this.showToast(message, 'danger');
+        }
+
+        showToast(message, type) {
+            // Create toast container if it doesn't exist
+            let toastContainer = document.querySelector('.toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+                document.body.appendChild(toastContainer);
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0`;
+            toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        `;
+
+            toastContainer.appendChild(toast);
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+        }
+    }
+</script>
+{% endblock %}

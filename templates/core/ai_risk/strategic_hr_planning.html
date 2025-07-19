@@ -1,0 +1,1166 @@
+{% extends 'core/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Strategic HR Planning" %}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans "Ana Səhifə" %}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'ai_risk_dashboard' %}">{% trans "AI Risk Dashboard" %}</a></li>
+<li class="breadcrumb-item active">{% trans "Strategic HR Planning" %}</li>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'core/css/modern-forms.css' %}">
+<style>
+    .talent-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: 10px;
+        margin: 20px 0;
+    }
+
+    .grid-cell {
+        border: 2px solid #dee2e6;
+        padding: 15px;
+        text-align: center;
+        min-height: 120px;
+        border-radius: 8px;
+        position: relative;
+    }
+
+    .grid-cell.high-performance {
+        border-color: #198754;
+        background-color: #d1eddb;
+    }
+
+    .grid-cell.medium-performance {
+        border-color: #ffc107;
+        background-color: #fff3cd;
+    }
+
+    .grid-cell.low-performance {
+        border-color: #dc3545;
+        background-color: #f8d7da;
+    }
+
+    .grid-cell h6 {
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+    }
+
+    .employee-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        margin: 2px;
+    }
+
+    .succession-card {
+        transition: transform 0.2s;
+    }
+
+    .succession-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0 text-gradient">
+                    <i class="bi bi-diagram-3 me-2"></i>
+                    {% trans "Strategic HR Planning" %}
+                </h1>
+                <p class="text-muted">{% trans "Workforce analysis, talent management and succession planning" %}</p>
+            </div>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary" id="refreshAnalysisBtn">
+                    <i class="bi bi-arrow-clockwise me-1"></i>{% trans "Refresh Analysis" %}
+                </button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#generatePlanModal">
+                    <i class="bi bi-plus-lg me-1"></i>{% trans "Generate Plan" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Control Panel -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">{% trans "Organization Unit" %}</label>
+                        <select class="form-select" id="organizationUnitFilter">
+                            <option value="">{% trans "All Units" %}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">{% trans "Evaluation Cycle" %}</label>
+                        <select class="form-select" id="evaluationCycleFilter">
+                            <option value="">{% trans "Latest Cycle" %}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">&nbsp;</label>
+                        <div class="d-grid">
+                            <button type="button" class="btn btn-primary" id="runAnalysisBtn">
+                                <i class="bi bi-play-fill me-1"></i>{% trans "Run Analysis" %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Tabs -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-0">
+                <ul class="nav nav-tabs card-header-tabs" id="planningTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="workforce-tab" data-bs-toggle="tab"
+                            data-bs-target="#workforce-pane" type="button" role="tab">
+                            <i class="bi bi-people me-2"></i>{% trans "Workforce Analysis" %}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="talent-tab" data-bs-toggle="tab" data-bs-target="#talent-pane"
+                            type="button" role="tab">
+                            <i class="bi bi-star me-2"></i>{% trans "Talent Management" %}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="succession-tab" data-bs-toggle="tab"
+                            data-bs-target="#succession-pane" type="button" role="tab">
+                            <i class="bi bi-diagram-2 me-2"></i>{% trans "Succession Planning" %}
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="recommendations-tab" data-bs-toggle="tab"
+                            data-bs-target="#recommendations-pane" type="button" role="tab">
+                            <i class="bi bi-lightbulb me-2"></i>{% trans "Recommendations" %}
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="planningTabContent">
+                    <!-- Workforce Analysis Tab -->
+                    <div class="tab-pane fade show active" id="workforce-pane" role="tabpanel">
+                        <div class="row g-4">
+                            <!-- Demographics Chart -->
+                            <div class="col-md-6">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-header bg-transparent">
+                                        <h6 class="mb-0">{% trans "Age Demographics" %}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="ageDemographicsChart" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Experience Distribution -->
+                            <div class="col-md-6">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-header bg-transparent">
+                                        <h6 class="mb-0">{% trans "Experience Distribution" %}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="experienceChart" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Department Distribution -->
+                            <div class="col-12">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-header bg-transparent">
+                                        <h6 class="mb-0">{% trans "Department Distribution" %}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="departmentChart" height="200"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Workforce Insights -->
+                            <div class="col-12">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-header bg-transparent">
+                                        <h6 class="mb-0">{% trans "Key Insights" %}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="workforceInsights">
+                                            <div class="text-center text-muted py-4">
+                                                <i class="bi bi-lightbulb display-1 d-block mb-3"></i>
+                                                {% trans "Run analysis to see insights" %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Talent Management Tab -->
+                    <div class="tab-pane fade" id="talent-pane" role="tabpanel">
+                        <div class="row g-4">
+                            <!-- 9-Box Grid -->
+                            <div class="col-12">
+                                <div class="card border-0 bg-light">
+                                    <div
+                                        class="card-header bg-transparent d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-0">{% trans "9-Box Talent Grid" %}</h6>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <button type="button" class="btn btn-outline-primary" id="exportGridBtn">
+                                                <i class="bi bi-download me-1"></i>{% trans "Export" %}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <div class="d-flex justify-content-between">
+                                                <small class="text-muted">{% trans "Low Performance" %}</small>
+                                                <small class="text-muted font-weight-bold">{% trans "Performance"
+                                                    %}</small>
+                                                <small class="text-muted">{% trans "High Performance" %}</small>
+                                            </div>
+                                        </div>
+
+                                        <div id="talentGrid" class="talent-grid">
+                                            <!-- Grid will be populated dynamically -->
+                                        </div>
+
+                                        <div class="mt-3">
+                                            <div class="d-flex justify-content-between">
+                                                <small class="text-muted">{% trans "Low Potential" %}</small>
+                                                <small class="text-muted font-weight-bold">{% trans "Potential"
+                                                    %}</small>
+                                                <small class="text-muted">{% trans "High Potential" %}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Talent Pipeline Summary -->
+                            <div class="col-12">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-header bg-transparent">
+                                        <h6 class="mb-0">{% trans "Talent Pipeline Summary" %}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3" id="talentPipelineSummary">
+                                            <!-- Summary cards will be populated dynamically -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Succession Planning Tab -->
+                    <div class="tab-pane fade" id="succession-pane" role="tabpanel">
+                        <div class="row g-4">
+                            <!-- Key Positions -->
+                            <div class="col-md-8">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-header bg-transparent">
+                                        <h6 class="mb-0">{% trans "Key Positions & Succession Plans" %}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="successionPlans">
+                                            <!-- Succession plans will be populated dynamically -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Succession Readiness -->
+                            <div class="col-md-4">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-header bg-transparent">
+                                        <h6 class="mb-0">{% trans "Readiness Overview" %}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="successionReadinessChart" height="200"></canvas>
+                                        <div id="readinessStats" class="mt-3">
+                                            <!-- Stats will be populated dynamically -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommendations Tab -->
+                    <div class="tab-pane fade" id="recommendations-pane" role="tabpanel">
+                        <div class="row g-4">
+                            <!-- Priority Matrix -->
+                            <div class="col-md-4">
+                                <div class="card border-0 bg-light h-100">
+                                    <div class="card-header bg-transparent">
+                                        <h6 class="mb-0 text-danger">{% trans "High Priority" %}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="highPriorityRecommendations">
+                                            <!-- High priority recommendations -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="card border-0 bg-light h-100">
+                                    <div class="card-header bg-transparent">
+                                        <h6 class="mb-0 text-warning">{% trans "Medium Priority" %}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="mediumPriorityRecommendations">
+                                            <!-- Medium priority recommendations -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="card border-0 bg-light h-100">
+                                    <div class="card-header bg-transparent">
+                                        <h6 class="mb-0 text-info">{% trans "Low Priority" %}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="lowPriorityRecommendations">
+                                            <!-- Low priority recommendations -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Key Metrics -->
+                            <div class="col-12">
+                                <div class="card border-0 bg-light">
+                                    <div class="card-header bg-transparent">
+                                        <h6 class="mb-0">{% trans "Key Performance Indicators" %}</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row g-3" id="keyMetrics">
+                                            <!-- KPIs will be populated dynamically -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Generate Plan Modal -->
+<div class="modal fade" id="generatePlanModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-gear me-2"></i>{% trans "Generate Strategic Plan" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="generatePlanForm">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label">{% trans "Plan Type" %}</label>
+                            <select class="form-select" name="plan_type" required>
+                                <option value="workforce_analysis">{% trans "Workforce Analysis" %}</option>
+                                <option value="talent_pipeline">{% trans "Talent Pipeline Analysis" %}</option>
+                                <option value="succession_planning">{% trans "Succession Planning" %}</option>
+                                <option value="hr_strategy">{% trans "Complete HR Strategy" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">{% trans "Organization Unit" %}</label>
+                            <select class="form-select" name="organization_unit">
+                                <option value="">{% trans "All Units" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">{% trans "Time Frame" %}</label>
+                            <select class="form-select" name="time_frame">
+                                <option value="current">{% trans "Current State" %}</option>
+                                <option value="6_months">{% trans "6 Months" %}</option>
+                                <option value="1_year">{% trans "1 Year" %}</option>
+                                <option value="3_years">{% trans "3 Years" %}</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="include_recommendations" checked>
+                                <label class="form-check-label">
+                                    {% trans "Include AI Recommendations" %}
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="include_charts">
+                                <label class="form-check-label">
+                                    {% trans "Include Charts and Visualizations" %}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        {% trans "Cancel" %}
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-download me-1"></i>{% trans "Generate & Download" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Employee Detail Modal -->
+<div class="modal fade" id="employeeDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-person-circle me-2"></i>{% trans "Employee Details" %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="employeeDetailContent">
+                <!-- Employee details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'core/js/modern-forms.js' %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const hrPlanning = new StrategicHRPlanning();
+        hrPlanning.init();
+    });
+
+    class StrategicHRPlanning {
+        constructor() {
+            this.charts = {};
+            this.currentData = null;
+        }
+
+        init() {
+            this.loadOrganizationUnits();
+            this.loadEvaluationCycles();
+            this.initializeCharts();
+            this.setupEventListeners();
+            this.runAnalysis(); // Run initial analysis
+        }
+
+        async loadOrganizationUnits() {
+            try {
+                const response = await fetch('/api/v1/organization-units/');
+                const data = await response.json();
+
+                const selects = document.querySelectorAll('select[name="organization_unit"], #organizationUnitFilter');
+                selects.forEach(select => {
+                    select.innerHTML = '<option value="">{% trans "All Units" %}</option>';
+                    (data.results || data).forEach(unit => {
+                        const option = document.createElement('option');
+                        option.value = unit.id;
+                        option.textContent = unit.name;
+                        select.appendChild(option);
+                    });
+                });
+            } catch (error) {
+                console.error('Error loading organization units:', error);
+            }
+        }
+
+        async loadEvaluationCycles() {
+            try {
+                const response = await fetch('/api/v1/evaluation-cycles/');
+                const data = await response.json();
+
+                const select = document.getElementById('evaluationCycleFilter');
+                select.innerHTML = '<option value="">{% trans "Latest Cycle" %}</option>';
+                (data.results || data).forEach(cycle => {
+                    const option = document.createElement('option');
+                    option.value = cycle.id;
+                    option.textContent = cycle.ad;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading evaluation cycles:', error);
+            }
+        }
+
+        setupEventListeners() {
+            // Run analysis button
+            document.getElementById('runAnalysisBtn').addEventListener('click', () => {
+                this.runAnalysis();
+            });
+
+            // Refresh analysis button
+            document.getElementById('refreshAnalysisBtn').addEventListener('click', () => {
+                this.runAnalysis();
+            });
+
+            // Generate plan form
+            document.getElementById('generatePlanForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.generatePlan();
+            });
+
+            // Export grid button
+            document.getElementById('exportGridBtn').addEventListener('click', () => {
+                this.exportTalentGrid();
+            });
+
+            // Tab switching
+            document.querySelectorAll('#planningTabs button[data-bs-toggle="tab"]').forEach(tab => {
+                tab.addEventListener('shown.bs.tab', (e) => {
+                    if (e.target.id === 'talent-tab' && this.currentData) {
+                        this.renderTalentGrid(this.currentData.talent_analysis);
+                    } else if (e.target.id === 'succession-tab' && this.currentData) {
+                        this.renderSuccessionPlans(this.currentData.succession_analysis);
+                    } else if (e.target.id === 'recommendations-tab' && this.currentData) {
+                        this.renderRecommendations(this.currentData.recommendations);
+                    }
+                });
+            });
+        }
+
+        async runAnalysis() {
+            try {
+                const orgUnit = document.getElementById('organizationUnitFilter').value;
+                const cycle = document.getElementById('evaluationCycleFilter').value;
+
+                const params = new URLSearchParams();
+                if (orgUnit) params.append('organization_unit', orgUnit);
+                if (cycle) params.append('cycle', cycle);
+
+                // Show loading indicators
+                this.showLoading();
+
+                const response = await fetch(`/api/v1/strategic-hr/analyze/?${params}`);
+                const data = await response.json();
+
+                this.currentData = data;
+                this.renderAnalysisResults(data);
+
+            } catch (error) {
+                console.error('Error running analysis:', error);
+                this.showError('Failed to run analysis');
+            } finally {
+                this.hideLoading();
+            }
+        }
+
+        renderAnalysisResults(data) {
+            // Render workforce analysis
+            this.renderWorkforceAnalysis(data.workforce_analysis);
+
+            // Update charts
+            this.updateCharts(data);
+
+            // Store data for other tabs
+            this.currentData = data;
+        }
+
+        renderWorkforceAnalysis(analysis) {
+            // Render workforce insights
+            const insightsContainer = document.getElementById('workforceInsights');
+            if (analysis.insights && analysis.insights.length > 0) {
+                insightsContainer.innerHTML = analysis.insights.map(insight => `
+                <div class="alert alert-info">
+                    <i class="bi bi-lightbulb me-2"></i>${insight}
+                </div>
+            `).join('');
+            } else {
+                insightsContainer.innerHTML = `
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-info-circle display-1 d-block mb-3"></i>
+                    {% trans "No specific insights available" %}
+                </div>
+            `;
+            }
+        }
+
+        renderTalentGrid(talentAnalysis) {
+            const gridContainer = document.getElementById('talentGrid');
+
+            if (!talentAnalysis || !talentAnalysis.grid_summary) {
+                gridContainer.innerHTML = `
+                <div class="col-span-3 text-center text-muted py-4">
+                    <i class="bi bi-grid display-1 d-block mb-3"></i>
+                    {% trans "No talent data available" %}
+                </div>
+            `;
+                return;
+            }
+
+            const gridPositions = [
+                ['low_performance_high_potential', 'medium_performance_high_potential', 'high_performance_high_potential'],
+                ['low_performance_medium_potential', 'medium_performance_medium_potential', 'high_performance_medium_potential'],
+                ['low_performance_low_potential', 'medium_performance_low_potential', 'high_performance_low_potential']
+            ];
+
+            const gridLabels = {
+                'high_performance_high_potential': 'Stars',
+                'high_performance_medium_potential': 'Current Leaders',
+                'high_performance_low_potential': 'Experts',
+                'medium_performance_high_potential': 'Future Leaders',
+                'medium_performance_medium_potential': 'Core Performers',
+                'medium_performance_low_potential': 'Solid Performers',
+                'low_performance_high_potential': 'Developing Talent',
+                'low_performance_medium_potential': 'Inconsistent',
+                'low_performance_low_potential': 'Underperformers'
+            };
+
+            gridContainer.innerHTML = '';
+
+            gridPositions.forEach((row, rowIndex) => {
+                row.forEach((position, colIndex) => {
+                    const cell = document.createElement('div');
+                    cell.className = 'grid-cell';
+
+                    // Add performance classes
+                    if (colIndex === 2) cell.classList.add('high-performance');
+                    else if (colIndex === 1) cell.classList.add('medium-performance');
+                    else cell.classList.add('low-performance');
+
+                    const employees = talentAnalysis.grid_summary[position]?.employees || [];
+
+                    cell.innerHTML = `
+                    <h6>${gridLabels[position]}</h6>
+                    <div class="badge bg-primary mb-2">${employees.length}</div>
+                    <div>
+                        ${employees.slice(0, 6).map(emp => `
+                            <img src="${emp.profile_image || '/static/media/profil_sekilleri/default.png'}" 
+                                 alt="${emp.name}" class="employee-avatar" 
+                                 title="${emp.name}" data-employee-id="${emp.id}">
+                        `).join('')}
+                        ${employees.length > 6 ? `<span class="small text-muted">+${employees.length - 6} more</span>` : ''}
+                    </div>
+                `;
+
+                    // Add click event for employee details
+                    cell.addEventListener('click', () => {
+                        this.showEmployeeList(gridLabels[position], employees);
+                    });
+
+                    gridContainer.appendChild(cell);
+                });
+            });
+
+            // Render talent pipeline summary
+            this.renderTalentPipelineSummary(talentAnalysis);
+        }
+
+        renderTalentPipelineSummary(talentAnalysis) {
+            const summaryContainer = document.getElementById('talentPipelineSummary');
+
+            const categories = [
+                { key: 'stars', label: 'Star Performers', color: 'success' },
+                { key: 'high_performers', label: 'High Performers', color: 'primary' },
+                { key: 'high_potentials', label: 'High Potentials', color: 'info' },
+                { key: 'solid_performers', label: 'Solid Performers', color: 'secondary' },
+                { key: 'underperformers', label: 'Underperformers', color: 'warning' }
+            ];
+
+            summaryContainer.innerHTML = categories.map(category => {
+                const data = talentAnalysis.pipeline_summary?.[category.key] || { count: 0, percentage: 0 };
+                return `
+                <div class="col-md-4 col-lg-2">
+                    <div class="card border-0 bg-${category.color} bg-opacity-10 text-center">
+                        <div class="card-body">
+                            <h4 class="text-${category.color}">${data.count}</h4>
+                            <p class="small mb-0">${category.label}</p>
+                            <small class="text-muted">${data.percentage}%</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+            }).join('');
+        }
+
+        renderSuccessionPlans(successionAnalysis) {
+            const plansContainer = document.getElementById('successionPlans');
+
+            if (!successionAnalysis || !successionAnalysis.succession_plans || successionAnalysis.succession_plans.length === 0) {
+                plansContainer.innerHTML = `
+                <div class="text-center text-muted py-4">
+                    <i class="bi bi-diagram-2 display-1 d-block mb-3"></i>
+                    {% trans "No succession plans available" %}
+                </div>
+            `;
+                return;
+            }
+
+            plansContainer.innerHTML = successionAnalysis.succession_plans.map(plan => `
+            <div class="card succession-card mb-3">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="card-title">${plan.position}</h6>
+                            <p class="text-muted">${plan.unit}</p>
+                            ${plan.current_incumbent ? `
+                                <div class="d-flex align-items-center mb-2">
+                                    <img src="${plan.current_incumbent.profile_image || '/static/media/profil_sekilleri/default.png'}" 
+                                         alt="" class="rounded-circle me-2" width="32" height="32">
+                                    <div>
+                                        <div class="fw-semibold">${plan.current_incumbent.name}</div>
+                                        <small class="text-muted">{% trans "Current Incumbent" %}</small>
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-2">
+                                <strong>{% trans "Readiness:" %}</strong> 
+                                <span class="badge bg-${this.getReadinessColor(plan.timeline)}">${plan.timeline}</span>
+                            </div>
+                            <div class="mb-2">
+                                <strong>{% trans "Candidates:" %}</strong> ${plan.candidates.length}
+                            </div>
+                            ${plan.candidates.slice(0, 3).map(candidate => `
+                                <div class="d-flex align-items-center mb-1">
+                                    <img src="${candidate.profile_image || '/static/media/profil_sekilleri/default.png'}" 
+                                         alt="" class="rounded-circle me-2" width="24" height="24">
+                                    <small>${candidate.name} (${candidate.readiness})</small>
+                                </div>
+                            `).join('')}
+                            ${plan.candidates.length > 3 ? `
+                                <small class="text-muted">+${plan.candidates.length - 3} more candidates</small>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+            // Render succession readiness stats
+            this.renderSuccessionReadiness(successionAnalysis);
+        }
+
+        renderSuccessionReadiness(successionAnalysis) {
+            const summary = successionAnalysis.summary || {};
+            const statsContainer = document.getElementById('readinessStats');
+
+            statsContainer.innerHTML = `
+            <div class="row g-2 text-center">
+                <div class="col-6">
+                    <div class="card border-0 bg-success bg-opacity-10">
+                        <div class="card-body p-2">
+                            <h6 class="text-success mb-0">${summary.ready_now || 0}</h6>
+                            <small>{% trans "Ready Now" %}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card border-0 bg-info bg-opacity-10">
+                        <div class="card-body p-2">
+                            <h6 class="text-info mb-0">${summary.ready_1_year || 0}</h6>
+                            <small>{% trans "1 Year" %}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card border-0 bg-warning bg-opacity-10">
+                        <div class="card-body p-2">
+                            <h6 class="text-warning mb-0">${summary.ready_2_3_years || 0}</h6>
+                            <small>{% trans "2-3 Years" %}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card border-0 bg-danger bg-opacity-10">
+                        <div class="card-body p-2">
+                            <h6 class="text-danger mb-0">${summary.needs_development || 0}</h6>
+                            <small>{% trans "Needs Dev" %}</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        }
+
+        renderRecommendations(recommendations) {
+            if (!recommendations) return;
+
+            // Render priority-based recommendations
+            const priorities = ['high_priority', 'medium_priority', 'low_priority'];
+            priorities.forEach(priority => {
+                const container = document.getElementById(`${priority.replace('_', '')}Recommendations`);
+                const items = recommendations.priority_matrix?.[priority] || [];
+
+                if (items.length === 0) {
+                    container.innerHTML = '<p class="text-muted small">{% trans "No recommendations" %}</p>';
+                    return;
+                }
+
+                container.innerHTML = items.map(item => `
+                <div class="alert alert-light py-2 px-3 mb-2">
+                    <i class="bi bi-arrow-right me-2"></i>
+                    <small>${item}</small>
+                </div>
+            `).join('');
+            });
+
+            // Render key metrics
+            this.renderKeyMetrics(recommendations.key_metrics);
+        }
+
+        renderKeyMetrics(metrics) {
+            const metricsContainer = document.getElementById('keyMetrics');
+
+            if (!metrics) {
+                metricsContainer.innerHTML = '<p class="text-muted">{% trans "No metrics available" %}</p>';
+                return;
+            }
+
+            const metricItems = [
+                { key: 'total_employees', label: 'Total Employees', color: 'primary' },
+                { key: 'high_potential_percentage', label: 'High Potential %', color: 'success' },
+                { key: 'succession_readiness', label: 'Succession Ready', color: 'info' },
+                { key: 'retention_risk_employees', label: 'Retention Risk', color: 'warning' }
+            ];
+
+            metricsContainer.innerHTML = metricItems.map(metric => `
+            <div class="col-md-3">
+                <div class="card border-0 bg-${metric.color} bg-opacity-10 text-center">
+                    <div class="card-body">
+                        <h4 class="text-${metric.color}">${metrics[metric.key] || 0}</h4>
+                        <p class="small mb-0">${metric.label}</p>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        }
+
+        initializeCharts() {
+            // Age Demographics Chart
+            const ctx1 = document.getElementById('ageDemographicsChart').getContext('2d');
+            this.charts.ageDemographics = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['20-30', '31-40', '41-50', '51-65'],
+                    datasets: [{
+                        data: [0, 0, 0, 0],
+                        backgroundColor: ['#0d6efd', '#6f42c1', '#d63384', '#fd7e14']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Experience Chart
+            const ctx2 = document.getElementById('experienceChart').getContext('2d');
+            this.charts.experience = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['0-1 years', '1-3 years', '3-5 years', '5-10 years', '10+ years'],
+                    datasets: [{
+                        label: 'Employees',
+                        data: [0, 0, 0, 0, 0],
+                        backgroundColor: 'rgba(13, 110, 253, 0.6)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Department Chart
+            const ctx3 = document.getElementById('departmentChart').getContext('2d');
+            this.charts.department = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Employees',
+                        data: [],
+                        backgroundColor: 'rgba(25, 135, 84, 0.6)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Succession Readiness Chart
+            const ctx4 = document.getElementById('successionReadinessChart').getContext('2d');
+            this.charts.successionReadiness = new Chart(ctx4, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Ready Now', '1 Year', '2-3 Years', 'Needs Development'],
+                    datasets: [{
+                        data: [0, 0, 0, 0],
+                        backgroundColor: ['#198754', '#20c997', '#ffc107', '#dc3545']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        updateCharts(data) {
+            const workforce = data.workforce_analysis;
+
+            // Update age demographics chart
+            if (workforce.demographics?.age_distribution) {
+                const ageData = workforce.demographics.age_distribution;
+                this.charts.ageDemographics.data.datasets[0].data = [
+                    ageData['20-30']?.count || 0,
+                    ageData['31-40']?.count || 0,
+                    ageData['41-50']?.count || 0,
+                    ageData['51-65']?.count || 0
+                ];
+                this.charts.ageDemographics.update();
+            }
+
+            // Update experience chart
+            if (workforce.demographics?.experience_distribution) {
+                const expData = workforce.demographics.experience_distribution;
+                this.charts.experience.data.datasets[0].data = [
+                    expData['0-1 il']?.count || 0,
+                    expData['1-3 il']?.count || 0,
+                    expData['3-5 il']?.count || 0,
+                    expData['5-10 il']?.count || 0,
+                    expData['10+ il']?.count || 0
+                ];
+                this.charts.experience.update();
+            }
+
+            // Update department chart
+            if (workforce.unit_distribution) {
+                this.charts.department.data.labels = workforce.unit_distribution.map(unit => unit.organization_unit__name);
+                this.charts.department.data.datasets[0].data = workforce.unit_distribution.map(unit => unit.count);
+                this.charts.department.update();
+            }
+
+            // Update succession readiness chart (if succession data is available)
+            if (data.succession_analysis?.summary) {
+                const summary = data.succession_analysis.summary;
+                this.charts.successionReadiness.data.datasets[0].data = [
+                    summary.ready_now || 0,
+                    summary.ready_1_year || 0,
+                    summary.ready_2_3_years || 0,
+                    summary.needs_development || 0
+                ];
+                this.charts.successionReadiness.update();
+            }
+        }
+
+        async generatePlan() {
+            try {
+                const formData = new FormData(document.getElementById('generatePlanForm'));
+
+                const response = await fetch('/api/v1/strategic-hr/generate-plan/', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `strategic-hr-plan-${new Date().toISOString().split('T')[0]}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+
+                    bootstrap.Modal.getInstance(document.getElementById('generatePlanModal')).hide();
+                    this.showSuccess('{% trans "Strategic plan generated successfully" %}');
+                } else {
+                    throw new Error('Plan generation failed');
+                }
+            } catch (error) {
+                console.error('Error generating plan:', error);
+                this.showError('{% trans "Failed to generate strategic plan" %}');
+            }
+        }
+
+        async exportTalentGrid() {
+            try {
+                const orgUnit = document.getElementById('organizationUnitFilter').value;
+                const cycle = document.getElementById('evaluationCycleFilter').value;
+
+                const params = new URLSearchParams();
+                if (orgUnit) params.append('organization_unit', orgUnit);
+                if (cycle) params.append('cycle', cycle);
+                params.append('export', 'talent_grid');
+
+                const response = await fetch(`/api/v1/strategic-hr/export/?${params}`);
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `talent-grid-${new Date().toISOString().split('T')[0]}.xlsx`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+
+                    this.showSuccess('{% trans "Talent grid exported successfully" %}');
+                } else {
+                    throw new Error('Export failed');
+                }
+            } catch (error) {
+                console.error('Error exporting talent grid:', error);
+                this.showError('{% trans "Failed to export talent grid" %}');
+            }
+        }
+
+        showEmployeeList(category, employees) {
+            const content = `
+            <h6>${category}</h6>
+            <div class="row g-3">
+                ${employees.map(emp => `
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center">
+                            <img src="${emp.profile_image || '/static/media/profil_sekilleri/default.png'}" 
+                                 alt="" class="rounded-circle me-3" width="48" height="48">
+                            <div>
+                                <div class="fw-semibold">${emp.name}</div>
+                                <small class="text-muted">${emp.position || '—'}</small>
+                                <div class="small">
+                                    Performance: ${emp.performance || 0}/5 | 
+                                    Potential: ${emp.potential || 0}/5
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+
+            document.getElementById('employeeDetailContent').innerHTML = content;
+            const modal = new bootstrap.Modal(document.getElementById('employeeDetailModal'));
+            modal.show();
+        }
+
+        getReadinessColor(timeline) {
+            switch (timeline) {
+                case 'ready_now': return 'success';
+                case '1_year': return 'info';
+                case '2_3_years': return 'warning';
+                case 'needs_development': return 'danger';
+                default: return 'secondary';
+            }
+        }
+
+        showLoading() {
+            // Show loading spinners or overlays
+            document.querySelectorAll('.card-body').forEach(card => {
+                if (!card.querySelector('.loading-overlay')) {
+                    const overlay = document.createElement('div');
+                    overlay.className = 'loading-overlay d-flex justify-content-center align-items-center position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-75';
+                    overlay.innerHTML = '<div class="spinner-border text-primary" role="status"></div>';
+                    overlay.style.zIndex = '10';
+                    card.style.position = 'relative';
+                    card.appendChild(overlay);
+                }
+            });
+        }
+
+        hideLoading() {
+            document.querySelectorAll('.loading-overlay').forEach(overlay => {
+                overlay.remove();
+            });
+        }
+
+        showSuccess(message) {
+            this.showToast(message, 'success');
+        }
+
+        showError(message) {
+            this.showToast(message, 'danger');
+        }
+
+        showToast(message, type) {
+            // Create toast container if it doesn't exist
+            let toastContainer = document.querySelector('.toast-container');
+            if (!toastContainer) {
+                toastContainer = document.createElement('div');
+                toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+                document.body.appendChild(toastContainer);
+            }
+
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0`;
+            toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body">${message}</div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        `;
+
+            toastContainer.appendChild(toast);
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+        }
+    }
+</script>
+{% endblock %}

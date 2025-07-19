@@ -135,7 +135,8 @@
                         <i class="bi bi-flag me-2"></i>{% trans "Active Risk Flags" %}
                     </h5>
                     <div class="btn-group btn-group-sm" role="group">
-                        <input type="radio" class="btn-check" name="flagFilter" id="allFlags" autocomplete="off" checked>
+                        <input type="radio" class="btn-check" name="flagFilter" id="allFlags" autocomplete="off"
+                            checked>
                         <label class="btn btn-outline-secondary" for="allFlags">{% trans "All" %}</label>
 
                         <input type="radio" class="btn-check" name="flagFilter" id="criticalFlags" autocomplete="off">
@@ -311,93 +312,93 @@
 {% block extra_js %}
 <script src="{% static 'core/js/modern-forms.js' %}"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize dashboard
-    const dashboard = new RiskDashboard();
-    dashboard.init();
-});
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize dashboard
+        const dashboard = new RiskDashboard();
+        dashboard.init();
+    });
 
-class RiskDashboard {
-    constructor() {
-        this.refreshInterval = null;
-        this.charts = {};
-        this.settings = {
-            autoRefresh: 60,
-            soundAlerts: true,
-            browserNotifications: false
-        };
-    }
-
-    init() {
-        this.loadSettings();
-        this.initializeCharts();
-        this.loadDashboardData();
-        this.setupEventListeners();
-        this.startAutoRefresh();
-    }
-
-    loadSettings() {
-        const saved = localStorage.getItem('riskDashboardSettings');
-        if (saved) {
-            this.settings = { ...this.settings, ...JSON.parse(saved) };
+    class RiskDashboard {
+        constructor() {
+            this.refreshInterval = null;
+            this.charts = {};
+            this.settings = {
+                autoRefresh: 60,
+                soundAlerts: true,
+                browserNotifications: false
+            };
         }
-        this.applySettings();
-    }
 
-    saveSettings() {
-        localStorage.setItem('riskDashboardSettings', JSON.stringify(this.settings));
-    }
-
-    applySettings() {
-        document.getElementById('refreshInterval').value = this.settings.autoRefresh;
-        document.getElementById('soundAlerts').checked = this.settings.soundAlerts;
-        document.getElementById('browserNotifications').checked = this.settings.browserNotifications;
-    }
-
-    async loadDashboardData() {
-        try {
-            const response = await fetch('/api/ai-risk-detection/dashboard/');
-            const data = await response.json();
-            
-            this.updateStatistics(data.stats);
-            this.updateRiskFlags(data.risk_flags);
-            this.updateCharts(data);
-            this.updateRecentActivity(data.recent_activity);
-        } catch (error) {
-            console.error('Error loading dashboard data:', error);
-            this.showError('Failed to load dashboard data');
+        init() {
+            this.loadSettings();
+            this.initializeCharts();
+            this.loadDashboardData();
+            this.setupEventListeners();
+            this.startAutoRefresh();
         }
-    }
 
-    updateStatistics(stats) {
-        document.getElementById('activeFlagsCount').textContent = stats.active_flags || 0;
-        document.getElementById('highRiskCount').textContent = stats.high_risk || 0;
-        document.getElementById('resolvedCount').textContent = stats.resolved || 0;
-        document.getElementById('avgRiskScore').textContent = (stats.avg_risk_score || 0).toFixed(1);
-    }
-
-    updateRiskFlags(flags) {
-        const tbody = document.getElementById('riskFlagsBody');
-        const spinner = document.getElementById('riskFlagsSpinner');
-        
-        if (!flags || flags.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">{% trans "No active risk flags found" %}</td></tr>';
-        } else {
-            tbody.innerHTML = flags.map(flag => this.renderRiskFlagRow(flag)).join('');
+        loadSettings() {
+            const saved = localStorage.getItem('riskDashboardSettings');
+            if (saved) {
+                this.settings = { ...this.settings, ...JSON.parse(saved) };
+            }
+            this.applySettings();
         }
-        
-        spinner.style.display = 'none';
-    }
 
-    renderRiskFlagRow(flag) {
-        const severityClass = {
-            'CRITICAL': 'danger',
-            'HIGH': 'warning',
-            'MEDIUM': 'info',
-            'LOW': 'secondary'
-        }[flag.severity] || 'secondary';
+        saveSettings() {
+            localStorage.setItem('riskDashboardSettings', JSON.stringify(this.settings));
+        }
 
-        return `
+        applySettings() {
+            document.getElementById('refreshInterval').value = this.settings.autoRefresh;
+            document.getElementById('soundAlerts').checked = this.settings.soundAlerts;
+            document.getElementById('browserNotifications').checked = this.settings.browserNotifications;
+        }
+
+        async loadDashboardData() {
+            try {
+                const response = await fetch('/api/ai-risk-detection/dashboard/');
+                const data = await response.json();
+
+                this.updateStatistics(data.stats);
+                this.updateRiskFlags(data.risk_flags);
+                this.updateCharts(data);
+                this.updateRecentActivity(data.recent_activity);
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                this.showError('Failed to load dashboard data');
+            }
+        }
+
+        updateStatistics(stats) {
+            document.getElementById('activeFlagsCount').textContent = stats.active_flags || 0;
+            document.getElementById('highRiskCount').textContent = stats.high_risk || 0;
+            document.getElementById('resolvedCount').textContent = stats.resolved || 0;
+            document.getElementById('avgRiskScore').textContent = (stats.avg_risk_score || 0).toFixed(1);
+        }
+
+        updateRiskFlags(flags) {
+            const tbody = document.getElementById('riskFlagsBody');
+            const spinner = document.getElementById('riskFlagsSpinner');
+
+            if (!flags || flags.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">{% trans "No active risk flags found" %}</td></tr>';
+            } else {
+                tbody.innerHTML = flags.map(flag => this.renderRiskFlagRow(flag)).join('');
+            }
+
+            spinner.style.display = 'none';
+        }
+
+        renderRiskFlagRow(flag) {
+            const severityClass = {
+                'CRITICAL': 'danger',
+                'HIGH': 'warning',
+                'MEDIUM': 'info',
+                'LOW': 'secondary'
+            }[flag.severity] || 'secondary';
+
+            return `
             <tr data-flag-id="${flag.id}" class="risk-flag-row">
                 <td>
                     <div class="d-flex align-items-center">
@@ -440,86 +441,86 @@ class RiskDashboard {
                 </td>
             </tr>
         `;
-    }
-
-    initializeCharts() {
-        // Risk Distribution Chart
-        const ctx1 = document.getElementById('riskDistributionChart').getContext('2d');
-        this.charts.distribution = new Chart(ctx1, {
-            type: 'doughnut',
-            data: {
-                labels: ['Low', 'Medium', 'High', 'Critical'],
-                datasets: [{
-                    data: [0, 0, 0, 0],
-                    backgroundColor: ['#198754', '#0dcaf0', '#ffc107', '#dc3545']
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
-            }
-        });
-
-        // Risk Trends Chart
-        const ctx2 = document.getElementById('riskTrendsChart').getContext('2d');
-        this.charts.trends = new Chart(ctx2, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [{
-                    label: 'Risk Score',
-                    data: [],
-                    borderColor: '#0d6efd',
-                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
-                    tension: 0.4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 10
-                    }
-                }
-            }
-        });
-    }
-
-    updateCharts(data) {
-        // Update distribution chart
-        if (data.distribution) {
-            this.charts.distribution.data.datasets[0].data = [
-                data.distribution.LOW || 0,
-                data.distribution.MEDIUM || 0,
-                data.distribution.HIGH || 0,
-                data.distribution.CRITICAL || 0
-            ];
-            this.charts.distribution.update();
         }
 
-        // Update trends chart
-        if (data.trends) {
-            this.charts.trends.data.labels = data.trends.labels;
-            this.charts.trends.data.datasets[0].data = data.trends.data;
-            this.charts.trends.update();
-        }
-    }
+        initializeCharts() {
+            // Risk Distribution Chart
+            const ctx1 = document.getElementById('riskDistributionChart').getContext('2d');
+            this.charts.distribution = new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Low', 'Medium', 'High', 'Critical'],
+                    datasets: [{
+                        data: [0, 0, 0, 0],
+                        backgroundColor: ['#198754', '#0dcaf0', '#ffc107', '#dc3545']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
 
-    updateRecentActivity(activities) {
-        const container = document.getElementById('recentActivity');
-        const spinner = document.getElementById('activitySpinner');
-        
-        if (!activities || activities.length === 0) {
-            container.innerHTML = '<p class="text-muted text-center">{% trans "No recent activity" %}</p>';
-        } else {
-            container.innerHTML = activities.map(activity => `
+            // Risk Trends Chart
+            const ctx2 = document.getElementById('riskTrendsChart').getContext('2d');
+            this.charts.trends = new Chart(ctx2, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Risk Score',
+                        data: [],
+                        borderColor: '#0d6efd',
+                        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 10
+                        }
+                    }
+                }
+            });
+        }
+
+        updateCharts(data) {
+            // Update distribution chart
+            if (data.distribution) {
+                this.charts.distribution.data.datasets[0].data = [
+                    data.distribution.LOW || 0,
+                    data.distribution.MEDIUM || 0,
+                    data.distribution.HIGH || 0,
+                    data.distribution.CRITICAL || 0
+                ];
+                this.charts.distribution.update();
+            }
+
+            // Update trends chart
+            if (data.trends) {
+                this.charts.trends.data.labels = data.trends.labels;
+                this.charts.trends.data.datasets[0].data = data.trends.data;
+                this.charts.trends.update();
+            }
+        }
+
+        updateRecentActivity(activities) {
+            const container = document.getElementById('recentActivity');
+            const spinner = document.getElementById('activitySpinner');
+
+            if (!activities || activities.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center">{% trans "No recent activity" %}</p>';
+            } else {
+                container.innerHTML = activities.map(activity => `
                 <div class="timeline-item">
                     <div class="timeline-marker bg-${activity.type}"></div>
                     <div class="timeline-content">
@@ -529,87 +530,87 @@ class RiskDashboard {
                     </div>
                 </div>
             `).join('');
-        }
-        
-        spinner.style.display = 'none';
-    }
-
-    setupEventListeners() {
-        // Refresh button
-        document.getElementById('refreshBtn').addEventListener('click', () => {
-            this.loadDashboardData();
-        });
-
-        // Settings form
-        document.getElementById('saveSettings').addEventListener('click', () => {
-            this.settings.autoRefresh = parseInt(document.getElementById('refreshInterval').value);
-            this.settings.soundAlerts = document.getElementById('soundAlerts').checked;
-            this.settings.browserNotifications = document.getElementById('browserNotifications').checked;
-            
-            this.saveSettings();
-            this.startAutoRefresh();
-            
-            const modal = bootstrap.Modal.getInstance(document.getElementById('settingsModal'));
-            modal.hide();
-        });
-
-        // Flag filters
-        document.querySelectorAll('input[name="flagFilter"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                this.filterRiskFlags(e.target.id);
-            });
-        });
-
-        // Trend period
-        document.querySelectorAll('input[name="trendPeriod"]').forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                this.updateTrendsPeriod(e.target.id);
-            });
-        });
-
-        // Table actions
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('.view-flag')) {
-                const flagId = e.target.closest('.view-flag').dataset.flagId;
-                this.viewRiskFlag(flagId);
             }
-            
-            if (e.target.closest('.resolve-flag')) {
-                const flagId = e.target.closest('.resolve-flag').dataset.flagId;
-                this.resolveRiskFlag(flagId);
-            }
-        });
-    }
 
-    startAutoRefresh() {
-        if (this.refreshInterval) {
-            clearInterval(this.refreshInterval);
+            spinner.style.display = 'none';
         }
-        
-        if (this.settings.autoRefresh > 0) {
-            this.refreshInterval = setInterval(() => {
+
+        setupEventListeners() {
+            // Refresh button
+            document.getElementById('refreshBtn').addEventListener('click', () => {
                 this.loadDashboardData();
-            }, this.settings.autoRefresh * 1000);
-        }
-    }
+            });
 
-    async viewRiskFlag(flagId) {
-        try {
-            const response = await fetch(`/api/risk-flags/${flagId}/`);
-            const flag = await response.json();
-            
-            document.getElementById('flagDetailContent').innerHTML = this.renderFlagDetail(flag);
-            
-            const modal = new bootstrap.Modal(document.getElementById('flagDetailModal'));
-            modal.show();
-        } catch (error) {
-            console.error('Error loading flag details:', error);
-            this.showError('Failed to load flag details');
-        }
-    }
+            // Settings form
+            document.getElementById('saveSettings').addEventListener('click', () => {
+                this.settings.autoRefresh = parseInt(document.getElementById('refreshInterval').value);
+                this.settings.soundAlerts = document.getElementById('soundAlerts').checked;
+                this.settings.browserNotifications = document.getElementById('browserNotifications').checked;
 
-    renderFlagDetail(flag) {
-        return `
+                this.saveSettings();
+                this.startAutoRefresh();
+
+                const modal = bootstrap.Modal.getInstance(document.getElementById('settingsModal'));
+                modal.hide();
+            });
+
+            // Flag filters
+            document.querySelectorAll('input[name="flagFilter"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    this.filterRiskFlags(e.target.id);
+                });
+            });
+
+            // Trend period
+            document.querySelectorAll('input[name="trendPeriod"]').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    this.updateTrendsPeriod(e.target.id);
+                });
+            });
+
+            // Table actions
+            document.addEventListener('click', (e) => {
+                if (e.target.closest('.view-flag')) {
+                    const flagId = e.target.closest('.view-flag').dataset.flagId;
+                    this.viewRiskFlag(flagId);
+                }
+
+                if (e.target.closest('.resolve-flag')) {
+                    const flagId = e.target.closest('.resolve-flag').dataset.flagId;
+                    this.resolveRiskFlag(flagId);
+                }
+            });
+        }
+
+        startAutoRefresh() {
+            if (this.refreshInterval) {
+                clearInterval(this.refreshInterval);
+            }
+
+            if (this.settings.autoRefresh > 0) {
+                this.refreshInterval = setInterval(() => {
+                    this.loadDashboardData();
+                }, this.settings.autoRefresh * 1000);
+            }
+        }
+
+        async viewRiskFlag(flagId) {
+            try {
+                const response = await fetch(`/api/risk-flags/${flagId}/`);
+                const flag = await response.json();
+
+                document.getElementById('flagDetailContent').innerHTML = this.renderFlagDetail(flag);
+
+                const modal = new bootstrap.Modal(document.getElementById('flagDetailModal'));
+                modal.show();
+            } catch (error) {
+                console.error('Error loading flag details:', error);
+                this.showError('Failed to load flag details');
+            }
+        }
+
+        renderFlagDetail(flag) {
+            return `
             <div class="row">
                 <div class="col-md-6">
                     <h6>{% trans "Employee Information" %}</h6>
@@ -639,96 +640,96 @@ class RiskDashboard {
                 </div>
             </div>
         `;
-    }
-
-    async resolveRiskFlag(flagId) {
-        if (!confirm('{% trans "Are you sure you want to resolve this risk flag?" %}')) {
-            return;
         }
 
-        try {
-            const response = await fetch(`/api/risk-flags/${flagId}/resolve/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        async resolveRiskFlag(flagId) {
+            if (!confirm('{% trans "Are you sure you want to resolve this risk flag?" %}')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/risk-flags/${flagId}/resolve/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    }
+                });
+
+                if (response.ok) {
+                    this.showSuccess('{% trans "Risk flag resolved successfully" %}');
+                    this.loadDashboardData();
+                } else {
+                    throw new Error('Failed to resolve flag');
                 }
+            } catch (error) {
+                console.error('Error resolving flag:', error);
+                this.showError('{% trans "Failed to resolve risk flag" %}');
+            }
+        }
+
+        filterRiskFlags(filter) {
+            const rows = document.querySelectorAll('.risk-flag-row');
+            rows.forEach(row => {
+                const severity = row.querySelector('.badge').textContent.trim();
+                let show = true;
+
+                switch (filter) {
+                    case 'criticalFlags':
+                        show = severity === 'CRITICAL';
+                        break;
+                    case 'highFlags':
+                        show = severity === 'HIGH';
+                        break;
+                    case 'allFlags':
+                    default:
+                        show = true;
+                }
+
+                row.style.display = show ? '' : 'none';
             });
-
-            if (response.ok) {
-                this.showSuccess('{% trans "Risk flag resolved successfully" %}');
-                this.loadDashboardData();
-            } else {
-                throw new Error('Failed to resolve flag');
-            }
-        } catch (error) {
-            console.error('Error resolving flag:', error);
-            this.showError('{% trans "Failed to resolve risk flag" %}');
         }
-    }
 
-    filterRiskFlags(filter) {
-        const rows = document.querySelectorAll('.risk-flag-row');
-        rows.forEach(row => {
-            const severity = row.querySelector('.badge').textContent.trim();
-            let show = true;
-            
-            switch (filter) {
-                case 'criticalFlags':
-                    show = severity === 'CRITICAL';
-                    break;
-                case 'highFlags':
-                    show = severity === 'HIGH';
-                    break;
-                case 'allFlags':
-                default:
-                    show = true;
+        async updateTrendsPeriod(period) {
+            try {
+                const response = await fetch(`/api/ai-risk-detection/trends/?period=${period}`);
+                const data = await response.json();
+
+                this.charts.trends.data.labels = data.labels;
+                this.charts.trends.data.datasets[0].data = data.data;
+                this.charts.trends.update();
+            } catch (error) {
+                console.error('Error updating trends:', error);
             }
-            
-            row.style.display = show ? '' : 'none';
-        });
-    }
-
-    async updateTrendsPeriod(period) {
-        try {
-            const response = await fetch(`/api/ai-risk-detection/trends/?period=${period}`);
-            const data = await response.json();
-            
-            this.charts.trends.data.labels = data.labels;
-            this.charts.trends.data.datasets[0].data = data.data;
-            this.charts.trends.update();
-        } catch (error) {
-            console.error('Error updating trends:', error);
         }
-    }
 
-    showSuccess(message) {
-        this.showToast(message, 'success');
-    }
+        showSuccess(message) {
+            this.showToast(message, 'success');
+        }
 
-    showError(message) {
-        this.showToast(message, 'danger');
-    }
+        showError(message) {
+            this.showToast(message, 'danger');
+        }
 
-    showToast(message, type) {
-        const toastContainer = document.querySelector('.toast-container');
-        const toast = document.createElement('div');
-        toast.className = `toast align-items-center text-white bg-${type} border-0`;
-        toast.innerHTML = `
+        showToast(message, type) {
+            const toastContainer = document.querySelector('.toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast align-items-center text-white bg-${type} border-0`;
+            toast.innerHTML = `
             <div class="d-flex">
                 <div class="toast-body">${message}</div>
                 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
             </div>
         `;
-        
-        toastContainer.appendChild(toast);
-        const bsToast = new bootstrap.Toast(toast);
-        bsToast.show();
-        
-        toast.addEventListener('hidden.bs.toast', () => {
-            toast.remove();
-        });
+
+            toastContainer.appendChild(toast);
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+
+            toast.addEventListener('hidden.bs.toast', () => {
+                toast.remove();
+            });
+        }
     }
-}
 </script>
 {% endblock %}

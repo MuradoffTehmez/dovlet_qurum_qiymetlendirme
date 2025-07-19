@@ -135,14 +135,14 @@ class InkishafPlaniSerializer(serializers.ModelSerializer):
 
 # --- Feedback Serializers ---
 class FeedbackSerializer(serializers.ModelSerializer):
-    gonderici_name = serializers.CharField(source='gonderici.get_full_name', read_only=True)
-    alici_name = serializers.CharField(source='alici.get_full_name', read_only=True)
+    user_name = serializers.CharField(source='user.get_full_name', read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
     
     class Meta:
         model = Feedback
         fields = [
-            'id', 'gonderici', 'gonderici_name', 'alici', 'alici_name',
-            'kateqoriya', 'metn', 'anonymous', 'yaradilma_tarixi'
+            'id', 'user', 'user_name', 'title', 'description', 'feedback_type',
+            'priority', 'status', 'status_display', 'created_at', 'updated_at'
         ]
 
 
