@@ -1,0 +1,435 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .notification-item {
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+    }
+
+    .notification-item:hover {
+        background-color: #f8f9fa;
+        transform: translateX(5px);
+    }
+
+    .notification-item.unread {
+        background-color: #fff3cd;
+        border-left-color: #ffc107;
+    }
+
+    .notification-item.unread:hover {
+        background-color: #fff1b3;
+    }
+
+    .notification-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+    }
+
+    .notification-content {
+        flex: 1;
+    }
+
+    .notification-time {
+        font-size: 0.8rem;
+        color: #6c757d;
+    }
+
+    .notification-actions {
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .notification-item:hover .notification-actions {
+        opacity: 1;
+    }
+
+    .filter-tabs .nav-link {
+        border-radius: 20px;
+        margin-right: 10px;
+    }
+
+    .stats-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .notification-center-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="notification-center-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2><i class="fas fa-bell me-2"></i>{{ title }}</h2>
+                <p class="text-muted mb-0">Bildirişlərinizi buradan idarə edin</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <button class="btn btn-primary" onclick="markAllAsRead()">
+                    <i class="fas fa-check-double me-2"></i>Hamısını Oxu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Sol Panel - Filtr və Statistika -->
+        <div class="col-md-3">
+            <!-- Statistika Kartları -->
+            <div class="stats-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6><i class="fas fa-chart-bar me-2"></i>Statistika</h6>
+                </div>
+                <div class="row text-center">
+                    <div class="col-4">
+                        <h4>{{ stats.total }}</h4>
+                        <small>Cəmi</small>
+                    </div>
+                    <div class="col-4">
+                        <h4 class="text-warning">{{ stats.unread }}</h4>
+                        <small>Oxunmamış</small>
+                    </div>
+                    <div class="col-4">
+                        <h4>{{ stats.today }}</h4>
+                        <small>Bu gün</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtrlər -->
+            <div class="card">
+                <div class="card-header">
+                    <h6><i class="fas fa-filter me-2"></i>Filtrlər</h6>
+                </div>
+                <div class="card-body">
+                    <form method="get" id="filter-form">
+                        <!-- Növ Filtri -->
+                        <div class="mb-3">
+                            <label class="form-label">Bildiriş Növü</label>
+                            <select name="type" class="form-select" onchange="submitFilter()">
+                                <option value="all" {% if current_filter_type=='all' %}selected{% endif %}>Hamısı
+                                </option>
+                                {% for type_code, type_name in notification_types %}
+                                <option value="{{ type_code }}" {% if current_filter_type==type_code %}selected{% endif
+                                    %}>
+                                    {{ type_name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Oxunma Statusu -->
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <select name="read" class="form-select" onchange="submitFilter()">
+                                <option value="all" {% if current_filter_read=='all' %}selected{% endif %}>Hamısı
+                                </option>
+                                <option value="unread" {% if current_filter_read=='unread' %}selected{% endif %}>
+                                    Oxunmamış</option>
+                                <option value="read" {% if current_filter_read=='read' %}selected{% endif %}>Oxunmuş
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Axtarış -->
+                        <div class="mb-3">
+                            <label class="form-label">Axtarış</label>
+                            <div class="input-group">
+                                <input type="text" name="search" class="form-control" placeholder="Bildiriş axtar..."
+                                    value="{{ search_query }}">
+                                <button class="btn btn-outline-secondary" type="submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Panel - Bildirişlər -->
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6>Bildirişlər ({{ page_obj.paginator.count }})</h6>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-primary" onclick="refreshNotifications()">
+                            <i class="fas fa-sync-alt"></i> Yenilə
+                        </button>
+                        <a href="{% url 'notification_preferences' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-cog"></i> Tənzimlər
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body p-0">
+                    {% if notifications %}
+                    <div id="notifications-list">
+                        {% for notification in notifications %}
+                        <div class="notification-item d-flex align-items-start p-3 border-bottom {% if not notification.is_read %}unread{% endif %}"
+                            data-notification-id="{{ notification.id }}">
+
+                            <!-- İkon -->
+                            <div class="notification-icon bg-{{ notification.get_color_class }} text-white">
+                                <i class="{{ notification.get_icon }}"></i>
+                            </div>
+
+                            <!-- Məzmun -->
+                            <div class="notification-content">
+                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                    <h6 class="mb-1 fw-bold">{{ notification.title }}</h6>
+                                    <small class="notification-time">{{ notification.created_at|timesince }}
+                                        əvvəl</small>
+                                </div>
+
+                                <p class="mb-2 text-muted">{{ notification.message|truncatechars:150 }}</p>
+
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="badge bg-{{ notification.get_priority_badge }} me-2">
+                                            {{ notification.get_priority_display }}
+                                        </span>
+                                        {% if notification.sender %}
+                                        <small class="text-muted">
+                                            <i class="fas fa-user me-1"></i>{{ notification.sender.get_full_name }}
+                                        </small>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Əməliyyat Düymələri -->
+                                    <div class="notification-actions">
+                                        {% if notification.action_url %}
+                                        <a href="{{ notification.action_url }}" class="btn btn-sm btn-primary me-2">
+                                            {{ notification.action_text|default:"Ətraflı" }}
+                                        </a>
+                                        {% endif %}
+
+                                        {% if not notification.is_read %}
+                                        <button class="btn btn-sm btn-outline-success me-2"
+                                            onclick="markAsRead({{ notification.id }})">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                        {% endif %}
+
+                                        <button class="btn btn-sm btn-outline-danger"
+                                            onclick="archiveNotification({{ notification.id }})">
+                                            <i class="fas fa-archive"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Səhifələmə -->
+                    {% if page_obj.has_other_pages %}
+                    <div class="d-flex justify-content-center p-3">
+                        <nav aria-label="Bildiriş səhifələri">
+                            <ul class="pagination">
+                                {% if page_obj.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link"
+                                        href="?page={{ page_obj.previous_page_number }}{% if current_filter_type != 'all' %}&type={{ current_filter_type }}{% endif %}{% if current_filter_read != 'all' %}&read={{ current_filter_read }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+
+                                {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                                {% else %}
+                                <li class="page-item">
+                                    <a class="page-link"
+                                        href="?page={{ num }}{% if current_filter_type != 'all' %}&type={{ current_filter_type }}{% endif %}{% if current_filter_read != 'all' %}&read={{ current_filter_read }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">{{
+                                        num }}</a>
+                                </li>
+                                {% endif %}
+                                {% endfor %}
+
+                                {% if page_obj.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link"
+                                        href="?page={{ page_obj.next_page_number }}{% if current_filter_type != 'all' %}&type={{ current_filter_type }}{% endif %}{% if current_filter_read != 'all' %}&read={{ current_filter_read }}{% endif %}{% if search_query %}&search={{ search_query }}{% endif %}">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    </div>
+                    {% endif %}
+
+                    {% else %}
+                    <!-- Boş State -->
+                    <div class="text-center py-5">
+                        <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">Heç bir bildiriş yoxdur</h5>
+                        <p class="text-muted">Yeni bildirişlər aldıqda burada görəcəksiniz.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function submitFilter() {
+        document.getElementById('filter-form').submit();
+    }
+
+    function refreshNotifications() {
+        location.reload();
+    }
+
+    function markAsRead(notificationId) {
+        fetch(`/bildirisler/oxu/${notificationId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const item = document.querySelector(`[data-notification-id="${notificationId}"]`);
+                    item.classList.remove('unread');
+
+                    // Unread count yenilə
+                    updateUnreadCount(data.unread_count);
+
+                    showToast(data.message, 'success');
+                }
+            });
+    }
+
+    function markAllAsRead() {
+        if (confirm('Bütün bildirişləri oxunmuş kimi işarələmək istəyirsiniz?')) {
+            fetch('/bildirisler/hamisi-oxu/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.querySelectorAll('.notification-item.unread').forEach(item => {
+                            item.classList.remove('unread');
+                        });
+
+                        updateUnreadCount(0);
+                        showToast(data.message, 'success');
+                    }
+                });
+        }
+    }
+
+    function archiveNotification(notificationId) {
+        if (confirm('Bu bildirişi arxivləşdirmək istəyirsiniz?')) {
+            fetch(`/bildirisler/arxiv/${notificationId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const item = document.querySelector(`[data-notification-id="${notificationId}"]`);
+                        item.style.animation = 'fadeOutRight 0.5s ease-out';
+                        setTimeout(() => {
+                            item.remove();
+                        }, 500);
+
+                        showToast(data.message, 'success');
+                    }
+                });
+        }
+    }
+
+    function updateUnreadCount(count) {
+        const badge = document.querySelector('.notification-badge');
+        if (badge) {
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'inline';
+            } else {
+                badge.style.display = 'none';
+            }
+        }
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function showToast(message, type) {
+        // Toast notification göstərmək üçün
+        const toast = document.createElement('div');
+        toast.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+        toast.style.top = '20px';
+        toast.style.right = '20px';
+        toast.style.zIndex = '9999';
+        toast.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+
+        document.body.appendChild(toast);
+
+        setTimeout(() => {
+            toast.remove();
+        }, 5000);
+    }
+
+    // CSS animasiyaları
+    const style = document.createElement('style');
+    style.textContent = `
+    @keyframes fadeOutRight {
+        from { opacity: 1; transform: translateX(0); }
+        to { opacity: 0; transform: translateX(100%); }
+    }
+`;
+    document.head.appendChild(style);
+</script>
+{% endblock %}

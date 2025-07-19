@@ -9,9 +9,14 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
 
-from .models import Ishchi, Qiymetlendirme
+from .models import Ishchi, Qiymetlendirme, Feedback
 from .tokens import account_activation_token
 from .tasks import send_activation_email_task
+from .notifications import (
+    notify_new_employee_joined, 
+    notify_feedback_received,
+    NotificationManager
+)
 
 
 @receiver(post_save, sender=Qiymetlendirme)
@@ -82,3 +87,46 @@ def send_activation_email(sender, instance, created, **kwargs):
                 send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [instance.email])
             except Exception as mail_error:
                 print(f"E-poçt göndərilərkən xəta: {mail_error}")
+
+
+# === YENİ BİLDİRİŞ SİGNALLARI ===
+
+@receiver(post_save, sender=Ishchi)
+def notify_new_user_registration(sender, instance, created, **kwargs):
+    """Yeni istifadəçi qeydiyyatdan keçdikdə bildiriş göndər"""
+    if created:
+        # HR Manager-lara bildiriş göndər
+        hr_managers = Ishchi.objects.filter(
+            groups__name='HR Manager',
+            is_active=True
+        )
+        
+        for hr_manager in hr_managers:
+            notify_new_employee_joined(instance, [hr_manager])
+
+@receiver(post_save, sender=Feedback)
+def notify_feedback_created(sender, instance, created, **kwargs):
+    """Yeni feedback yaradıldıqda admin-lərə bildiriş göndər"""
+    if created:
+        # Super Admin və HR Manager-lara bildiriş göndər
+        admins = Ishchi.objects.filter(
+            groups__name__in=['Super Admin', 'HR Manager'],
+            is_active=True
+        )
+        
+        for admin in admins:
+            notify_feedback_received(admin, instance)
+
+@receiver(post_save, sender=Qiymetlendirme)
+def notify_evaluation_assignment(sender, instance, created, **kwargs):
+    """Qiymətləndirmə tapşırığı verildikdə bildiriş göndər"""
+    if created:
+        from .notifications import notify_task_assigned
+        
+        notify_task_assigned(
+            employee=instance.qiymetlendirilen,
+            task_title="Performans Qiymətləndirməsi",
+            task_description=f"{instance.qiymetlendiren.get_full_name()} tərəfindən qiymətləndirmə tapşırığı",
+            evaluator=instance.qiymetlendiren,
+            due_date=instance.dovr.bitme_tarixi if instance.dovr else None
+        )

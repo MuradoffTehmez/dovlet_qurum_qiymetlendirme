@@ -4,7 +4,8 @@ from simple_history.admin import SimpleHistoryAdmin
 
 from .models import (
     Cavab, Ishchi, Qiymetlendirme, QiymetlendirmeDovru,
-    Sual, SualKateqoriyasi, Hedef, InkishafPlani, OrganizationUnit
+    Sual, SualKateqoriyasi, Hedef, InkishafPlani, OrganizationUnit,
+    Notification, Feedback
 )
 
 # --- Ishchi modeli üçün admin ---
@@ -152,3 +153,146 @@ class InkishafPlaniAdmin(SimpleHistoryAdmin):
             return f"{obj.ishchi.organization_unit.name} ({obj.ishchi.organization_unit.get_type_display()})"
         return "—"
     get_ishchi_unit.short_description = "İşçinin Təşkilati Vahidi"
+
+
+# === BİLDİRİŞ SİSTEMİ ADMİN ===
+
+@admin.register(Notification)
+class NotificationAdmin(SimpleHistoryAdmin):
+    list_display = (
+        'title', 'recipient', 'notification_type', 'priority', 
+        'is_read', 'created_at', 'get_sender_name'
+    )
+    list_filter = (
+        'notification_type', 'priority', 'is_read', 'is_archived',
+        'created_at', 'recipient__organization_unit'
+    )
+    search_fields = ('title', 'message', 'recipient__username', 'recipient__first_name', 'recipient__last_name')
+    readonly_fields = ('created_at', 'read_at')
+    
+    fieldsets = (
+        ('Əsas Məlumatlar', {
+            'fields': ('recipient', 'sender', 'title', 'message', 'notification_type', 'priority')
+        }),
+        ('Status', {
+            'fields': ('is_read', 'read_at', 'is_archived')
+        }),
+        ('Əməliyyat', {
+            'fields': ('action_url', 'action_text')
+        }),
+        ('Tarixlər', {
+            'fields': ('created_at', 'expires_at')
+        }),
+        ('Əlavə Məlumatlar', {
+            'fields': ('metadata',),
+            'classes': ('collapse',)
+        })
+    )
+    
+    actions = ['mark_as_read', 'mark_as_unread', 'archive_notifications']
+    
+    def get_sender_name(self, obj):
+        return obj.sender.get_full_name() if obj.sender else "Sistem"
+    get_sender_name.short_description = "Göndərən"
+    
+    def mark_as_read(self, request, queryset):
+        updated = queryset.update(is_read=True)
+        self.message_user(request, f"{updated} bildiriş oxunmuş kimi işarələndi.")
+    mark_as_read.short_description = "Seçilmiş bildirişləri oxunmuş kimi işarələ"
+    
+    def mark_as_unread(self, request, queryset):
+        updated = queryset.update(is_read=False)
+        self.message_user(request, f"{updated} bildiriş oxunmamış kimi işarələndi.")
+    mark_as_unread.short_description = "Seçilmiş bildirişləri oxunmamış kimi işarələ"
+    
+    def archive_notifications(self, request, queryset):
+        updated = queryset.update(is_archived=True)
+        self.message_user(request, f"{updated} bildiriş arxivləşdirildi.")
+    archive_notifications.short_description = "Seçilmiş bildirişləri arxivləşdir"
+
+
+@admin.register(Feedback)
+class FeedbackAdmin(SimpleHistoryAdmin):
+    list_display = (
+        'title', 'user', 'feedback_type', 'priority', 'status', 
+        'created_at', 'get_response_status'
+    )
+    list_filter = (
+        'feedback_type', 'priority', 'status', 'created_at',
+        'user__organization_unit'
+    )
+    search_fields = ('title', 'description', 'user__username', 'user__first_name', 'user__last_name')
+    readonly_fields = ('created_at', 'updated_at', 'resolved_at', 'user', 'ip_address', 'user_agent')
+    
+    fieldsets = (
+        ('Əsas Məlumatlar', {
+            'fields': ('user', 'title', 'description', 'feedback_type', 'priority', 'status')
+        }),
+        ('Admin Cavabı', {
+            'fields': ('admin_response', 'responded_by', 'response_date')
+        }),
+        ('Əlavə Fayllar', {
+            'fields': ('attachment',)
+        }),
+        ('Tarixlər', {
+            'fields': ('created_at', 'updated_at', 'resolved_at')
+        }),
+        ('Texniki Məlumatlar', {
+            'fields': ('ip_address', 'user_agent'),
+            'classes': ('collapse',)
+        })
+    )
+    
+    actions = ['mark_as_resolved', 'mark_as_in_progress', 'mark_as_closed']
+    
+    def get_response_status(self, obj):
+        if obj.admin_response:
+            return "✅ Cavablanıb"
+        return "❌ Cavablanmayıb"
+    get_response_status.short_description = "Cavab Statusu"
+    
+    def save_model(self, request, obj, form, change):
+        # Admin cavab verəndə responded_by sahəsini avtomatik doldur
+        if obj.admin_response and not obj.responded_by:
+            obj.responded_by = request.user
+            from django.utils import timezone
+            obj.response_date = timezone.now()
+            
+            # Status həll edilmiş kimi dəyişdir
+            if obj.status == 'NEW':
+                obj.status = 'RESOLVED'
+                obj.resolved_at = timezone.now()
+        
+        super().save_model(request, obj, form, change)
+        
+        # İstifadəçiyə bildiriş göndər
+        if obj.admin_response and obj.responded_by:
+            from .notifications import NotificationManager
+            
+            NotificationManager.create_and_send(
+                recipient=obj.user,
+                title="Geri Bildiriminizə Cavab",
+                message=f"'{obj.title}' mövzusunda geri bildiriminizə cavab verildi.",
+                notification_type='SUCCESS',
+                priority='MEDIUM',
+                sender=request.user,
+                action_url=f"/admin/core/feedback/{obj.id}/change/",
+                action_text="Cavabı Gör",
+                send_email=True
+            )
+    
+    def mark_as_resolved(self, request, queryset):
+        from django.utils import timezone
+        updated = queryset.update(status='RESOLVED', resolved_at=timezone.now())
+        self.message_user(request, f"{updated} geri bildirim həll edilmiş kimi işarələndi.")
+    mark_as_resolved.short_description = "Seçilmiş geri bildirişləri həll edilmiş kimi işarələ"
+    
+    def mark_as_in_progress(self, request, queryset):
+        updated = queryset.update(status='IN_PROGRESS')
+        self.message_user(request, f"{updated} geri bildirim işləmədə kimi işarələndi.")
+    mark_as_in_progress.short_description = "Seçilmiş geri bildirişləri işləmədə kimi işarələ"
+    
+    def mark_as_closed(self, request, queryset):
+        updated = queryset.update(status='CLOSED')
+        self.message_user(request, f"{updated} geri bildirim bağlandı.")
+    mark_as_closed.short_description = "Seçilmiş geri bildirişləri bağla"

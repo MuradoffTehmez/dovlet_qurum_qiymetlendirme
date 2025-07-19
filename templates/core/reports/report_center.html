@@ -1,0 +1,308 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.report-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+    border: 1px solid #dee2e6;
+    height: 100%;
+}
+
+.report-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-color: #667eea;
+}
+
+.report-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+.report-formats {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.format-badge {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    border: 1px solid #667eea;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.recent-reports-card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.recent-report-item {
+    padding: 12px;
+    border-left: 4px solid #667eea;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.stats-overview {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="stats-overview">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2><i class="fas fa-chart-bar me-2"></i>{{ title }}</h2>
+                <p class="mb-0">Dinamik filtrlər və müxtəlif formatlarla hesabat yaradın</p>
+            </div>
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="stat-item">
+                            <div class="stat-number">{{ available_reports|length }}</div>
+                            <div class="stat-label">Hesabat Növü</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="stat-item">
+                            <div class="stat-number">{{ recent_reports|length }}</div>
+                            <div class="stat-label">Son Hesabatlar</div>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="stat-item">
+                            <div class="stat-number">3</div>
+                            <div class="stat-label">Format Seçimi</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Sol Panel - Hesabat Növləri -->
+        <div class="col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4>Mövcud Hesabatlar</h4>
+                <div class="btn-group">
+                    <a href="{% url 'schedule_report' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-clock me-2"></i>Planlanmış Hesabat
+                    </a>
+                    <a href="{% url 'report_analytics' %}" class="btn btn-outline-info">
+                        <i class="fas fa-analytics me-2"></i>Analitika
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                {% for report_id, report_info in available_reports.items %}
+                <div class="col-md-6 mb-4">
+                    <div class="report-card">
+                        <div class="d-flex align-items-start">
+                            <div class="report-icon bg-primary text-white me-3">
+                                <i class="{{ report_info.icon }}"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h5 class="mb-2">{{ report_info.name }}</h5>
+                                <p class="text-muted small mb-3">{{ report_info.description }}</p>
+                                
+                                <div class="report-formats">
+                                    {% for format in report_info.formats %}
+                                        <span class="format-badge">{{ format|upper }}</span>
+                                    {% endfor %}
+                                </div>
+                                
+                                <div class="mt-3">
+                                    <div class="btn-group w-100" role="group">
+                                        <a href="{% url 'generate_report' report_id %}" 
+                                           class="btn btn-primary btn-sm">
+                                            <i class="fas fa-play me-1"></i>Generasiya Et
+                                        </a>
+                                        <a href="{% url 'download_sample_report' report_id %}" 
+                                           class="btn btn-outline-secondary btn-sm">
+                                            <i class="fas fa-download me-1"></i>Nümunə
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Sağ Panel - Son Hesabatlar və Filtr Seçimləri -->
+        <div class="col-lg-4">
+            <!-- Son Hesabatlar -->
+            <div class="recent-reports-card mb-4">
+                <h6><i class="fas fa-history me-2"></i>Son Hesabatlar</h6>
+                <hr>
+                
+                {% if recent_reports %}
+                    {% for report in recent_reports %}
+                    <div class="recent-report-item">
+                        <h6 class="mb-1">{{ report.title }}</h6>
+                        <small class="text-muted">
+                            <i class="fas fa-clock me-1"></i>{{ report.generated_at|timesince }} əvvəl
+                            <span class="ms-2">
+                                <i class="fas fa-file me-1"></i>{{ report.format|upper }}
+                            </span>
+                        </small>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-3">
+                        <i class="fas fa-file-alt fa-2x text-muted mb-2"></i>
+                        <p class="text-muted">Hələ hesabat generasiya etməmisiniz</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Tez Filtr Seçimləri -->
+            <div class="card">
+                <div class="card-header">
+                    <h6><i class="fas fa-filter me-2"></i>Tez Filtr</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label small">Tarix Aralığı</label>
+                        <select class="form-select form-select-sm" id="quick-date-filter">
+                            <option value="last_7_days">Son 7 gün</option>
+                            <option value="last_30_days">Son 30 gün</option>
+                            <option value="last_3_months">Son 3 ay</option>
+                            <option value="last_6_months">Son 6 ay</option>
+                            <option value="last_year">Son il</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label small">Şöbə</label>
+                        <select class="form-select form-select-sm" id="quick-department-filter">
+                            <option value="">Hamısı</option>
+                            {% for dept_id, dept_name in filter_options.departments %}
+                                <option value="{{ dept_id }}">{{ dept_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <button class="btn btn-primary btn-sm w-100" onclick="applyQuickFilters()">
+                        <i class="fas fa-search me-2"></i>Filtrlə və Aç
+                    </button>
+                </div>
+            </div>
+
+            <!-- Kömək və Məsləhətlər -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h6><i class="fas fa-lightbulb me-2"></i>Məsləhətlər</h6>
+                </div>
+                <div class="card-body">
+                    <div class="small">
+                        <p><strong>PDF:</strong> Çap və prezentasiya üçün ən yaxşısı</p>
+                        <p><strong>Excel:</strong> Məlumat analizi və hesablamalar üçün</p>
+                        <p><strong>CSV:</strong> Digər sistemlərə ixrac üçün</p>
+                        <hr>
+                        <p class="text-primary">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Planlanmış hesabatlarla vaxtınızı qənaət edin!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function applyQuickFilters() {
+    const dateRange = document.getElementById('quick-date-filter').value;
+    const department = document.getElementById('quick-department-filter').value;
+    
+    // İlk hesabat növünü seç və filtrləri tətbiq et
+    const firstReportType = '{{ available_reports|first.0 }}';
+    
+    let url = `/hesabatlar/generate/${firstReportType}/?date_range=${dateRange}`;
+    if (department) {
+        url += `&department=${department}`;
+    }
+    
+    window.location.href = url;
+}
+
+// Hesabat kartlarına hover effekti
+document.addEventListener('DOMContentLoaded', function() {
+    const reportCards = document.querySelectorAll('.report-card');
+    
+    reportCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.background = 'linear-gradient(135deg, #fff 0%, #f8f9fa 100%)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.background = 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)';
+        });
+    });
+});
+
+// Real-time hesabat sayğacları (simulasiya)
+setInterval(() => {
+    const recentCount = document.querySelector('.stat-number');
+    if (recentCount && Math.random() > 0.95) {
+        let current = parseInt(recentCount.textContent);
+        recentCount.textContent = current + 1;
+        
+        // Animasiya effekti
+        recentCount.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+            recentCount.style.transform = 'scale(1)';
+        }, 200);
+    }
+}, 5000);
+</script>
+{% endblock %}

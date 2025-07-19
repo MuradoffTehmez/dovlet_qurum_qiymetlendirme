@@ -332,3 +332,196 @@ class Feedback(models.Model):
         return colors.get(self.priority, 'secondary')
     
     history = HistoricalRecords()
+
+
+# --- Bildiriş Sistemi ---
+class Notification(models.Model):
+    """Real-time bildiriş sistemi"""
+    
+    class NotificationType(models.TextChoices):
+        INFO = "INFO", "Məlumat"
+        SUCCESS = "SUCCESS", "Uğur"
+        WARNING = "WARNING", "Xəbərdarlıq"  
+        ERROR = "ERROR", "Xəta"
+        TASK_ASSIGNED = "TASK_ASSIGNED", "Tapşırıq Təyin Edildi"
+        DEADLINE_REMINDER = "DEADLINE_REMINDER", "Son Tarix Xatırlatması"
+        EVALUATION_COMPLETED = "EVALUATION_COMPLETED", "Qiymətləndirmə Tamamlandı"
+        PLAN_APPROVED = "PLAN_APPROVED", "Plan Təsdiqləndi"
+        FEEDBACK_RECEIVED = "FEEDBACK_RECEIVED", "Yeni Geri Bildirim"
+        SYSTEM_UPDATE = "SYSTEM_UPDATE", "Sistem Yeniləməsi"
+    
+    class Priority(models.TextChoices):
+        LOW = "LOW", "Aşağı"
+        MEDIUM = "MEDIUM", "Orta" 
+        HIGH = "HIGH", "Yüksək"
+        URGENT = "URGENT", "Təcili"
+    
+    # Əsas sahələr
+    recipient = models.ForeignKey(
+        Ishchi, on_delete=models.CASCADE,
+        related_name="notifications", verbose_name="Alıcı"
+    )
+    sender = models.ForeignKey(
+        Ishchi, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="sent_notifications", verbose_name="Göndərən"
+    )
+    
+    title = models.CharField(max_length=200, verbose_name="Başlıq")
+    message = models.TextField(verbose_name="Mesaj")
+    notification_type = models.CharField(
+        max_length=25, choices=NotificationType.choices,
+        default=NotificationType.INFO, verbose_name="Növ"
+    )
+    priority = models.CharField(
+        max_length=10, choices=Priority.choices,
+        default=Priority.MEDIUM, verbose_name="Prioritet"
+    )
+    
+    # Status sahələri
+    is_read = models.BooleanField(default=False, verbose_name="Oxunub")
+    read_at = models.DateTimeField(null=True, blank=True, verbose_name="Oxunma Tarixi")
+    is_archived = models.BooleanField(default=False, verbose_name="Arxivləşdirilib")
+    
+    # Əlavə məlumatlar
+    action_url = models.URLField(blank=True, null=True, verbose_name="Əməliyyat URL-i")
+    action_text = models.CharField(max_length=100, blank=True, verbose_name="Əməliyyat Mətni")
+    
+    # Tarixlər
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaradılma Tarixi")
+    expires_at = models.DateTimeField(null=True, blank=True, verbose_name="Bitmə Tarixi")
+    
+    # Əlavə metadata JSON
+    metadata = models.JSONField(default=dict, blank=True, verbose_name="Əlavə Məlumatlar")
+    
+    class Meta:
+        verbose_name = "Bildiriş"
+        verbose_name_plural = "Bildirişlər"
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['recipient', 'is_read', 'created_at']),
+            models.Index(fields=['notification_type', 'priority']),
+            models.Index(fields=['is_archived', 'expires_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.recipient.username} - {self.title[:50]}"
+    
+    def mark_as_read(self):
+        """Bildirişi oxunmuş kimi işarələ"""
+        from django.utils import timezone
+        
+        if not self.is_read:
+            self.is_read = True
+            self.read_at = timezone.now()
+            self.save(update_fields=['is_read', 'read_at'])
+    
+    def get_icon(self):
+        """Bildiriş növünə görə ikon qaytarır"""
+        icons = {
+            self.NotificationType.INFO: 'fas fa-info-circle',
+            self.NotificationType.SUCCESS: 'fas fa-check-circle',
+            self.NotificationType.WARNING: 'fas fa-exclamation-triangle',
+            self.NotificationType.ERROR: 'fas fa-times-circle',
+            self.NotificationType.TASK_ASSIGNED: 'fas fa-tasks',
+            self.NotificationType.DEADLINE_REMINDER: 'fas fa-clock',
+            self.NotificationType.EVALUATION_COMPLETED: 'fas fa-chart-line',
+            self.NotificationType.PLAN_APPROVED: 'fas fa-thumbs-up',
+            self.NotificationType.FEEDBACK_RECEIVED: 'fas fa-comments',
+            self.NotificationType.SYSTEM_UPDATE: 'fas fa-cog',
+        }
+        return icons.get(self.notification_type, 'fas fa-bell')
+    
+    def get_color_class(self):
+        """Bildiriş növünə görə rəng sinifi qaytarır"""
+        colors = {
+            self.NotificationType.INFO: 'primary',
+            self.NotificationType.SUCCESS: 'success', 
+            self.NotificationType.WARNING: 'warning',
+            self.NotificationType.ERROR: 'danger',
+            self.NotificationType.TASK_ASSIGNED: 'info',
+            self.NotificationType.DEADLINE_REMINDER: 'warning',
+            self.NotificationType.EVALUATION_COMPLETED: 'success',
+            self.NotificationType.PLAN_APPROVED: 'success',
+            self.NotificationType.FEEDBACK_RECEIVED: 'primary',
+            self.NotificationType.SYSTEM_UPDATE: 'secondary',
+        }
+        return colors.get(self.notification_type, 'primary')
+    
+    def get_priority_badge(self):
+        """Prioritet badge-i qaytarır"""
+        badges = {
+            self.Priority.LOW: 'secondary',
+            self.Priority.MEDIUM: 'primary',
+            self.Priority.HIGH: 'warning', 
+            self.Priority.URGENT: 'danger'
+        }
+        return badges.get(self.priority, 'secondary')
+    
+    def is_expired(self):
+        """Bildirişin müddətinin bitib-bitmədiyini yoxlayır"""
+        if not self.expires_at:
+            return False
+        
+        from django.utils import timezone
+        return timezone.now() > self.expires_at
+    
+    @classmethod
+    def cleanup_expired(cls):
+        """Müddəti bitmiş bildirişləri sil"""
+        from django.utils import timezone
+        
+        expired_count = cls.objects.filter(
+            expires_at__lt=timezone.now(),
+            is_archived=False
+        ).update(is_archived=True)
+        
+        return expired_count
+    
+    @classmethod
+    def get_unread_count(cls, user):
+        """İstifadəçinin oxunmamış bildiriş sayını qaytarır"""
+        return cls.objects.filter(
+            recipient=user,
+            is_read=False,
+            is_archived=False
+        ).count()
+    
+    @classmethod
+    def create_notification(cls, recipient, title, message, notification_type=None, 
+                          priority=None, sender=None, action_url=None, action_text=None, 
+                          expires_in_days=None, metadata=None):
+        """
+        Yeni bildiriş yaratmaq üçün helper method
+        
+        Usage:
+        Notification.create_notification(
+            recipient=user,
+            title="Yeni Tapşırıq",
+            message="Sizə yeni performans qiymətləndirməsi tapşırığı təyin edildi",
+            notification_type=Notification.NotificationType.TASK_ASSIGNED,
+            priority=Notification.Priority.HIGH,
+            action_url="/evaluations/123/",
+            action_text="Qiymətləndirməyə Bax"
+        )
+        """
+        from django.utils import timezone
+        
+        notification = cls(
+            recipient=recipient,
+            sender=sender,
+            title=title,
+            message=message,
+            notification_type=notification_type or cls.NotificationType.INFO,
+            priority=priority or cls.Priority.MEDIUM,
+            action_url=action_url,
+            action_text=action_text,
+            metadata=metadata or {}
+        )
+        
+        if expires_in_days:
+            notification.expires_at = timezone.now() + timezone.timedelta(days=expires_in_days)
+        
+        notification.save()
+        return notification
+    
+    history = HistoricalRecords()

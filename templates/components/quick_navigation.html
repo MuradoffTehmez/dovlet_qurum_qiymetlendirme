@@ -1,0 +1,138 @@
+{% load i18n %}
+
+<!-- Quick Navigation Cards -->
+<div class="row g-4 mb-4">
+    <!-- Dashboard -->
+    <div class="col-lg-2 col-md-4 col-sm-6">
+        <a href="{% url 'dashboard' %}" class="card h-100 text-decoration-none quick-nav-card">
+            <div class="card-body text-center p-3">
+                <div class="quick-nav-icon bg-primary text-white rounded-circle mx-auto mb-2">
+                    <i class="fas fa-tachometer-alt"></i>
+                </div>
+                <h6 class="card-title mb-1">{% trans "Ana Səhifə" %}</h6>
+                <small class="text-muted">Dashboard</small>
+            </div>
+        </a>
+    </div>
+
+    <!-- Calendar -->
+    <div class="col-lg-2 col-md-4 col-sm-6">
+        <a href="{% url 'calendar_view' %}" class="card h-100 text-decoration-none quick-nav-card">
+            <div class="card-body text-center p-3">
+                <div class="quick-nav-icon bg-info text-white rounded-circle mx-auto mb-2">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <h6 class="card-title mb-1">{% trans "Təqvim" %}</h6>
+                <small class="text-muted">Events & Goals</small>
+            </div>
+        </a>
+    </div>
+
+    <!-- Notifications -->
+    <div class="col-lg-2 col-md-4 col-sm-6">
+        <a href="{% url 'notification_center' %}" class="card h-100 text-decoration-none quick-nav-card">
+            <div class="card-body text-center p-3">
+                <div class="quick-nav-icon bg-warning text-white rounded-circle mx-auto mb-2">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <h6 class="card-title mb-1">{% trans "Bildirişlər" %}</h6>
+                <small class="text-muted">Notifications</small>
+            </div>
+        </a>
+    </div>
+
+    <!-- Reports -->
+    <div class="col-lg-2 col-md-4 col-sm-6">
+        <a href="{% url 'report_center' %}" class="card h-100 text-decoration-none quick-nav-card">
+            <div class="card-body text-center p-3">
+                <div class="quick-nav-icon bg-success text-white rounded-circle mx-auto mb-2">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h6 class="card-title mb-1">{% trans "Hesabatlar" %}</h6>
+                <small class="text-muted">Reports</small>
+            </div>
+        </a>
+    </div>
+
+    <!-- Profile -->
+    <div class="col-lg-2 col-md-4 col-sm-6">
+        <a href="{% url 'profil' %}" class="card h-100 text-decoration-none quick-nav-card">
+            <div class="card-body text-center p-3">
+                <div class="quick-nav-icon bg-secondary text-white rounded-circle mx-auto mb-2">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h6 class="card-title mb-1">{% trans "Profilim" %}</h6>
+                <small class="text-muted">Profile</small>
+            </div>
+        </a>
+    </div>
+
+    <!-- Manager Panel (if applicable) -->
+    {% if user.rol == 'REHBER' or user.is_superuser %}
+    <div class="col-lg-2 col-md-4 col-sm-6">
+        <a href="{% url 'rehber_paneli' %}" class="card h-100 text-decoration-none quick-nav-card">
+            <div class="card-body text-center p-3">
+                <div class="quick-nav-icon bg-purple text-white rounded-circle mx-auto mb-2">
+                    <i class="fas fa-users-cog"></i>
+                </div>
+                <h6 class="card-title mb-1">{% trans "Rəhbər Paneli" %}</h6>
+                <small class="text-muted">Management</small>
+            </div>
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.quick-nav-card {
+    transition: all 0.3s ease;
+    border: 1px solid #e3e6f0;
+    color: inherit;
+}
+
+.quick-nav-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    color: inherit;
+    text-decoration: none;
+}
+
+.quick-nav-icon {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.bg-purple {
+    background-color: #6f42c1 !important;
+}
+
+.quick-nav-card .card-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.quick-nav-card small {
+    font-size: 0.75rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .quick-nav-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .quick-nav-card .card-title {
+        font-size: 0.8rem;
+    }
+    
+    .quick-nav-card small {
+        font-size: 0.7rem;
+    }
+}
+</style>
