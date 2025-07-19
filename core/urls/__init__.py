@@ -125,4 +125,7 @@ urlpatterns = [
     
     # === PRIVATE NOTES URL-LƏRİ ===
     path("private-notes/", include('core.urls.private_notes')),
+    
+    # === IDEA BANK URL-LƏRİ ===
+    path("idea-bank/", include('core.urls.idea_bank')),
 ]
