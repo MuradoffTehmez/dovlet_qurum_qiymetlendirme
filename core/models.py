@@ -113,13 +113,35 @@ class Sual(models.Model):
 
 # --- Qiymətləndirmə Prosesi Modelləri ---
 class QiymetlendirmeDovru(models.Model):
+    class AnonymityLevel(models.TextChoices):
+        FULL_ANONYMOUS = 'FULL_ANONYMOUS', 'Tam Anonim'
+        MANAGER_ONLY = 'MANAGER_ONLY', 'Yalnız Rəhbər Görür'
+        OPEN = 'OPEN', 'Açıq'
+
     ad = models.CharField(max_length=255, verbose_name="Dövrün Adı (məs: 2025 Q1)")
     bashlama_tarixi = models.DateField()
     bitme_tarixi = models.DateField()
     aktivdir = models.BooleanField(default=True)
+    anonymity_level = models.CharField(
+        max_length=20, 
+        choices=AnonymityLevel.choices, 
+        default=AnonymityLevel.MANAGER_ONLY,
+        verbose_name="Anonimlik Səviyyəsi"
+    )
 
     def __str__(self):
         return self.ad
+
+    def is_anonymous_for_user(self, user):
+        """İstifadəçi üçün bu dövrün anonim olub olmadığını yoxlayır"""
+        if self.anonymity_level == self.AnonymityLevel.OPEN:
+            return False
+        elif self.anonymity_level == self.AnonymityLevel.FULL_ANONYMOUS:
+            return True
+        elif self.anonymity_level == self.AnonymityLevel.MANAGER_ONLY:
+            # Yalnız rəhbər və admin rolları adları görə bilər
+            return user.rol not in ['ADMIN', 'SUPERADMIN', 'REHBER']
+        return True
 
     history = HistoricalRecords()
 
@@ -129,6 +151,12 @@ class Qiymetlendirme(models.Model):
         GOZLEMEDE = "GOZLEMEDE", "Gözləmədə"
         TAMAMLANDI = "TAMAMLANDI", "Tamamlandı"
 
+    class QiymetlendirmeNovu(models.TextChoices):
+        PEER_REVIEW = "PEER_REVIEW", "Həmkar Qiymətləndirməsi"
+        MANAGER_REVIEW = "MANAGER_REVIEW", "Rəhbər Qiymətləndirməsi"
+        SELF_REVIEW = "SELF_REVIEW", "Öz-özünə Qiymətləndirmə"
+        SUBORDINATE_REVIEW = "SUBORDINATE_REVIEW", "Təbə Qiymətləndirməsi"
+
     dovr = models.ForeignKey(QiymetlendirmeDovru, on_delete=models.CASCADE)
     qiymetlendirilen = models.ForeignKey(
         Ishchi, on_delete=models.CASCADE, related_name="verilen_qiymetler"
@@ -136,15 +164,46 @@ class Qiymetlendirme(models.Model):
     qiymetlendiren = models.ForeignKey(
         Ishchi, on_delete=models.CASCADE, related_name="etdiyi_qiymetler"
     )
+    qiymetlendirme_novu = models.CharField(
+        max_length=20,
+        choices=QiymetlendirmeNovu.choices,
+        default=QiymetlendirmeNovu.PEER_REVIEW,
+        verbose_name="Qiymətləndirmə Növü"
+    )
     status = models.CharField(
         max_length=10, choices=Status.choices, default=Status.GOZLEMEDE
     )
+    yaradilma_tarixi = models.DateTimeField(auto_now_add=True, null=True, blank=True, verbose_name="Yaradılma Tarixi")
+    tamamlanma_tarixi = models.DateTimeField(null=True, blank=True, verbose_name="Tamamlanma Tarixi")
 
     class Meta:
-        unique_together = ("dovr", "qiymetlendirilen", "qiymetlendiren")
+        unique_together = ("dovr", "qiymetlendirilen", "qiymetlendiren", "qiymetlendirme_novu")
 
     def __str__(self):
-        return f"{self.qiymetlendiren} -> {self.qiymetlendirilen} ({self.dovr.ad})"
+        return f"{self.qiymetlendiren} -> {self.qiymetlendirilen} ({self.dovr.ad}) [{self.get_qiymetlendirme_novu_display()}]"
+
+    def is_self_review(self):
+        """Bu qiymətləndirmənin self-review olub olmadığını yoxlayır"""
+        return self.qiymetlendirme_novu == self.QiymetlendirmeNovu.SELF_REVIEW
+
+    def calculate_average_score(self):
+        """Bu qiymətləndirmənin ortalama balını hesablayır"""
+        cavablar = self.cavablar.all()
+        if not cavablar.exists():
+            return 0
+        
+        total_score = sum(cavab.xal for cavab in cavablar)
+        return round(total_score / cavablar.count(), 2)
+
+    def get_completion_percentage(self):
+        """Qiymətləndirmənin tamamlanma faizini hesablayır"""
+        total_questions = self.dovr.suallar.count() if hasattr(self.dovr, 'suallar') else 0
+        answered_questions = self.cavablar.count()
+        
+        if total_questions == 0:
+            return 0
+        
+        return round((answered_questions / total_questions) * 100, 1)
 
     history = HistoricalRecords()
 
@@ -711,3 +770,138 @@ class CalendarEvent(models.Model):
         return queryset.distinct()
     
     history = HistoricalRecords()
+
+
+# === QUICK FEEDBACK SİSTEMİ ===
+
+class QuickFeedbackCategory(models.Model):
+    """Sürətli geri bildirim kateqoriyaları"""
+    
+    class CategoryType(models.TextChoices):
+        RECOGNITION = 'RECOGNITION', 'Tanınma / Təşəkkür'
+        IMPROVEMENT = 'IMPROVEMENT', 'İnkişaf Təklifi'
+        COLLABORATION = 'COLLABORATION', 'Əməkdaşlıq'
+        PROJECT = 'PROJECT', 'Layihə üzrə'
+        GENERAL = 'GENERAL', 'Ümumi'
+    
+    name = models.CharField(max_length=100, verbose_name="Kateqoriya Adı")
+    description = models.TextField(blank=True, verbose_name="Təsvir")
+    category_type = models.CharField(
+        max_length=20, 
+        choices=CategoryType.choices,
+        default=CategoryType.GENERAL,
+        verbose_name="Kateqoriya Növü"
+    )
+    icon = models.CharField(max_length=50, default="fas fa-comment", verbose_name="İkon")
+    is_active = models.BooleanField(default=True, verbose_name="Aktivdir")
+    
+    class Meta:
+        verbose_name = "Sürətli Geri Bildirim Kateqoriyası"
+        verbose_name_plural = "Sürətli Geri Bildirim Kateqoriyaları"
+        ordering = ['name']
+    
+    def __str__(self):
+        return self.name
+
+    history = HistoricalRecords()
+
+
+class QuickFeedback(models.Model):
+    """Sürətli geri bildirim sistemi"""
+    
+    class FeedbackType(models.TextChoices):
+        POSITIVE = 'POSITIVE', 'Müsbət'
+        CONSTRUCTIVE = 'CONSTRUCTIVE', 'Konstruktiv'
+        NEUTRAL = 'NEUTRAL', 'Neytral'
+    
+    class Priority(models.TextChoices):
+        LOW = 'LOW', 'Aşağı'
+        MEDIUM = 'MEDIUM', 'Orta'
+        HIGH = 'HIGH', 'Yüksək'
+        URGENT = 'URGENT', 'Təcili'
+    
+    # Əsas sahələr
+    from_user = models.ForeignKey(
+        Ishchi, on_delete=models.CASCADE,
+        related_name="given_quick_feedbacks", verbose_name="Verən"
+    )
+    to_user = models.ForeignKey(
+        Ishchi, on_delete=models.CASCADE,
+        related_name="received_quick_feedbacks", verbose_name="Alan"
+    )
+    
+    # Məzmun
+    category = models.ForeignKey(
+        QuickFeedbackCategory, on_delete=models.SET_NULL, null=True,
+        verbose_name="Kateqoriya"
+    )
+    feedback_type = models.CharField(
+        max_length=15, choices=FeedbackType.choices,
+        default=FeedbackType.POSITIVE, verbose_name="Geri Bildirim Növü"
+    )
+    priority = models.CharField(
+        max_length=10, choices=Priority.choices,
+        default=Priority.MEDIUM, verbose_name="Prioritet"
+    )
+    
+    title = models.CharField(max_length=200, verbose_name="Başlıq")
+    message = models.TextField(verbose_name="Mesaj")
+    
+    # Əlavə məlumatlar
+    is_anonymous = models.BooleanField(default=False, verbose_name="Anonim")
+    is_private = models.BooleanField(default=True, verbose_name="Şəxsi")
+    
+    # Tarixlər
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaradılma Tarixi")
+    read_at = models.DateTimeField(null=True, blank=True, verbose_name="Oxunma Tarixi")
+    
+    # Status
+    is_read = models.BooleanField(default=False, verbose_name="Oxunub")
+    is_archived = models.BooleanField(default=False, verbose_name="Arxivləşdirilib")
+    
+    # Rating (5 ulduzlu sistem)
+    rating = models.PositiveSmallIntegerField(
+        null=True, blank=True,
+        choices=[(i, f"{i} ulduz") for i in range(1, 6)],
+        verbose_name="Reytinq"
+    )
+    
+    class Meta:
+        verbose_name = "Sürətli Geri Bildirim"
+        verbose_name_plural = "Sürətli Geri Bildirimlər"
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['to_user', 'is_read', 'created_at']),
+            models.Index(fields=['from_user', 'created_at']),
+            models.Index(fields=['category', 'feedback_type']),
+            models.Index(fields=['is_archived', 'created_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.from_user.get_full_name()} -> {self.to_user.get_full_name()}: {self.title[:50]}"
+    
+    def mark_as_read(self):
+        """Geri bildirimi oxunmuş kimi işarələ"""
+        if not self.is_read:
+            self.is_read = True
+            self.read_at = timezone.now()
+            self.save(update_fields=['is_read', 'read_at'])
+    
+    def get_display_sender(self):
+        """Anonim olub olmadığına görə göndərəni qaytarır"""
+        if self.is_anonymous:
+            return "Anonim İşçi"
+        return self.from_user.get_full_name()
+    
+    def get_color_class(self):
+        """Feedback növünə görə CSS sinifi qaytarır"""
+        colors = {
+            self.FeedbackType.POSITIVE: 'success',
+            self.FeedbackType.CONSTRUCTIVE: 'warning',
+            self.FeedbackType.NEUTRAL: 'info'
+        }
+        return colors.get(self.feedback_type, 'secondary')
+
+    history = HistoricalRecords()
+
+

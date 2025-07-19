@@ -21,7 +21,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.encoding import force_bytes, force_str
 # --- gemini AI modulu (Gemini AI module) ---
-from .ai_utils import generate_recommendations # <-- 
+from ..ai_utils import generate_recommendations # <-- 
 # --- Django util modulları ---
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.generic import TemplateView
@@ -30,15 +30,15 @@ from openpyxl import Workbook
 from openpyxl.styles import Alignment, Font
 from weasyprint import HTML
 # --- core modulları ---
-from .decorators import rehber_required, superadmin_required
-from .forms import (HedefFormSet, IshchiCreationForm, IshchiPasswordChangeForm,
+from ..decorators import rehber_required, superadmin_required
+from ..forms import (HedefFormSet, IshchiCreationForm, IshchiPasswordChangeForm,
                     IshchiUpdateForm, YeniDovrForm)
 # --- Lokal Layihə Modulları ---
-from .models import (Cavab, Hedef, InkishafPlani, Ishchi, OrganizationUnit,
+from ..models import (Cavab, Hedef, InkishafPlani, Ishchi, OrganizationUnit,
                      Qiymetlendirme, QiymetlendirmeDovru, Sual,
                      SualKateqoriyasi)
-from .tokens import account_activation_token
-from .utils import get_detailed_report_context, get_performance_trend
+from ..tokens import account_activation_token
+from ..utils import get_detailed_report_context, get_performance_trend
 
 
 # --- ÜMUMİ VƏ QEYDİYYAT GÖRÜNÜŞLƏRİ ---

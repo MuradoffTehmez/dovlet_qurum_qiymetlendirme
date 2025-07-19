@@ -12,6 +12,8 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 
 # Sistem rolları və onların icazələri
 ROLE_PERMISSIONS = {
@@ -128,6 +130,27 @@ def permission_required(permission_code, raise_exception=True):
                     raise PermissionDenied
             
             return redirect('dashboard')
+        
+        return wrapper
+    return decorator
+
+
+def require_role(allowed_roles):
+    """
+    Self-review üçün rol əsaslı icazə dekoratoru
+    allowed_roles: icazə verilən rolların siyahısı ['ISHCHI', 'REHBER', 'ADMIN', 'SUPERADMIN']
+    """
+    def decorator(view_func):
+        @wraps(view_func)
+        @login_required
+        def wrapper(request, *args, **kwargs):
+            user_role = getattr(request.user, 'rol', None)
+            
+            if user_role in allowed_roles:
+                return view_func(request, *args, **kwargs)
+            
+            messages.error(request, 'Bu səhifəyə giriş icazəniz yoxdur.')
+            return HttpResponseForbidden("Bu səhifəyə giriş icazəniz yoxdur.")
         
         return wrapper
     return decorator

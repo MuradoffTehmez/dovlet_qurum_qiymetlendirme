@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'simple_history',
+    'django_celery_beat',  # Celery Beat üçün
     
     # Django-nun daxili tətbiqləri
     'django.contrib.admin',

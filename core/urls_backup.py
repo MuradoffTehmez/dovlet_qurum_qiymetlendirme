@@ -107,6 +107,9 @@ urlpatterns = [
              path("api/preferences/", dashboard_views.dashboard_widget_preferences, name="dashboard_widget_preferences"),
          ])
     ),
+    
+    # === SELF-REVIEW URL-LƏRİ ===
+    path("self-review/", include('core.urls.self_review')),
 ]
 # Uncomment the following lines if you want to enable these views
 # path('superadmin/dovrlar/', views.dovrlar_siyahisi, name='dovrlar_siyahisi'),

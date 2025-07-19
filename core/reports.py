@@ -196,16 +196,27 @@ class EmployeePerformanceReport:
     
     def _prepare_detailed_data(self, evaluations):
         """Detallı məlumatları hazırlayır"""
-        return evaluations.values(
-            'qiymetlendirilen__first_name',
-            'qiymetlendirilen__last_name',
-            'qiymetlendirilen__organization_unit__name',
-            'qiymetlendirilen__rol',
-            'umumi_qiymet',
-            'tarix',
-            'qiymetlendiren__first_name',
-            'qiymetlendiren__last_name'
-        ).order_by('-umumi_qiymet')
+        detailed_data = []
+        
+        for evaluation in evaluations.select_related('qiymetlendirilen', 'qiymetlendiren', 'dovr'):
+            # Anonimlik səviyyəsinə görə məlumatları filtrələ
+            is_anonymous = evaluation.dovr.is_anonymous_for_user(self.filters.get('current_user'))
+            
+            data = {
+                'qiymetlendirilen__first_name': evaluation.qiymetlendirilen.first_name,
+                'qiymetlendirilen__last_name': evaluation.qiymetlendirilen.last_name,
+                'qiymetlendirilen__organization_unit__name': evaluation.qiymetlendirilen.organization_unit.name if evaluation.qiymetlendirilen.organization_unit else '',
+                'qiymetlendirilen__rol': evaluation.qiymetlendirilen.get_rol_display(),
+                'umumi_qiymet': getattr(evaluation, 'umumi_qiymet', 0),
+                'tarix': getattr(evaluation, 'tarix', evaluation.dovr.bashlama_tarixi),
+                'qiymetlendiren__first_name': "***" if is_anonymous else evaluation.qiymetlendiren.first_name,
+                'qiymetlendiren__last_name': "Anonim" if is_anonymous else evaluation.qiymetlendiren.last_name,
+                'anonymity_level': evaluation.dovr.get_anonymity_level_display(),
+                'is_anonymous': is_anonymous
+            }
+            detailed_data.append(data)
+        
+        return sorted(detailed_data, key=lambda x: x['umumi_qiymet'], reverse=True)
 
 
 class ReportGenerator:
