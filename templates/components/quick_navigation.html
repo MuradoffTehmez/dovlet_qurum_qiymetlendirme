@@ -19,7 +19,8 @@
     <div class="col-lg-2 col-md-4 col-sm-6">
         <a href="{% url 'interactive_dashboard' %}" class="card h-100 text-decoration-none quick-nav-card">
             <div class="card-body text-center p-3">
-                <div class="quick-nav-icon bg-gradient text-white rounded-circle mx-auto mb-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                <div class="quick-nav-icon bg-gradient text-white rounded-circle mx-auto mb-2"
+                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                     <i class="fas fa-chart-line"></i>
                 </div>
                 <h6 class="card-title mb-1">{% trans "İnteraktiv Panel" %}</h6>
@@ -80,6 +81,64 @@
         </a>
     </div>
 
+    <!-- AI Risk Detection -->
+    {% if user.rol == 'hr' or user.rol == 'manager' or user.is_superuser %}
+    <div class="col-lg-2 col-md-4 col-sm-6">
+        <a href="{% url 'ai_risk_dashboard' %}" class="card h-100 text-decoration-none quick-nav-card">
+            <div class="card-body text-center p-3">
+                <div class="quick-nav-icon bg-danger text-white rounded-circle mx-auto mb-2">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h6 class="card-title mb-1">{% trans "AI Risk Analizi" %}</h6>
+                <small class="text-muted">Risk Detection</small>
+            </div>
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Training & Development -->
+    <div class="col-lg-2 col-md-4 col-sm-6">
+        <a href="{% url 'training_dashboard' %}" class="card h-100 text-decoration-none quick-nav-card">
+            <div class="card-body text-center p-3">
+                <div class="quick-nav-icon bg-gradient text-white rounded-circle mx-auto mb-2"
+                    style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h6 class="card-title mb-1">{% trans "Təhsil və İnkişaf" %}</h6>
+                <small class="text-muted">Learning</small>
+            </div>
+        </a>
+    </div>
+
+    <!-- Performance Management -->
+    <div class="col-lg-2 col-md-4 col-sm-6">
+        <a href="{% url 'performance_dashboard' %}" class="card h-100 text-decoration-none quick-nav-card">
+            <div class="card-body text-center p-3">
+                <div class="quick-nav-icon bg-gradient text-white rounded-circle mx-auto mb-2"
+                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h6 class="card-title mb-1">{% trans "Performans İdarəetmə" %}</h6>
+                <small class="text-muted">Performance</small>
+            </div>
+        </a>
+    </div>
+
+    <!-- API Documentation -->
+    {% if user.rol == 'hr' or user.rol == 'manager' or user.is_superuser %}
+    <div class="col-lg-2 col-md-4 col-sm-6">
+        <a href="/api/docs/" target="_blank" class="card h-100 text-decoration-none quick-nav-card">
+            <div class="card-body text-center p-3">
+                <div class="quick-nav-icon bg-dark text-white rounded-circle mx-auto mb-2">
+                    <i class="fas fa-code"></i>
+                </div>
+                <h6 class="card-title mb-1">{% trans "API Sənədlər" %}</h6>
+                <small class="text-muted">API Docs</small>
+            </div>
+        </a>
+    </div>
+    {% endif %}
+
     <!-- Manager Panel (if applicable) -->
     {% if user.rol == 'REHBER' or user.is_superuser %}
     <div class="col-lg-2 col-md-4 col-sm-6">
@@ -97,66 +156,66 @@
 </div>
 
 <style>
-.quick-nav-card {
-    transition: all 0.3s ease;
-    border: 1px solid #e3e6f0;
-    color: inherit;
-}
+    .quick-nav-card {
+        transition: all 0.3s ease;
+        border: 1px solid #e3e6f0;
+        color: inherit;
+    }
 
-.quick-nav-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    color: inherit;
-    text-decoration: none;
-}
+    .quick-nav-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+        color: inherit;
+        text-decoration: none;
+    }
 
-.quick-nav-icon {
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-}
-
-.bg-purple {
-    background-color: #6f42c1 !important;
-}
-
-.btn-outline-purple {
-    color: #6f42c1;
-    border-color: #6f42c1;
-}
-
-.btn-outline-purple:hover {
-    color: #fff;
-    background-color: #6f42c1;
-    border-color: #6f42c1;
-}
-
-.quick-nav-card .card-title {
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.quick-nav-card small {
-    font-size: 0.75rem;
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
     .quick-nav-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 1rem;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
     }
-    
+
+    .bg-purple {
+        background-color: #6f42c1 !important;
+    }
+
+    .btn-outline-purple {
+        color: #6f42c1;
+        border-color: #6f42c1;
+    }
+
+    .btn-outline-purple:hover {
+        color: #fff;
+        background-color: #6f42c1;
+        border-color: #6f42c1;
+    }
+
     .quick-nav-card .card-title {
-        font-size: 0.8rem;
+        font-size: 0.9rem;
+        font-weight: 600;
     }
-    
+
     .quick-nav-card small {
-        font-size: 0.7rem;
+        font-size: 0.75rem;
     }
-}
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .quick-nav-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 1rem;
+        }
+
+        .quick-nav-card .card-title {
+            font-size: 0.8rem;
+        }
+
+        .quick-nav-card small {
+            font-size: 0.7rem;
+        }
+    }
 </style>

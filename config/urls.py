@@ -6,6 +6,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.i18n import i18n_patterns
 from core.views import CustomLoginView
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 # Dilə həssas olan URL-lər
 i18n_urlpatterns = i18n_patterns(
@@ -19,6 +20,11 @@ i18n_urlpatterns = i18n_patterns(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('core.api_urls')),
+    
+    # API Documentation
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
 urlpatterns += i18n_urlpatterns
 

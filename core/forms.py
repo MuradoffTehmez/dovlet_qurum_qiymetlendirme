@@ -508,3 +508,125 @@ class FeedbackResponseForm(forms.ModelForm):
             ),
             HTML('</div></div>')
         )
+
+
+# --- İstifadəçi Qeydiyyat və Profil Formları ---
+
+class QeydiyyatFormu(UserCreationForm):
+    """İstifadəçi qeydiyyat forması"""
+    
+    email = forms.EmailField(
+        required=True,
+        widget=ModernEmailInput(),
+        help_text="E-poçt ünvanı aktivləşdirmə üçün istifadə olunacaq"
+    )
+    first_name = forms.CharField(
+        max_length=30,
+        required=True,
+        widget=ModernTextInput(placeholder="Adınız")
+    )
+    last_name = forms.CharField(
+        max_length=30,
+        required=True,
+        widget=ModernTextInput(placeholder="Soyadınız")
+    )
+    
+    class Meta:
+        model = Ishchi
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
+        widgets = {
+            'username': ModernTextInput(placeholder="İstifadəçi adı"),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['password1'].widget = ModernPasswordInput()
+        self.fields['password2'].widget = ModernPasswordInput()
+        
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'modern-form'
+        
+        self.helper.layout = Layout(
+            HTML('<div class="card"><div class="card-body">'),
+            HTML('<h4 class="card-title text-center mb-4"><i class="fas fa-user-plus me-2"></i>Qeydiyyat</h4>'),
+            
+            Row(
+                Column('first_name', css_class='form-group col-md-6'),
+                Column('last_name', css_class='form-group col-md-6'),
+            ),
+            'username',
+            'email',
+            Row(
+                Column('password1', css_class='form-group col-md-6'),
+                Column('password2', css_class='form-group col-md-6'),
+            ),
+            
+            Div(
+                Submit('submit', 'Qeydiyyatdan Keç', css_class='btn btn-primary w-100'),
+                css_class='text-center mt-3'
+            ),
+            HTML('</div></div>')
+        )
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    """İstifadəçi profil yeniləmə forması"""
+    
+    class Meta:
+        model = Ishchi
+        fields = [
+            'first_name', 'last_name', 'email', 'elaqe_nomresi', 
+            'dogum_tarixi', 'profil_sekli'
+        ]
+        widgets = {
+            'first_name': ModernTextInput(placeholder="Adınız"),
+            'last_name': ModernTextInput(placeholder="Soyadınız"),
+            'email': ModernEmailInput(),
+            'elaqe_nomresi': ModernTextInput(placeholder="+994 XX XXX XX XX"),
+            'dogum_tarixi': ModernDateInput(),
+            'profil_sekli': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
+            })
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Telefon nömrəsi validator
+        phone_validator = RegexValidator(
+            regex=r'^\+?1?\d{9,15}$',
+            message="Telefon nömrəsini düzgün formatda daxil edin."
+        )
+        self.fields['elaqe_nomresi'].validators.append(phone_validator)
+        
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.form_class = 'modern-form'
+        self.helper.form_enctype = 'multipart/form-data'
+        
+        self.helper.layout = Layout(
+            HTML('<div class="card"><div class="card-body">'),
+            HTML('<h5 class="card-title"><i class="fas fa-user-edit me-2"></i>Profil Məlumatları</h5>'),
+            
+            Row(
+                Column('first_name', css_class='form-group col-md-6'),
+                Column('last_name', css_class='form-group col-md-6'),
+            ),
+            Row(
+                Column('email', css_class='form-group col-md-6'),
+                Column('elaqe_nomresi', css_class='form-group col-md-6'),
+            ),
+            Row(
+                Column('dogum_tarixi', css_class='form-group col-md-6'),
+                Column('profil_sekli', css_class='form-group col-md-6'),
+            ),
+            
+            Div(
+                Submit('submit', 'Məlumatları Yenilə', css_class='btn btn-success me-2'),
+                HTML('<a href="{% url \'dashboard\' %}" class="btn btn-outline-secondary">Ləğv et</a>'),
+                css_class='text-end mt-3'
+            ),
+            HTML('</div></div>')
+        )

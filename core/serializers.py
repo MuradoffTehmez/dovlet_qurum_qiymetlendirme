@@ -168,29 +168,36 @@ class CalendarEventSerializer(serializers.ModelSerializer):
 
 # --- Quick Feedback Serializers ---
 class QuickFeedbackSerializer(serializers.ModelSerializer):
-    sender_name = serializers.CharField(source='sender.get_full_name', read_only=True)
-    receiver_name = serializers.CharField(source='receiver.get_full_name', read_only=True)
+    from_user_name = serializers.CharField(source='from_user.get_full_name', read_only=True)
+    to_user_name = serializers.CharField(source='to_user.get_full_name', read_only=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
+    feedback_type_display = serializers.CharField(source='get_feedback_type_display', read_only=True)
+    priority_display = serializers.CharField(source='get_priority_display', read_only=True)
     
     class Meta:
         model = QuickFeedback
         fields = [
-            'id', 'sender', 'sender_name', 'receiver', 'receiver_name',
-            'category', 'category_name', 'message', 'emoji',
-            'is_anonymous', 'created_at'
+            'id', 'from_user', 'from_user_name', 'to_user', 'to_user_name',
+            'category', 'category_name', 'title', 'message', 'feedback_type',
+            'feedback_type_display', 'priority', 'priority_display',
+            'rating', 'is_anonymous', 'is_read', 'created_at'
         ]
 
 
 # --- Private Notes Serializers ---
 class PrivateNoteSerializer(serializers.ModelSerializer):
-    author_name = serializers.CharField(source='author.get_full_name', read_only=True)
+    manager_name = serializers.CharField(source='manager.get_full_name', read_only=True)
     employee_name = serializers.CharField(source='employee.get_full_name', read_only=True)
+    note_type_display = serializers.CharField(source='get_note_type_display', read_only=True)
+    priority_display = serializers.CharField(source='get_priority_display', read_only=True)
     
     class Meta:
         model = PrivateNote
         fields = [
-            'id', 'author', 'author_name', 'employee', 'employee_name',
-            'title', 'content', 'created_at', 'updated_at'
+            'id', 'manager', 'manager_name', 'employee', 'employee_name',
+            'title', 'content', 'note_type', 'note_type_display', 
+            'priority', 'priority_display', 'tags', 'related_cycle',
+            'is_archived', 'is_confidential', 'created_at', 'updated_at'
         ]
 
 
@@ -324,3 +331,39 @@ class PsychologicalRiskResponseSerializer(serializers.ModelSerializer):
             'is_anonymous_response', 'responded_at', 'ai_analysis',
             'requires_attention'
         ]
+
+
+# --- Dashboard və AI Risk Analysis üçün Dummy Serializers ---
+
+class DashboardStatsSerializer(serializers.Serializer):
+    """Dashboard statistika serializer"""
+    pending_evaluations = serializers.IntegerField()
+    completed_evaluations = serializers.IntegerField()
+    unread_notifications = serializers.IntegerField()
+    quick_feedback_received = serializers.IntegerField()
+    ideas_submitted = serializers.IntegerField()
+    
+    # Admin/Manager sahələri
+    total_employees = serializers.IntegerField(required=False)
+    pending_system_evaluations = serializers.IntegerField(required=False)
+    completed_system_evaluations = serializers.IntegerField(required=False)
+    active_development_plans = serializers.IntegerField(required=False)
+    recent_feedback_count = serializers.IntegerField(required=False)
+
+
+class AIRiskAnalysisSerializer(serializers.Serializer):
+    """AI Risk Analysis serializer"""
+    risk_score = serializers.FloatField()
+    risk_level = serializers.CharField()
+    analysis_date = serializers.DateTimeField()
+    recommendations = serializers.ListField(child=serializers.CharField())
+    details = serializers.DictField()
+
+
+class StatisticalAnomalySerializer(serializers.Serializer):
+    """Statistical Anomaly serializer"""
+    anomaly_type = serializers.CharField()
+    confidence_score = serializers.FloatField()
+    detected_at = serializers.DateTimeField()
+    affected_employees = serializers.ListField(child=serializers.IntegerField())
+    metrics = serializers.DictField()

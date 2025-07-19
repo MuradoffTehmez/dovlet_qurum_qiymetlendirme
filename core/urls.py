@@ -8,6 +8,8 @@ from . import report_views
 from . import calendar_views
 from . import dashboard_views
 from . import ai_risk_views
+from . import training_views
+from . import performance_views
 
 urlpatterns = [
     path("", views.dashboard, name="dashboard"),
@@ -121,6 +123,33 @@ urlpatterns = [
              path("risk-flags/", ai_risk_views.risk_flags_management, name="risk_flags_management"),
              path("psychological-surveys/", ai_risk_views.psychological_surveys, name="psychological_surveys"),
              path("strategic-hr-planning/", ai_risk_views.strategic_hr_planning, name="strategic_hr_planning"),
+         ])
+    ),
+    
+    # === TƏHSİL VƏ İNKİŞAF URL-LƏRİ ===
+    path("training/",
+         include([
+             path("", training_views.training_dashboard, name="training_dashboard"),
+             path("programs/", training_views.training_programs, name="training_programs"),
+             path("learning-path/", training_views.employee_learning_path, name="employee_learning_path"),
+             path("skills-matrix/", training_views.skills_matrix, name="skills_matrix"),
+             path("certifications/", training_views.certifications, name="certifications"),
+             path("api/stats/", training_views.training_api_stats, name="training_api_stats"),
+             path("api/skills/", training_views.skills_assessment_api, name="skills_assessment_api"),
+         ])
+    ),
+    
+    # === PERFORMANS İDARƏETMƏ URL-LƏRİ ===
+    path("performance/",
+         include([
+             path("", performance_views.performance_dashboard, name="performance_dashboard"),
+             path("analytics/", performance_views.performance_analytics, name="performance_analytics"),
+             path("goals/", performance_views.goal_management, name="goal_management"),
+             path("talent-review/", performance_views.talent_review, name="talent_review"),
+             path("career-development/", performance_views.career_development, name="career_development"),
+             path("api/stats/", performance_views.performance_api_stats, name="performance_api_stats"),
+             path("api/matrix/", performance_views.performance_matrix_api, name="performance_matrix_api"),
+             path("api/goals/", performance_views.goals_api, name="goals_api"),
          ])
     ),
 ]

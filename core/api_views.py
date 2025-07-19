@@ -27,7 +27,8 @@ from .serializers import (
     IdeaSerializer, IdeaDetailSerializer, IdeaCategorySerializer,
     UserProfileSerializer, ChangePasswordSerializer,
     RiskFlagSerializer, EmployeeRiskAnalysisSerializer,
-    PsychologicalRiskSurveySerializer, PsychologicalRiskResponseSerializer
+    PsychologicalRiskSurveySerializer, PsychologicalRiskResponseSerializer,
+    DashboardStatsSerializer, AIRiskAnalysisSerializer, StatisticalAnomalySerializer
 )
 from .api_permissions import IsOwnerOrReadOnly, IsManagerOrAdmin
 
@@ -439,7 +440,7 @@ class IdeaViewSet(viewsets.ModelViewSet):
 # --- Dashboard & Analytics Views ---
 class DashboardViewSet(viewsets.GenericViewSet):
     permission_classes = [IsAuthenticated]
-    serializer_class = None  # Dashboard serializer yoxdur, yalnız action-lar var
+    serializer_class = DashboardStatsSerializer
     
     @action(detail=False, methods=['get'])
     def stats(self, request):
@@ -800,6 +801,7 @@ class PsychologicalRiskResponseViewSet(viewsets.ModelViewSet):
 class AIRiskDetectionViewSet(viewsets.ViewSet):
     """AI Risk Detection əməliyyatları"""
     permission_classes = [IsAuthenticated]
+    serializer_class = AIRiskAnalysisSerializer
     
     @action(detail=False, methods=['get'])
     def dashboard(self, request):
@@ -867,6 +869,7 @@ class AIRiskDetectionViewSet(viewsets.ViewSet):
 class StatisticalAnomalyViewSet(viewsets.ViewSet):
     """Statistik Anomaliy Aşkarlama əməliyyatları"""
     permission_classes = [IsAuthenticated]
+    serializer_class = StatisticalAnomalySerializer
     
     @action(detail=False, methods=['post'])
     def detect_performance_anomalies(self, request):
