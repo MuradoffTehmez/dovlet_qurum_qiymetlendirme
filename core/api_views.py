@@ -9,12 +9,14 @@ from django.contrib.auth import get_user_model
 from django.db.models import Q, Count, Avg
 from django.utils import timezone
 from datetime import datetime, timedelta
+from typing import List
 
 from .models import (
     OrganizationUnit, Ishchi, SualKateqoriyasi, Sual,
     QiymetlendirmeDovru, Qiymetlendirme, InkishafPlani,
     Feedback, Notification, CalendarEvent, QuickFeedback,
-    PrivateNote, Idea, IdeaCategory, IdeaComment, Cavab
+    PrivateNote, Idea, IdeaCategory, IdeaComment, Cavab,
+    RiskFlag, EmployeeRiskAnalysis, PsychologicalRiskSurvey, PsychologicalRiskResponse
 )
 from .serializers import (
     OrganizationUnitSerializer, IshchiSerializer, IshchiCreateSerializer,
@@ -23,7 +25,9 @@ from .serializers import (
     InkishafPlaniSerializer, FeedbackSerializer, NotificationSerializer,
     CalendarEventSerializer, QuickFeedbackSerializer, PrivateNoteSerializer,
     IdeaSerializer, IdeaDetailSerializer, IdeaCategorySerializer,
-    UserProfileSerializer, ChangePasswordSerializer
+    UserProfileSerializer, ChangePasswordSerializer,
+    RiskFlagSerializer, EmployeeRiskAnalysisSerializer,
+    PsychologicalRiskSurveySerializer, PsychologicalRiskResponseSerializer
 )
 from .api_permissions import IsOwnerOrReadOnly, IsManagerOrAdmin
 
@@ -504,3 +508,770 @@ class DashboardViewSet(viewsets.GenericViewSet):
         activities = sorted(activities, key=lambda x: x['date'], reverse=True)[:10]
         
         return Response(activities)
+
+
+# === AI RİSK ANALİZİ API VİEWS ===
+
+class RiskFlagViewSet(viewsets.ModelViewSet):
+    """Risk Bayraqlari API"""
+    queryset = RiskFlag.objects.all()
+    serializer_class = RiskFlagSerializer
+    permission_classes = [IsAuthenticated]
+    filterset_fields = ['employee', 'cycle', 'flag_type', 'severity', 'status']
+    search_fields = ['employee__first_name', 'employee__last_name', 'flag_type']
+    ordering_fields = ['detected_at', 'severity', 'risk_score']
+    ordering = ['-detected_at', '-severity']
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        # İşçilər yalnız öz risklərini görə bilər
+        if self.request.user.rol == 'ISHCHI':
+            queryset = queryset.filter(employee=self.request.user)
+        
+        # Aktiv risklər filtri
+        if self.request.query_params.get('active_only') == 'true':
+            queryset = queryset.filter(status=RiskFlag.Status.ACTIVE)
+        
+        return queryset
+    
+    @action(detail=True, methods=['post'])
+    def resolve(self, request, pk=None):
+        """Risk bayrağını həll edilmiş kimi işarələ"""
+        risk_flag = self.get_object()
+        action_taken = request.data.get('action_taken', '')
+        
+        risk_flag.resolve(request.user, action_taken)
+        
+        return Response({
+            'status': 'resolved',
+            'message': 'Risk bayrağı həll edildi'
+        })
+    
+    @action(detail=True, methods=['post'])
+    def ignore(self, request, pk=None):
+        """Risk bayrağını rədd et"""
+        risk_flag = self.get_object()
+        reason = request.data.get('reason', '')
+        
+        risk_flag.ignore(request.user, reason)
+        
+        return Response({
+            'status': 'ignored',
+            'message': 'Risk bayrağı rədd edildi'
+        })
+
+
+class EmployeeRiskAnalysisViewSet(viewsets.ModelViewSet):
+    """İşçi Risk Analizi API"""
+    queryset = EmployeeRiskAnalysis.objects.all()
+    serializer_class = EmployeeRiskAnalysisSerializer
+    permission_classes = [IsAuthenticated]
+    filterset_fields = ['employee', 'cycle', 'risk_level']
+    search_fields = ['employee__first_name', 'employee__last_name']
+    ordering_fields = ['analyzed_at', 'total_risk_score', 'risk_level']
+    ordering = ['-total_risk_score', '-analyzed_at']
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        # İşçilər yalnız öz analizlərini görə bilər
+        if self.request.user.rol == 'ISHCHI':
+            queryset = queryset.filter(employee=self.request.user)
+        
+        return queryset
+    
+    @action(detail=False, methods=['post'])
+    def analyze_employee(self, request):
+        """Müəyyən işçi üçün risk analizi apar"""
+        from .ai_risk_detection import AIRiskDetector
+        
+        employee_id = request.data.get('employee_id')
+        cycle_id = request.data.get('cycle_id')
+        
+        if not employee_id:
+            return Response({'error': 'employee_id tələb olunur'}, status=400)
+        
+        try:
+            employee = Ishchi.objects.get(id=employee_id)
+            cycle = None
+            if cycle_id:
+                cycle = QiymetlendirmeDovru.objects.get(id=cycle_id)
+            
+            detector = AIRiskDetector()
+            risk_data = detector.analyze_employee_risks(employee, cycle)
+            
+            # Risk analizi nəticəsini saxla
+            if 'error' not in risk_data:
+                analysis, created = EmployeeRiskAnalysis.objects.update_or_create(
+                    employee=employee,
+                    cycle=cycle or QiymetlendirmeDovru.objects.filter(aktivdir=True).first(),
+                    defaults={
+                        'total_risk_score': risk_data['total_risk_score'],
+                        'risk_level': risk_data['risk_level'],
+                        'performance_risk_score': risk_data['detailed_analysis']['performance_risk']['risk_score'],
+                        'consistency_risk_score': risk_data['detailed_analysis']['consistency_risk']['risk_score'],
+                        'peer_feedback_risk_score': risk_data['detailed_analysis']['peer_feedback_risk']['risk_score'],
+                        'behavioral_risk_score': risk_data['detailed_analysis']['behavioral_risk']['risk_score'],
+                        'detailed_analysis': risk_data['detailed_analysis'],
+                    }
+                )
+                
+                # Red Flag-ları saxla
+                for flag_type in risk_data['red_flags']:
+                    RiskFlag.objects.get_or_create(
+                        employee=employee,
+                        cycle=cycle or QiymetlendirmeDovru.objects.filter(aktivdir=True).first(),
+                        flag_type=flag_type,
+                        defaults={
+                            'severity': RiskFlag.Severity.HIGH if risk_data['risk_level'] in ['HIGH', 'CRITICAL'] else RiskFlag.Severity.MEDIUM,
+                            'risk_score': risk_data['total_risk_score'],
+                            'details': risk_data['detailed_analysis'],
+                            'ai_confidence': 0.85
+                        }
+                    )
+            
+            return Response(risk_data)
+            
+        except Ishchi.DoesNotExist:
+            return Response({'error': 'İşçi tapılmadı'}, status=404)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
+    
+    @action(detail=False, methods=['post'])
+    def bulk_analyze(self, request):
+        """Bütün işçilər üçün risk analizi"""
+        from .ai_risk_detection import AIRiskDetector
+        
+        cycle_id = request.data.get('cycle_id')
+        cycle = None
+        if cycle_id:
+            try:
+                cycle = QiymetlendirmeDovru.objects.get(id=cycle_id)
+            except QiymetlendirmeDovru.DoesNotExist:
+                return Response({'error': 'Dövr tapılmadı'}, status=404)
+        
+        detector = AIRiskDetector()
+        results = detector.bulk_analyze_all_employees(cycle)
+        
+        return Response({
+            'total_analyzed': len(results),
+            'results': results[:10],  # İlk 10 nəticəni qaytar
+            'summary': detector.get_organization_risk_summary()
+        })
+
+
+class PsychologicalRiskSurveyViewSet(viewsets.ModelViewSet):
+    """Psixoloji Risk Sorğuları API"""
+    queryset = PsychologicalRiskSurvey.objects.all()
+    serializer_class = PsychologicalRiskSurveySerializer
+    permission_classes = [IsAuthenticated]
+    filterset_fields = ['survey_type', 'is_active', 'is_anonymous']
+    search_fields = ['title']
+    ordering = ['-created_at']
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        # İşçilər yalnız aktiv sorğuları görə bilər
+        if self.request.user.rol == 'ISHCHI':
+            queryset = queryset.filter(is_active=True)
+        
+        return queryset
+    
+    def perform_create(self, serializer):
+        serializer.save(created_by=self.request.user)
+    
+    @action(detail=False, methods=['post'])
+    def create_default_surveys(self, request):
+        """Standart psixoloji sorğuları yaradır"""
+        from .psychological_surveys import PsychologicalSurveyManager
+        
+        # Yalnız admin və superadmin yarada bilər
+        if request.user.rol not in ['ADMIN', 'SUPERADMIN']:
+            return Response({'error': 'İcazə yoxdur'}, status=403)
+        
+        manager = PsychologicalSurveyManager()
+        surveys = manager.create_default_surveys(request.user)
+        
+        serialized_surveys = PsychologicalRiskSurveySerializer(surveys, many=True)
+        
+        return Response({
+            'created_surveys': len(surveys),
+            'surveys': serialized_surveys.data,
+            'message': f'{len(surveys)} yeni sorğu yaradıldı' if surveys else 'Bütün standart sorğular artıq mövcuddur'
+        })
+    
+    @action(detail=True, methods=['get'])
+    def analytics(self, request, pk=None):
+        """Sorğu analitik məlumatları"""
+        from .psychological_surveys import PsychologicalSurveyManager
+        
+        survey = self.get_object()
+        manager = PsychologicalSurveyManager()
+        analytics = manager.get_survey_analytics(survey)
+        
+        return Response(analytics)
+    
+    @action(detail=True, methods=['post'])
+    def duplicate(self, request, pk=None):
+        """Sorğunu kopyalayır"""
+        if request.user.rol not in ['ADMIN', 'SUPERADMIN']:
+            return Response({'error': 'İcazə yoxdur'}, status=403)
+        
+        original_survey = self.get_object()
+        new_title = request.data.get('title', f"{original_survey.title} (Kopya)")
+        
+        # Yeni sorğu yarad
+        new_survey = PsychologicalRiskSurvey.objects.create(
+            title=new_title,
+            survey_type=original_survey.survey_type,
+            questions=original_survey.questions,
+            scoring_method=original_survey.scoring_method,
+            risk_thresholds=original_survey.risk_thresholds,
+            is_active=False,  # Kopya deaktiv başlayır
+            is_anonymous=original_survey.is_anonymous,
+            created_by=request.user
+        )
+        
+        serializer = PsychologicalRiskSurveySerializer(new_survey)
+        return Response(serializer.data)
+
+
+class PsychologicalRiskResponseViewSet(viewsets.ModelViewSet):
+    """Psixoloji Risk Cavabları API"""
+    queryset = PsychologicalRiskResponse.objects.all()
+    serializer_class = PsychologicalRiskResponseSerializer
+    permission_classes = [IsAuthenticated]
+    filterset_fields = ['survey', 'risk_level', 'requires_attention']
+    ordering = ['-responded_at']
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        # İşçilər yalnız öz cavablarını görə bilər
+        if self.request.user.rol == 'ISHCHI':
+            queryset = queryset.filter(employee=self.request.user)
+        
+        return queryset
+    
+    def perform_create(self, serializer):
+        from .psychological_surveys import PsychologicalSurveyManager
+        
+        survey = serializer.validated_data['survey']
+        answers = serializer.validated_data['answers']
+        
+        # Xalı hesabla
+        manager = PsychologicalSurveyManager()
+        calculated_score = manager.calculate_survey_score(survey, answers)
+        
+        response = serializer.save(
+            employee=self.request.user,
+            total_score=calculated_score
+        )
+        
+        # Risk səviyyəsini hesabla
+        risk_level = response.calculate_risk_level()
+        response.risk_level = risk_level
+        
+        # Yüksək risk halında diqqət tələb edir
+        if risk_level in ['HIGH', 'VERY_HIGH']:
+            response.requires_attention = True
+        
+        response.save()
+    
+    @action(detail=True, methods=['get'])
+    def analysis(self, request, pk=None):
+        """Cavab analizi və tövsiyələr"""
+        from .psychological_surveys import PsychologicalSurveyManager
+        
+        response = self.get_object()
+        
+        # Yalnız öz cavabını və ya admin/manager-lar görə bilər
+        if response.employee != request.user and request.user.rol not in ['ADMIN', 'SUPERADMIN', 'REHBER']:
+            return Response({'error': 'İcazə yoxdur'}, status=403)
+        
+        manager = PsychologicalSurveyManager()
+        analysis = manager.analyze_survey_response(response)
+        
+        return Response(analysis)
+
+
+class AIRiskDetectionViewSet(viewsets.ViewSet):
+    """AI Risk Detection əməliyyatları"""
+    permission_classes = [IsAuthenticated]
+    
+    @action(detail=False, methods=['get'])
+    def dashboard(self, request):
+        """Risk analizi dashboard məlumatları"""
+        
+        # Aktiv dövr
+        active_cycle = QiymetlendirmeDovru.objects.filter(aktivdir=True).first()
+        if not active_cycle:
+            return Response({'error': 'Aktiv dövr tapılmadı'}, status=404)
+        
+        # Risk statistikaları
+        risk_stats = {
+            'total_flags': RiskFlag.objects.filter(cycle=active_cycle).count(),
+            'active_flags': RiskFlag.objects.filter(cycle=active_cycle, status=RiskFlag.Status.ACTIVE).count(),
+            'critical_flags': RiskFlag.objects.filter(
+                cycle=active_cycle, 
+                severity=RiskFlag.Severity.CRITICAL,
+                status=RiskFlag.Status.ACTIVE
+            ).count(),
+            'high_risk_employees': EmployeeRiskAnalysis.objects.filter(
+                cycle=active_cycle,
+                risk_level__in=['HIGH', 'CRITICAL']
+            ).count(),
+        }
+        
+        # Risk səviyyəsi paylanması
+        risk_distribution = EmployeeRiskAnalysis.objects.filter(cycle=active_cycle).values('risk_level').annotate(
+            count=Count('id')
+        )
+        
+        # Son risk analizi
+        recent_analyses = EmployeeRiskAnalysis.objects.filter(
+            cycle=active_cycle
+        ).order_by('-analyzed_at')[:5]
+        
+        # Ən çox rastlanan risk növləri
+        common_flags = RiskFlag.objects.filter(
+            cycle=active_cycle,
+            status=RiskFlag.Status.ACTIVE
+        ).values('flag_type').annotate(
+            count=Count('id')
+        ).order_by('-count')[:10]
+        
+        return Response({
+            'cycle': active_cycle.ad,
+            'stats': risk_stats,
+            'risk_distribution': list(risk_distribution),
+            'recent_analyses': EmployeeRiskAnalysisSerializer(recent_analyses, many=True).data,
+            'common_flags': list(common_flags)
+        })
+    
+    @action(detail=False, methods=['get'])
+    def organization_summary(self, request):
+        """Təşkilat üçün ümumi risk xülasəsi"""
+        from .ai_risk_detection import AIRiskDetector
+        
+        detector = AIRiskDetector()
+        summary = detector.get_organization_risk_summary()
+        
+        return Response(summary)
+
+
+# === STATİSTİK ANOMALİ AŞKARLAMA API VİEWS ===
+
+class StatisticalAnomalyViewSet(viewsets.ViewSet):
+    """Statistik Anomaliy Aşkarlama əməliyyatları"""
+    permission_classes = [IsAuthenticated]
+    
+    @action(detail=False, methods=['post'])
+    def detect_performance_anomalies(self, request):
+        """Performans anomaliyalarını aşkarlayır"""
+        from .statistical_anomaly_detection import StatisticalAnomalyDetector
+        
+        cycle_id = request.data.get('cycle_id')
+        cycle = None
+        if cycle_id:
+            try:
+                cycle = QiymetlendirmeDovru.objects.get(id=cycle_id)
+            except QiymetlendirmeDovru.DoesNotExist:
+                return Response({'error': 'Dövr tapılmadı'}, status=404)
+        
+        detector = StatisticalAnomalyDetector()
+        results = detector.detect_performance_anomalies(cycle)
+        
+        return Response(results)
+    
+    @action(detail=False, methods=['post'])
+    def detect_behavioral_anomalies(self, request):
+        """Davranış anomaliyalarını aşkarlayır"""
+        from .statistical_anomaly_detection import StatisticalAnomalyDetector
+        
+        days_back = request.data.get('days_back', 30)
+        
+        try:
+            days_back = int(days_back)
+            if days_back <= 0 or days_back > 365:
+                days_back = 30
+        except (ValueError, TypeError):
+            days_back = 30
+        
+        detector = StatisticalAnomalyDetector()
+        results = detector.detect_behavioral_anomalies(days_back)
+        
+        return Response(results)
+    
+    @action(detail=False, methods=['post'])
+    def analyze_employee_trends(self, request):
+        """Müəyyən işçinin zaman ərzində performans trendi"""
+        from .statistical_anomaly_detection import StatisticalAnomalyDetector
+        
+        employee_id = request.data.get('employee_id')
+        months_back = request.data.get('months_back', 6)
+        
+        if not employee_id:
+            return Response({'error': 'employee_id tələb olunur'}, status=400)
+        
+        try:
+            employee = Ishchi.objects.get(id=employee_id)
+            months_back = int(months_back)
+            if months_back <= 0 or months_back > 24:
+                months_back = 6
+        except Ishchi.DoesNotExist:
+            return Response({'error': 'İşçi tapılmadı'}, status=404)
+        except (ValueError, TypeError):
+            months_back = 6
+        
+        detector = StatisticalAnomalyDetector()
+        results = detector.detect_temporal_anomalies(employee, months_back)
+        
+        return Response(results)
+    
+    @action(detail=False, methods=['post'])
+    def generate_full_report(self, request):
+        """Tam anomaliy hesabatı yaradır"""
+        from .statistical_anomaly_detection import StatisticalAnomalyDetector
+        
+        cycle_id = request.data.get('cycle_id')
+        cycle = None
+        if cycle_id:
+            try:
+                cycle = QiymetlendirmeDovru.objects.get(id=cycle_id)
+            except QiymetlendirmeDovru.DoesNotExist:
+                return Response({'error': 'Dövr tapılmadı'}, status=404)
+        
+        detector = StatisticalAnomalyDetector()
+        report = detector.generate_anomaly_report(cycle)
+        
+        return Response(report)
+    
+    @action(detail=False, methods=['get'])
+    def anomaly_statistics(self, request):
+        """Anomaliy statistikaları"""
+        
+        # Aktiv dövr
+        active_cycle = QiymetlendirmeDovru.objects.filter(aktivdir=True).first()
+        if not active_cycle:
+            return Response({'error': 'Aktiv dövr tapılmadı'}, status=404)
+        
+        # Statistik anomaliy bayraqlari
+        stats = {
+            'statistical_anomaly_flags': RiskFlag.objects.filter(
+                cycle=active_cycle,
+                flag_type__in=['STATISTICAL_ANOMALY', 'BEHAVIORAL_ANOMALY'],
+                status=RiskFlag.Status.ACTIVE
+            ).count(),
+            'performance_anomalies': RiskFlag.objects.filter(
+                cycle=active_cycle,
+                flag_type='STATISTICAL_ANOMALY',
+                status=RiskFlag.Status.ACTIVE
+            ).count(),
+            'behavioral_anomalies': RiskFlag.objects.filter(
+                cycle=active_cycle,
+                flag_type='BEHAVIORAL_ANOMALY',
+                status=RiskFlag.Status.ACTIVE
+            ).count(),
+            'critical_anomalies': RiskFlag.objects.filter(
+                cycle=active_cycle,
+                flag_type__in=['STATISTICAL_ANOMALY', 'BEHAVIORAL_ANOMALY'],
+                severity=RiskFlag.Severity.CRITICAL,
+                status=RiskFlag.Status.ACTIVE
+            ).count(),
+        }
+        
+        # Ən çox anomaliy olan işçilər
+        from django.db.models import Count
+        top_anomaly_employees = RiskFlag.objects.filter(
+            cycle=active_cycle,
+            flag_type__in=['STATISTICAL_ANOMALY', 'BEHAVIORAL_ANOMALY'],
+            status=RiskFlag.Status.ACTIVE
+        ).values(
+            'employee__id', 'employee__first_name', 'employee__last_name'
+        ).annotate(
+            anomaly_count=Count('id')
+        ).order_by('-anomaly_count')[:10]
+        
+        # Anomaliy növlərinin paylanması
+        anomaly_distribution = RiskFlag.objects.filter(
+            cycle=active_cycle,
+            flag_type__in=['STATISTICAL_ANOMALY', 'BEHAVIORAL_ANOMALY'],
+            status=RiskFlag.Status.ACTIVE
+        ).values('flag_type', 'severity').annotate(
+            count=Count('id')
+        )
+        
+        return Response({
+            'cycle': active_cycle.ad,
+            'statistics': stats,
+            'top_anomaly_employees': list(top_anomaly_employees),
+            'anomaly_distribution': list(anomaly_distribution),
+            'analysis_date': timezone.now()
+        })
+
+
+# === STRATEJİ KADR PLANLAŞDIRMASI API VİEWS ===
+
+class StrategicHRPlanningViewSet(viewsets.ViewSet):
+    """Strateji HR planlaşdırma əməliyyatları"""
+    permission_classes = [IsAuthenticated]
+    
+    @action(detail=False, methods=['post'])
+    def workforce_composition(self, request):
+        """İş qüvvəsi tərkibi analizi"""
+        from .strategic_hr_planning import StrategicHRPlanner
+        
+        # Yalnız admin və rəhbərlər görə bilər
+        if request.user.rol not in ['ADMIN', 'SUPERADMIN', 'REHBER']:
+            return Response({'error': 'İcazə yoxdur'}, status=403)
+        
+        unit_id = request.data.get('organization_unit_id')
+        unit = None
+        if unit_id:
+            try:
+                unit = OrganizationUnit.objects.get(id=unit_id)
+            except OrganizationUnit.DoesNotExist:
+                return Response({'error': 'Təşkilati vahid tapılmadı'}, status=404)
+        
+        planner = StrategicHRPlanner()
+        analysis = planner.analyze_workforce_composition(unit)
+        
+        return Response(analysis)
+    
+    @action(detail=False, methods=['post'])
+    def high_potential_employees(self, request):
+        """Yüksək potensial işçilər analizi"""
+        from .strategic_hr_planning import StrategicHRPlanner
+        
+        if request.user.rol not in ['ADMIN', 'SUPERADMIN', 'REHBER']:
+            return Response({'error': 'İcazə yoxdur'}, status=403)
+        
+        cycle_id = request.data.get('cycle_id')
+        cycle = None
+        if cycle_id:
+            try:
+                cycle = QiymetlendirmeDovru.objects.get(id=cycle_id)
+            except QiymetlendirmeDovru.DoesNotExist:
+                return Response({'error': 'Dövr tapılmadı'}, status=404)
+        
+        planner = StrategicHRPlanner()
+        analysis = planner.identify_high_potential_employees(cycle)
+        
+        return Response(analysis)
+    
+    @action(detail=False, methods=['post'])
+    def succession_planning(self, request):
+        """Varislik planlaşdırması"""
+        from .strategic_hr_planning import StrategicHRPlanner
+        
+        if request.user.rol not in ['ADMIN', 'SUPERADMIN']:
+            return Response({'error': 'İcazə yoxdur'}, status=403)
+        
+        unit_id = request.data.get('organization_unit_id')
+        unit = None
+        if unit_id:
+            try:
+                unit = OrganizationUnit.objects.get(id=unit_id)
+            except OrganizationUnit.DoesNotExist:
+                return Response({'error': 'Təşkilati vahid tapılmadı'}, status=404)
+        
+        planner = StrategicHRPlanner()
+        succession_plan = planner.create_succession_plan(unit)
+        
+        return Response(succession_plan)
+    
+    @action(detail=False, methods=['get'])
+    def talent_pipeline(self, request):
+        """Talent pipeline analizi"""
+        from .strategic_hr_planning import StrategicHRPlanner
+        
+        if request.user.rol not in ['ADMIN', 'SUPERADMIN', 'REHBER']:
+            return Response({'error': 'İcazə yoxdur'}, status=403)
+        
+        planner = StrategicHRPlanner()
+        pipeline_analysis = planner.analyze_talent_pipeline()
+        
+        return Response(pipeline_analysis)
+    
+    @action(detail=False, methods=['post'])
+    def hr_strategy_recommendations(self, request):
+        """HR strategiyası tövsiyələri"""
+        from .strategic_hr_planning import StrategicHRPlanner
+        
+        if request.user.rol not in ['ADMIN', 'SUPERADMIN']:
+            return Response({'error': 'İcazə yoxdur'}, status=403)
+        
+        unit_id = request.data.get('organization_unit_id')
+        unit = None
+        if unit_id:
+            try:
+                unit = OrganizationUnit.objects.get(id=unit_id)
+            except OrganizationUnit.DoesNotExist:
+                return Response({'error': 'Təşkilati vahid tapılmadı'}, status=404)
+        
+        planner = StrategicHRPlanner()
+        strategy = planner.generate_hr_strategy_recommendations(unit)
+        
+        return Response(strategy)
+    
+    @action(detail=False, methods=['get'])
+    def dashboard_metrics(self, request):
+        """Strateji HR dashboard məlumatları"""
+        from .strategic_hr_planning import StrategicHRPlanner
+        
+        if request.user.rol not in ['ADMIN', 'SUPERADMIN', 'REHBER']:
+            return Response({'error': 'İcazə yoxdur'}, status=403)
+        
+        planner = StrategicHRPlanner()
+        
+        # Əsas metrikalar
+        workforce = planner.analyze_workforce_composition()
+        talent_pipeline = planner.analyze_talent_pipeline()
+        high_potential = planner.identify_high_potential_employees()
+        
+        # Aktiv dövr üçün risk analizi
+        active_cycle = QiymetlendirmeDovru.objects.filter(aktivdir=True).first()
+        risk_metrics = {}
+        if active_cycle:
+            risk_metrics = {
+                'high_risk_employees': EmployeeRiskAnalysis.objects.filter(
+                    cycle=active_cycle,
+                    risk_level__in=['HIGH', 'CRITICAL']
+                ).count(),
+                'active_flags': RiskFlag.objects.filter(
+                    cycle=active_cycle,
+                    status=RiskFlag.Status.ACTIVE
+                ).count(),
+                'retention_alerts': PsychologicalRiskResponse.objects.filter(
+                    requires_attention=True
+                ).count()
+            }
+        
+        dashboard_data = {
+            'overview': {
+                'total_employees': workforce.get('total_employees', 0),
+                'high_potential_count': high_potential.get('high_potential_count', 0),
+                'succession_ready': high_potential.get('succession_ready_count', 0),
+                'stars_count': talent_pipeline.get('pipeline_summary', {}).get('stars', {}).get('count', 0)
+            },
+            'talent_distribution': talent_pipeline.get('pipeline_summary', {}),
+            'risk_metrics': risk_metrics,
+            'workforce_demographics': workforce.get('demographics', {}),
+            'key_insights': [
+                f"{high_potential.get('high_potential_count', 0)} yüksək potensial işçi müəyyən edilib",
+                f"{high_potential.get('succession_ready_count', 0)} işçi varislik üçün hazırdır",
+                f"{talent_pipeline.get('pipeline_summary', {}).get('stars', {}).get('count', 0)} star performer mövcuddur"
+            ],
+            'last_updated': timezone.now()
+        }
+        
+        return Response(dashboard_data)
+    
+    @action(detail=False, methods=['post'])
+    def employee_potential_assessment(self, request):
+        """Müəyyən işçinin potensial qiymətləndirməsi"""
+        from .strategic_hr_planning import StrategicHRPlanner
+        
+        employee_id = request.data.get('employee_id')
+        if not employee_id:
+            return Response({'error': 'employee_id tələb olunur'}, status=400)
+        
+        try:
+            employee = Ishchi.objects.get(id=employee_id)
+        except Ishchi.DoesNotExist:
+            return Response({'error': 'İşçi tapılmadı'}, status=404)
+        
+        # Yalnız öz məlumatını və ya admin/manager-lar görə bilər
+        if employee != request.user and request.user.rol not in ['ADMIN', 'SUPERADMIN', 'REHBER']:
+            return Response({'error': 'İcazə yoxdur'}, status=403)
+        
+        planner = StrategicHRPlanner()
+        cycle = QiymetlendirmeDovru.objects.filter(aktivdir=True).first()
+        
+        if not cycle:
+            return Response({'error': 'Aktiv dövr tapılmadı'}, status=404)
+        
+        # Potensial hesablama
+        potential_score = planner._calculate_potential_score(employee, cycle)
+        
+        # Performans məlumatları
+        performance_data = planner._get_employee_performance(employee, cycle)
+        
+        # 9-box grid mövqeyi
+        if performance_data:
+            grid_position = planner._determine_9box_position(
+                performance_data['performance'], 
+                potential_score
+            )
+        else:
+            grid_position = 'insufficient_data'
+        
+        # Varislik hazırlığı
+        retention_risk = planner._assess_retention_risk(employee, cycle)
+        
+        assessment = {
+            'employee': {
+                'id': employee.id,
+                'name': employee.get_full_name(),
+                'position': employee.vezife,
+                'unit': employee.organization_unit.name if employee.organization_unit else 'N/A'
+            },
+            'scores': {
+                'potential_score': round(potential_score, 2),
+                'performance_score': round(performance_data['performance'], 2) if performance_data else 0,
+                'retention_risk': round(retention_risk, 2)
+            },
+            'assessments': {
+                'grid_position': grid_position,
+                'is_high_potential': potential_score >= 4.0,
+                'succession_readiness': planner._assess_succession_readiness(employee, employee.vezife)
+            },
+            'development_recommendations': self._get_development_recommendations(grid_position, potential_score),
+            'analysis_date': timezone.now()
+        }
+        
+        return Response(assessment)
+    
+    def _get_development_recommendations(self, grid_position: str, potential_score: float) -> List[str]:
+        """Grid mövqeyinə əsasən inkişaf tövsiyələri"""
+        recommendations_map = {
+            'star': [
+                'Stretch assignments və challenging projects verin',
+                'Executive coaching proqramına daxil edin',
+                'Cross-functional leadership rolları təklif edin'
+            ],
+            'future_leader': [
+                'Leadership development proqramına qoşun',
+                'Mentoring relationships qurun',
+                'Strategic thinking skills inkişaf etdirin'
+            ],
+            'high_potential': [
+                'Skill development opportunities yaradın',
+                'Job rotation proqramlarına daxil edin',
+                'Performance coaching dəstəyi verin'
+            ],
+            'solid_performer': [
+                'Current role-da expertise dərinləşdirin',
+                'Specialization opportunities axtarın',
+                'Team leadership skills inkişaf etdirin'
+            ],
+            'developing': [
+                'Fundamental skills training təmin edin',
+                'Regular feedback və coaching',
+                'Clear performance expectations qoyun'
+            ],
+            'underperformer': [
+                'Performance improvement plan yaradın',
+                'Intensive coaching və support',
+                'Role fit assessment aparın'
+            ]
+        }
+        
+        return recommendations_map.get(grid_position, [
+            'Professional development planı yaradın',
+            'Skill assessment və gap analysis aparın',
+            'Mentor təyin edin'
+        ])

@@ -6,7 +6,8 @@ from .models import (
     OrganizationUnit, Ishchi, SualKateqoriyasi, Sual, 
     QiymetlendirmeDovru, Qiymetlendirme, Cavab, InkishafPlani,
     Feedback, Notification, CalendarEvent, QuickFeedback,
-    PrivateNote, Idea, IdeaCategory, IdeaComment
+    PrivateNote, Idea, IdeaCategory, IdeaComment,
+    RiskFlag, EmployeeRiskAnalysis, PsychologicalRiskSurvey, PsychologicalRiskResponse
 )
 
 User = get_user_model()
@@ -255,3 +256,71 @@ class ChangePasswordSerializer(serializers.Serializer):
         if attrs['new_password'] != attrs['confirm_password']:
             raise serializers.ValidationError("Yeni şifrələr uyğun gəlmir.")
         return attrs
+
+
+# --- AI Risk Analysis Serializers ---
+class RiskFlagSerializer(serializers.ModelSerializer):
+    employee_name = serializers.CharField(source='employee.get_full_name', read_only=True)
+    cycle_name = serializers.CharField(source='cycle.ad', read_only=True)
+    resolved_by_name = serializers.CharField(source='resolved_by.get_full_name', read_only=True)
+    flag_type_display = serializers.CharField(source='get_flag_type_display', read_only=True)
+    severity_display = serializers.CharField(source='get_severity_display', read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    
+    class Meta:
+        model = RiskFlag
+        fields = [
+            'id', 'employee', 'employee_name', 'cycle', 'cycle_name',
+            'flag_type', 'flag_type_display', 'severity', 'severity_display',
+            'status', 'status_display', 'risk_score', 'details', 'ai_confidence',
+            'detected_at', 'resolved_at', 'resolved_by', 'resolved_by_name',
+            'hr_notes', 'resolution_action', 'is_active', 'days_active'
+        ]
+
+
+class EmployeeRiskAnalysisSerializer(serializers.ModelSerializer):
+    employee_name = serializers.CharField(source='employee.get_full_name', read_only=True)
+    cycle_name = serializers.CharField(source='cycle.ad', read_only=True)
+    risk_level_display = serializers.CharField(source='get_risk_level_display', read_only=True)
+    active_flags_count = serializers.ReadOnlyField()
+    
+    class Meta:
+        model = EmployeeRiskAnalysis
+        fields = [
+            'id', 'employee', 'employee_name', 'cycle', 'cycle_name',
+            'total_risk_score', 'risk_level', 'risk_level_display',
+            'performance_risk_score', 'consistency_risk_score',
+            'peer_feedback_risk_score', 'behavioral_risk_score',
+            'detailed_analysis', 'ai_recommendations',
+            'analyzed_at', 'updated_at', 'reviewed_by_hr', 'hr_action_taken',
+            'active_flags_count'
+        ]
+
+
+class PsychologicalRiskSurveySerializer(serializers.ModelSerializer):
+    created_by_name = serializers.CharField(source='created_by.get_full_name', read_only=True)
+    survey_type_display = serializers.CharField(source='get_survey_type_display', read_only=True)
+    responses_count = serializers.IntegerField(source='responses.count', read_only=True)
+    
+    class Meta:
+        model = PsychologicalRiskSurvey
+        fields = [
+            'id', 'title', 'survey_type', 'survey_type_display', 'questions',
+            'is_active', 'is_anonymous', 'scoring_method', 'risk_thresholds',
+            'created_at', 'created_by', 'created_by_name', 'responses_count'
+        ]
+
+
+class PsychologicalRiskResponseSerializer(serializers.ModelSerializer):
+    employee_name = serializers.CharField(source='employee.get_full_name', read_only=True)
+    survey_title = serializers.CharField(source='survey.title', read_only=True)
+    risk_level_display = serializers.CharField(source='get_risk_level_display', read_only=True)
+    
+    class Meta:
+        model = PsychologicalRiskResponse
+        fields = [
+            'id', 'survey', 'survey_title', 'employee', 'employee_name',
+            'answers', 'total_score', 'risk_level', 'risk_level_display',
+            'is_anonymous_response', 'responded_at', 'ai_analysis',
+            'requires_attention'
+        ]

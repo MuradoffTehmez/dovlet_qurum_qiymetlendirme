@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from simple_history.models import HistoricalRecords
 
+# AI Risk Detection Models will be added directly to avoid circular imports
+
 
 # --- Yeni Təşkilati Struktur Modeli ---
 class OrganizationUnit(models.Model):
@@ -1196,6 +1198,374 @@ class IdeaVote(models.Model):
     
     def __str__(self):
         return f"{self.user.get_full_name()} -> {self.idea.title} ({self.vote_type})"
+
+
+# === AI RİSK ANALİZİ SİSTEMİ ===
+
+class RiskFlag(models.Model):
+    """
+    Qırmızı Bayraq sistemi - AI tərəfindən aşkar edilən risklər
+    """
+    
+    class FlagType(models.TextChoices):
+        LOW_PERFORMANCE = 'LOW_PERFORMANCE', 'Aşağı Performans'
+        HIGH_SCORE_VARIANCE = 'HIGH_SCORE_VARIANCE', 'Yüksək Bal Uyğunsuzluğu'
+        HIGH_NEGATIVE_FEEDBACK = 'HIGH_NEGATIVE_FEEDBACK', 'Çox Neqativ Rəy'
+        LOW_PEER_INTERACTION = 'LOW_PEER_INTERACTION', 'Az Həmkar Qarşılıqlı Əlaqəsi'
+        LONG_ABSENCE = 'LONG_ABSENCE', 'Uzun Müddət Qeyb Olma'
+        NO_DEVELOPMENT_PLAN = 'NO_DEVELOPMENT_PLAN', 'İnkişaf Planı Yoxdur'
+        NO_ORGANIZATIONAL_UNIT = 'NO_ORGANIZATIONAL_UNIT', 'Təşkilati Vahidə Aid Deyil'
+        INSUFFICIENT_EVALUATORS = 'INSUFFICIENT_EVALUATORS', 'Kifayətsiz Qiymətləndirici'
+        NO_EVALUATION_DATA = 'NO_EVALUATION_DATA', 'Qiymətləndirmə Məlumatı Yox'
+        NO_ANSWER_DATA = 'NO_ANSWER_DATA', 'Cavab Məlumatı Yox'
+        STATISTICAL_ANOMALY = 'STATISTICAL_ANOMALY', 'Statistik Anomaliy'
+        BEHAVIORAL_ANOMALY = 'BEHAVIORAL_ANOMALY', 'Davranış Anomaliyası'
+    
+    class Severity(models.TextChoices):
+        LOW = 'LOW', 'Aşağı'
+        MEDIUM = 'MEDIUM', 'Orta'
+        HIGH = 'HIGH', 'Yüksək'
+        CRITICAL = 'CRITICAL', 'Kritik'
+    
+    class Status(models.TextChoices):
+        ACTIVE = 'ACTIVE', 'Aktiv'
+        RESOLVED = 'RESOLVED', 'Həll edilib'
+        IGNORED = 'IGNORED', 'Rədd edilib'
+        REVIEWING = 'REVIEWING', 'Nəzərdən keçirilir'
+    
+    employee = models.ForeignKey(
+        Ishchi, on_delete=models.CASCADE,
+        related_name='risk_flags', verbose_name='İşçi'
+    )
+    cycle = models.ForeignKey(
+        QiymetlendirmeDovru, on_delete=models.CASCADE,
+        verbose_name='Qiymətləndirmə Dövrü'
+    )
+    flag_type = models.CharField(
+        max_length=50, choices=FlagType.choices,
+        verbose_name='Bayraq Növü'
+    )
+    severity = models.CharField(
+        max_length=20, choices=Severity.choices,
+        default=Severity.MEDIUM, verbose_name='Ciddiyyət'
+    )
+    status = models.CharField(
+        max_length=20, choices=Status.choices,
+        default=Status.ACTIVE, verbose_name='Status'
+    )
+    
+    # Risk məlumatları
+    risk_score = models.PositiveIntegerField(
+        default=0, verbose_name='Risk Xalı'
+    )
+    details = models.JSONField(
+        default=dict, verbose_name='Ətraflı Məlumat'
+    )
+    ai_confidence = models.FloatField(
+        default=0.0, verbose_name='AI Əminlik Dərəcəsi'
+    )
+    
+    # Tarixlər
+    detected_at = models.DateTimeField(
+        auto_now_add=True, verbose_name='Aşkar Edilmə Tarixi'
+    )
+    resolved_at = models.DateTimeField(
+        null=True, blank=True, verbose_name='Həll Edilmə Tarixi'
+    )
+    resolved_by = models.ForeignKey(
+        Ishchi, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='resolved_flags', verbose_name='Həll Edən'
+    )
+    
+    # Qeydlər
+    hr_notes = models.TextField(
+        blank=True, verbose_name='HR Qeydləri'
+    )
+    resolution_action = models.TextField(
+        blank=True, verbose_name='Həll Tədbirləri'
+    )
+    
+    history = HistoricalRecords()
+    
+    class Meta:
+        verbose_name = 'Risk Bayrağı'
+        verbose_name_plural = 'Risk Bayraqlari'
+        ordering = ['-detected_at', '-severity']
+        indexes = [
+            models.Index(fields=['employee', 'status']),
+            models.Index(fields=['flag_type', 'severity']),
+            models.Index(fields=['detected_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.employee.get_full_name()} - {self.get_flag_type_display()} ({self.get_severity_display()})"
+    
+    def resolve(self, resolved_by: 'Ishchi', action_taken: str = ""):
+        """Riski həll edilmiş kimi işarələ"""
+        from django.utils import timezone
+        self.status = self.Status.RESOLVED
+        self.resolved_at = timezone.now()
+        self.resolved_by = resolved_by
+        self.resolution_action = action_taken
+        self.save()
+    
+    def ignore(self, ignored_by: 'Ishchi', reason: str = ""):
+        """Riski rədd edilmiş kimi işarələ"""
+        from django.utils import timezone
+        self.status = self.Status.IGNORED
+        self.resolved_at = timezone.now()
+        self.resolved_by = ignored_by
+        self.hr_notes = f"Rədd edilmə səbəbi: {reason}"
+        self.save()
+    
+    @property
+    def is_active(self):
+        return self.status == self.Status.ACTIVE
+    
+    @property
+    def days_active(self):
+        from django.utils import timezone
+        if self.resolved_at:
+            return (self.resolved_at.date() - self.detected_at.date()).days
+        return (timezone.now().date() - self.detected_at.date()).days
+
+
+class EmployeeRiskAnalysis(models.Model):
+    """
+    İşçi üçün ümumi risk analizi nəticələri
+    """
+    
+    class RiskLevel(models.TextChoices):
+        LOW = 'LOW', 'Aşağı'
+        MEDIUM = 'MEDIUM', 'Orta'
+        HIGH = 'HIGH', 'Yüksək'
+        CRITICAL = 'CRITICAL', 'Kritik'
+    
+    employee = models.ForeignKey(
+        Ishchi, on_delete=models.CASCADE,
+        related_name='risk_analyses', verbose_name='İşçi'
+    )
+    cycle = models.ForeignKey(
+        QiymetlendirmeDovru, on_delete=models.CASCADE,
+        verbose_name='Qiymətləndirmə Dövrü'
+    )
+    
+    # Risk məlumatları
+    total_risk_score = models.PositiveIntegerField(
+        default=0, verbose_name='Ümumi Risk Xalı'
+    )
+    risk_level = models.CharField(
+        max_length=20, choices=RiskLevel.choices,
+        default=RiskLevel.LOW, verbose_name='Risk Səviyyəsi'
+    )
+    
+    # Alt risk kateqoriyaları
+    performance_risk_score = models.PositiveIntegerField(
+        default=0, verbose_name='Performans Risk Xalı'
+    )
+    consistency_risk_score = models.PositiveIntegerField(
+        default=0, verbose_name='Uyğunsuzluq Risk Xalı'
+    )
+    peer_feedback_risk_score = models.PositiveIntegerField(
+        default=0, verbose_name='Həmkar Rəyi Risk Xalı'
+    )
+    behavioral_risk_score = models.PositiveIntegerField(
+        default=0, verbose_name='Davranış Risk Xalı'
+    )
+    
+    # Ətraflı analiz
+    detailed_analysis = models.JSONField(
+        default=dict, verbose_name='Ətraflı Analiz'
+    )
+    ai_recommendations = models.TextField(
+        blank=True, verbose_name='AI Tövsiyələri'
+    )
+    
+    # Tarixlər
+    analyzed_at = models.DateTimeField(
+        auto_now_add=True, verbose_name='Analiz Tarixi'
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True, verbose_name='Yenilənmə Tarixi'
+    )
+    
+    # İdarə məlumatları
+    reviewed_by_hr = models.BooleanField(
+        default=False, verbose_name='HR tərəfindən nəzərdən keçirilib'
+    )
+    hr_action_taken = models.TextField(
+        blank=True, verbose_name='HR-ın Tədbirləri'
+    )
+    
+    history = HistoricalRecords()
+    
+    class Meta:
+        verbose_name = 'İşçi Risk Analizi'
+        verbose_name_plural = 'İşçi Risk Analizləri'
+        unique_together = ['employee', 'cycle']
+        ordering = ['-total_risk_score', '-analyzed_at']
+        indexes = [
+            models.Index(fields=['risk_level', 'analyzed_at']),
+            models.Index(fields=['employee', 'cycle']),
+        ]
+    
+    def __str__(self):
+        return f"{self.employee.get_full_name()} - {self.get_risk_level_display()} ({self.total_risk_score})"
+    
+    @property
+    def active_flags_count(self):
+        return self.employee.risk_flags.filter(
+            cycle=self.cycle,
+            status=RiskFlag.Status.ACTIVE
+        ).count()
+    
+    @property
+    def critical_flags(self):
+        return self.employee.risk_flags.filter(
+            cycle=self.cycle,
+            severity=RiskFlag.Severity.CRITICAL,
+            status=RiskFlag.Status.ACTIVE
+        )
+
+
+class PsychologicalRiskSurvey(models.Model):
+    """
+    Psixoloji risk sorğuları - WHO-5 və digər standart sorğular
+    """
+    
+    class SurveyType(models.TextChoices):
+        WHO5_WELLBEING = 'WHO5_WELLBEING', 'WHO-5 Rifah İndeksi'
+        BURNOUT_ASSESSMENT = 'BURNOUT_ASSESSMENT', 'Tükənmişlik Qiymətləndirməsi'
+        STRESS_LEVEL = 'STRESS_LEVEL', 'Stress Səviyyəsi'
+        JOB_SATISFACTION = 'JOB_SATISFACTION', 'İş Məmnunluğu'
+        WORK_LIFE_BALANCE = 'WORK_LIFE_BALANCE', 'İş-Həyat Balansı'
+    
+    class RiskLevel(models.TextChoices):
+        VERY_LOW = 'VERY_LOW', 'Çox Aşağı'
+        LOW = 'LOW', 'Aşağı'
+        MODERATE = 'MODERATE', 'Orta'
+        HIGH = 'HIGH', 'Yüksək'
+        VERY_HIGH = 'VERY_HIGH', 'Çox Yüksək'
+    
+    title = models.CharField(
+        max_length=200, verbose_name='Sorğu Adı'
+    )
+    survey_type = models.CharField(
+        max_length=50, choices=SurveyType.choices,
+        verbose_name='Sorğu Növü'
+    )
+    questions = models.JSONField(
+        verbose_name='Suallar'
+    )
+    is_active = models.BooleanField(
+        default=True, verbose_name='Aktivdir'
+    )
+    is_anonymous = models.BooleanField(
+        default=True, verbose_name='Anonimldir'
+    )
+    
+    # Nəticə hesablama parametrləri
+    scoring_method = models.JSONField(
+        default=dict, verbose_name='Hesablama Metodu'
+    )
+    risk_thresholds = models.JSONField(
+        default=dict, verbose_name='Risk Hədd Dəyərləri'
+    )
+    
+    created_at = models.DateTimeField(
+        auto_now_add=True, verbose_name='Yaradılma Tarixi'
+    )
+    created_by = models.ForeignKey(
+        Ishchi, on_delete=models.SET_NULL, null=True,
+        verbose_name='Yaradan'
+    )
+    
+    history = HistoricalRecords()
+    
+    class Meta:
+        verbose_name = 'Psixoloji Risk Sorğusu'
+        verbose_name_plural = 'Psixoloji Risk Sorğuları'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.title} ({self.get_survey_type_display()})"
+
+
+class PsychologicalRiskResponse(models.Model):
+    """
+    Psixoloji risk sorğularına cavablar
+    """
+    
+    survey = models.ForeignKey(
+        PsychologicalRiskSurvey, on_delete=models.CASCADE,
+        related_name='responses', verbose_name='Sorğu'
+    )
+    employee = models.ForeignKey(
+        Ishchi, on_delete=models.CASCADE,
+        related_name='psych_responses', verbose_name='İşçi'
+    )
+    
+    # Cavablar
+    answers = models.JSONField(
+        verbose_name='Cavablar'
+    )
+    total_score = models.FloatField(
+        default=0.0, verbose_name='Ümumi Bal'
+    )
+    risk_level = models.CharField(
+        max_length=20, choices=PsychologicalRiskSurvey.RiskLevel.choices,
+        default=PsychologicalRiskSurvey.RiskLevel.LOW,
+        verbose_name='Risk Səviyyəsi'
+    )
+    
+    # Anonimlik
+    is_anonymous_response = models.BooleanField(
+        default=True, verbose_name='Anonim Cavab'
+    )
+    
+    # Tarixlər
+    responded_at = models.DateTimeField(
+        auto_now_add=True, verbose_name='Cavab Tarixi'
+    )
+    
+    # AI analizi
+    ai_analysis = models.JSONField(
+        default=dict, blank=True, verbose_name='AI Analizi'
+    )
+    requires_attention = models.BooleanField(
+        default=False, verbose_name='Diqqət Tələb Edir'
+    )
+    
+    history = HistoricalRecords()
+    
+    class Meta:
+        verbose_name = 'Psixoloji Risk Cavabı'
+        verbose_name_plural = 'Psixoloji Risk Cavabları'
+        unique_together = ['survey', 'employee']
+        ordering = ['-responded_at']
+        indexes = [
+            models.Index(fields=['risk_level', 'requires_attention']),
+            models.Index(fields=['survey', 'responded_at']),
+        ]
+    
+    def __str__(self):
+        employee_name = self.employee.get_full_name() if not self.is_anonymous_response else "Anonim"
+        return f"{employee_name} - {self.survey.title} ({self.get_risk_level_display()})"
+    
+    def calculate_risk_level(self):
+        """Cavablara əsasən risk səviyyəsini hesabla"""
+        thresholds = self.survey.risk_thresholds
+        
+        if self.total_score >= thresholds.get('very_high', 80):
+            return PsychologicalRiskSurvey.RiskLevel.VERY_HIGH
+        elif self.total_score >= thresholds.get('high', 60):
+            return PsychologicalRiskSurvey.RiskLevel.HIGH
+        elif self.total_score >= thresholds.get('moderate', 40):
+            return PsychologicalRiskSurvey.RiskLevel.MODERATE
+        elif self.total_score >= thresholds.get('low', 20):
+            return PsychologicalRiskSurvey.RiskLevel.LOW
+        else:
+            return PsychologicalRiskSurvey.RiskLevel.VERY_LOW
 
 
 class IdeaComment(models.Model):

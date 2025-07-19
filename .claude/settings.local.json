@@ -21,7 +21,8 @@
       "Bash(git add:*)",
       "Bash(tail:*)",
       "Bash(mkdir:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(timeout:*)"
     ],
     "deny": []
   }

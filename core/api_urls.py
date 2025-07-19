@@ -10,7 +10,10 @@ from .api_views import (
     SualKateqoriyasiViewSet, SualViewSet, QiymetlendirmeDovruViewSet,
     QiymetlendirmeViewSet, InkishafPlaniViewSet, FeedbackViewSet,
     NotificationViewSet, CalendarEventViewSet, QuickFeedbackViewSet,
-    PrivateNoteViewSet, IdeaCategoryViewSet, IdeaViewSet, DashboardViewSet
+    PrivateNoteViewSet, IdeaCategoryViewSet, IdeaViewSet, DashboardViewSet,
+    RiskFlagViewSet, EmployeeRiskAnalysisViewSet, PsychologicalRiskSurveyViewSet,
+    PsychologicalRiskResponseViewSet, AIRiskDetectionViewSet, StatisticalAnomalyViewSet,
+    StrategicHRPlanningViewSet
 )
 
 # Router yaradılması
@@ -32,6 +35,15 @@ router.register(r'private-notes', PrivateNoteViewSet)
 router.register(r'idea-categories', IdeaCategoryViewSet)
 router.register(r'ideas', IdeaViewSet)
 router.register(r'dashboard', DashboardViewSet, basename='dashboard')
+
+# AI Risk Detection endpoints
+router.register(r'risk-flags', RiskFlagViewSet)
+router.register(r'risk-analyses', EmployeeRiskAnalysisViewSet)
+router.register(r'psych-surveys', PsychologicalRiskSurveyViewSet)
+router.register(r'psych-responses', PsychologicalRiskResponseViewSet)
+router.register(r'ai-risk', AIRiskDetectionViewSet, basename='ai-risk')
+router.register(r'anomaly-detection', StatisticalAnomalyViewSet, basename='anomaly-detection')
+router.register(r'strategic-hr', StrategicHRPlanningViewSet, basename='strategic-hr')
 
 urlpatterns = [
     # Authentication endpoints
