@@ -5,7 +5,9 @@ from simple_history.admin import SimpleHistoryAdmin
 from .models import (
     Cavab, Ishchi, Qiymetlendirme, QiymetlendirmeDovru,
     Sual, SualKateqoriyasi, Hedef, InkishafPlani, OrganizationUnit,
-    Notification, Feedback, CalendarEvent
+    Notification, Feedback, CalendarEvent, RiskFlag, EmployeeRiskAnalysis,
+    PsychologicalRiskSurvey, PsychologicalRiskResponse, QuickFeedback,
+    PrivateNote, Idea, IdeaCategory, QuickFeedbackCategory
 )
 
 # --- Ishchi modeli üçün admin ---
@@ -209,6 +211,171 @@ class NotificationAdmin(SimpleHistoryAdmin):
         updated = queryset.update(is_archived=True)
         self.message_user(request, f"{updated} bildiriş arxivləşdirildi.")
     archive_notifications.short_description = "Seçilmiş bildirişləri arxivləşdir"
+
+
+# === AI RİSK TƏHLİLİ ADMİN ===
+
+@admin.register(RiskFlag)
+class RiskFlagAdmin(SimpleHistoryAdmin):
+    list_display = (
+        'employee', 'cycle', 'flag_type', 'severity', 'status', 
+        'detected_at', 'get_resolver_name'
+    )
+    list_filter = (
+        'flag_type', 'severity', 'status', 'detected_at', 'cycle',
+        'employee__organization_unit'
+    )
+    search_fields = (
+        'employee__username', 'employee__first_name', 'employee__last_name',
+        'hr_notes', 'resolution_action'
+    )
+    readonly_fields = ('detected_at', 'resolved_at', 'ai_confidence')
+    
+    fieldsets = (
+        ('Əsas Məlumatlar', {
+            'fields': ('employee', 'cycle', 'flag_type', 'severity', 'status')
+        }),
+        ('Təfərrüatlar', {
+            'fields': ('risk_score', 'details', 'ai_confidence')
+        }),
+        ('Həll', {
+            'fields': ('resolved_by', 'hr_notes', 'resolution_action', 'resolved_at')
+        }),
+        ('Tarixlər', {
+            'fields': ('detected_at',),
+            'classes': ('collapse',)
+        })
+    )
+    
+    actions = ['mark_as_resolved', 'mark_as_investigating']
+    
+    def get_resolver_name(self, obj):
+        return obj.resolved_by.get_full_name() if obj.resolved_by else "—"
+    get_resolver_name.short_description = "Həll Edən"
+    
+    def mark_as_resolved(self, request, queryset):
+        from django.utils import timezone
+        updated = queryset.update(
+            status=RiskFlag.Status.RESOLVED,
+            resolved_by=request.user,
+            resolved_at=timezone.now()
+        )
+        self.message_user(request, f"{updated} risk bayrağı həll edildi.")
+    mark_as_resolved.short_description = "Seçilmiş risk bayraqlari həll et"
+    
+    def mark_as_investigating(self, request, queryset):
+        updated = queryset.update(status=RiskFlag.Status.INVESTIGATING)
+        self.message_user(request, f"{updated} risk bayrağı araşdırılır statusuna dəyişdirildi.")
+    mark_as_investigating.short_description = "Araşdırılır statusuna dəyişdir"
+
+
+@admin.register(EmployeeRiskAnalysis)
+class EmployeeRiskAnalysisAdmin(SimpleHistoryAdmin):
+    list_display = (
+        'employee', 'cycle', 'risk_level', 'total_risk_score', 'reviewed_by_hr',
+        'analyzed_at', 'get_flag_count'
+    )
+    list_filter = (
+        'risk_level', 'reviewed_by_hr', 'analyzed_at', 'cycle',
+        'employee__organization_unit'
+    )
+    search_fields = (
+        'employee__username', 'employee__first_name', 'employee__last_name',
+        'ai_recommendations'
+    )
+    readonly_fields = ('analyzed_at', 'total_risk_score', 'detailed_analysis', 'ai_recommendations')
+    
+    fieldsets = (
+        ('Əsas Məlumatlar', {
+            'fields': ('employee', 'cycle', 'risk_level', 'reviewed_by_hr')
+        }),
+        ('Risk Xalları', {
+            'fields': ('performance_risk_score', 'consistency_risk_score', 'peer_feedback_risk_score', 'total_risk_score')
+        }),
+        ('Təhlil Nəticələri', {
+            'fields': ('detailed_analysis', 'ai_recommendations')
+        }),
+        ('Tarixlər', {
+            'fields': ('analyzed_at',),
+            'classes': ('collapse',)
+        })
+    )
+    
+    def get_flag_count(self, obj):
+        return obj.employee.risk_flags.filter(cycle=obj.cycle, status='ACTIVE').count()
+    get_flag_count.short_description = "Aktiv Bayraklar"
+
+
+@admin.register(PsychologicalRiskSurvey)
+class PsychologicalRiskSurveyAdmin(SimpleHistoryAdmin):
+    list_display = (
+        'title', 'survey_type', 'created_by', 'is_active', 'created_at',
+        'get_questions_count', 'get_responses_count'
+    )
+    list_filter = ('survey_type', 'is_active', 'created_at', 'created_by')
+    search_fields = ('title', 'description')
+    readonly_fields = ('created_at',)
+    
+    fieldsets = (
+        ('Əsas Məlumatlar', {
+            'fields': ('title', 'description', 'survey_type', 'created_by', 'is_active')
+        }),
+        ('Sorğu Məlumatları', {
+            'fields': ('questions_data', 'scoring_rules', 'interpretation_guide')
+        }),
+        ('Tarixlər', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        })
+    )
+    
+    def get_questions_count(self, obj):
+        return len(obj.questions_data.get('questions', []))
+    get_questions_count.short_description = "Sual Sayı"
+    
+    def get_responses_count(self, obj):
+        return obj.responses.count()
+    get_responses_count.short_description = "Cavab Sayı"
+
+
+@admin.register(PsychologicalRiskResponse)
+class PsychologicalRiskResponseAdmin(SimpleHistoryAdmin):
+    list_display = (
+        'survey', 'employee', 'total_score', 'risk_level', 'requires_attention',
+        'responded_at', 'get_completion_time'
+    )
+    list_filter = (
+        'risk_level', 'requires_attention', 'responded_at', 'survey__survey_type',
+        'employee__organization_unit'
+    )
+    search_fields = (
+        'employee__username', 'employee__first_name', 'employee__last_name',
+        'survey__title', 'ai_analysis'
+    )
+    readonly_fields = ('responded_at', 'total_score', 'risk_level', 'ai_analysis')
+    
+    fieldsets = (
+        ('Əsas Məlumatlar', {
+            'fields': ('survey', 'employee', 'requires_attention')
+        }),
+        ('Cavablar', {
+            'fields': ('answers', 'total_score', 'risk_level')
+        }),
+        ('Təhlil', {
+            'fields': ('ai_analysis', 'is_anonymous_response')
+        }),
+        ('Tarixlər', {
+            'fields': ('responded_at',),
+            'classes': ('collapse',)
+        })
+    )
+    
+    def get_completion_time(self, obj):
+        # Since we only have responded_at, show when response was submitted
+        if obj.responded_at:
+            return obj.responded_at.strftime("%d.%m.%Y %H:%M")
+        return "—"
+    get_completion_time.short_description = "Cavab Tarixi"
 
 
 @admin.register(Feedback)
