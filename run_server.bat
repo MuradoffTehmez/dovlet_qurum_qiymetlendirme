@@ -10,7 +10,7 @@ echo Virtual Environment: %VIRTUAL_ENV%
 
 REM Install missing dependencies if needed
 echo Installing/Checking dependencies...
-python -m pip install -r requirements.txt
+python -m pip install -r requirements_minimal.txt
 
 REM Run migrations if needed
 echo Running migrations...

@@ -1,0 +1,41 @@
+# Core Django and web framework dependencies
+Django==5.2.3
+asgiref==3.8.1
+sqlparse==0.5.3
+tzdata==2025.2
+
+# Django REST Framework
+djangorestframework==3.15.2
+djangorestframework-simplejwt==5.3.0
+drf-spectacular==0.28.0
+django-cors-headers==4.6.0
+
+# Django Extensions
+django-crispy-forms==2.4
+crispy-bootstrap5==2025.6
+django-jazzmin==3.0.1
+django-simple-history==3.8.0
+
+# Python utilities
+python-dotenv==1.1.0
+python-dateutil==2.9.0.post0
+pytz==2025.2
+
+# Data processing (lightweight alternatives)
+pandas==2.2.3
+numpy==2.2.6
+
+# File processing
+openpyxl==3.1.5
+XlsxWriter==3.2.3
+pillow==11.2.1
+
+# HTTP and requests
+requests==2.32.4
+urllib3==2.4.0
+
+# Optional: Basic ML without heavy compilation (comment out if not needed)
+# scikit-learn==1.5.1  # Disabled due to C++ compiler requirements
+
+# Development tools (optional)
+# django-celery-beat==2.5.0  # Disabled - not needed for core functionality

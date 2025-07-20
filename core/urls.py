@@ -1,4 +1,4 @@
-# core/urls.py
+# core/urls.py - Updated for URL resolution fix
 
 from django.urls import path, include
 
@@ -115,43 +115,31 @@ urlpatterns = [
     path("self-review/", include('core.urls.self_review')),
     
     # === AI RİSK DETECTION URL-LƏRİ ===
-    path("ai-risk/",
-         include([
-             path("", ai_risk_views.ai_risk_dashboard, name="ai_risk_dashboard"),
-             path("dashboard/", ai_risk_views.ai_risk_dashboard_api, name="ai_risk_dashboard_api"),
-             path("trends/", ai_risk_views.ai_risk_trends_api, name="ai_risk_trends_api"),
-             path("risk-flags/", ai_risk_views.risk_flags_management, name="risk_flags_management"),
-             path("psychological-surveys/", ai_risk_views.psychological_surveys, name="psychological_surveys"),
-             path("strategic-hr-planning/", ai_risk_views.strategic_hr_planning, name="strategic_hr_planning"),
-         ])
-    ),
+    path("ai-risk/", ai_risk_views.ai_risk_dashboard, name="ai_risk_dashboard"),
+    path("ai-risk/dashboard/", ai_risk_views.ai_risk_dashboard_api, name="ai_risk_dashboard_api"),
+    path("ai-risk/trends/", ai_risk_views.ai_risk_trends_api, name="ai_risk_trends_api"),
+    path("ai-risk/risk-flags/", ai_risk_views.risk_flags_management, name="risk_flags_management"),
+    path("ai-risk/psychological-surveys/", ai_risk_views.psychological_surveys, name="psychological_surveys"),
+    path("ai-risk/strategic-hr-planning/", ai_risk_views.strategic_hr_planning, name="strategic_hr_planning"),
     
     # === TƏHSİL VƏ İNKİŞAF URL-LƏRİ ===
-    path("training/",
-         include([
-             path("", training_views.training_dashboard, name="training_dashboard"),
-             path("programs/", training_views.training_programs, name="training_programs"),
-             path("learning-path/", training_views.employee_learning_path, name="employee_learning_path"),
-             path("skills-matrix/", training_views.skills_matrix, name="skills_matrix"),
-             path("certifications/", training_views.certifications, name="certifications"),
-             path("api/stats/", training_views.training_api_stats, name="training_api_stats"),
-             path("api/skills/", training_views.skills_assessment_api, name="skills_assessment_api"),
-         ])
-    ),
+    path("training/", training_views.training_dashboard, name="training_dashboard"),
+    path("training/programs/", training_views.training_programs, name="training_programs"),
+    path("training/learning-path/", training_views.employee_learning_path, name="employee_learning_path"),
+    path("training/skills-matrix/", training_views.skills_matrix, name="skills_matrix"),
+    path("training/certifications/", training_views.certifications, name="certifications"),
+    path("training/api/stats/", training_views.training_api_stats, name="training_api_stats"),
+    path("training/api/skills/", training_views.skills_assessment_api, name="skills_assessment_api"),
     
     # === PERFORMANS İDARƏETMƏ URL-LƏRİ ===
-    path("performance/",
-         include([
-             path("", performance_views.performance_dashboard, name="performance_dashboard"),
-             path("analytics/", performance_views.performance_analytics, name="performance_analytics"),
-             path("goals/", performance_views.goal_management, name="goal_management"),
-             path("talent-review/", performance_views.talent_review, name="talent_review"),
-             path("career-development/", performance_views.career_development, name="career_development"),
-             path("api/stats/", performance_views.performance_api_stats, name="performance_api_stats"),
-             path("api/matrix/", performance_views.performance_matrix_api, name="performance_matrix_api"),
-             path("api/goals/", performance_views.goals_api, name="goals_api"),
-         ])
-    ),
+    path("performance/", performance_views.performance_dashboard, name="performance_dashboard"),
+    path("performance/analytics/", performance_views.performance_analytics, name="performance_analytics"),
+    path("performance/goals/", performance_views.goal_management, name="goal_management"),
+    path("performance/talent-review/", performance_views.talent_review, name="talent_review"),
+    path("performance/career-development/", performance_views.career_development, name="career_development"),
+    path("performance/api/stats/", performance_views.performance_api_stats, name="performance_api_stats"),
+    path("performance/api/matrix/", performance_views.performance_matrix_api, name="performance_matrix_api"),
+    path("performance/api/goals/", performance_views.goals_api, name="goals_api"),
 ]
 # Uncomment the following lines if you want to enable these views
 # path('superadmin/dovrlar/', views.dovrlar_siyahisi, name='dovrlar_siyahisi'),

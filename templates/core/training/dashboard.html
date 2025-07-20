@@ -1,0 +1,423 @@
+{% extends 'core/base.html' %}
+{% load static i18n %}
+
+{% block title %}{% trans "Təlim və İnkişaf" %}{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans "Ana Səhifə" %}</a></li>
+<li class="breadcrumb-item active">{% trans "Təlim və İnkişaf" %}</li>
+{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h3 mb-0 text-gradient">
+                    <i class="bi bi-mortarboard me-2"></i>
+                    {% trans "Təlim və İnkişaf" %}
+                </h1>
+                <p class="text-muted">{% trans "Təlim proqramları və bacarıq inkişafı" %}</p>
+            </div>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-primary" id="refreshBtn">
+                    <i class="bi bi-arrow-clockwise me-1"></i>{% trans "Yenilə" %}
+                </button>
+                <a href="#" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-1"></i>{% trans "Yeni Təlim" %}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Training Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="p-3 rounded-circle bg-primary bg-opacity-10">
+                            <i class="bi bi-book text-primary fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted text-uppercase fw-bold">{% trans "Ümumi Kurslar" %}</div>
+                        <div class="h4 fw-bold mb-0" id="totalCourses">-</div>
+                        <div class="small text-primary">
+                            <i class="bi bi-arrow-up"></i> <span id="coursesChange">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="p-3 rounded-circle bg-success bg-opacity-10">
+                            <i class="bi bi-check-circle text-success fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted text-uppercase fw-bold">{% trans "Tamamlanan" %}</div>
+                        <div class="h4 fw-bold mb-0" id="completedCourses">-</div>
+                        <div class="small text-success">
+                            <i class="bi bi-trophy"></i> <span id="completionRate">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="p-3 rounded-circle bg-warning bg-opacity-10">
+                            <i class="bi bi-clock text-warning fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted text-uppercase fw-bold">{% trans "Davam Edənlər" %}</div>
+                        <div class="h4 fw-bold mb-0" id="ongoingCourses">-</div>
+                        <div class="small text-warning">
+                            <i class="bi bi-play-circle"></i> <span id="progressTime">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-sm-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <div class="p-3 rounded-circle bg-info bg-opacity-10">
+                            <i class="bi bi-star text-info fs-4"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="small text-muted text-uppercase fw-bold">{% trans "Sertifikatlar" %}</div>
+                        <div class="h4 fw-bold mb-0" id="certificates">-</div>
+                        <div class="small text-info">
+                            <i class="bi bi-award"></i> <span id="certificationLevel">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content Area -->
+<div class="row g-4">
+    <!-- Learning Progress Chart -->
+    <div class="col-xl-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-0">
+                <h5 class="mb-0">
+                    <i class="bi bi-graph-up me-2"></i>{% trans "Öyrənmə İrəliləyişi" %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="position-relative" style="height: 300px;">
+                    <canvas id="learningChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skills Matrix -->
+    <div class="col-xl-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-0">
+                <h5 class="mb-0">
+                    <i class="bi bi-diagram-3 me-2"></i>{% trans "Bacarıq Matrisi" %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="skillsMatrix">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Active Training Programs -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-0">
+                <h5 class="mb-0">
+                    <i class="bi bi-play-btn me-2"></i>{% trans "Aktiv Təlim Proqramları" %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row" id="activePrograms">
+                    <!-- Dynamic content will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Learning Path Recommendations -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-0">
+                <h5 class="mb-0">
+                    <i class="bi bi-lightbulb me-2"></i>{% trans "Tövsiyə Edilən Öyrənmə Yolları" %}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>{% trans "Təlim" %}</th>
+                                <th>{% trans "Səviyyə" %}</th>
+                                <th>{% trans "Müddət" %}</th>
+                                <th>{% trans "Reytinq" %}</th>
+                                <th>{% trans "Əməliyyat" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recommendedLearning">
+                            <!-- Dynamic content will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadTrainingData();
+    initializeLearningChart();
+    
+    // Refresh button
+    document.getElementById('refreshBtn').addEventListener('click', function() {
+        loadTrainingData();
+    });
+});
+
+async function loadTrainingData() {
+    try {
+        const response = await fetch('/api/v1/training/stats/');
+        const data = await response.json();
+        
+        updateStats(data.stats);
+        updateLearningChart(data.learning_progress);
+        updateSkillsMatrix(data.skills_matrix);
+        updateActivePrograms(data.active_programs);
+        updateRecommendations(data.recommendations);
+    } catch (error) {
+        console.error('Error loading training data:', error);
+        // Load placeholder data
+        loadPlaceholderData();
+    }
+}
+
+function loadPlaceholderData() {
+    // Placeholder stats
+    updateStats({
+        total_courses: 45,
+        completed_courses: 12,
+        ongoing_courses: 3,
+        certificates: 8
+    });
+    
+    // Placeholder chart data
+    updateLearningChart({
+        labels: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyun'],
+        data: [15, 22, 28, 35, 42, 48]
+    });
+    
+    // Placeholder skills
+    updateSkillsMatrix([
+        {name: 'JavaScript', level: 85},
+        {name: 'Python', level: 70},
+        {name: 'React', level: 90},
+        {name: 'Docker', level: 60}
+    ]);
+    
+    // Placeholder programs
+    updateActivePrograms([
+        {
+            title: 'Advanced JavaScript',
+            progress: 75,
+            duration: '6 həftə',
+            instructor: 'Məhəmməd Əliyev'
+        },
+        {
+            title: 'Leadership Development',
+            progress: 40,
+            duration: '8 həftə',
+            instructor: 'Ayşe Məmmədova'
+        }
+    ]);
+    
+    // Placeholder recommendations
+    updateRecommendations([
+        {
+            title: 'Machine Learning Fundamentals',
+            level: 'Orta',
+            duration: '12 həftə',
+            rating: 4.8,
+            enrolled: 156
+        },
+        {
+            title: 'DevOps Best Practices',
+            level: 'İrəli',
+            duration: '8 həftə',
+            rating: 4.9,
+            enrolled: 89
+        }
+    ]);
+}
+
+function updateStats(stats) {
+    document.getElementById('totalCourses').textContent = stats.total_courses || 0;
+    document.getElementById('completedCourses').textContent = stats.completed_courses || 0;
+    document.getElementById('ongoingCourses').textContent = stats.ongoing_courses || 0;
+    document.getElementById('certificates').textContent = stats.certificates || 0;
+    
+    // Update change indicators
+    document.getElementById('coursesChange').textContent = '+5 bu ay';
+    document.getElementById('completionRate').textContent = '78% tamamlama';
+    document.getElementById('progressTime').textContent = '24 saat';
+    document.getElementById('certificationLevel').textContent = 'Professional';
+}
+
+let learningChart;
+
+function initializeLearningChart() {
+    const ctx = document.getElementById('learningChart').getContext('2d');
+    learningChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: '{% trans "Tamamlanan Kurslar" %}',
+                data: [],
+                borderColor: '#198754',
+                backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function updateLearningChart(progress) {
+    if (learningChart && progress) {
+        learningChart.data.labels = progress.labels;
+        learningChart.data.datasets[0].data = progress.data;
+        learningChart.update();
+    }
+}
+
+function updateSkillsMatrix(skills) {
+    const container = document.getElementById('skillsMatrix');
+    if (!skills || skills.length === 0) {
+        container.innerHTML = '<p class="text-muted text-center">{% trans "Bacarıq məlumatı tapılmadı" %}</p>';
+        return;
+    }
+    
+    container.innerHTML = skills.map(skill => `
+        <div class="mb-3">
+            <div class="d-flex justify-content-between mb-1">
+                <small class="fw-semibold">${skill.name}</small>
+                <small>${skill.level}%</small>
+            </div>
+            <div class="progress" style="height: 6px;">
+                <div class="progress-bar bg-info" style="width: ${skill.level}%"></div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateActivePrograms(programs) {
+    const container = document.getElementById('activePrograms');
+    if (!programs || programs.length === 0) {
+        container.innerHTML = '<div class="col-12"><p class="text-muted text-center">{% trans "Aktiv proqram tapılmadı" %}</p></div>';
+        return;
+    }
+    
+    container.innerHTML = programs.map(program => `
+        <div class="col-md-6 mb-3">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-title">${program.title}</h6>
+                    <p class="card-text small text-muted">Müəllim: ${program.instructor}</p>
+                    <div class="progress mb-2" style="height: 6px;">
+                        <div class="progress-bar" style="width: ${program.progress}%"></div>
+                    </div>
+                    <div class="d-flex justify-content-between small">
+                        <span>${program.progress}% tamamlanıb</span>
+                        <span>${program.duration}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateRecommendations(recommendations) {
+    const tbody = document.getElementById('recommendedLearning');
+    if (!recommendations || recommendations.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">{% trans "Tövsiyə tapılmadı" %}</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = recommendations.map(rec => `
+        <tr>
+            <td>
+                <div class="fw-semibold">${rec.title}</div>
+                <small class="text-muted">${rec.enrolled} iştirakçı</small>
+            </td>
+            <td><span class="badge bg-info">${rec.level}</span></td>
+            <td>${rec.duration}</td>
+            <td>
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-star-fill text-warning me-1"></i>
+                    ${rec.rating}
+                </div>
+            </td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-plus-circle me-1"></i>Qoşul
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+</script>
+{% endblock %}
