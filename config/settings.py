@@ -542,8 +542,7 @@ AXES_FAILURE_LIMIT = 5  # 5 uğursuz cəhddən sonra blokla
 AXES_COOLOFF_TIME = 1  # 1 saat bloklanma müddəti
 AXES_LOCKOUT_TEMPLATE = 'registration/account_locked.html'
 AXES_RESET_ON_SUCCESS = True  # Uğurlu girişdən sonra reset et
-AXES_LOCK_OUT_BY_COMBINATION_USER_AND_IP = True  # IP və istifadəçi kombinasiyasına görə blokla
-AXES_ONLY_USER_FAILURES = False  # Yalnız istifadəçi səhvlərini saymırsa
+AXES_LOCKOUT_PARAMETERS = [["username", "ip_address"]]  # IP və istifadəçi kombinasiyasına görə blokla
 AXES_ENABLE_ADMIN = True  # Admin paneldə Axes məlumatlarını göstər
 
 # ===================================================================
