@@ -42,18 +42,35 @@ class NotificationManager:
             
             # E-poçt göndər (əgər istənilirsə)
             if send_email and recipient.email:
-                send_notification_email_task.delay(
-                    user_email=recipient.email,
-                    notification_type='general_notification',
-                    context={
-                        'subject': title,
-                        'title': title,
+                try:
+                    send_notification_email_task.delay(
+                        user_email=recipient.email,
+                        notification_type='general_notification',
+                        context={
+                            'subject': title,
+                            'title': title,
                         'message': message,
                         'action_url': action_url,
                         'action_text': action_text,
                         'user_name': recipient.get_full_name() or recipient.username
                     }
-                )
+                    )
+                except Exception as celery_error:
+                    logger.error(f"Celery email xətası: {celery_error}")
+                    # Redis problemi varsa, sync email göndər
+                    from .tasks import send_notification_email_sync
+                    send_notification_email_sync(
+                        user_email=recipient.email,
+                        notification_type='general_notification',
+                        context={
+                            'subject': title,
+                            'title': title,
+                            'message': message,
+                            'action_url': action_url,
+                            'action_text': action_text,
+                            'user_name': recipient.get_full_name() or recipient.username
+                        }
+                    )
             
             logger.info(f"Bildiriş yaradıldı: {title} -> {recipient.username}")
             return notification

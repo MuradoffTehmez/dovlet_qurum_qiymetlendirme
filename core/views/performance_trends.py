@@ -42,11 +42,158 @@ def performance_trends_dashboard(request):
     # Benchmark məlumatları
     benchmark_data = get_benchmark_data(target_user, cycles)
     
+    # Template üçün əlavə məlumatlar
+    current_score = 0
+    score_trend = 0
+    average_growth = 0
+    predicted_next_score = 0
+    consistency_score = 0
+    six_month_prediction = 0
+    performance_level = 'needs-improvement'
+    total_evaluations = 0
+    evaluation_frequency = 0
+    department_rank = 1
+    
+    if trend_data['overall']:
+        scores = [item['average_score'] for item in trend_data['overall']]
+        if scores:
+            current_score = scores[-1]
+            
+            # Score trend (comparing last two periods)
+            if len(scores) >= 2:
+                score_trend = scores[-1] - scores[-2]
+            
+            # Average growth calculation
+            if len(scores) >= 2:
+                total_change = scores[-1] - scores[0]
+                periods = len(scores) - 1
+                average_growth = (total_change / periods) * 100 / 10  # Percentage
+            
+            # Consistency score (inverse of standard deviation)
+            if len(scores) > 1:
+                import statistics
+                std_dev = statistics.stdev(scores)
+                consistency_score = max(0, 100 - (std_dev * 10))
+            
+            # Performance level
+            if current_score >= 8.5:
+                performance_level = 'excellent'
+            elif current_score >= 7.0:
+                performance_level = 'good'
+            else:
+                performance_level = 'needs-improvement'
+            
+            # Simple prediction (linear trend)
+            if len(scores) >= 3:
+                recent_trend = (scores[-1] - scores[-3]) / 2
+                predicted_next_score = min(10, max(0, current_score + recent_trend))
+                six_month_prediction = min(10, max(0, current_score + recent_trend * 2))
+            else:
+                predicted_next_score = current_score
+                six_month_prediction = current_score
+        
+        # Total evaluations
+        total_evaluations = sum(item['evaluations_count'] for item in trend_data['overall'])
+        
+        # Evaluation frequency (per month)
+        if cycles.exists():
+            months_span = len(trend_data['overall'])
+            if months_span > 0:
+                evaluation_frequency = total_evaluations / months_span
+    
+    # Category trends with direction analysis
+    category_trends = []
+    if trend_data['categories']:
+        for category_name, category_data in trend_data['categories'].items():
+            if category_data:
+                scores = [item['average_score'] for item in category_data]
+                current_cat_score = scores[-1] if scores else 0
+                
+                # Trend direction
+                trend_direction = 'stable'
+                change = 0
+                if len(scores) >= 2:
+                    change = scores[-1] - scores[-2]
+                    if change > 0.3:
+                        trend_direction = 'improving'
+                    elif change < -0.3:
+                        trend_direction = 'declining'
+                
+                category_trends.append({
+                    'id': category_name.replace(' ', '_').lower(),
+                    'name': category_name,
+                    'current_score': current_cat_score,
+                    'change': change,
+                    'trend_direction': trend_direction,
+                    'question_count': len(category_data)
+                })
+    
+    # Top performing and improvement areas
+    top_performing_areas = []
+    improvement_areas = []
+    
+    if category_trends:
+        sorted_categories = sorted(category_trends, key=lambda x: x['current_score'], reverse=True)
+        top_performing_areas = sorted_categories[:3]
+        improvement_areas = sorted_categories[-3:]
+    
+    # Chart data preparation
+    trend_chart_data = {
+        'labels': [item['cycle_name'] for item in trend_data['overall']],
+        'user_scores': [item['average_score'] for item in trend_data['overall']],
+        'predictions': []  # Will be filled with ML predictions
+    }
+    
+    # Add simple predictions to chart
+    if trend_chart_data['user_scores']:
+        last_score = trend_chart_data['user_scores'][-1]
+        trend_chart_data['predictions'] = [None] * len(trend_chart_data['user_scores'])
+        trend_chart_data['predictions'].append(predicted_next_score)
+        trend_chart_data['labels'].append('Proqnoz')
+    
+    # Comparative chart data
+    comparative_chart_data = {
+        'labels': [item['cycle_name'] for item in trend_data['overall']],
+        'user_scores': [item['average_score'] for item in trend_data['overall']],
+        'department_averages': [],
+        'company_averages': []
+    }
+    
+    # Fill benchmark data if available
+    if benchmark_data:
+        for dept_item in benchmark_data.get('department_average', []):
+            comparative_chart_data['department_averages'].append(dept_item['average_score'])
+        
+        for comp_item in benchmark_data.get('company_average', []):
+            comparative_chart_data['company_averages'].append(comp_item['average_score'])
+    
+    # Ensure arrays are same length
+    labels_count = len(comparative_chart_data['labels'])
+    while len(comparative_chart_data['department_averages']) < labels_count:
+        comparative_chart_data['department_averages'].append(0)
+    while len(comparative_chart_data['company_averages']) < labels_count:
+        comparative_chart_data['company_averages'].append(0)
+    
     context = {
         'target_user': target_user,
         'trend_data': trend_data,
         'benchmark_data': benchmark_data,
         'cycles': cycles,
+        'current_score': current_score,
+        'score_trend': score_trend,
+        'average_growth': average_growth,
+        'predicted_next_score': predicted_next_score,
+        'consistency_score': consistency_score,
+        'six_month_prediction': six_month_prediction,
+        'performance_level': performance_level,
+        'total_evaluations': total_evaluations,
+        'evaluation_frequency': evaluation_frequency,
+        'department_rank': department_rank,
+        'category_trends': category_trends,
+        'top_performing_areas': top_performing_areas,
+        'improvement_areas': improvement_areas,
+        'trend_chart_data': json.dumps(trend_chart_data),
+        'comparative_chart_data': json.dumps(comparative_chart_data),
         'page_title': f'İnkişaf Trendi: {target_user.get_full_name()}',
         'show_user_selector': request.user.rol in ['ADMIN', 'SUPERADMIN', 'REHBER']
     }
@@ -154,15 +301,19 @@ def department_trends_comparison(request):
 
 
 @login_required
-def individual_category_trend(request, user_id, category_id):
+def individual_category_trend(request, category_id):
     """Fərdi kateqoriya trendi detaylı görünüş"""
     
-    target_user = get_object_or_404(Ishchi, id=user_id)
-    category = get_object_or_404(SualKateqoriyasi, id=category_id)
+    # User ID parametrini al (GET parametri ilə)
+    user_id = request.GET.get('user_id')
     
-    # İcazə yoxlaması
-    if target_user != request.user and request.user.rol not in ['ADMIN', 'SUPERADMIN', 'REHBER']:
-        return JsonResponse({'error': 'İcazəsiz giriş'}, status=403)
+    # Əgər user_id verilmişsə və icazə varsa, həmin istifadəçinin məlumatını göstər
+    if user_id and (request.user.rol in ['ADMIN', 'SUPERADMIN', 'REHBER']):
+        target_user = get_object_or_404(Ishchi, id=user_id)
+    else:
+        target_user = request.user
+    
+    category = get_object_or_404(SualKateqoriyasi, id=category_id)
     
     # Son 2 illik dövrləri tap
     two_years_ago = timezone.now().date() - timedelta(days=730)

@@ -138,9 +138,9 @@ def log_evaluation_changes(sender, instance, created, **kwargs):
     
     details = {
         'evaluation_id': instance.id,
-        'employee': str(instance.ishchi),
+        'employee': str(instance.qiymetlendirilen),
         'period': str(instance.dovr),
-        'overall_score': instance.umumi_qiymet,
+        'evaluation_type': instance.qiymetlendirme_novu,
         'created': created
     }
     

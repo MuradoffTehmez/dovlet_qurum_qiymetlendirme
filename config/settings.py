@@ -26,6 +26,7 @@ ALLOWED_HOSTS = ["127.0.0.1", "localhost", "*"]
 AUTHENTICATION_BACKENDS = [
     "core.backends.EmailOrUsernameBackend",
     "django.contrib.auth.backends.ModelBackend",
+    'axes.backends.AxesBackend',  # Brute force protection backend
 ]
 
 # ===================================================================
@@ -39,6 +40,13 @@ INSTALLED_APPS = [
     'crispy_bootstrap5',
     'simple_history',
     # 'django_celery_beat',  # Celery Beat - optional, disabled for now
+    
+    # Təhlükəsizlik tətbiqləri
+    'django_otp',
+    'django_otp.plugins.otp_totp',
+    'django_otp.plugins.otp_static',
+    'axes',
+    'modeltranslation',
     
     # REST API tətbiqləri
     'rest_framework',
@@ -70,6 +78,8 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django_otp.middleware.OTPMiddleware",  # 2FA middleware
+    "axes.middleware.AxesMiddleware",      # Brute force protection
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
@@ -514,3 +524,74 @@ if not DEBUG:
     CORS_ALLOWED_ORIGINS = [
         # Production domainlərinizi burada qeyd edin
     ]
+
+# ===================================================================
+# 2FA (TWO-FACTOR AUTHENTICATION) KONFİQURASİYASI
+# ===================================================================
+
+# OTP konfiqurasiyası
+OTP_TOTP_ISSUER = 'Q360 Performance Management'
+OTP_LOGIN_URL = '/auth/login/'
+
+# ===================================================================
+# DJANGO-AXES (BRUTE FORCE PROTECTION) KONFİQURASİYASI  
+# ===================================================================
+
+# Axes konfiqurasiyası
+AXES_FAILURE_LIMIT = 5  # 5 uğursuz cəhddən sonra blokla
+AXES_COOLOFF_TIME = 1  # 1 saat bloklanma müddəti
+AXES_LOCKOUT_TEMPLATE = 'registration/account_locked.html'
+AXES_RESET_ON_SUCCESS = True  # Uğurlu girişdən sonra reset et
+AXES_LOCK_OUT_BY_COMBINATION_USER_AND_IP = True  # IP və istifadəçi kombinasiyasına görə blokla
+AXES_ONLY_USER_FAILURES = False  # Yalnız istifadəçi səhvlərini saymırsa
+AXES_ENABLE_ADMIN = True  # Admin paneldə Axes məlumatlarını göstər
+
+# ===================================================================
+# RATE LIMITING KONFİQURASİYASI
+# ===================================================================
+
+# Rate limiting for API endpoints
+RATELIMIT_USE_CACHE = 'default'
+RATELIMIT_ENABLE = True
+
+# ===================================================================
+# YÜKSƏLMİŞ TƏHLÜKƏSİZLİK TƏNZİMLƏMƏLƏRİ
+# ===================================================================
+
+# Security headers
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# SSL/HTTPS settings for production
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+# Session security
+SESSION_COOKIE_AGE = 3600  # 1 saat
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+
+# CSRF security
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000', 'http://localhost:8000']
+
+# ===================================================================
+# DJANGO MODEL TRANSLATION KONFİQURASİYASI
+# ===================================================================
+
+# Modeltranslation konfiqurasiyası
+MODELTRANSLATION_DEFAULT_LANGUAGE = 'az'
+MODELTRANSLATION_LANGUAGES = ('az', 'en')
+MODELTRANSLATION_FALLBACK_LANGUAGES = {
+    'default': ('az', 'en'),
+    'az': ('en',),
+    'en': ('az',),
+}

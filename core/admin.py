@@ -313,15 +313,15 @@ class PsychologicalRiskSurveyAdmin(SimpleHistoryAdmin):
         'get_questions_count', 'get_responses_count'
     )
     list_filter = ('survey_type', 'is_active', 'created_at', 'created_by')
-    search_fields = ('title', 'description')
+    search_fields = ('title',)
     readonly_fields = ('created_at',)
     
     fieldsets = (
         ('Əsas Məlumatlar', {
-            'fields': ('title', 'description', 'survey_type', 'created_by', 'is_active')
+            'fields': ('title', 'survey_type', 'created_by', 'is_active', 'is_anonymous')
         }),
         ('Sorğu Məlumatları', {
-            'fields': ('questions_data', 'scoring_rules', 'interpretation_guide')
+            'fields': ('questions', 'scoring_method', 'risk_thresholds')
         }),
         ('Tarixlər', {
             'fields': ('created_at',),
@@ -419,6 +419,10 @@ class FeedbackAdmin(SimpleHistoryAdmin):
     get_response_status.short_description = "Cavab Statusu"
     
     def save_model(self, request, obj, form, change):
+        # Yeni feedback yaradılırkən user-i təyin et
+        if not change and not obj.user:
+            obj.user = request.user
+            
         # Admin cavab verəndə responded_by sahəsini avtomatik doldur
         if obj.admin_response and not obj.responded_by:
             obj.responded_by = request.user

@@ -29,8 +29,98 @@ def gap_analysis_dashboard(request):
     
     # İstifadəçinin gap analysis məlumatları
     user_gap_data = None
+    comparison_chart_data = {'categories': [], 'self_scores': [], 'others_scores': []}
+    historical_chart_data = {'labels': [], 'gaps': []}
+    overall_gap = 0
+    overall_gap_direction = 'neutral'
+    self_average = 0
+    others_average = 0
+    evaluators_count = 0
+    significant_gaps_count = 0
+    category_gaps = []
+    overestimated_areas = []
+    underestimated_areas = []
+    historical_data = False
+    
     if active_cycle:
         user_gap_data = get_user_gap_analysis(request.user, active_cycle)
+        
+        if user_gap_data and user_gap_data['has_self_review']:
+            # Overall metrics
+            overall_gap = user_gap_data['overall_gap']
+            if overall_gap > 0.5:
+                overall_gap_direction = 'positive'
+            elif overall_gap < -0.5:
+                overall_gap_direction = 'negative'
+            else:
+                overall_gap_direction = 'neutral'
+            
+            # Calculate averages
+            if user_gap_data['categories']:
+                self_scores = [cat['self_score'] for cat in user_gap_data['categories']]
+                others_scores = [cat['others_score'] for cat in user_gap_data['categories']]
+                self_average = sum(self_scores) / len(self_scores)
+                others_average = sum(others_scores) / len(others_scores)
+                
+                # Count significant gaps (>1.5)
+                significant_gaps_count = len([cat for cat in user_gap_data['categories'] if abs(cat['gap']) > 1.5])
+                
+                # Prepare chart data
+                for cat in user_gap_data['categories']:
+                    comparison_chart_data['categories'].append(cat['category'].ad)
+                    comparison_chart_data['self_scores'].append(cat['self_score'])
+                    comparison_chart_data['others_scores'].append(cat['others_score'])
+                    
+                    # Category gaps for summary
+                    direction = 'positive' if cat['gap'] > 0.5 else ('negative' if cat['gap'] < -0.5 else 'neutral')
+                    category_gaps.append({
+                        'category': cat['category'].ad,
+                        'gap': cat['gap'],
+                        'self_score': cat['self_score'],
+                        'others_score': cat['others_score'],
+                        'direction': direction
+                    })
+                    
+                    # Overestimated and underestimated areas
+                    if cat['gap'] > 1.5:
+                        overestimated_areas.append({
+                            'category': cat['category'].ad,
+                            'self_score': cat['self_score'],
+                            'others_score': cat['others_score'],
+                            'gap': cat['gap'],
+                            'description': f"Bu sahədə özünüzü {cat['gap']:.1f} bal yüksək qiymətləndirirsiniz"
+                        })
+                    elif cat['gap'] < -1.5:
+                        underestimated_areas.append({
+                            'category': cat['category'].ad,
+                            'self_score': cat['self_score'],
+                            'others_score': cat['others_score'],
+                            'gap': cat['gap'],
+                            'description': f"Bu sahədə özünüzü {abs(cat['gap']):.1f} bal aşağı qiymətləndirirsiniz"
+                        })
+                
+                # Get evaluators count
+                if active_cycle:
+                    evaluators_count = Qiymetlendirme.objects.filter(
+                        qiymetlendirilen=request.user,
+                        dovr=active_cycle,
+                        status=Qiymetlendirme.Status.TAMAMLANDI
+                    ).exclude(
+                        qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW
+                    ).count()
+        
+        # Historical data for trend analysis
+        historical_cycles = QiymetlendirmeDovru.objects.filter(
+            bashlama_tarixi__lt=active_cycle.bashlama_tarixi
+        ).order_by('-bashlama_tarixi')[:5]
+        
+        if historical_cycles.exists():
+            historical_data = True
+            for cycle in reversed(historical_cycles):
+                cycle_gap_data = get_user_gap_analysis(request.user, cycle)
+                if cycle_gap_data and cycle_gap_data['has_self_review']:
+                    historical_chart_data['labels'].append(cycle.ad)
+                    historical_chart_data['gaps'].append(cycle_gap_data['overall_gap'])
     
     # Bütün dövrləri göstər
     all_cycles = QiymetlendirmeDovru.objects.filter(
@@ -41,6 +131,18 @@ def gap_analysis_dashboard(request):
         'active_cycle': active_cycle,
         'user_gap_data': user_gap_data,
         'all_cycles': all_cycles,
+        'overall_gap': overall_gap,
+        'overall_gap_direction': overall_gap_direction,
+        'self_average': self_average,
+        'others_average': others_average,
+        'evaluators_count': evaluators_count,
+        'significant_gaps_count': significant_gaps_count,
+        'category_gaps': category_gaps,
+        'overestimated_areas': overestimated_areas,
+        'underestimated_areas': underestimated_areas,
+        'comparison_chart_data': json.dumps(comparison_chart_data),
+        'historical_data': historical_data,
+        'historical_chart_data': json.dumps(historical_chart_data),
         'page_title': 'Fərq Təhlili (Gap Analysis)'
     }
     

@@ -14,9 +14,9 @@ urlpatterns = [
     path('api/', performance_trends.performance_trends_api, name='api'),
     
     # Şöbələr müqayisəsi
-    path('departments/', performance_trends.department_trends_comparison, name='departments'),
+    path('department-comparison/', performance_trends.department_trends_comparison, name='department_comparison'),
     
     # Fərdi kateqoriya trendi
-    path('user/<int:user_id>/category/<int:category_id>/', 
+    path('category/<int:category_id>/', 
          performance_trends.individual_category_trend, name='category_detail'),
 ]

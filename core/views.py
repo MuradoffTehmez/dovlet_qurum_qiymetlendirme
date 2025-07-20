@@ -40,6 +40,18 @@ class CustomLoginView(LoginView):
         response = super().form_valid(form)
         messages.success(self.request, f'Xoş gəlmisiniz, {self.request.user.get_full_name()}!')
         return response
+    
+    def get_success_url(self):
+        """Login uğurlu olduqda dashboard-a yönləndirin"""
+        # next parametrini yoxla
+        next_url = self.request.GET.get('next')
+        if next_url:
+            return next_url
+        
+        # Dil kodunu əlavə edərək dashboard-a yönləndir
+        from django.utils.translation import get_language
+        current_language = get_language() or 'az'
+        return f'/{current_language}/'
 
 
 @login_required

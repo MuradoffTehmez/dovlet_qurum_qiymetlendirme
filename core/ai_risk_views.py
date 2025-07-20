@@ -197,3 +197,104 @@ def ai_risk_trends_api(request):
         
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+def run_ai_risk_analysis_api(request):
+    """Manual AI Risk Analysis Trigger"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST method required'}, status=405)
+    
+    try:
+        from .ai_risk_detection import AIRiskDetector
+        from .statistical_anomaly_detection import StatisticalAnomalyDetector
+        
+        detector = AIRiskDetector()
+        anomaly_detector = StatisticalAnomalyDetector()
+        
+        # Run bulk analysis for all employees
+        risk_results = detector.bulk_analyze_all_employees()
+        
+        # Run statistical anomaly detection
+        anomaly_results = anomaly_detector.generate_anomaly_report()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'AI Risk Analysis completed successfully',
+            'results': {
+                'employees_analyzed': len(risk_results),
+                'high_risk_count': len([r for r in risk_results if r.get('risk_level') in ['HIGH', 'CRITICAL']]),
+                'anomalies_detected': anomaly_results.get('summary', {}).get('total_performance_anomalies', 0) + 
+                                   anomaly_results.get('summary', {}).get('total_behavioral_anomalies', 0),
+                'analysis_timestamp': timezone.now().isoformat()
+            }
+        })
+        
+    except Exception as e:
+        logger.error(f"AI Risk Analysis error: {e}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required  
+def psychological_surveys_api(request):
+    """Psychological Surveys API endpoint"""
+    try:
+        # Get statistics
+        active_surveys = PsychologicalRiskSurvey.objects.filter(is_active=True).count()
+        total_responses = PsychologicalRiskResponse.objects.count()
+        high_risk_responses = PsychologicalRiskResponse.objects.filter(
+            risk_level__in=['HIGH', 'VERY_HIGH']
+        ).count()
+        
+        # Calculate completion rate  
+        total_employees = User.objects.filter(is_active=True, rol='ISHCHI').count()
+        completion_rate = (total_responses / max(total_employees, 1)) * 100
+        
+        return JsonResponse({
+            'active_surveys': active_surveys,
+            'total_responses': total_responses,
+            'high_risk_responses': high_risk_responses,
+            'completion_rate': round(completion_rate, 1)
+        })
+        
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@login_required
+def strategic_hr_planning_api(request):
+    """Strategic HR Planning API endpoint"""
+    try:
+        from .strategic_hr_planning import StrategicHRPlanner
+        
+        planner = StrategicHRPlanner()
+        
+        # Get organization unit filter
+        org_unit_id = request.GET.get('organization_unit')
+        org_unit = None
+        if org_unit_id:
+            try:
+                from .models import OrganizationUnit
+                org_unit = OrganizationUnit.objects.get(id=org_unit_id)
+            except OrganizationUnit.DoesNotExist:
+                pass
+        
+        # Run comprehensive analysis
+        workforce_analysis = planner.analyze_workforce_composition(org_unit)
+        talent_analysis = planner.analyze_talent_pipeline()
+        high_potential_analysis = planner.identify_high_potential_employees()
+        succession_analysis = planner.create_succession_plan(org_unit)
+        recommendations = planner.generate_hr_strategy_recommendations(org_unit)
+        
+        return JsonResponse({
+            'workforce_analysis': workforce_analysis,
+            'talent_analysis': talent_analysis,
+            'high_potential_analysis': high_potential_analysis,
+            'succession_analysis': succession_analysis,
+            'recommendations': recommendations,
+            'analysis_timestamp': timezone.now().isoformat()
+        })
+        
+    except Exception as e:
+        logger.error(f"Strategic HR Planning error: {e}")
+        return JsonResponse({'error': str(e)}, status=500)

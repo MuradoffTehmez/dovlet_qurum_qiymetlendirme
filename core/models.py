@@ -1616,3 +1616,451 @@ class IdeaComment(models.Model):
     history = HistoricalRecords()
 
 
+# === LMS (LEARNING MANAGEMENT SYSTEM) MODELS ===
+
+class TrainingCategory(models.Model):
+    """Təlim kateqoriyaları"""
+    
+    name = models.CharField(max_length=100, verbose_name="Kateqoriya Adı")
+    description = models.TextField(blank=True, verbose_name="Təsvir")
+    icon = models.CharField(max_length=50, default="fas fa-graduation-cap", verbose_name="İkon")
+    color = models.CharField(max_length=7, default="#007bff", verbose_name="Rəng")
+    is_active = models.BooleanField(default=True, verbose_name="Aktivdir")
+    
+    class Meta:
+        verbose_name = "Təlim Kateqoriyası"
+        verbose_name_plural = "Təlim Kateqoriyaları"
+        ordering = ['name']
+    
+    def __str__(self):
+        return self.name
+
+    history = HistoricalRecords()
+
+
+class TrainingProgram(models.Model):
+    """Təlim proqramları"""
+    
+    class Status(models.TextChoices):
+        DRAFT = 'DRAFT', 'Layihə'
+        ACTIVE = 'ACTIVE', 'Aktiv'
+        COMPLETED = 'COMPLETED', 'Tamamlandı'
+        CANCELLED = 'CANCELLED', 'Ləğv edildi'
+        ARCHIVED = 'ARCHIVED', 'Arxivləşdirilib'
+    
+    class DifficultyLevel(models.TextChoices):
+        BEGINNER = 'BEGINNER', 'Başlanğıc'
+        INTERMEDIATE = 'INTERMEDIATE', 'Orta'
+        ADVANCED = 'ADVANCED', 'İrəli'
+        EXPERT = 'EXPERT', 'Ekspert'
+    
+    title = models.CharField(max_length=200, verbose_name="Proqram Adı")
+    description = models.TextField(verbose_name="Təsvir")
+    category = models.ForeignKey(
+        TrainingCategory, on_delete=models.SET_NULL, null=True,
+        related_name="programs", verbose_name="Kateqoriya"
+    )
+    
+    # Proqram məlumatları
+    duration_hours = models.PositiveIntegerField(verbose_name="Müddət (saat)")
+    difficulty_level = models.CharField(
+        max_length=15, choices=DifficultyLevel.choices,
+        default=DifficultyLevel.BEGINNER, verbose_name="Çətinlik Səviyyəsi"
+    )
+    max_participants = models.PositiveIntegerField(
+        default=20, verbose_name="Maksimum İştirakçı"
+    )
+    
+    # Status və tarixlər
+    status = models.CharField(
+        max_length=15, choices=Status.choices,
+        default=Status.DRAFT, verbose_name="Status"
+    )
+    start_date = models.DateField(verbose_name="Başlama Tarixi")
+    end_date = models.DateField(verbose_name="Bitmə Tarixi")
+    registration_deadline = models.DateField(verbose_name="Qeydiyyat Son Tarixi")
+    
+    # Təlimçi məlumatları
+    instructor = models.ForeignKey(
+        Ishchi, on_delete=models.SET_NULL, null=True,
+        related_name="taught_programs", verbose_name="Təlimçi"
+    )
+    external_instructor = models.CharField(
+        max_length=200, blank=True, verbose_name="Xarici Təlimçi"
+    )
+    
+    # Məkan və format
+    location = models.CharField(max_length=200, blank=True, verbose_name="Məkan")
+    is_online = models.BooleanField(default=False, verbose_name="Online")
+    meeting_link = models.URLField(blank=True, verbose_name="Görüş Linki")
+    
+    # Sertifikat
+    provides_certificate = models.BooleanField(default=True, verbose_name="Sertifikat Verir")
+    certificate_template = models.TextField(blank=True, verbose_name="Sertifikat Şablonu")
+    
+    # Metadata
+    prerequisites = models.TextField(blank=True, verbose_name="Ön Şərtlər")
+    learning_objectives = models.TextField(blank=True, verbose_name="Öyrənmə Məqsədləri")
+    materials_needed = models.TextField(blank=True, verbose_name="Lazım olan Materiallar")
+    
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaradılma Tarixi")
+    created_by = models.ForeignKey(
+        Ishchi, on_delete=models.SET_NULL, null=True,
+        related_name="created_programs", verbose_name="Yaradan"
+    )
+    
+    class Meta:
+        verbose_name = "Təlim Proqramı"
+        verbose_name_plural = "Təlim Proqramları"
+        ordering = ['-start_date']
+        indexes = [
+            models.Index(fields=['status', 'start_date']),
+            models.Index(fields=['category', 'difficulty_level']),
+        ]
+    
+    def __str__(self):
+        return self.title
+    
+    @property
+    def available_spots(self):
+        """Boş yerlərin sayı"""
+        enrolled_count = self.enrollments.filter(status='ENROLLED').count()
+        return max(0, self.max_participants - enrolled_count)
+    
+    @property
+    def is_full(self):
+        """Proqram doludur"""
+        return self.available_spots == 0
+    
+    @property
+    def enrollment_open(self):
+        """Qeydiyyat açıqdır"""
+        from django.utils import timezone
+        return (self.status == self.Status.ACTIVE and 
+                timezone.now().date() <= self.registration_deadline)
+
+    history = HistoricalRecords()
+
+
+class TrainingEnrollment(models.Model):
+    """Təlim proqramlarına qeydiyyat"""
+    
+    class Status(models.TextChoices):
+        PENDING = 'PENDING', 'Gözləmədə'
+        ENROLLED = 'ENROLLED', 'Qeydiyyatdan keçib'
+        COMPLETED = 'COMPLETED', 'Tamamladı'
+        FAILED = 'FAILED', 'Uğursuz'
+        CANCELLED = 'CANCELLED', 'Ləğv edildi'
+        NO_SHOW = 'NO_SHOW', 'Gəlmədi'
+    
+    program = models.ForeignKey(
+        TrainingProgram, on_delete=models.CASCADE,
+        related_name="enrollments", verbose_name="Proqram"
+    )
+    employee = models.ForeignKey(
+        Ishchi, on_delete=models.CASCADE,
+        related_name="training_enrollments", verbose_name="İşçi"
+    )
+    
+    # Status və tarixlər
+    status = models.CharField(
+        max_length=15, choices=Status.choices,
+        default=Status.PENDING, verbose_name="Status"
+    )
+    enrolled_at = models.DateTimeField(auto_now_add=True, verbose_name="Qeydiyyat Tarixi")
+    completed_at = models.DateTimeField(null=True, blank=True, verbose_name="Tamamlama Tarixi")
+    
+    # Nəticələr
+    attendance_rate = models.FloatField(
+        default=0.0, verbose_name="İştirak Faizi"
+    )
+    final_score = models.FloatField(
+        null=True, blank=True, verbose_name="Final Balı"
+    )
+    feedback_rating = models.PositiveSmallIntegerField(
+        null=True, blank=True,
+        choices=[(i, f"{i} ulduz") for i in range(1, 6)],
+        verbose_name="Geri Bildirim Reytinqi"
+    )
+    feedback_comments = models.TextField(blank=True, verbose_name="Geri Bildirim Şərhləri")
+    
+    # Sertifikat
+    certificate_issued = models.BooleanField(default=False, verbose_name="Sertifikat Verilib")
+    certificate_number = models.CharField(max_length=50, blank=True, verbose_name="Sertifikat Nömrəsi")
+    
+    class Meta:
+        verbose_name = "Təlim Qeydiyyatı"
+        verbose_name_plural = "Təlim Qeydiyyatları"
+        unique_together = ['program', 'employee']
+        ordering = ['-enrolled_at']
+        indexes = [
+            models.Index(fields=['employee', 'status']),
+            models.Index(fields=['program', 'status']),
+        ]
+    
+    def __str__(self):
+        return f"{self.employee.get_full_name()} - {self.program.title}"
+    
+    def complete(self, score=None, issue_certificate=True):
+        """Təlimi tamamlanmış kimi işarələ"""
+        from django.utils import timezone
+        self.status = self.Status.COMPLETED
+        self.completed_at = timezone.now()
+        if score is not None:
+            self.final_score = score
+        
+        if issue_certificate and self.program.provides_certificate:
+            self.issue_certificate()
+        
+        self.save()
+    
+    def issue_certificate(self):
+        """Sertifikat ver"""
+        if not self.certificate_issued and self.status == self.Status.COMPLETED:
+            import uuid
+            self.certificate_number = f"CERT-{uuid.uuid4().hex[:8].upper()}"
+            self.certificate_issued = True
+            self.save()
+
+    history = HistoricalRecords()
+
+
+class Skill(models.Model):
+    """Bacarıqlar"""
+    
+    class SkillType(models.TextChoices):
+        TECHNICAL = 'TECHNICAL', 'Texniki'
+        SOFT = 'SOFT', 'Yumşaq Bacarıq'
+        LEADERSHIP = 'LEADERSHIP', 'Liderlik'
+        LANGUAGE = 'LANGUAGE', 'Dil'
+        DOMAIN = 'DOMAIN', 'Sahə Bilikləri'
+    
+    name = models.CharField(max_length=100, verbose_name="Bacarıq Adı")
+    description = models.TextField(blank=True, verbose_name="Təsvir")
+    skill_type = models.CharField(
+        max_length=15, choices=SkillType.choices,
+        default=SkillType.TECHNICAL, verbose_name="Bacarıq Növü"
+    )
+    parent_skill = models.ForeignKey(
+        'self', on_delete=models.CASCADE, null=True, blank=True,
+        related_name="sub_skills", verbose_name="Ana Bacarıq"
+    )
+    is_active = models.BooleanField(default=True, verbose_name="Aktivdir")
+    
+    class Meta:
+        verbose_name = "Bacarıq"
+        verbose_name_plural = "Bacarıqlar"
+        ordering = ['skill_type', 'name']
+    
+    def __str__(self):
+        return self.name
+
+    history = HistoricalRecords()
+
+
+class EmployeeSkill(models.Model):
+    """İşçilərin bacarıqları"""
+    
+    class ProficiencyLevel(models.TextChoices):
+        BEGINNER = 'BEGINNER', 'Başlanğıc (1-2)'
+        INTERMEDIATE = 'INTERMEDIATE', 'Orta (3-4)'
+        ADVANCED = 'ADVANCED', 'İrəli (5-6)'
+        EXPERT = 'EXPERT', 'Ekspert (7-8)'
+        MASTER = 'MASTER', 'Usta (9-10)'
+    
+    employee = models.ForeignKey(
+        Ishchi, on_delete=models.CASCADE,
+        related_name="skills", verbose_name="İşçi"
+    )
+    skill = models.ForeignKey(
+        Skill, on_delete=models.CASCADE,
+        related_name="employee_skills", verbose_name="Bacarıq"
+    )
+    
+    # Bacarıq səviyyəsi (1-10)
+    current_level = models.PositiveSmallIntegerField(
+        choices=[(i, str(i)) for i in range(1, 11)],
+        default=1, verbose_name="Mövcud Səviyyə"
+    )
+    target_level = models.PositiveSmallIntegerField(
+        choices=[(i, str(i)) for i in range(1, 11)],
+        default=5, verbose_name="Hədəf Səviyyə"
+    )
+    proficiency_level = models.CharField(
+        max_length=15, choices=ProficiencyLevel.choices,
+        default=ProficiencyLevel.BEGINNER, verbose_name="Bacarıq Səviyyəsi"
+    )
+    
+    # Təsdiq məlumatları
+    self_assessed = models.BooleanField(default=True, verbose_name="Özqiymətləndirmə")
+    manager_confirmed = models.BooleanField(default=False, verbose_name="Rəhbər Təsdiqlədi")
+    last_assessment_date = models.DateField(
+        auto_now_add=True, verbose_name="Son Qiymətləndirmə Tarixi"
+    )
+    
+    # Progress tracking
+    improvement_notes = models.TextField(blank=True, verbose_name="İnkişaf Qeydləri")
+    recommended_trainings = models.ManyToManyField(
+        TrainingProgram, blank=True,
+        related_name="recommended_for_skills", verbose_name="Tövsiyə olunan Təlimlər"
+    )
+    
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaradılma Tarixi")
+    updated_at = models.DateTimeField(auto_now=True, verbose_name="Yenilənmə Tarixi")
+    
+    class Meta:
+        verbose_name = "İşçi Bacarığı"
+        verbose_name_plural = "İşçi Bacarıqları"
+        unique_together = ['employee', 'skill']
+        ordering = ['-current_level', 'skill__name']
+        indexes = [
+            models.Index(fields=['employee', 'current_level']),
+            models.Index(fields=['current_level', 'target_level']),
+        ]
+    
+    def __str__(self):
+        return f"{self.employee.get_full_name()} - {self.skill.name} ({self.current_level}/10)"
+    
+    @property
+    def skill_type(self):
+        return self.skill.skill_type
+    
+    @property
+    def skill_gap(self):
+        """Bacarıq boşluğu"""
+        return max(0, self.target_level - self.current_level)
+    
+    @property
+    def needs_improvement(self):
+        """İnkişaf tələb edir"""
+        return self.skill_gap > 0
+    
+    def update_proficiency_level(self):
+        """Cari səviyyəyə əsasən bacarıq səviyyəsini yenilə"""
+        if self.current_level <= 2:
+            self.proficiency_level = self.ProficiencyLevel.BEGINNER
+        elif self.current_level <= 4:
+            self.proficiency_level = self.ProficiencyLevel.INTERMEDIATE
+        elif self.current_level <= 6:
+            self.proficiency_level = self.ProficiencyLevel.ADVANCED
+        elif self.current_level <= 8:
+            self.proficiency_level = self.ProficiencyLevel.EXPERT
+        else:
+            self.proficiency_level = self.ProficiencyLevel.MASTER
+        self.save()
+
+    history = HistoricalRecords()
+
+
+class LearningPath(models.Model):
+    """Öyrənmə yolları"""
+    
+    class Status(models.TextChoices):
+        DRAFT = 'DRAFT', 'Layihə'
+        ACTIVE = 'ACTIVE', 'Aktiv'
+        COMPLETED = 'COMPLETED', 'Tamamlandı'
+        PAUSED = 'PAUSED', 'Dayandırılıb'
+        CANCELLED = 'CANCELLED', 'Ləğv edildi'
+    
+    title = models.CharField(max_length=200, verbose_name="Öyrənmə Yolu Adı")
+    description = models.TextField(verbose_name="Təsvir")
+    employee = models.ForeignKey(
+        Ishchi, on_delete=models.CASCADE,
+        related_name="learning_paths", verbose_name="İşçi"
+    )
+    
+    # Hədəf bacarıqlar
+    target_skills = models.ManyToManyField(
+        Skill, related_name="learning_paths",
+        verbose_name="Hədəf Bacarıqlar"
+    )
+    
+    # Status və progress
+    status = models.CharField(
+        max_length=15, choices=Status.choices,
+        default=Status.DRAFT, verbose_name="Status"
+    )
+    progress_percentage = models.FloatField(default=0.0, verbose_name="İrəliləyiş Faizi")
+    
+    # Tarixlər
+    start_date = models.DateField(verbose_name="Başlama Tarixi")
+    target_completion_date = models.DateField(verbose_name="Hədəf Tamamlama Tarixi")
+    actual_completion_date = models.DateField(null=True, blank=True, verbose_name="Faktiki Tamamlama Tarixi")
+    
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Yaradılma Tarixi")
+    created_by = models.ForeignKey(
+        Ishchi, on_delete=models.SET_NULL, null=True,
+        related_name="created_learning_paths", verbose_name="Yaradan"
+    )
+    
+    class Meta:
+        verbose_name = "Öyrənmə Yolu"
+        verbose_name_plural = "Öyrənmə Yolları"
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['employee', 'status']),
+            models.Index(fields=['status', 'target_completion_date']),
+        ]
+    
+    def __str__(self):
+        return f"{self.employee.get_full_name()} - {self.title}"
+    
+    def calculate_progress(self):
+        """Progress hesabla"""
+        total_programs = self.programs.count()
+        if total_programs == 0:
+            return 0.0
+        
+        completed_programs = self.programs.filter(
+            enrollment__status='COMPLETED'
+        ).count()
+        
+        self.progress_percentage = (completed_programs / total_programs) * 100
+        self.save()
+        return self.progress_percentage
+    
+    @property
+    def is_overdue(self):
+        """Vaxtı keçib"""
+        from django.utils import timezone
+        return (self.status != self.Status.COMPLETED and 
+                timezone.now().date() > self.target_completion_date)
+
+    history = HistoricalRecords()
+
+
+class LearningPathProgram(models.Model):
+    """Öyrənmə yolundakı proqramlar"""
+    
+    learning_path = models.ForeignKey(
+        LearningPath, on_delete=models.CASCADE,
+        related_name="programs", verbose_name="Öyrənmə Yolu"
+    )
+    program = models.ForeignKey(
+        TrainingProgram, on_delete=models.CASCADE,
+        related_name="learning_paths", verbose_name="Proqram"
+    )
+    enrollment = models.ForeignKey(
+        TrainingEnrollment, on_delete=models.SET_NULL, null=True, blank=True,
+        verbose_name="Qeydiyyat"
+    )
+    
+    # Sıralama və məcburiyyət
+    order = models.PositiveIntegerField(default=1, verbose_name="Sıra")
+    is_required = models.BooleanField(default=True, verbose_name="Məcburidir")
+    prerequisite_completed = models.BooleanField(default=False, verbose_name="Ön şərt tamamlandı")
+    
+    added_at = models.DateTimeField(auto_now_add=True, verbose_name="Əlavə edilmə Tarixi")
+    
+    class Meta:
+        verbose_name = "Öyrənmə Yolu Proqramı"
+        verbose_name_plural = "Öyrənmə Yolu Proqramları"
+        unique_together = ['learning_path', 'program']
+        ordering = ['learning_path', 'order']
+    
+    def __str__(self):
+        return f"{self.learning_path.title} - {self.program.title}"
+
+    history = HistoricalRecords()
+
+

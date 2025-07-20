@@ -1,0 +1,566 @@
+{% extends 'core/base.html' %}
+{% load i18n %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .participation-card {
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        border: none;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .participation-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .participation-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 15px 15px 0 0;
+    }
+
+    .stats-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+        transition: transform 0.3s ease;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .progress-ring {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        margin: 0 auto;
+    }
+
+    .progress-ring svg {
+        transform: rotate(-90deg);
+    }
+
+    .progress-ring circle {
+        fill: none;
+        stroke-width: 8;
+    }
+
+    .progress-ring .ring-bg {
+        stroke: #e9ecef;
+    }
+
+    .progress-ring .ring-progress {
+        stroke: #28a745;
+        stroke-linecap: round;
+        transition: stroke-dasharray 0.3s ease;
+    }
+
+    .department-item {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .department-item.excellent {
+        border-left-color: #28a745;
+    }
+
+    .department-item.good {
+        border-left-color: #17a2b8;
+    }
+
+    .department-item.average {
+        border-left-color: #ffc107;
+    }
+
+    .department-item.poor {
+        border-left-color: #dc3545;
+    }
+
+    .timeline-item {
+        position: relative;
+        padding-left: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0.5rem;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #007bff;
+    }
+
+    .reminder-panel {
+        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        border-radius: 15px;
+        padding: 1.5rem;
+        color: #495057;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>{{ page_title }}
+                    </h1>
+                    <p class="text-muted mt-1">Qiymətləndirmə prosesində iştirak nəzarəti və analizi</p>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-cog me-1"></i>Əməliyyatlar
+                    </button>
+                    <ul class="dropdown-menu">
+                        {% if selected_cycle %}
+                        <li><a class="dropdown-item"
+                                href="{% url 'participation_monitoring:details' selected_cycle.id %}">
+                                <i class="fas fa-eye me-2"></i>Detallı Məlumatlar
+                            </a></li>
+                        <li><a class="dropdown-item" href="#" onclick="sendReminders('all')">
+                                <i class="fas fa-bell me-2"></i>Hamıya Xatırlatma
+                            </a></li>
+                        <li><a class="dropdown-item" href="#" onclick="sendReminders('low_participation')">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Aşağı İştiraka Xatırlatma
+                            </a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item"
+                                href="{% url 'participation_monitoring:export' selected_cycle.id %}">
+                                <i class="fas fa-download me-2"></i>Excel Ixracı
+                            </a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cycle Selection -->
+    {% if active_cycles %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <label class="form-label">Qiymətləndirmə Dövrü:</label>
+                            <select class="form-select" onchange="window.location.href='?cycle_id=' + this.value">
+                                <option value="">Dövr seçin...</option>
+                                {% for cycle in active_cycles %}
+                                <option value="{{ cycle.id }}" {% if selected_cycle and cycle.id==selected_cycle.id
+                                    %}selected{% endif %}>
+                                    {{ cycle.ad }} ({{ cycle.bashlama_tarixi|date:"d.m.Y" }} - {{
+                                    cycle.bitme_tarixi|date:"d.m.Y" }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% if selected_cycle %}
+                        <div class="col-md-6">
+                            <div class="text-end">
+                                <small class="text-muted">Son Tarix:</small>
+                                <h6 class="mb-0">{{ selected_cycle.bitme_tarixi|date:"d F Y" }}</h6>
+                                <small class="text-muted">{{ participation_data.days_remaining }} gün qalıb</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if participation_data %}
+    <!-- Key Statistics -->
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="stats-card">
+                <div class="stat-number text-primary">{{ participation_data.total_evaluators }}</div>
+                <h6 class="text-muted">Ümumi Qiymətləndirici</h6>
+                <small class="text-muted">Bu dövrə təyin edilmiş</small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stats-card">
+                <div class="stat-number text-success">{{ participation_data.active_evaluators }}</div>
+                <h6 class="text-muted">Aktiv İştirak</h6>
+                <small class="text-muted">Ən azı bir qiymətləndirmə</small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stats-card">
+                <div class="stat-number text-info">{{ participation_data.participation_rate }}%</div>
+                <h6 class="text-muted">İştirak Faizi</h6>
+                <small class="text-muted">Başlama nisbəti</small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stats-card">
+                <div class="stat-number text-warning">{{ participation_data.completion_rate }}%</div>
+                <h6 class="text-muted">Tamamlama Faizi</h6>
+                <small class="text-muted">Tam bitirmə nisbəti</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Overall Progress -->
+        <div class="col-lg-8 mb-4">
+            <div class="participation-card">
+                <div class="participation-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>İştirak Trendi
+                    </h5>
+                    <small>Günlük qiymətləndirmə tamamlama sayı</small>
+                </div>
+                <div class="card-body">
+                    <div style="height: 400px; position: relative;">
+                        <canvas id="participationTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Ring -->
+        <div class="col-lg-4 mb-4">
+            <div class="participation-card">
+                <div class="participation-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-percentage me-2"></i>Dövr Tamamlanması
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="progress-ring mb-3">
+                        <svg width="120" height="120">
+                            <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
+                            <circle class="ring-progress" cx="60" cy="60" r="52"
+                                stroke-dasharray="{{ participation_data.cycle_progress|floatformat:1|add:',100' }}"
+                                stroke-dashoffset="0"></circle>
+                        </svg>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+                            <h3 class="mb-0">{{ participation_data.cycle_progress|floatformat:1 }}%</h3>
+                            <small class="text-muted">Tamamlandı</small>
+                        </div>
+                    </div>
+
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <h5 class="text-success mb-0">{{ participation_data.fully_completed }}</h5>
+                            <small class="text-muted">Tam Bitirən</small>
+                        </div>
+                        <div class="col-6">
+                            <h5 class="text-warning mb-0">{{ participation_data.days_remaining }}</h5>
+                            <small class="text-muted">Qalan Gün</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reminder Panel -->
+            <div class="reminder-panel">
+                <h6 class="mb-3">
+                    <i class="fas fa-bell me-2"></i>Xatırlatma Göndərmə
+                </h6>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-primary btn-sm" onclick="sendReminders('no_participation')">
+                        <i class="fas fa-user-times me-1"></i>Başlamamışlara
+                    </button>
+                    <button class="btn btn-outline-warning btn-sm" onclick="sendReminders('low_participation')">
+                        <i class="fas fa-exclamation-triangle me-1"></i>Aşağı İştiraka
+                    </button>
+                    <button class="btn btn-outline-info btn-sm" onclick="sendReminders('all')">
+                        <i class="fas fa-users me-1"></i>Hamısına
+                    </button>
+                </div>
+
+                <hr>
+
+                <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Xatırlatmalar e-mail və sistem bildirişləri vasitəsilə göndərilir.
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Department Analysis -->
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="participation-card">
+                <div class="participation-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-building me-2"></i>Şöbələr üzrə İştirak Analizi
+                    </h5>
+                    <small>Hər şöbənin iştirak faizi və statistikaları</small>
+                </div>
+                <div class="card-body">
+                    <div style="height: 350px; position: relative;">
+                        <canvas id="departmentChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Timeline -->
+        <div class="col-lg-4 mb-4">
+            <div class="participation-card">
+                <div class="participation-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>Son Fəaliyyətlər
+                    </h5>
+                </div>
+                <div class="card-body" style="max-height: 350px; overflow-y: auto;">
+                    <div class="timeline-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>12 yeni qiymətləndirmə</strong>
+                            <small class="text-muted">2 saat əvvəl</small>
+                        </div>
+                        <p class="text-muted small mb-0">İnsan Resursları şöbəsindən</p>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>Xatırlatma göndərildi</strong>
+                            <small class="text-muted">4 saat əvvəl</small>
+                        </div>
+                        <p class="text-muted small mb-0">25 işçiyə son xatırlatma</p>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>8 qiymətləndirmə tamamlandı</strong>
+                            <small class="text-muted">Dünən</small>
+                        </div>
+                        <p class="text-muted small mb-0">Satış şöbəsindən</p>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="d-flex justify-content-between">
+                            <strong>İlk xatırlatma göndərildi</strong>
+                            <small class="text-muted">2 gün əvvəl</small>
+                        </div>
+                        <p class="text-muted small mb-0">Bütün işçilərə</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h6 class="mb-1">
+                                <i class="fas fa-rocket text-primary me-2"></i>Sürətli Əməliyyatlar
+                            </h6>
+                            <p class="text-muted small mb-0">İştirak nəzarəti üçün faydalı funksiyalar</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="btn-group" role="group">
+                                {% if selected_cycle %}
+                                <a href="{% url 'participation_monitoring:details' selected_cycle.id %}"
+                                    class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-list me-1"></i>Detallı Siyahı
+                                </a>
+                                <a href="{% url 'participation_monitoring:export' selected_cycle.id %}"
+                                    class="btn btn-outline-success btn-sm">
+                                    <i class="fas fa-file-excel me-1"></i>Excel Ixracı
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- No Data State -->
+    <div class="row">
+        <div class="col-12">
+            <div class="text-center py-5">
+                <i class="fas fa-chart-bar fa-4x text-muted mb-4"></i>
+                <h4 class="text-muted">Aktiv Dövr Yoxdur</h4>
+                <p class="text-muted">İştirak nəzarəti üçün aktiv qiymətləndirmə dövrü seçin.</p>
+                {% if active_cycles %}
+                <p class="text-muted">Yuxarıdakı dropdown menyudan dövr seçin.</p>
+                {% else %}
+                <p class="text-muted">Hal-hazırda aktiv qiymətləndirmə dövrü yoxdur.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    {% if participation_data %}
+    document.addEventListener('DOMContentLoaded', function () {
+        // Participation Trend Chart
+        const trendCtx = document.getElementById('participationTrendChart').getContext('2d');
+
+        // Dummy data - backend-dən real data gələcək
+        const trendData = {
+            labels: {{ participation_data.timeline_data|default: "[]" | safe
+    }},
+        datasets: [{
+            label: 'Günlük Tamamlanma',
+            data: [5, 12, 8, 15, 20, 18, 25, 22, 30, 28, 35, 32],
+            borderColor: '#667eea',
+            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+            fill: true,
+            tension: 0.4
+        }]
+    };
+
+    new Chart(trendCtx, {
+        type: 'line',
+        data: trendData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Department Chart
+    const deptCtx = document.getElementById('departmentChart').getContext('2d');
+
+    const departmentData = {
+        labels: ['İnsan Resursları', 'İT', 'Satış', 'Maliyyə', 'Marketing'],
+        datasets: [{
+            label: 'İştirak Faizi (%)',
+            data: [85, 92, 78, 88, 75],
+            backgroundColor: [
+                'rgba(40, 167, 69, 0.8)',
+                'rgba(23, 162, 184, 0.8)',
+                'rgba(255, 193, 7, 0.8)',
+                'rgba(0, 123, 255, 0.8)',
+                'rgba(220, 53, 69, 0.8)'
+            ],
+            borderColor: [
+                'rgba(40, 167, 69, 1)',
+                'rgba(23, 162, 184, 1)',
+                'rgba(255, 193, 7, 1)',
+                'rgba(0, 123, 255, 1)',
+                'rgba(220, 53, 69, 1)'
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    new Chart(deptCtx, {
+        type: 'bar',
+        data: departmentData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function (value) {
+                            return value + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+    {% endif %}
+
+    // Send Reminders Function
+    function sendReminders(type) {
+        {% if selected_cycle %}
+        if (!confirm('Seçilmiş qrupa xatırlatma göndərilsin?')) {
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('reminder_type', type);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        fetch('{% url "participation_monitoring:send_reminders" selected_cycle.id %}', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Xatırlatma uğurla göndərildi: ' + data.message);
+                    location.reload();
+                } else {
+                    alert('Xəta: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Xatırlatma göndərilərkən xəta baş verdi.');
+            });
+        {% else %}
+        alert('Əvvəlcə qiymətləndirmə dövrü seçin.');
+        {% endif %}
+    }
+
+    // Auto-refresh every 5 minutes
+    setInterval(function () {
+        if (window.location.href.indexOf('cycle_id=') > -1) {
+            location.reload();
+        }
+    }, 300000);
+</script>
+{% endblock %}

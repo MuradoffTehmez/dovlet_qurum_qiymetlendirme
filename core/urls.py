@@ -122,6 +122,17 @@ urlpatterns = [
     path("ai-risk/psychological-surveys/", ai_risk_views.psychological_surveys, name="psychological_surveys"),
     path("ai-risk/strategic-hr-planning/", ai_risk_views.strategic_hr_planning, name="strategic_hr_planning"),
     
+    # AI Risk Analysis API endpoints
+    path("api/ai-risk-detection/dashboard/", ai_risk_views.ai_risk_dashboard_api, name="api_ai_risk_dashboard"),
+    path("api/ai-risk-detection/trends/", ai_risk_views.ai_risk_trends_api, name="api_ai_risk_trends"),
+    path("api/ai-risk-detection/run-analysis/", ai_risk_views.run_ai_risk_analysis_api, name="api_run_ai_risk_analysis"),
+    
+    # Psychological Surveys API
+    path("api/v1/psych-surveys/statistics/", ai_risk_views.psychological_surveys_api, name="api_psych_surveys_stats"),
+    
+    # Strategic HR Planning API
+    path("api/v1/strategic-hr/analyze/", ai_risk_views.strategic_hr_planning_api, name="api_strategic_hr_analyze"),
+    
     # === TƏHSİL VƏ İNKİŞAF URL-LƏRİ ===
     path("training/", training_views.training_dashboard, name="training_dashboard"),
     path("training/programs/", training_views.training_programs, name="training_programs"),
@@ -140,6 +151,25 @@ urlpatterns = [
     path("performance/api/stats/", performance_views.performance_api_stats, name="performance_api_stats"),
     path("performance/api/matrix/", performance_views.performance_matrix_api, name="performance_matrix_api"),
     path("performance/api/goals/", performance_views.goals_api, name="goals_api"),
+    
+    # === MƏRHƏLƏ 2 YENİ XÜSUSİYYƏTLƏR ===
+    # Gap Analysis (Fərq Təhlili)
+    path("gap-analysis/", include('core.urls.gap_analysis')),
+    
+    # Performance Trends (İnkişaf Trendi)
+    path("performance-trends/", include('core.urls.performance_trends')),
+    
+    # Participation Monitoring (İştirak Nəzarəti)
+    path("participation-monitoring/", include('core.urls.participation_monitoring')),
+    
+    # Quick Feedback (Sürətli Geri Bildirim)
+    path("quick-feedback/", include('core.urls.quick_feedback')),
+    
+    # Private Notes (Məxfi Qeydlər)
+    path("private-notes/", include('core.urls.private_notes')),
+    
+    # Idea Bank (İdeya Bankı)
+    path("idea-bank/", include('core.urls.idea_bank')),
 ]
 # Uncomment the following lines if you want to enable these views
 # path('superadmin/dovrlar/', views.dovrlar_siyahisi, name='dovrlar_siyahisi'),

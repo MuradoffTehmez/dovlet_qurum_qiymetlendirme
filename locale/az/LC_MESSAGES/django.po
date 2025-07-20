@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-01 00:00+0000\n"
+"POT-Creation-Date: 2025-07-20 10:39+0400\n"
 "PO-Revision-Date: 2025-01-01 00:00+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,11 +17,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\core\signals.py:69
+#: .\config\settings.py:137
+#, fuzzy
+#| msgid "Bakı, Azərbaycan"
+msgid "Azərbaycan"
+msgstr "Baku, Azerbaijan"
+
+#: .\config\settings.py:138
+msgid "English"
+msgstr ""
+
+#: .\core\permissions.py:129
+#, fuzzy
+#| msgid "Bu səhifəyə daxil olmaq üçün icazəniz yoxdur."
+msgid "Bu əməliyyat üçün icazəniz yoxdur."
+msgstr "You don't have permission to access this page."
+
+#: .\core\signals.py:74
 msgid "Activate Your Account"
 msgstr "Activate Your Account"
 
-#: .\core\signals.py:71
+#: .\core\signals.py:76
 #, python-brace-format
 msgid ""
 "Hi {user_name},\n"
@@ -36,141 +52,1318 @@ msgstr ""
 "\n"
 "http://127.0.0.1:8000{activation_link}"
 
-#: .\templates\components\notification_badge.html:9
-msgid "oxunmamış bildiriş"
-msgstr "unread notification"
-
-#: .\templates\components\notification_badge.html:13
+#: .\templates\components\notification_badge.html:18
+#: .\templates\components\quick_navigation.html:52
+#: .\templates\core\dashboard_clean.html:225
 msgid "Bildirişlər"
 msgstr "Notifications"
 
-#: .\templates\components\notification_badge.html:20
-msgid "Priority"
-msgstr "Priority"
+#: .\templates\components\notification_badge.html:21
+msgid "Hamısını oxu"
+msgstr ""
 
-#: .\templates\core\base.html:8
-msgid "Peşəkar işçilərin performansını qiymətləndirmək üçün müasir həll"
-msgstr "Modern solution for evaluating professional employee performance"
+#: .\templates\components\notification_badge.html:25
+msgid "Hamısını gör"
+msgstr ""
 
-#: .\templates\core\base.html:9
-msgid "qiymətləndirmə, performans, işçi, HR, insan resursları"
-msgstr "evaluation, performance, employee, HR, human resources"
-
-#: .\templates\core\base.html:10 .\templates\core\base.html:20
-#: .\templates\core\base.html:61 .\templates\core\base.html:200
-#: .\templates\core\base.html:247 .\templates\errors\modern_error.html:7
-msgid "Qiymətləndirmə Sistemi"
-msgstr "Evaluation System"
-
-#: .\templates\core\base.html:48
+#: .\templates\components\notification_badge.html:37
+#: .\templates\core\base.html:75
 msgid "Yüklənir..."
 msgstr "Loading..."
 
-#: .\templates\core\base.html:54
-msgid "Əsas məzmuna keç"
-msgstr "Skip to main content"
+#: .\templates\components\notification_badge.html:46
+#, fuzzy
+#| msgid "Bildirişlər"
+msgid "Bütün bildirişləri gör"
+msgstr "Notifications"
 
-#: .\templates\core\base.html:65
-msgid "Navigasiyanı aç/bağla"
-msgstr "Toggle navigation"
+#: .\templates\components\notification_badge.html:160
+msgid "Yeni bildiriş yoxdur"
+msgstr ""
 
-#: .\templates\core\base.html:75
-msgid "Tema dəyişdir"
-msgstr "Change theme"
+#: .\templates\components\notification_badge.html:190
+msgid "Bildirişlər yüklənə bilmədi"
+msgstr ""
 
-#: .\templates\core\base.html:83
-msgid "Dil seçimi"
-msgstr "Language selection"
+#: .\templates\components\quick_navigation.html:12
+#: .\templates\core\ai_risk\dashboard.html:7
+#: .\templates\core\ai_risk\psychological_surveys.html:7
+#: .\templates\core\ai_risk\risk_flags.html:7
+#: .\templates\core\ai_risk\strategic_hr_planning.html:7
+#: .\templates\core\base.html:232 .\templates\core\dashboard.html:4
+#: .\templates\core\dashboard_clean.html:4
+#: .\templates\core\performance\dashboard.html:7
+#: .\templates\core\training\dashboard.html:7
+#: .\templates\core\training\learning_path.html:7
+#: .\templates\core\training\programs.html:7 .\templates\errors\404.html:101
+#: .\templates\errors\modern_error.html:151
+msgid "Ana Səhifə"
+msgstr "Home"
 
-#: .\templates\core\base.html:108
-msgid "İstifadəçi menyusu"
-msgstr "User menu"
+#: .\templates\components\quick_navigation.html:26
+#: .\templates\core\dashboard_clean.html:209
+msgid "İnteraktiv Panel"
+msgstr ""
 
-#: .\templates\core\base.html:110
-msgid "Avatar"
-msgstr "Avatar"
+#: .\templates\components\quick_navigation.html:39
+#: .\templates\core\dashboard_clean.html:217
+msgid "Təqvim"
+msgstr ""
 
-#: .\templates\core\base.html:120
-msgid "Salam"
-msgstr "Hello"
+#: .\templates\components\quick_navigation.html:65
+#: .\templates\core\dashboard_clean.html:233
+#, fuzzy
+#| msgid "Hesabat Tarixi"
+msgid "Hesabatlar"
+msgstr "Report Date"
 
-#: .\templates\core\base.html:123 .\templates\core\base.html:215
-#: .\templates\core\plan_form.html:4 .\templates\core\plan_form.html:8
-#: .\templates\core\profil.html:4 .\templates\core\profil.html:8
+#: .\templates\components\quick_navigation.html:78
+#: .\templates\core\base.html:163 .\templates\core\plan_form.html:4
+#: .\templates\core\plan_form.html:8 .\templates\core\profil.html:4
+#: .\templates\core\profil.html:8
 msgid "Profilim"
 msgstr "My Profile"
 
-#: .\templates\core\base.html:126 .\templates\core\base.html:214
-#: .\templates\core\dashboard.html:161
-msgid "Hesabatım"
-msgstr "My Report"
+#: .\templates\components\quick_navigation.html:92
+msgid "AI Risk Analizi"
+msgstr ""
 
-#: .\templates\core\base.html:131 .\templates\core\rehber_paneli.html:4
-#: .\templates\core\rehber_paneli.html:7
+#: .\templates\components\quick_navigation.html:107
+#: .\templates\core\training\learning_path.html:8
+#: .\templates\core\training\programs.html:8
+msgid "Təhsil və İnkişaf"
+msgstr ""
+
+#: .\templates\components\quick_navigation.html:121
+#: .\templates\core\performance\dashboard.html:4
+#: .\templates\core\performance\dashboard.html:8
+#: .\templates\core\performance\dashboard.html:23
+#, fuzzy
+#| msgid "Komanda İdarəsi"
+msgid "Performans İdarəetmə"
+msgstr "Team Management"
+
+#: .\templates\components\quick_navigation.html:135
+msgid "API Sənədlər"
+msgstr ""
+
+#: .\templates\components\quick_navigation.html:150
+#: .\templates\core\base.html:173 .\templates\core\dashboard_clean.html:242
+#: .\templates\core\rehber_paneli.html:4 .\templates\core\rehber_paneli.html:7
 msgid "Rəhbər Paneli"
 msgstr "Manager Panel"
 
-#: .\templates\core\base.html:136 .\templates\core\superadmin_paneli.html:4
+#: .\templates\core\ai_risk\dashboard.html:4
+#: .\templates\core\ai_risk\dashboard.html:24
+msgid "AI Risk Detection Dashboard"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:8
+#: .\templates\core\ai_risk\psychological_surveys.html:8
+#: .\templates\core\ai_risk\risk_flags.html:8
+#: .\templates\core\ai_risk\strategic_hr_planning.html:8
+#, fuzzy
+#| msgid "Dashboard"
+msgid "AI Risk Dashboard"
+msgstr "Dashboard"
+
+#: .\templates\core\ai_risk\dashboard.html:26
+msgid "Real-time risk monitoring and analysis"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:30
+msgid "Refresh"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:33
+msgid "Settings"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:52
+msgid "Active Flags"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:73
+#: .\templates\core\ai_risk\psychological_surveys.html:89
+msgid "High Risk"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:94
+#: .\templates\core\ai_risk\risk_flags.html:78
+msgid "Resolved"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:115
+#: .\templates\core\ai_risk\dashboard.html:625
+#: .\templates\core\ai_risk\risk_flags.html:202
+#: .\templates\core\ai_risk\risk_flags.html:614
+msgid "Risk Score"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:135
+msgid "Active Risk Flags"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:140
+#: .\templates\core\ai_risk\psychological_surveys.html:151
+msgid "All"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:143
+#: .\templates\core\ai_risk\risk_flags.html:70
+#: .\templates\core\ai_risk\risk_flags.html:198
+msgid "Critical"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:146
+#: .\templates\core\ai_risk\psychological_surveys.html:198
+#: .\templates\core\ai_risk\risk_flags.html:69
+#: .\templates\core\ai_risk\risk_flags.html:197
+msgid "High"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:155
+#: .\templates\core\ai_risk\psychological_surveys.html:221
+#: .\templates\core\ai_risk\risk_flags.html:47
+#: .\templates\core\ai_risk\risk_flags.html:125
+#: .\templates\core\ai_risk\risk_flags.html:172
+msgid "Employee"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:156
+#: .\templates\core\ai_risk\risk_flags.html:53
+#: .\templates\core\ai_risk\risk_flags.html:126
+#: .\templates\core\ai_risk\risk_flags.html:178
+#: .\templates\core\ai_risk\risk_flags.html:606
+msgid "Risk Type"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:157
+#: .\templates\core\ai_risk\dashboard.html:624
+#: .\templates\core\ai_risk\risk_flags.html:64
+#: .\templates\core\ai_risk\risk_flags.html:127
+#: .\templates\core\ai_risk\risk_flags.html:192
+#: .\templates\core\ai_risk\risk_flags.html:610
+msgid "Severity"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:158
+#: .\templates\core\ai_risk\psychological_surveys.html:223
+#: .\templates\core\ai_risk\risk_flags.html:128
+msgid "Score"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:159
+#: .\templates\core\ai_risk\psychological_surveys.html:226
+msgid "Date"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:160
+#: .\templates\core\ai_risk\psychological_surveys.html:174
+#: .\templates\core\ai_risk\psychological_surveys.html:227
+#: .\templates\core\ai_risk\risk_flags.html:131
+msgid "Actions"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:182
+msgid "Risk Distribution"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:196
+msgid "Recent Activity"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:220
+msgid "Risk Trends"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:224
+msgid "7 Days"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:227
+msgid "30 Days"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:230
+msgid "90 Days"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:249
+#, fuzzy
+#| msgid "Dashboard"
+msgid "Dashboard Settings"
+msgstr "Dashboard"
+
+#: .\templates\core\ai_risk\dashboard.html:256
+msgid "Auto Refresh Interval"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:258
+msgid "Disabled"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:259
+msgid "seconds"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:260
+msgid "minute"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:261
+msgid "minutes"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:268
+msgid "Sound Alerts"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:276
+msgid "Browser Notifications"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:284
+#: .\templates\core\ai_risk\psychological_surveys.html:352
+#: .\templates\core\ai_risk\psychological_surveys.html:382
+#: .\templates\core\ai_risk\risk_flags.html:226
+#: .\templates\core\ai_risk\strategic_hr_planning.html:430
+msgid "Cancel"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:287
+msgid "Save Settings"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:300
+#: .\templates\core\ai_risk\risk_flags.html:243
+msgid "Risk Flag Details"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:385
+msgid "No active risk flags found"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:521
+msgid "No recent activity"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:616
+msgid "Employee Information"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:617
+msgid "Name"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:618
+#, fuzzy
+#| msgid "Departament"
+msgid "Department"
+msgstr "Department"
+
+#: .\templates\core\ai_risk\dashboard.html:619
+msgid "Position"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:622
+msgid "Risk Details"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:623
+#: .\templates\core\ai_risk\psychological_surveys.html:169
+msgid "Type"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:630
+#: .\templates\core\ai_risk\psychological_surveys.html:313
+#: .\templates\core\ai_risk\risk_flags.html:213
+#: .\templates\core\ai_risk\risk_flags.html:633
+msgid "Description"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:631
+msgid "No description available"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:636
+#: .\templates\core\ai_risk\psychological_surveys.html:1015
+msgid "AI Analysis"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:638
+msgid "No AI analysis available"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:646
+#: .\templates\core\ai_risk\risk_flags.html:682
+msgid "Are you sure you want to resolve this risk flag?"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:660
+#: .\templates\core\ai_risk\risk_flags.html:696
+msgid "Risk flag resolved successfully"
+msgstr ""
+
+#: .\templates\core\ai_risk\dashboard.html:667
+#: .\templates\core\ai_risk\risk_flags.html:703
+msgid "Failed to resolve risk flag"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:4
+#: .\templates\core\ai_risk\psychological_surveys.html:24
+msgid "Psychological Risk Surveys"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:9
+msgid "Psychological Surveys"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:26
+msgid "Create and manage psychological wellbeing assessments"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:30
+msgid "Generate Report"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:34
+#: .\templates\core\ai_risk\psychological_surveys.html:355
+msgid "Create Survey"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:53
+msgid "Active Surveys"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:71
+msgid "Total Responses"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:107
+msgid "Completion Rate"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:125
+msgid "Surveys"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:131
+#: .\templates\core\ai_risk\psychological_surveys.html:171
+msgid "Responses"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:137
+msgid "Analytics"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:147
+msgid "Survey Management"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:155
+#: .\templates\core\ai_risk\psychological_surveys.html:480
+#: .\templates\core\ai_risk\risk_flags.html:77
+msgid "Active"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:168
+#: .\templates\core\ai_risk\psychological_surveys.html:293
+msgid "Survey Title"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:170
+msgid "Created By"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:172
+#: .\templates\core\ai_risk\risk_flags.html:74
+#: .\templates\core\ai_risk\risk_flags.html:130
+#: .\templates\core\ai_risk\risk_flags.html:618
+#: .\templates\core\performance\dashboard.html:178
+#: .\templates\core\training\programs.html:44
+msgid "Status"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:173
+msgid "Created"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:189
+#: .\templates\core\ai_risk\psychological_surveys.html:541
+msgid "All Surveys"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:194
+msgid "All Risk Levels"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:195
+msgid "Very Low"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:196
+#: .\templates\core\ai_risk\risk_flags.html:67
+#: .\templates\core\ai_risk\risk_flags.html:195
+msgid "Low"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:197
+msgid "Moderate"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:199
+msgid "Very High"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:206
+msgid "Requires Attention Only"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:212
+#: .\templates\core\ai_risk\risk_flags.html:86
+msgid "Filter"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:222
+msgid "Survey"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:224
+msgid "Risk Level"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:225
+msgid "Attention"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:243
+msgid "Risk Level Distribution"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:253
+msgid "Survey Response Trends"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:263
+msgid "Department-wise Risk Analysis"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:284
+msgid "Create Psychological Survey"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:296
+msgid "Enter survey title..."
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:299
+msgid "Survey Type"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:302
+msgid "Select Type"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:303
+msgid "WHO-5 Wellbeing Index"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:304
+msgid "Burnout Assessment"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:305
+msgid "Stress Level"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:306
+msgid "Work Engagement"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:307
+msgid "Job Satisfaction"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:308
+msgid "Mental Health Check"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:309
+msgid "Custom Survey"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:315
+msgid "Describe the purpose and scope of this survey..."
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:320
+msgid "Active Survey"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:326
+msgid "Anonymous Responses"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:334
+msgid "Survey Questions"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:336
+msgid "Add Question"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:346
+msgid "Note:"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:369
+#: .\templates\core\ai_risk\psychological_surveys.html:514
+msgid "Take Survey"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:385
+msgid "Submit Response"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:399
+msgid "Survey Response Details"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:468
+msgid "No surveys found"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:480
+msgid "Inactive"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:510
+#: .\templates\core\ai_risk\psychological_surveys.html:624
+#: .\templates\core\ai_risk\risk_flags.html:400
+msgid "View Details"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:518
+msgid "Edit"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:522
+#: .\templates\core\ai_risk\risk_flags.html:410
+#: .\venv\Lib\site-packages\django\forms\formsets.py:499
+msgid "Delete"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:561
+msgid "No responses found"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:581
+msgid "Anonymous"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:629
+msgid "Follow Up"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:743
+#: .\templates\core\ai_risk\psychological_surveys.html:912
+#: .\templates\core\ai_risk\psychological_surveys.html:1009
+msgid "Question"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:750
+msgid "Question Text"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:756
+msgid "Question Type"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:758
+msgid "Rating Scale"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:759
+msgid "Multiple Choice"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:760
+msgid "Text Response"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:761
+msgid "Yes/No"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:765
+msgid "Weight"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:770
+msgid "Options (for multiple choice)"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:772
+msgid "Enter options separated by new lines"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:813
+msgid "Survey created successfully"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:865
+msgid "Never"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:866
+msgid "Always"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:893
+#: .\templates\core\ai_risk\psychological_surveys.html:1000
+#: .\venv\Lib\site-packages\django\forms\widgets.py:867
+msgid "Yes"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:897
+#: .\templates\core\ai_risk\psychological_surveys.html:1001
+#: .\venv\Lib\site-packages\django\forms\widgets.py:868
+msgid "No"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:904
+msgid "Enter your response..."
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:933
+msgid "Survey response submitted successfully"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:975
+msgid "Anonymous Response"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:979
+msgid "Total Score"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:985
+msgid "Survey Information"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:988
+msgid "Survey:"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:991
+msgid "Date:"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:994
+msgid "Risk Level:"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:998
+msgid "Requires Attention:"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:1005
+msgid "Detailed Responses"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:1193
+msgid "Report generated successfully"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:1199
+msgid "Failed to generate report"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:1204
+msgid "Are you sure you want to delete this survey?"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:1217
+msgid "Survey deleted successfully"
+msgstr ""
+
+#: .\templates\core\ai_risk\psychological_surveys.html:1225
+msgid "Failed to delete survey"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:4
+#: .\templates\core\ai_risk\risk_flags.html:24
+msgid "Risk Flags Management"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:9
+#: .\templates\core\ai_risk\risk_flags.html:103
+msgid "Risk Flags"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:26
+msgid "Monitor and manage employee risk indicators"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:30
+#: .\templates\core\ai_risk\strategic_hr_planning.html:228
+msgid "Export"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:33
+#: .\templates\core\ai_risk\risk_flags.html:229
+msgid "Create Flag"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:49
+msgid "All Employees"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:55
+msgid "All Types"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:56
+#: .\templates\core\ai_risk\risk_flags.html:181
+#: .\templates\core\ai_risk\strategic_hr_planning.html:235
+msgid "Low Performance"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:57
+msgid "Score Variance"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:58
+msgid "Negative Feedback"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:59
+#: .\templates\core\ai_risk\risk_flags.html:187
+msgid "Statistical Anomaly"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:60
+#: .\templates\core\ai_risk\risk_flags.html:188
+msgid "Behavioral Anomaly"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:66
+msgid "All Levels"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:68
+#: .\templates\core\ai_risk\risk_flags.html:196
+msgid "Medium"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:76
+msgid "All Status"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:79
+msgid "Under Review"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:107
+msgid "Bulk Resolve"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:110
+msgid "Bulk Delete"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:129
+msgid "Date Created"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:163
+msgid "Create Risk Flag"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:174
+#: .\templates\core\ai_risk\risk_flags.html:283
+msgid "Select Employee"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:180
+msgid "Select Risk Type"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:182
+msgid "High Score Variance"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:183
+msgid "High Negative Feedback"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:184
+msgid "Low Peer Interaction"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:185
+msgid "Long Absence"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:186
+msgid "No Development Plan"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:194
+msgid "Select Severity"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:215
+msgid "Enter detailed description of the risk..."
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:218
+#: .\templates\core\ai_risk\risk_flags.html:640
+msgid "HR Notes"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:220
+msgid "Internal HR notes and observations..."
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:330
+msgid "No risk flags found"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:405
+msgid "Resolve"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:560
+msgid "Risk flag created successfully"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:622
+msgid "Created Date"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:626
+msgid "AI Confidence"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:649
+msgid "Technical Details"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:659
+msgid "Resolved By"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:663
+msgid "Resolved Date"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:668
+msgid "Resolution Action"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:708
+msgid "Are you sure you want to delete this risk flag?"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:721
+msgid "Risk flag deleted successfully"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:728
+msgid "Failed to delete risk flag"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:734
+msgid "Please select flags to resolve"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:738
+msgid "Are you sure you want to resolve"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:738
+#: .\templates\core\ai_risk\risk_flags.html:771
+msgid "selected flags?"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:755
+msgid "Successfully resolved"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:755
+#: .\templates\core\ai_risk\risk_flags.html:787
+msgid "flags"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:761
+msgid "Failed to resolve some flags"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:767
+msgid "Please select flags to delete"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:771
+msgid "Are you sure you want to delete"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:787
+msgid "Successfully deleted"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:793
+msgid "Failed to delete some flags"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:821
+msgid "Export completed successfully"
+msgstr ""
+
+#: .\templates\core\ai_risk\risk_flags.html:827
+msgid "Failed to export risk flags"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:4
+#: .\templates\core\ai_risk\strategic_hr_planning.html:9
+#: .\templates\core\ai_risk\strategic_hr_planning.html:76
+msgid "Strategic HR Planning"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:78
+msgid "Workforce analysis, talent management and succession planning"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:82
+msgid "Refresh Analysis"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:86
+msgid "Generate Plan"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:100
+#: .\templates\core\ai_risk\strategic_hr_planning.html:396
+msgid "Organization Unit"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:102
+#: .\templates\core\ai_risk\strategic_hr_planning.html:398
+#: .\templates\core\ai_risk\strategic_hr_planning.html:489
+msgid "All Units"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:106
+msgid "Evaluation Cycle"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:108
+#: .\templates\core\ai_risk\strategic_hr_planning.html:508
+msgid "Latest Cycle"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:115
+msgid "Run Analysis"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:134
+#: .\templates\core\ai_risk\strategic_hr_planning.html:389
+msgid "Workforce Analysis"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:140
+msgid "Talent Management"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:146
+#: .\templates\core\ai_risk\strategic_hr_planning.html:391
+msgid "Succession Planning"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:152
+msgid "Recommendations"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:166
+msgid "Age Demographics"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:178
+msgid "Experience Distribution"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:190
+msgid "Department Distribution"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:202
+msgid "Key Insights"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:208
+msgid "Run analysis to see insights"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:225
+msgid "9-Box Talent Grid"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:238
+msgid "High Performance"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:248
+msgid "Low Potential"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:251
+msgid "High Potential"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:262
+msgid "Talent Pipeline Summary"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:281
+msgid "Key Positions & Succession Plans"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:295
+msgid "Readiness Overview"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:315
+#, fuzzy
+#| msgid "Priority"
+msgid "High Priority"
+msgstr "Priority"
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:328
+#, fuzzy
+#| msgid "Priority"
+msgid "Medium Priority"
+msgstr "Priority"
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:341
+#, fuzzy
+#| msgid "Priority"
+msgid "Low Priority"
+msgstr "Priority"
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:355
+msgid "Key Performance Indicators"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:378
+msgid "Generate Strategic Plan"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:387
+msgid "Plan Type"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:390
+msgid "Talent Pipeline Analysis"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:392
+msgid "Complete HR Strategy"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:402
+msgid "Time Frame"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:404
+msgid "Current State"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:405
+msgid "6 Months"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:406
+#: .\templates\core\ai_risk\strategic_hr_planning.html:787
+msgid "1 Year"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:407
+msgid "3 Years"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:414
+msgid "Include AI Recommendations"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:422
+msgid "Include Charts and Visualizations"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:433
+msgid "Generate & Download"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:447
+msgid "Employee Details"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:606
+msgid "No specific insights available"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:619
+msgid "No talent data available"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:717
+msgid "No succession plans available"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:736
+msgid "Current Incumbent"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:743
+msgid "Readiness:"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:747
+msgid "Candidates:"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:779
+msgid "Ready Now"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:795
+msgid "2-3 Years"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:803
+msgid "Needs Dev"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:821
+msgid "No recommendations"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:841
+msgid "No metrics available"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:1029
+msgid "Strategic plan generated successfully"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:1035
+msgid "Failed to generate strategic plan"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:1062
+msgid "Talent grid exported successfully"
+msgstr ""
+
+#: .\templates\core\ai_risk\strategic_hr_planning.html:1068
+msgid "Failed to export talent grid"
+msgstr ""
+
+#: .\templates\core\base.html:9
+msgid "Peşəkar işçilərin performansını qiymətləndirmək üçün müasir həll"
+msgstr "Modern solution for evaluating professional employee performance"
+
+#: .\templates\core\base.html:11
+msgid "qiymətləndirmə, performans, işçi, HR, insan resursları"
+msgstr "evaluation, performance, employee, HR, human resources"
+
+#: .\templates\core\base.html:12 .\templates\core\base.html:44
+#: .\templates\core\base.html:90 .\templates\core\base.html:246
+#: .\templates\core\base.html:302 .\templates\errors\modern_error.html:8
+msgid "Qiymətləndirmə Sistemi"
+msgstr "Evaluation System"
+
+#: .\templates\core\base.html:82
+msgid "Əsas məzmuna keç"
+msgstr "Skip to main content"
+
+#: .\templates\core\base.html:94
+msgid "Navigasiyanı aç/bağla"
+msgstr "Toggle navigation"
+
+#: .\templates\core\base.html:104
+msgid "Tema dəyişdir"
+msgstr "Change theme"
+
+#: .\templates\core\base.html:113
+msgid "Dil seçimi"
+msgstr "Language selection"
+
+#: .\templates\core\base.html:140
+msgid "İstifadəçi menyusu"
+msgstr "User menu"
+
+#: .\templates\core\base.html:142
+msgid "Avatar"
+msgstr "Avatar"
+
+#: .\templates\core\base.html:156
+msgid "Salam"
+msgstr "Hello"
+
+#: .\templates\core\base.html:166 .\templates\core\dashboard.html:170
+msgid "Hesabatım"
+msgstr "My Report"
+
+#: .\templates\core\base.html:178 .\templates\core\superadmin_paneli.html:4
 #: .\templates\core\superadmin_paneli.html:8
 msgid "Superadmin Paneli"
 msgstr "Superadmin Panel"
 
-#: .\templates\core\base.html:144
+#: .\templates\core\base.html:188
 msgid "Çıxış"
 msgstr "Logout"
 
-#: .\templates\core\base.html:154 .\templates\registration\login.html:42
+#: .\templates\core\base.html:198 .\templates\registration\login.html:42
 msgid "Daxil Ol"
 msgstr "Login"
 
-#: .\templates\core\base.html:175
+#: .\templates\core\base.html:221
 msgid "Bağla"
 msgstr "Close"
 
-#: .\templates\core\base.html:186 .\templates\core\base.html:212
-#: .\templates\core\dashboard.html:4 .\templates\errors\404.html:101
-#: .\templates\errors\modern_error.html:131
-msgid "Ana Səhifə"
-msgstr "Home"
-
-#: .\templates\core\base.html:201
-msgid ""
-"Peşəkar işçilərin performansını qiymətləndirmək üçün müasir və etibarlı həll"
-msgstr "Modern and reliable solution for evaluating professional employee performance"
-
-#: .\templates\core\base.html:210
+#: .\templates\core\base.html:261
 msgid "Keçidlər"
 msgstr "Links"
 
-#: .\templates\core\base.html:220
+#: .\templates\core\base.html:274
 msgid "Dəstək"
 msgstr "Support"
 
-#: .\templates\core\base.html:222
+#: .\templates\core\base.html:276
 msgid "Yardım"
 msgstr "Help"
 
-#: .\templates\core\base.html:223 .\templates\core\base.html:228
+#: .\templates\core\base.html:277 .\templates\core\base.html:282
 msgid "Əlaqə"
 msgstr "Contact"
 
-#: .\templates\core\base.html:224
+#: .\templates\core\base.html:278
 msgid "Gizlilik"
 msgstr "Privacy"
 
-#: .\templates\core\base.html:239
+#: .\templates\core\base.html:294
 msgid "Bakı, Azərbaycan"
 msgstr "Baku, Azerbaijan"
 
-#: .\templates\core\base.html:247
+#: .\templates\core\base.html:302
 msgid "Bütün hüquqlar qorunur"
 msgstr "All rights reserved"
 
-#: .\templates\core\base.html:252
+#: .\templates\core\base.html:307
 msgid "Versiya"
 msgstr "Version"
 
-#: .\templates\core\base.html:252
+#: .\templates\core\base.html:307
 msgid "Son yenilik"
 msgstr "Latest update"
 
@@ -178,71 +1371,131 @@ msgstr "Latest update"
 msgid "Dashboard"
 msgstr "Dashboard"
 
-#: .\templates\core\dashboard.html:15
+#: .\templates\core\dashboard.html:15 .\templates\core\dashboard_clean.html:144
 msgid "Xoş gəldiniz"
 msgstr "Welcome"
 
-#: .\templates\core\dashboard.html:16
+#: .\templates\core\dashboard.html:17
 msgid "Performans idarəetmə sisteminə xoş gəldiniz"
 msgstr "Welcome to the performance management system"
 
-#: .\templates\core\dashboard.html:20
+#: .\templates\core\dashboard.html:21 .\templates\core\dashboard_clean.html:149
 msgid "Son giriş"
 msgstr "Last login"
 
-#: .\templates\core\dashboard.html:53
+#: .\templates\core\dashboard.html:61
 msgid "Aktiv İnkişaf Planınız"
 msgstr "Your Active Development Plan"
 
-#: .\templates\core\dashboard.html:61
-msgid ""
-"Sizin üçün aktiv inkişaf planı mövcuddur. Hədəflərinizi izləyin və inkişaf "
-"edin."
-msgstr "You have an active development plan. Track your goals and improve."
-
-#: .\templates\core\dashboard.html:66 .\templates\core\hesabat.html:17
+#: .\templates\core\dashboard.html:75 .\templates\core\dashboard_clean.html:193
+#: .\templates\core\hesabat.html:17
 msgid "Plana Bax"
 msgstr "View Plan"
 
-#: .\templates\core\dashboard.html:83
+#: .\templates\core\dashboard.html:92
 msgid "Qiymətləndirmə Tapşırıqlarınız"
 msgstr "Your Evaluation Tasks"
 
-#: .\templates\core\dashboard.html:89
+#: .\templates\core\dashboard.html:98
 msgid "Aşağıdakı şəxslər üçün qiymətləndirməni tamamlamalısınız"
 msgstr "You need to complete evaluations for the following people"
 
-#: .\templates\core\dashboard.html:114 .\templates\core\hesabat_pdf.html:124
+#: .\templates\core\dashboard.html:123 .\templates\core\hesabat_pdf.html:124
 msgid "Dövr"
 msgstr "Period"
 
-#: .\templates\core\dashboard.html:119
+#: .\templates\core\dashboard.html:128
 msgid "Gözləyir"
 msgstr "Pending"
 
-#: .\templates\core\dashboard.html:124
+#: .\templates\core\dashboard.html:133
 msgid "Son tarix"
 msgstr "Deadline"
 
-#: .\templates\core\dashboard.html:135
+#: .\templates\core\dashboard.html:144
 msgid "Əla!"
 msgstr "Great!"
 
-#: .\templates\core\dashboard.html:137
+#: .\templates\core\dashboard.html:146
 msgid "Hal-hazırda tamamlanmalı qiymətləndirmə tapşırığınız yoxdur."
 msgstr "You currently have no evaluation tasks to complete."
 
-#: .\templates\core\dashboard.html:153
+#: .\templates\core\dashboard.html:162
+#: .\templates\core\dashboard_clean.html:203
 msgid "Tez Əməliyyatlar"
 msgstr "Quick Actions"
 
-#: .\templates\core\dashboard.html:167
+#: .\templates\core\dashboard.html:176
 msgid "Profil Yeniləmə"
 msgstr "Profile Update"
 
-#: .\templates\core\dashboard.html:174
+#: .\templates\core\dashboard.html:183
 msgid "Komanda İdarəsi"
 msgstr "Team Management"
+
+#: .\templates\core\dashboard_clean.html:145
+#, fuzzy
+#| msgid "Performans idarəetmə sisteminə xoş gəldiniz"
+msgid "Q360 Performans İdarəetmə Sistemi"
+msgstr "Welcome to the performance management system"
+
+#: .\templates\core\dashboard_clean.html:158
+msgid "Statistikalar"
+msgstr ""
+
+#: .\templates\core\dashboard_clean.html:162
+#, fuzzy
+#| msgid "Qiymətləndirmə Formu"
+msgid "Gözləyən Qiymətləndirmə"
+msgstr "Evaluation Form"
+
+#: .\templates\core\dashboard_clean.html:166
+#, fuzzy
+#| msgid "Qiymətləndirmə Formu"
+msgid "Tamamlanmış Qiymətləndirmə"
+msgstr "Evaluation Form"
+
+#: .\templates\core\dashboard_clean.html:170
+#: .\templates\core\performance\dashboard.html:51
+#, fuzzy
+#| msgid "Qiymətləndirmə Formu"
+msgid "Ümumi Qiymətləndirmə"
+msgstr "Evaluation Form"
+
+#: .\templates\core\dashboard_clean.html:175
+#: .\templates\core\performance\dashboard.html:114
+#: .\templates\core\rehber_paneli.html:22
+msgid "Komanda Üzvləri"
+msgstr "Team Members"
+
+#: .\templates\core\dashboard_clean.html:184
+#, fuzzy
+#| msgid "Aktiv İnkişaf Planınız"
+msgid "Aktiv Planınız"
+msgstr "Your Active Development Plan"
+
+#: .\templates\core\dashboard_clean.html:189
+#, fuzzy
+#| msgid ""
+#| "Sizin üçün aktiv inkişaf planı mövcuddur. Hədəflərinizi izləyin və "
+#| "inkişaf edin."
+msgid "Hədəflərinizi izləyin və inkişaf edin"
+msgstr "You have an active development plan. Track your goals and improve."
+
+#: .\templates\core\dashboard_clean.html:252
+#: .\templates\core\performance\dashboard.html:167
+msgid "Son Fəaliyyətlər"
+msgstr ""
+
+#: .\templates\core\dashboard_clean.html:254
+msgid "Sizin üçün gözləyən qiymətləndirmələr"
+msgstr ""
+
+#: .\templates\core\dashboard_clean.html:263
+#, fuzzy
+#| msgid "Qiymətləndirmə Formu"
+msgid "Qiymətləndir"
+msgstr "Evaluation Form"
 
 #: .\templates\core\hesabat.html:4 .\templates\core\hesabat.html:10
 #: .\templates\core\hesabat_pdf.html:7
@@ -345,6 +1598,68 @@ msgstr "Gap Analysis"
 msgid "Anonim Yazılı Rəylər"
 msgstr "Anonymous Written Feedback"
 
+#: .\templates\core\performance\dashboard.html:25
+msgid "Performans analitika və hədəf idarəetmə"
+msgstr ""
+
+#: .\templates\core\performance\dashboard.html:29
+#: .\templates\core\training\dashboard.html:29
+msgid "Yenilə"
+msgstr ""
+
+#: .\templates\core\performance\dashboard.html:32
+#: .\templates\core\plan_detail.html:35
+msgid "Hədəflər"
+msgstr "Goals"
+
+#: .\templates\core\performance\dashboard.html:72
+msgid "Orta Performans"
+msgstr ""
+
+#: .\templates\core\performance\dashboard.html:93
+#, fuzzy
+#| msgid "Hədəflər"
+msgid "Aktiv Hədəflər"
+msgstr "Goals"
+
+#: .\templates\core\performance\dashboard.html:133
+msgid "Performans Trendləri"
+msgstr ""
+
+#: .\templates\core\performance\dashboard.html:149
+msgid "Hədəf İrəliləyişi"
+msgstr ""
+
+#: .\templates\core\performance\dashboard.html:175
+msgid "Fəaliyyət"
+msgstr ""
+
+#: .\templates\core\performance\dashboard.html:176
+#, fuzzy
+#| msgid "Dövr"
+msgid "Növ"
+msgstr "Period"
+
+#: .\templates\core\performance\dashboard.html:177
+msgid "Tarix"
+msgstr ""
+
+#: .\templates\core\performance\dashboard.html:234
+msgid "Performans"
+msgstr ""
+
+#: .\templates\core\performance\dashboard.html:265
+#, fuzzy
+#| msgid "Səhifə Tapılmadı"
+msgid "Hədəf tapılmadı"
+msgstr "Page Not Found"
+
+#: .\templates\core\performance\dashboard.html:285
+#, fuzzy
+#| msgid "Səhifə Tapılmadı"
+msgid "Fəaliyyət tapılmadı"
+msgstr "Page Not Found"
+
 #: .\templates\core\plan_detail.html:5 .\templates\core\plan_detail.html:10
 msgid "Fərdi İnkişaf Planı"
 msgstr "Individual Development Plan"
@@ -357,56 +1672,40 @@ msgstr "Plan Information"
 msgid "Qiymətləndirmə Dövrü:"
 msgstr "Evaluation Period:"
 
-#: .\templates\core\plan_detail.html:35
-msgid "Hədəflər"
-msgstr "Goals"
-
 #: .\templates\core\plan_form.html:9 .\templates\core\profil.html:9
 msgid ""
 "Burada şəxsi məlumatlarınızı redaktə edə və şifrənizi dəyişə bilərsiniz."
 msgstr "Here you can edit your personal information and change your password."
 
-#: .\templates\core\plan_form.html:15 .\templates\core\profil.html:16
+#: .\templates\core\plan_form.html:16 .\templates\core\profil.html:16
 msgid "Profil Şəkli"
 msgstr "Profile Picture"
 
-#: .\templates\core\plan_form.html:23 .\templates\core\profil.html:24
+#: .\templates\core\plan_form.html:24 .\templates\core\profil.html:24
 msgid "İstifadəçi adı:"
 msgstr "Username:"
 
-#: .\templates\core\plan_form.html:24 .\templates\core\profil.html:26
+#: .\templates\core\plan_form.html:26 .\templates\core\profil.html:26
 msgid "E-poçt:"
 msgstr "Email:"
 
-#: .\templates\core\plan_form.html:25 .\templates\core\profil.html:28
+#: .\templates\core\plan_form.html:28 .\templates\core\profil.html:28
 msgid "Əlaqə Nömrəsi:"
 msgstr "Phone Number:"
 
-#: .\templates\core\plan_form.html:26 .\templates\core\profil.html:30
+#: .\templates\core\plan_form.html:30 .\templates\core\profil.html:30
 msgid "Doğum Tarixi:"
 msgstr "Date of Birth:"
 
-#: .\templates\core\plan_form.html:27 .\templates\core\profil.html:32
+#: .\templates\core\plan_form.html:32 .\templates\core\profil.html:32
 msgid "Qeydiyyat Tarixi:"
 msgstr "Registration Date:"
 
-#: .\templates\core\plan_form.html:37
-msgid "Məlumatları Dəyiş"
-msgstr "Change Information"
-
-#: .\templates\core\plan_form.html:40
-msgid "Şifrəni Dəyiş"
-msgstr "Change Password"
-
-#: .\templates\core\plan_form.html:46 .\templates\core\profil.html:56
+#: .\templates\core\plan_form.html:56 .\templates\core\profil.html:56
 msgid "Profil Məlumatları"
 msgstr "Profile Information"
 
-#: .\templates\core\plan_form.html:51
-msgid "Yadda Saxla"
-msgstr "Save"
-
-#: .\templates\core\plan_form.html:57 .\templates\core\profil.html:68
+#: .\templates\core\plan_form.html:68 .\templates\core\profil.html:68
 msgid "Təhlükəsizlik"
 msgstr "Security"
 
@@ -445,10 +1744,6 @@ msgstr "Confirm Evaluation"
 #: .\templates\core\rehber_paneli.html:13
 msgid "Komandanın Kompetensiyalar üzrə Performansı"
 msgstr "Team Performance by Competencies"
-
-#: .\templates\core\rehber_paneli.html:22
-msgid "Komanda Üzvləri"
-msgstr "Team Members"
 
 #: .\templates\core\rehber_paneli.html:23
 msgid "Sizin tabeliyinizdə olan işçilərin siyahısı:"
@@ -516,12 +1811,159 @@ msgstr "Average Score"
 msgid "Statistika üçün məlumat tapılmadı."
 msgstr "No data found for statistics."
 
+#: .\templates\core\training\dashboard.html:4
+#: .\templates\core\training\dashboard.html:8
+#: .\templates\core\training\dashboard.html:23
+#, fuzzy
+#| msgid "Fərdi İnkişaf Planı"
+msgid "Təlim və İnkişaf"
+msgstr "Individual Development Plan"
+
+#: .\templates\core\training\dashboard.html:25
+msgid "Təlim proqramları və bacarıq inkişafı"
+msgstr ""
+
+#: .\templates\core\training\dashboard.html:32
+msgid "Yeni Təlim"
+msgstr ""
+
+#: .\templates\core\training\dashboard.html:51
+#, fuzzy
+#| msgid "Ümumi Ortalama Bal"
+msgid "Ümumi Kurslar"
+msgstr "Overall Average Score"
+
+#: .\templates\core\training\dashboard.html:72
+#, fuzzy
+#| msgid "Tamamlanma Nisbəti"
+msgid "Tamamlanan"
+msgstr "Completion Rate"
+
+#: .\templates\core\training\dashboard.html:93
+msgid "Davam Edənlər"
+msgstr ""
+
+#: .\templates\core\training\dashboard.html:114
+msgid "Sertifikatlar"
+msgstr ""
+
+#: .\templates\core\training\dashboard.html:133
+msgid "Öyrənmə İrəliləyişi"
+msgstr ""
+
+#: .\templates\core\training\dashboard.html:149
+msgid "Bacarıq Matrisi"
+msgstr ""
+
+#: .\templates\core\training\dashboard.html:167
+msgid "Aktiv Təlim Proqramları"
+msgstr ""
+
+#: .\templates\core\training\dashboard.html:185
+msgid "Tövsiyə Edilən Öyrənmə Yolları"
+msgstr ""
+
+#: .\templates\core\training\dashboard.html:193
+msgid "Təlim"
+msgstr ""
+
+#: .\templates\core\training\dashboard.html:194
+msgid "Səviyyə"
+msgstr ""
+
+#: .\templates\core\training\dashboard.html:195
+#: .\templates\core\training\programs.html:42
+msgid "Müddət"
+msgstr ""
+
+#: .\templates\core\training\dashboard.html:196
+msgid "Reytinq"
+msgstr ""
+
+#: .\templates\core\training\dashboard.html:197
+#, fuzzy
+#| msgid "Tez Əməliyyatlar"
+msgid "Əməliyyat"
+msgstr "Quick Actions"
+
+#: .\templates\core\training\dashboard.html:320
+msgid "Tamamlanan Kurslar"
+msgstr ""
+
+#: .\templates\core\training\dashboard.html:350
+#, fuzzy
+#| msgid "Statistika üçün məlumat tapılmadı."
+msgid "Bacarıq məlumatı tapılmadı"
+msgstr "No data found for statistics."
+
+#: .\templates\core\training\dashboard.html:370
+msgid "Aktiv proqram tapılmadı"
+msgstr ""
+
+#: .\templates\core\training\dashboard.html:396
+#, fuzzy
+#| msgid "Səhifə Tapılmadı"
+msgid "Tövsiyə tapılmadı"
+msgstr "Page Not Found"
+
+#: .\templates\core\training\learning_path.html:4
+#: .\templates\core\training\learning_path.html:9
+#: .\templates\core\training\learning_path.html:19
+msgid "Mənim Öyrənmə Yolum"
+msgstr ""
+
+#: .\templates\core\training\learning_path.html:21
+msgid "Fərdi inkişaf planınız və irəliləyişiniz"
+msgstr ""
+
+#: .\templates\core\training\learning_path.html:31
+msgid "Cari Öyrənmə Yolu"
+msgstr ""
+
+#: .\templates\core\training\learning_path.html:73
+#, fuzzy
+#| msgid "Şifrəni Dəyiş"
+msgid "İrəliləyiş"
+msgstr "Change Password"
+
+#: .\templates\core\training\programs.html:4
+#: .\templates\core\training\programs.html:9
+#: .\templates\core\training\programs.html:19
+msgid "Təhsil Proqramları"
+msgstr ""
+
+#: .\templates\core\training\programs.html:21
+msgid "Təhsil proqramlarını idarə edin"
+msgstr ""
+
+#: .\templates\core\training\programs.html:25
+msgid "Yeni Proqram"
+msgstr ""
+
+#: .\templates\core\training\programs.html:40
+msgid "Proqram Adı"
+msgstr ""
+
+#: .\templates\core\training\programs.html:41
+msgid "Kateqoriya"
+msgstr ""
+
+#: .\templates\core\training\programs.html:43
+msgid "İştirakçılar"
+msgstr ""
+
+#: .\templates\core\training\programs.html:45
+#, fuzzy
+#| msgid "Tez Əməliyyatlar"
+msgid "Əməliyyatlar"
+msgstr "Quick Actions"
+
 #: .\templates\core\yeni_dovr_form.html:5
 #: .\templates\core\yeni_dovr_form.html:9
 msgid "Yeni Qiymətləndirmə Dövrü Yarat"
 msgstr "Create New Evaluation Period"
 
-#: .\templates\errors\400.html:4 .\templates\errors\modern_error.html:7
+#: .\templates\errors\400.html:4 .\templates\errors\modern_error.html:8
 msgid "Xəta"
 msgstr "Error"
 
@@ -566,7 +2008,7 @@ msgstr "Page Not Found"
 msgid "Axtardığınız səhifə mövcud deyil və ya silinib."
 msgstr "The page you are looking for does not exist or has been deleted."
 
-#: .\templates\errors\404.html:90 .\templates\errors\modern_error.html:119
+#: .\templates\errors\404.html:90 .\templates\errors\modern_error.html:139
 msgid "Təkliflər"
 msgstr "Suggestions"
 
@@ -582,15 +2024,15 @@ msgstr "Return to home page"
 msgid "Axtarış edərək məzmunu tapın"
 msgstr "Find content by searching"
 
-#: .\templates\errors\404.html:105 .\templates\errors\modern_error.html:135
+#: .\templates\errors\404.html:105 .\templates\errors\modern_error.html:155
 msgid "Geri"
 msgstr "Back"
 
-#: .\templates\errors\404.html:111 .\templates\errors\modern_error.html:141
+#: .\templates\errors\404.html:111 .\templates\errors\modern_error.html:161
 msgid "Problemin davam etdiyi halda"
 msgstr "If the problem persists"
 
-#: .\templates\errors\404.html:115 .\templates\errors\modern_error.html:145
+#: .\templates\errors\404.html:115 .\templates\errors\modern_error.html:165
 msgid "ilə əlaqə saxlayın"
 msgstr "contact us"
 
@@ -604,7 +2046,8 @@ msgstr "Server Error"
 
 #: .\templates\errors\500.html:8
 msgid "Daxili server xətası baş verdi. Komandamız problemi araşdırır."
-msgstr "An internal server error occurred. Our team is investigating the problem."
+msgstr ""
+"An internal server error occurred. Our team is investigating the problem."
 
 #: .\templates\errors\502.html:4 .\templates\errors\502.html:7
 msgid "Keçid Xətası"
@@ -698,3 +2141,1595 @@ msgstr "Already have an account?"
 #: .\templates\registration\qeydiyyat_form.html:25
 msgid "Daxil olun"
 msgstr "Login"
+
+#: .\venv\Lib\site-packages\click\_termui_impl.py:600
+#, python-brace-format
+msgid "{editor}: Editing failed"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\_termui_impl.py:604
+#, python-brace-format
+msgid "{editor}: Editing failed: {e}"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\core.py:1084
+#: .\venv\Lib\site-packages\click\core.py:1121
+#, python-brace-format
+msgid "{text} {deprecated_message}"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\core.py:1140
+msgid "Options"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\core.py:1202
+#, python-brace-format
+msgid "Got unexpected extra argument ({args})"
+msgid_plural "Got unexpected extra arguments ({args})"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\click\core.py:1221
+msgid "DeprecationWarning: The command {name!r} is deprecated.{extra_message}"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\core.py:1405
+msgid "Aborted!"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\core.py:1779
+msgid "Commands"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\core.py:1810
+msgid "Missing command."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\core.py:1888
+msgid "No such command {name!r}."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\core.py:2303
+msgid "Value must be an iterable."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\core.py:2324
+#, python-brace-format
+msgid "Takes {nargs} values but 1 was given."
+msgid_plural "Takes {nargs} values but {len} were given."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\click\core.py:2404
+msgid ""
+"DeprecationWarning: The {param_type} {name!r} is deprecated.{extra_message}"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\core.py:2807
+#, python-brace-format
+msgid "env var: {var}"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\core.py:2810
+#, python-brace-format
+msgid "default: {default}"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\core.py:2870
+msgid "(dynamic)"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\decorators.py:465
+#, python-format
+msgid "%(prog)s, version %(version)s"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\decorators.py:522
+msgid "Show the version and exit."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\decorators.py:548
+msgid "Show this message and exit."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\exceptions.py:50
+#: .\venv\Lib\site-packages\click\exceptions.py:89
+#, python-brace-format
+msgid "Error: {message}"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\exceptions.py:81
+#, python-brace-format
+msgid "Try '{command} {option}' for help."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\exceptions.py:130
+#, python-brace-format
+msgid "Invalid value: {message}"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\exceptions.py:132
+#, python-brace-format
+msgid "Invalid value for {param_hint}: {message}"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\exceptions.py:190
+msgid "Missing argument"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\exceptions.py:192
+msgid "Missing option"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\exceptions.py:194
+msgid "Missing parameter"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\exceptions.py:196
+#, python-brace-format
+msgid "Missing {param_type}"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\exceptions.py:203
+#, python-brace-format
+msgid "Missing parameter: {param_name}"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\exceptions.py:223
+#, python-brace-format
+msgid "No such option: {name}"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\exceptions.py:235
+#, python-brace-format
+msgid "Did you mean {possibility}?"
+msgid_plural "(Possible options: {possibilities})"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\click\exceptions.py:282
+msgid "unknown error"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\exceptions.py:289
+msgid "Could not open file {filename!r}: {message}"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\formatting.py:156
+msgid "Usage:"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\parser.py:200
+msgid "Argument {name!r} takes {nargs} values."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\parser.py:383
+msgid "Option {name!r} does not take a value."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\parser.py:444
+msgid "Option {name!r} requires an argument."
+msgid_plural "Option {name!r} requires {nargs} arguments."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\click\shell_completion.py:326
+msgid "Shell completion is not supported for Bash versions older than 4.4."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\shell_completion.py:333
+msgid "Couldn't detect Bash version, shell completion is not supported."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\termui.py:162
+msgid "Repeat for confirmation"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\termui.py:178
+msgid "Error: The value you entered was invalid."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\termui.py:180
+#, python-brace-format
+msgid "Error: {e.message}"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\termui.py:191
+msgid "Error: The two entered values do not match."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\termui.py:247
+msgid "Error: invalid input"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\termui.py:866
+msgid "Press any key to continue..."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\types.py:332
+#, python-brace-format
+msgid ""
+"Choose from:\n"
+"\t{choices}"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\types.py:369
+msgid "{value!r} is not {choice}."
+msgid_plural "{value!r} is not one of {choices}."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\click\types.py:460
+msgid "{value!r} does not match the format {format}."
+msgid_plural "{value!r} does not match the formats {formats}."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\click\types.py:482
+msgid "{value!r} is not a valid {number_type}."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\types.py:538
+#, python-brace-format
+msgid "{value} is not in the range {range}."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\types.py:679
+msgid "{value!r} is not a valid boolean."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\types.py:703
+msgid "{value!r} is not a valid UUID."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\types.py:893
+msgid "file"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\types.py:895
+msgid "directory"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\types.py:897
+msgid "path"
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\types.py:944
+msgid "{name} {filename!r} does not exist."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\types.py:953
+msgid "{name} {filename!r} is a file."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\types.py:961
+msgid "{name} {filename!r} is a directory."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\types.py:970
+msgid "{name} {filename!r} is not readable."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\types.py:979
+msgid "{name} {filename!r} is not writable."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\types.py:988
+msgid "{name} {filename!r} is not executable."
+msgstr ""
+
+#: .\venv\Lib\site-packages\click\types.py:1055
+#, python-brace-format
+msgid "{len_type} values are required, but {len_value} was given."
+msgid_plural "{len_type} values are required, but {len_value} were given."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\contrib\messages\apps.py:16
+msgid "Messages"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\contrib\sitemaps\apps.py:8
+msgid "Site Maps"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\contrib\staticfiles\apps.py:9
+msgid "Static Files"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\contrib\syndication\apps.py:7
+msgid "Syndication"
+msgstr ""
+
+#. Translators: String used to replace omitted page numbers in elided page
+#. range generated by paginators, e.g. [1, 2, '…', 5, 6, 7, '…', 9, 10].
+#: .\venv\Lib\site-packages\django\core\paginator.py:30
+msgid "…"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\paginator.py:32
+msgid "That page number is not an integer"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\paginator.py:33
+msgid "That page number is less than 1"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\paginator.py:34
+msgid "That page contains no results"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:22
+msgid "Enter a valid value."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:70
+msgid "Enter a valid domain name."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:153
+#: .\venv\Lib\site-packages\django\forms\fields.py:775
+msgid "Enter a valid URL."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:200
+msgid "Enter a valid integer."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:211
+msgid "Enter a valid email address."
+msgstr ""
+
+#. Translators: "letters" means latin letters: a-z and A-Z.
+#: .\venv\Lib\site-packages\django\core\validators.py:289
+msgid ""
+"Enter a valid “slug” consisting of letters, numbers, underscores or hyphens."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:297
+msgid ""
+"Enter a valid “slug” consisting of Unicode letters, numbers, underscores, or "
+"hyphens."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:309
+#: .\venv\Lib\site-packages\django\core\validators.py:318
+#: .\venv\Lib\site-packages\django\core\validators.py:332
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2220
+#, python-format
+msgid "Enter a valid %(protocol)s address."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:311
+msgid "IPv4"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:320
+#: .\venv\Lib\site-packages\django\utils\ipv6.py:43
+msgid "IPv6"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:334
+msgid "IPv4 or IPv6"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:375
+msgid "Enter only digits separated by commas."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:381
+#, python-format
+msgid "Ensure this value is %(limit_value)s (it is %(show_value)s)."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:416
+#, python-format
+msgid "Ensure this value is less than or equal to %(limit_value)s."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:425
+#, python-format
+msgid "Ensure this value is greater than or equal to %(limit_value)s."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:434
+#, python-format
+msgid "Ensure this value is a multiple of step size %(limit_value)s."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:441
+#, python-format
+msgid ""
+"Ensure this value is a multiple of step size %(limit_value)s, starting from "
+"%(offset)s, e.g. %(offset)s, %(valid_value1)s, %(valid_value2)s, and so on."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:473
+#, python-format
+msgid ""
+"Ensure this value has at least %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at least %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:491
+#, python-format
+msgid ""
+"Ensure this value has at most %(limit_value)d character (it has "
+"%(show_value)d)."
+msgid_plural ""
+"Ensure this value has at most %(limit_value)d characters (it has "
+"%(show_value)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:514
+#: .\venv\Lib\site-packages\django\forms\fields.py:366
+#: .\venv\Lib\site-packages\django\forms\fields.py:405
+msgid "Enter a number."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:516
+#, python-format
+msgid "Ensure that there are no more than %(max)s digit in total."
+msgid_plural "Ensure that there are no more than %(max)s digits in total."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:521
+#, python-format
+msgid "Ensure that there are no more than %(max)s decimal place."
+msgid_plural "Ensure that there are no more than %(max)s decimal places."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:526
+#, python-format
+msgid ""
+"Ensure that there are no more than %(max)s digit before the decimal point."
+msgid_plural ""
+"Ensure that there are no more than %(max)s digits before the decimal point."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:597
+#, python-format
+msgid ""
+"File extension “%(extension)s” is not allowed. Allowed extensions are: "
+"%(allowed_extensions)s."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\core\validators.py:659
+msgid "Null characters are not allowed."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\base.py:1600
+#: .\venv\Lib\site-packages\django\forms\models.py:908
+msgid "and"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\base.py:1602
+#, python-format
+msgid "%(model_name)s with this %(field_labels)s already exists."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\constraints.py:22
+#, python-format
+msgid "Constraint “%(name)s” is violated."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:134
+#, python-format
+msgid "Value %(value)r is not a valid choice."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:135
+msgid "This field cannot be null."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:136
+msgid "This field cannot be blank."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:137
+#, python-format
+msgid "%(model_name)s with this %(field_label)s already exists."
+msgstr ""
+
+#. Translators: The 'lookup_type' is one of 'date', 'year' or
+#. 'month'. Eg: "Title must be unique for pub_date year"
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:141
+#, python-format
+msgid ""
+"%(field_label)s must be unique for %(date_field_label)s %(lookup_type)s."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:180
+#, python-format
+msgid "Field of type: %(field_type)s"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1162
+#, python-format
+msgid "“%(value)s” value must be either True or False."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1163
+#, python-format
+msgid "“%(value)s” value must be either True, False, or None."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1165
+msgid "Boolean (Either True or False)"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1215
+#, python-format
+msgid "String (up to %(max_length)s)"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1217
+msgid "String (unlimited)"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1326
+msgid "Comma-separated integers"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1427
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid date format. It must be in YYYY-MM-DD "
+"format."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1431
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1566
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (YYYY-MM-DD) but it is an invalid "
+"date."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1435
+msgid "Date (without time)"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1562
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in YYYY-MM-DD "
+"HH:MM[:ss[.uuuuuu]][TZ] format."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1570
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (YYYY-MM-DD HH:MM[:ss[.uuuuuu]]"
+"[TZ]) but it is an invalid date/time."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1575
+msgid "Date (with time)"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1702
+#, python-format
+msgid "“%(value)s” value must be a decimal number."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1704
+msgid "Decimal number"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1864
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in [DD] "
+"[[HH:]MM:]ss[.uuuuuu] format."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1868
+msgid "Duration"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1920
+msgid "Email address"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:1945
+msgid "File path"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2023
+#, python-format
+msgid "“%(value)s” value must be a float."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2025
+msgid "Floating point number"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2065
+#, python-format
+msgid "“%(value)s” value must be an integer."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2067
+msgid "Integer"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2163
+msgid "Big (8 byte) integer"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2180
+msgid "Small integer"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2188
+msgid "IPv4 address"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2219
+msgid "IP address"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2310
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2311
+#, python-format
+msgid "“%(value)s” value must be either None, True or False."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2313
+msgid "Boolean (Either True, False or None)"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2364
+msgid "Positive big integer"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2379
+msgid "Positive integer"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2394
+msgid "Positive small integer"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2410
+#, python-format
+msgid "Slug (up to %(max_length)s)"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2446
+msgid "Text"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2526
+#, python-format
+msgid ""
+"“%(value)s” value has an invalid format. It must be in HH:MM[:ss[.uuuuuu]] "
+"format."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2530
+#, python-format
+msgid ""
+"“%(value)s” value has the correct format (HH:MM[:ss[.uuuuuu]]) but it is an "
+"invalid time."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2534
+msgid "Time"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2642
+msgid "URL"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2666
+msgid "Raw binary data"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2731
+#, python-format
+msgid "“%(value)s” is not a valid UUID."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\__init__.py:2733
+msgid "Universally unique identifier"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\files.py:244
+msgid "File"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\files.py:420
+msgid "Image"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\json.py:24
+msgid "A JSON object"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\json.py:26
+msgid "Value must be valid JSON."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\related.py:978
+#, python-format
+msgid "%(model)s instance with %(field)s %(value)r is not a valid choice."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\related.py:981
+msgid "Foreign Key (type determined by related field)"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\related.py:1275
+msgid "One-to-one relationship"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\related.py:1332
+#, python-format
+msgid "%(from)s-%(to)s relationship"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\related.py:1334
+#, python-format
+msgid "%(from)s-%(to)s relationships"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\db\models\fields\related.py:1382
+msgid "Many-to-many relationship"
+msgstr ""
+
+#. Translators: If found as last label character, these punctuation
+#. characters will prevent the default label_suffix to be appended to the label
+#: .\venv\Lib\site-packages\django\forms\boundfield.py:185
+msgid ":?.!"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:95
+msgid "This field is required."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:315
+msgid "Enter a whole number."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:486
+#: .\venv\Lib\site-packages\django\forms\fields.py:1267
+msgid "Enter a valid date."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:509
+#: .\venv\Lib\site-packages\django\forms\fields.py:1268
+msgid "Enter a valid time."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:536
+msgid "Enter a valid date/time."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:570
+msgid "Enter a valid duration."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:571
+#, python-brace-format
+msgid "The number of days must be between {min_days} and {max_days}."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:640
+msgid "No file was submitted. Check the encoding type on the form."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:641
+msgid "No file was submitted."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:642
+msgid "The submitted file is empty."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:644
+#, python-format
+msgid "Ensure this filename has at most %(max)d character (it has %(length)d)."
+msgid_plural ""
+"Ensure this filename has at most %(max)d characters (it has %(length)d)."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:649
+msgid "Please either submit a file or check the clear checkbox, not both."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:717
+msgid ""
+"Upload a valid image. The file you uploaded was either not an image or a "
+"corrupted image."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:889
+#: .\venv\Lib\site-packages\django\forms\fields.py:975
+#: .\venv\Lib\site-packages\django\forms\models.py:1592
+#, python-format
+msgid "Select a valid choice. %(value)s is not one of the available choices."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:977
+#: .\venv\Lib\site-packages\django\forms\fields.py:1096
+#: .\venv\Lib\site-packages\django\forms\models.py:1590
+msgid "Enter a list of values."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:1097
+msgid "Enter a complete value."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:1339
+msgid "Enter a valid UUID."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\fields.py:1369
+msgid "Enter a valid JSON."
+msgstr ""
+
+#. Translators: This is the default suffix added to form field labels
+#: .\venv\Lib\site-packages\django\forms\forms.py:97
+msgid ":"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\forms.py:239
+#, python-format
+msgid "(Hidden field %(name)s) %(error)s"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\formsets.py:61
+#, python-format
+msgid ""
+"ManagementForm data is missing or has been tampered with. Missing fields: "
+"%(field_names)s. You may need to file a bug report if the issue persists."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\formsets.py:65
+#, python-format
+msgid "Please submit at most %(num)d form."
+msgid_plural "Please submit at most %(num)d forms."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\forms\formsets.py:70
+#, python-format
+msgid "Please submit at least %(num)d form."
+msgid_plural "Please submit at least %(num)d forms."
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\forms\formsets.py:484
+#: .\venv\Lib\site-packages\django\forms\formsets.py:491
+msgid "Order"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\models.py:901
+#, python-format
+msgid "Please correct the duplicate data for %(field)s."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\models.py:906
+#, python-format
+msgid "Please correct the duplicate data for %(field)s, which must be unique."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\models.py:913
+#, python-format
+msgid ""
+"Please correct the duplicate data for %(field_name)s which must be unique "
+"for the %(lookup)s in %(date_field)s."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\models.py:922
+msgid "Please correct the duplicate values below."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\models.py:1359
+msgid "The inline value did not match the parent instance."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\models.py:1450
+msgid "Select a valid choice. That choice is not one of the available choices."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\models.py:1594
+#, python-format
+msgid "“%(pk)s” is not a valid value."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\utils.py:229
+#, python-format
+msgid ""
+"%(datetime)s couldn’t be interpreted in time zone %(current_timezone)s; it "
+"may be ambiguous or it may not exist."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\widgets.py:527
+msgid "Clear"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\widgets.py:528
+msgid "Currently"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\widgets.py:529
+msgid "Change"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\forms\widgets.py:866
+msgid "Unknown"
+msgstr ""
+
+#. Translators: Please do not add spaces around commas.
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:873
+msgid "yes,no,maybe"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:903
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:920
+#, python-format
+msgid "%(size)d byte"
+msgid_plural "%(size)d bytes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:922
+#, python-format
+msgid "%s KB"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:924
+#, python-format
+msgid "%s MB"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:926
+#, python-format
+msgid "%s GB"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:928
+#, python-format
+msgid "%s TB"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\template\defaultfilters.py:930
+#, python-format
+msgid "%s PB"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dateformat.py:74
+msgid "p.m."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dateformat.py:75
+msgid "a.m."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dateformat.py:80
+msgid "PM"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dateformat.py:81
+msgid "AM"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dateformat.py:153
+msgid "midnight"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dateformat.py:155
+msgid "noon"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:7
+msgid "Monday"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:8
+msgid "Tuesday"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:9
+msgid "Wednesday"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:10
+msgid "Thursday"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:11
+msgid "Friday"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:12
+msgid "Saturday"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:13
+msgid "Sunday"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:16
+msgid "Mon"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:17
+msgid "Tue"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:18
+msgid "Wed"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:19
+msgid "Thu"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:20
+msgid "Fri"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:21
+msgid "Sat"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:22
+msgid "Sun"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:25
+msgid "January"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:26
+msgid "February"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:27
+msgid "March"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:28
+msgid "April"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:29
+msgid "May"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:30
+msgid "June"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:31
+msgid "July"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:32
+msgid "August"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:33
+msgid "September"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:34
+msgid "October"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:35
+msgid "November"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:36
+msgid "December"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:39
+msgid "jan"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:40
+msgid "feb"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:41
+msgid "mar"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:42
+msgid "apr"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:43
+msgid "may"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:44
+msgid "jun"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:45
+msgid "jul"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:46
+msgid "aug"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:47
+msgid "sep"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:48
+msgid "oct"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:49
+msgid "nov"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:50
+msgid "dec"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:53
+msgctxt "abbrev. month"
+msgid "Jan."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:54
+msgctxt "abbrev. month"
+msgid "Feb."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:55
+msgctxt "abbrev. month"
+msgid "March"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:56
+msgctxt "abbrev. month"
+msgid "April"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:57
+msgctxt "abbrev. month"
+msgid "May"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:58
+msgctxt "abbrev. month"
+msgid "June"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:59
+msgctxt "abbrev. month"
+msgid "July"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:60
+msgctxt "abbrev. month"
+msgid "Aug."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:61
+msgctxt "abbrev. month"
+msgid "Sept."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:62
+msgctxt "abbrev. month"
+msgid "Oct."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:63
+msgctxt "abbrev. month"
+msgid "Nov."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:64
+msgctxt "abbrev. month"
+msgid "Dec."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:67
+msgctxt "alt. month"
+msgid "January"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:68
+msgctxt "alt. month"
+msgid "February"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:69
+msgctxt "alt. month"
+msgid "March"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:70
+msgctxt "alt. month"
+msgid "April"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:71
+msgctxt "alt. month"
+msgid "May"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:72
+msgctxt "alt. month"
+msgid "June"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:73
+msgctxt "alt. month"
+msgid "July"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:74
+msgctxt "alt. month"
+msgid "August"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:75
+msgctxt "alt. month"
+msgid "September"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:76
+msgctxt "alt. month"
+msgid "October"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:77
+msgctxt "alt. month"
+msgid "November"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\dates.py:78
+msgctxt "alt. month"
+msgid "December"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\ipv6.py:20
+msgid "This is not a valid IPv6 address."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\text.py:76
+#, python-format
+msgctxt "String to return when truncating text"
+msgid "%(truncated_text)s…"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\text.py:287
+msgid "or"
+msgstr ""
+
+#. Translators: This string is used as a separator between list elements
+#: .\venv\Lib\site-packages\django\utils\text.py:306
+#: .\venv\Lib\site-packages\django\utils\timesince.py:135
+msgid ", "
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\utils\timesince.py:8
+#, python-format
+msgid "%(num)d year"
+msgid_plural "%(num)d years"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\utils\timesince.py:9
+#, python-format
+msgid "%(num)d month"
+msgid_plural "%(num)d months"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\utils\timesince.py:10
+#, python-format
+msgid "%(num)d week"
+msgid_plural "%(num)d weeks"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\utils\timesince.py:11
+#, python-format
+msgid "%(num)d day"
+msgid_plural "%(num)d days"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\utils\timesince.py:12
+#, python-format
+msgid "%(num)d hour"
+msgid_plural "%(num)d hours"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\utils\timesince.py:13
+#, python-format
+msgid "%(num)d minute"
+msgid_plural "%(num)d minutes"
+msgstr[0] ""
+msgstr[1] ""
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:29
+msgid "Forbidden"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:30
+msgid "CSRF verification failed. Request aborted."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:34
+msgid ""
+"You are seeing this message because this HTTPS site requires a “Referer "
+"header” to be sent by your web browser, but none was sent. This header is "
+"required for security reasons, to ensure that your browser is not being "
+"hijacked by third parties."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:40
+msgid ""
+"If you have configured your browser to disable “Referer” headers, please re-"
+"enable them, at least for this site, or for HTTPS connections, or for “same-"
+"origin” requests."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:45
+msgid ""
+"If you are using the <meta name=\"referrer\" content=\"no-referrer\"> tag or "
+"including the “Referrer-Policy: no-referrer” header, please remove them. The "
+"CSRF protection requires the “Referer” header to do strict referer checking. "
+"If you’re concerned about privacy, use alternatives like <a "
+"rel=\"noreferrer\" …> for links to third-party sites."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:54
+msgid ""
+"You are seeing this message because this site requires a CSRF cookie when "
+"submitting forms. This cookie is required for security reasons, to ensure "
+"that your browser is not being hijacked by third parties."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:60
+msgid ""
+"If you have configured your browser to disable cookies, please re-enable "
+"them, at least for this site, or for “same-origin” requests."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\csrf.py:66
+msgid "More information is available with DEBUG=True."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:44
+msgid "No year specified"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:64
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:115
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:214
+msgid "Date out of range"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:94
+msgid "No month specified"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:147
+msgid "No day specified"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:194
+msgid "No week specified"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:353
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:384
+#, python-format
+msgid "No %(verbose_name_plural)s available"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:680
+#, python-format
+msgid ""
+"Future %(verbose_name_plural)s not available because "
+"%(class_name)s.allow_future is False."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\generic\dates.py:720
+#, python-format
+msgid "Invalid date string “%(datestr)s” given format “%(format)s”"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\generic\detail.py:56
+#, python-format
+msgid "No %(verbose_name)s found matching the query"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\generic\list.py:70
+msgid "Page is not “last”, nor can it be converted to an int."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\generic\list.py:77
+#, python-format
+msgid "Invalid page (%(page_number)s): %(message)s"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\generic\list.py:173
+#, python-format
+msgid "Empty list and “%(class_name)s.allow_empty” is False."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\static.py:49
+msgid "Directory indexes are not allowed here."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\static.py:51
+#, python-format
+msgid "“%(path)s” does not exist"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\static.py:68
+#: .\venv\Lib\site-packages\django\views\templates\directory_index.html:8
+#: .\venv\Lib\site-packages\django\views\templates\directory_index.html:11
+#, python-format
+msgid "Index of %(directory)s"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:7
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:204
+msgid "The install worked successfully! Congratulations!"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:206
+#, python-format
+msgid ""
+"View <a href=\"https://docs.djangoproject.com/en/%(version)s/releases/\" "
+"target=\"_blank\" rel=\"noopener\">release notes</a> for Django %(version)s"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:208
+#, python-format
+msgid ""
+"You are seeing this page because <a href=\"https://docs.djangoproject.com/en/"
+"%(version)s/ref/settings/#debug\" target=\"_blank\" "
+"rel=\"noopener\">DEBUG=True</a> is in your settings file and you have not "
+"configured any URLs."
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:217
+msgid "Django Documentation"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:218
+msgid "Topics, references, &amp; how-to’s"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:226
+msgid "Tutorial: A Polling App"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:227
+msgid "Get started with Django"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:235
+msgid "Django Community"
+msgstr ""
+
+#: .\venv\Lib\site-packages\django\views\templates\default_urlconf.html:236
+msgid "Connect, get help, or contribute"
+msgstr ""
+
+#: .\venv\Lib\site-packages\drf_spectacular\openapi.py:1394
+#: .\venv\Lib\site-packages\drf_spectacular\openapi.py:1447
+#: .\venv\Lib\site-packages\drf_spectacular\openapi.py:1451
+#: .\venv\Lib\site-packages\drf_spectacular\openapi.py:1455
+msgid "No response body"
+msgstr ""
+
+#: .\venv\Lib\site-packages\drf_spectacular\openapi.py:1419
+#: .\venv\Lib\site-packages\drf_spectacular\openapi.py:1473
+msgid "Unspecified response body"
+msgstr ""
+
+#: .\venv\Lib\site-packages\drf_spectacular\plumbing.py:487
+#, python-format
+msgid "Token-based authentication with required prefix \"%s\""
+msgstr ""
+
+#: .\venv\Lib\site-packages\drf_spectacular\views.py:45
+msgid ""
+"\n"
+"    OpenApi3 schema for this API. Format can be selected via content "
+"negotiation.\n"
+"\n"
+"    - YAML: application/vnd.oai.openapi\n"
+"    - JSON: application/vnd.oai.openapi+json\n"
+"    "
+msgstr ""
+
+#: .\venv\Lib\site-packages\httplib2\__init__.py:408
+#, python-format
+msgid "Content purported to be compressed with %s but failed to decompress."
+msgstr ""
+
+#: .\venv\Lib\site-packages\httplib2\__init__.py:572
+#, python-format
+msgid "Unsupported value for qop: %s."
+msgstr ""
+
+#: .\venv\Lib\site-packages\httplib2\__init__.py:576
+#: .\venv\Lib\site-packages\httplib2\__init__.py:654
+#, python-format
+msgid "Unsupported value for algorithm: %s."
+msgstr ""
+
+#: .\venv\Lib\site-packages\httplib2\__init__.py:649
+msgid "The challenge doesn't contain a server nonce, or this one is empty."
+msgstr ""
+
+#: .\venv\Lib\site-packages\httplib2\__init__.py:659
+#, python-format
+msgid "Unsupported value for pw-algorithm: %s."
+msgstr ""
+
+#: .\venv\Lib\site-packages\httplib2\__init__.py:1468
+msgid "Redirected but the response is missing a Location: header."
+msgstr ""
+
+#: .\venv\Lib\site-packages\isort\main.py:159
+msgid "show this help message and exit"
+msgstr ""
+
+#: .\venv\Lib\site-packages\kombu\transport\qpid.py:1311
+#, python-format
+msgid "Attempting to connect to qpid with SASL mechanism %s"
+msgstr ""
+
+#: .\venv\Lib\site-packages\kombu\transport\qpid.py:1316
+#, python-format
+msgid "Connected to qpid with SASL mechanism %s"
+msgstr ""
+
+#: .\venv\Lib\site-packages\kombu\transport\qpid.py:1334
+#, python-format
+msgid "Unable to connect to qpid with SASL mechanism %s"
+msgstr ""
+
+#: .\venv\Lib\site-packages\mypy\main.py:423
+#, python-format
+msgid "%(prog)s: error: %(message)s\n"
+msgstr ""
+
+#~ msgid "oxunmamış bildiriş"
+#~ msgstr "unread notification"
+
+#~ msgid ""
+#~ "Peşəkar işçilərin performansını qiymətləndirmək üçün müasir və etibarlı "
+#~ "həll"
+#~ msgstr ""
+#~ "Modern and reliable solution for evaluating professional employee "
+#~ "performance"
+
+#~ msgid "Məlumatları Dəyiş"
+#~ msgstr "Change Information"
+
+#~ msgid "Yadda Saxla"
+#~ msgstr "Save"

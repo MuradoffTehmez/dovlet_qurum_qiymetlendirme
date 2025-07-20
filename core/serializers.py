@@ -7,7 +7,10 @@ from .models import (
     QiymetlendirmeDovru, Qiymetlendirme, Cavab, InkishafPlani,
     Feedback, Notification, CalendarEvent, QuickFeedback,
     PrivateNote, Idea, IdeaCategory, IdeaComment,
-    RiskFlag, EmployeeRiskAnalysis, PsychologicalRiskSurvey, PsychologicalRiskResponse
+    RiskFlag, EmployeeRiskAnalysis, PsychologicalRiskSurvey, PsychologicalRiskResponse,
+    # LMS Models
+    TrainingCategory, TrainingProgram, TrainingEnrollment, Skill, EmployeeSkill,
+    LearningPath, LearningPathProgram
 )
 
 User = get_user_model()
@@ -273,6 +276,7 @@ class RiskFlagSerializer(serializers.ModelSerializer):
     flag_type_display = serializers.CharField(source='get_flag_type_display', read_only=True)
     severity_display = serializers.CharField(source='get_severity_display', read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
+    details = serializers.JSONField(default=dict, required=False)
     
     class Meta:
         model = RiskFlag
@@ -367,3 +371,151 @@ class StatisticalAnomalySerializer(serializers.Serializer):
     detected_at = serializers.DateTimeField()
     affected_employees = serializers.ListField(child=serializers.IntegerField())
     metrics = serializers.DictField()
+
+
+# === LMS SERIALIZERS ===
+
+class TrainingCategorySerializer(serializers.ModelSerializer):
+    programs_count = serializers.IntegerField(source='programs.count', read_only=True)
+    
+    class Meta:
+        model = TrainingCategory
+        fields = ['id', 'name', 'description', 'icon', 'color', 'is_active', 'programs_count']
+
+
+class TrainingProgramSerializer(serializers.ModelSerializer):
+    category_name = serializers.CharField(source='category.name', read_only=True)
+    instructor_name = serializers.CharField(source='instructor.get_full_name', read_only=True)
+    created_by_name = serializers.CharField(source='created_by.get_full_name', read_only=True)
+    available_spots = serializers.ReadOnlyField()
+    is_full = serializers.ReadOnlyField()
+    enrollment_open = serializers.ReadOnlyField()
+    enrollments_count = serializers.IntegerField(source='enrollments.count', read_only=True)
+    
+    class Meta:
+        model = TrainingProgram
+        fields = [
+            'id', 'title', 'description', 'category', 'category_name',
+            'duration_hours', 'difficulty_level', 'max_participants',
+            'status', 'start_date', 'end_date', 'registration_deadline',
+            'instructor', 'instructor_name', 'external_instructor',
+            'location', 'is_online', 'meeting_link',
+            'provides_certificate', 'prerequisites', 'learning_objectives',
+            'materials_needed', 'created_at', 'created_by', 'created_by_name',
+            'available_spots', 'is_full', 'enrollment_open', 'enrollments_count'
+        ]
+
+
+class TrainingEnrollmentSerializer(serializers.ModelSerializer):
+    program_title = serializers.CharField(source='program.title', read_only=True)
+    employee_name = serializers.CharField(source='employee.get_full_name', read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    
+    class Meta:
+        model = TrainingEnrollment
+        fields = [
+            'id', 'program', 'program_title', 'employee', 'employee_name',
+            'status', 'status_display', 'enrolled_at', 'completed_at',
+            'attendance_rate', 'final_score', 'feedback_rating', 'feedback_comments',
+            'certificate_issued', 'certificate_number'
+        ]
+
+
+class SkillSerializer(serializers.ModelSerializer):
+    parent_skill_name = serializers.CharField(source='parent_skill.name', read_only=True)
+    sub_skills_count = serializers.IntegerField(source='sub_skills.count', read_only=True)
+    
+    class Meta:
+        model = Skill
+        fields = [
+            'id', 'name', 'description', 'skill_type', 'parent_skill', 'parent_skill_name',
+            'is_active', 'sub_skills_count'
+        ]
+
+
+class EmployeeSkillSerializer(serializers.ModelSerializer):
+    employee_name = serializers.CharField(source='employee.get_full_name', read_only=True)
+    skill_name = serializers.CharField(source='skill.name', read_only=True)
+    skill_type_display = serializers.CharField(source='skill.get_skill_type_display', read_only=True)
+    proficiency_level_display = serializers.CharField(source='get_proficiency_level_display', read_only=True)
+    skill_gap = serializers.ReadOnlyField()
+    needs_improvement = serializers.ReadOnlyField()
+    recommended_trainings_count = serializers.IntegerField(source='recommended_trainings.count', read_only=True)
+    
+    class Meta:
+        model = EmployeeSkill
+        fields = [
+            'id', 'employee', 'employee_name', 'skill', 'skill_name', 'skill_type_display',
+            'current_level', 'target_level', 'proficiency_level', 'proficiency_level_display',
+            'self_assessed', 'manager_confirmed', 'last_assessment_date',
+            'improvement_notes', 'skill_gap', 'needs_improvement',
+            'recommended_trainings_count', 'created_at', 'updated_at'
+        ]
+
+
+class LearningPathSerializer(serializers.ModelSerializer):
+    employee_name = serializers.CharField(source='employee.get_full_name', read_only=True)
+    created_by_name = serializers.CharField(source='created_by.get_full_name', read_only=True)
+    target_skills_count = serializers.IntegerField(source='target_skills.count', read_only=True)
+    programs_count = serializers.IntegerField(source='programs.count', read_only=True)
+    is_overdue = serializers.ReadOnlyField()
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    
+    class Meta:
+        model = LearningPath
+        fields = [
+            'id', 'title', 'description', 'employee', 'employee_name',
+            'status', 'status_display', 'progress_percentage',
+            'start_date', 'target_completion_date', 'actual_completion_date',
+            'created_at', 'created_by', 'created_by_name',
+            'target_skills_count', 'programs_count', 'is_overdue'
+        ]
+
+
+class LearningPathProgramSerializer(serializers.ModelSerializer):
+    learning_path_title = serializers.CharField(source='learning_path.title', read_only=True)
+    program_title = serializers.CharField(source='program.title', read_only=True)
+    enrollment_status = serializers.CharField(source='enrollment.status', read_only=True)
+    
+    class Meta:
+        model = LearningPathProgram
+        fields = [
+            'id', 'learning_path', 'learning_path_title', 'program', 'program_title',
+            'enrollment', 'enrollment_status', 'order', 'is_required',
+            'prerequisite_completed', 'added_at'
+        ]
+
+
+class LearningPathDetailSerializer(LearningPathSerializer):
+    """Detallı learning path serializer"""
+    target_skills = SkillSerializer(many=True, read_only=True)
+    programs = LearningPathProgramSerializer(many=True, read_only=True)
+    
+    class Meta(LearningPathSerializer.Meta):
+        fields = LearningPathSerializer.Meta.fields + ['target_skills', 'programs']
+
+
+class EmployeeSkillMatrixSerializer(serializers.Serializer):
+    """İşçinin bacarıq matrisi"""
+    employee_id = serializers.IntegerField()
+    employee_name = serializers.CharField()
+    
+    technical_skills = EmployeeSkillSerializer(many=True)
+    soft_skills = EmployeeSkillSerializer(many=True)
+    leadership_skills = EmployeeSkillSerializer(many=True)
+    language_skills = EmployeeSkillSerializer(many=True)
+    domain_skills = EmployeeSkillSerializer(many=True)
+    
+    overall_score = serializers.FloatField()
+    improvement_areas = serializers.ListField(child=serializers.CharField())
+    recommended_trainings = TrainingProgramSerializer(many=True)
+
+
+class TrainingRecommendationSerializer(serializers.Serializer):
+    """Təlim tövsiyələri"""
+    employee_id = serializers.IntegerField()
+    skill_gaps = serializers.ListField(child=serializers.DictField())
+    recommended_programs = TrainingProgramSerializer(many=True)
+    learning_path_suggestions = serializers.ListField(child=serializers.DictField())
+    priority_score = serializers.FloatField()
+    rationale = serializers.CharField()

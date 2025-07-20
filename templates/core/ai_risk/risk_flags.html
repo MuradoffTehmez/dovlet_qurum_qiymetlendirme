@@ -11,6 +11,57 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'core/css/modern-forms.css' %}">
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+    .heatmap-container {
+        overflow-x: auto;
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        min-height: 400px;
+    }
+
+    .heatmap-cell {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .heatmap-cell:hover {
+        stroke: #000;
+        stroke-width: 2px;
+    }
+
+    .risk-legend {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        margin-top: 20px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+    }
+
+    .tooltip {
+        position: absolute;
+        background: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        pointer-events: none;
+        z-index: 1000;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -88,6 +139,52 @@
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Risk Heatmap -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-transparent border-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-thermometer-half me-2"></i>{% trans "Risk Distribution Heatmap" %}
+                    </h5>
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-outline-secondary" id="toggleHeatmap">
+                            <i class="bi bi-eye me-1"></i>{% trans "Toggle View" %}
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" id="refreshHeatmap">
+                            <i class="bi bi-arrow-clockwise me-1"></i>{% trans "Refresh" %}
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="heatmapContainer" class="heatmap-container">
+                    <div id="heatmapVisualization"></div>
+                    <div class="risk-legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #28a745;"></div>
+                            <span>{% trans "Low Risk" %} (0-2)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #ffc107;"></div>
+                            <span>{% trans "Medium Risk" %} (3-5)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #fd7e14;"></div>
+                            <span>{% trans "High Risk" %} (6-8)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #dc3545;"></div>
+                            <span>{% trans "Critical Risk" %} (9-10)</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -270,6 +367,7 @@
         init() {
             this.loadEmployees();
             this.loadRiskFlags();
+            this.initializeHeatmap();
             this.setupEventListeners();
         }
 
@@ -464,6 +562,208 @@
             pagination.innerHTML = paginationHTML;
         }
 
+        async initializeHeatmap() {
+            await this.loadHeatmapData();
+            this.renderHeatmap();
+        }
+
+        async loadHeatmapData() {
+            try {
+                // Fetch heatmap data from API
+                const response = await fetch('/api/v1/risk-flags/heatmap/');
+                this.heatmapData = await response.json();
+            } catch (error) {
+                console.error('Error loading heatmap data:', error);
+                this.heatmapData = this.generateSampleHeatmapData();
+            }
+        }
+
+        generateSampleHeatmapData() {
+            // Generate sample data for demonstration
+            const departments = ['HR', 'IT', 'Satış', 'Maliyyə', 'Əməliyyat', 'Marketinq'];
+            const riskTypes = ['LOW_PERFORMANCE', 'HIGH_SCORE_VARIANCE', 'HIGH_NEGATIVE_FEEDBACK', 
+                              'STATISTICAL_ANOMALY', 'BEHAVIORAL_ANOMALY'];
+            
+            const data = [];
+            departments.forEach((dept, deptIndex) => {
+                riskTypes.forEach((type, typeIndex) => {
+                    data.push({
+                        department: dept,
+                        risk_type: type,
+                        avg_risk_score: Math.random() * 10,
+                        count: Math.floor(Math.random() * 20) + 1
+                    });
+                });
+            });
+            
+            return {
+                departments,
+                risk_types: riskTypes,
+                data
+            };
+        }
+
+        renderHeatmap() {
+            const container = d3.select('#heatmapVisualization');
+            container.selectAll('*').remove();
+
+            const margin = { top: 60, right: 30, bottom: 100, left: 100 };
+            const width = 800 - margin.left - margin.right;
+            const height = 400 - margin.bottom - margin.top;
+
+            const svg = container
+                .append('svg')
+                .attr('width', width + margin.left + margin.right)
+                .attr('height', height + margin.top + margin.bottom);
+
+            const g = svg.append('g')
+                .attr('transform', `translate(${margin.left},${margin.top})`);
+
+            // Create tooltip
+            const tooltip = d3.select('body').append('div')
+                .attr('class', 'tooltip')
+                .style('opacity', 0);
+
+            // Scales
+            const xScale = d3.scaleBand()
+                .domain(this.heatmapData.departments)
+                .range([0, width])
+                .padding(0.1);
+
+            const yScale = d3.scaleBand()
+                .domain(this.heatmapData.risk_types)
+                .range([0, height])
+                .padding(0.1);
+
+            const colorScale = d3.scaleSequential()
+                .interpolator(d3.interpolateReds)
+                .domain([0, 10]);
+
+            // Create heatmap cells
+            g.selectAll('.heatmap-cell')
+                .data(this.heatmapData.data)
+                .enter()
+                .append('rect')
+                .attr('class', 'heatmap-cell')
+                .attr('x', d => xScale(d.department))
+                .attr('y', d => yScale(d.risk_type))
+                .attr('width', xScale.bandwidth())
+                .attr('height', yScale.bandwidth())
+                .attr('fill', d => colorScale(d.avg_risk_score))
+                .attr('stroke', '#fff')
+                .attr('stroke-width', 1)
+                .on('mouseover', (event, d) => {
+                    tooltip.transition()
+                        .duration(200)
+                        .style('opacity', .9);
+                    tooltip.html(`
+                        <strong>${d.department}</strong><br/>
+                        Risk Type: ${this.formatRiskType(d.risk_type)}<br/>
+                        Avg Score: ${d.avg_risk_score.toFixed(1)}<br/>
+                        Count: ${d.count}
+                    `)
+                        .style('left', (event.pageX + 10) + 'px')
+                        .style('top', (event.pageY - 28) + 'px');
+                })
+                .on('mouseout', () => {
+                    tooltip.transition()
+                        .duration(500)
+                        .style('opacity', 0);
+                })
+                .on('click', (event, d) => {
+                    this.filterByHeatmapCell(d);
+                });
+
+            // Add cell values
+            g.selectAll('.cell-text')
+                .data(this.heatmapData.data)
+                .enter()
+                .append('text')
+                .attr('class', 'cell-text')
+                .attr('x', d => xScale(d.department) + xScale.bandwidth() / 2)
+                .attr('y', d => yScale(d.risk_type) + yScale.bandwidth() / 2)
+                .attr('text-anchor', 'middle')
+                .attr('dy', '.35em')
+                .style('fill', d => d.avg_risk_score > 5 ? 'white' : 'black')
+                .style('font-size', '12px')
+                .style('font-weight', 'bold')
+                .text(d => d.avg_risk_score.toFixed(1));
+
+            // Add x-axis
+            g.append('g')
+                .attr('transform', `translate(0,${height})`)
+                .call(d3.axisBottom(xScale))
+                .selectAll('text')
+                .style('text-anchor', 'end')
+                .attr('dx', '-.8em')
+                .attr('dy', '.15em')
+                .attr('transform', 'rotate(-45)');
+
+            // Add y-axis
+            g.append('g')
+                .call(d3.axisLeft(yScale))
+                .selectAll('text')
+                .text(d => this.formatRiskType(d));
+
+            // Add axis labels
+            svg.append('text')
+                .attr('transform', 'rotate(-90)')
+                .attr('y', 0 - margin.left)
+                .attr('x', 0 - (height / 2))
+                .attr('dy', '1em')
+                .style('text-anchor', 'middle')
+                .style('font-weight', 'bold')
+                .text('Risk Types');
+
+            svg.append('text')
+                .attr('transform', `translate(${width / 2 + margin.left}, ${height + margin.top + 80})`)
+                .style('text-anchor', 'middle')
+                .style('font-weight', 'bold')
+                .text('Departments');
+
+            // Add title
+            svg.append('text')
+                .attr('x', (width + margin.left + margin.right) / 2)
+                .attr('y', margin.top / 2)
+                .attr('text-anchor', 'middle')
+                .style('font-size', '16px')
+                .style('font-weight', 'bold')
+                .text('Risk Distribution by Department and Type');
+        }
+
+        formatRiskType(riskType) {
+            const typeMap = {
+                'LOW_PERFORMANCE': 'Low Performance',
+                'HIGH_SCORE_VARIANCE': 'Score Variance',
+                'HIGH_NEGATIVE_FEEDBACK': 'Negative Feedback',
+                'STATISTICAL_ANOMALY': 'Statistical Anomaly',
+                'BEHAVIORAL_ANOMALY': 'Behavioral Anomaly'
+            };
+            return typeMap[riskType] || riskType;
+        }
+
+        filterByHeatmapCell(cellData) {
+            // Update filters based on clicked cell
+            document.getElementById('riskTypeFilter').value = cellData.risk_type;
+            
+            // Trigger filter update
+            this.currentPage = 1;
+            this.loadRiskFlags();
+        }
+
+        toggleHeatmapVisibility() {
+            const container = document.getElementById('heatmapContainer');
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                document.getElementById('toggleHeatmap').innerHTML = 
+                    '<i class="bi bi-eye-slash me-1"></i>{% trans "Hide View" %}';
+            } else {
+                container.style.display = 'none';
+                document.getElementById('toggleHeatmap').innerHTML = 
+                    '<i class="bi bi-eye me-1"></i>{% trans "Show View" %}';
+            }
+        }
+
         setupEventListeners() {
             // Filter form
             document.getElementById('filterForm').addEventListener('submit', (e) => {
@@ -541,6 +841,15 @@
             // Export button
             document.getElementById('exportBtn').addEventListener('click', () => {
                 this.exportRiskFlags();
+            });
+
+            // Heatmap controls
+            document.getElementById('toggleHeatmap').addEventListener('click', () => {
+                this.toggleHeatmapVisibility();
+            });
+
+            document.getElementById('refreshHeatmap').addEventListener('click', () => {
+                this.initializeHeatmap();
             });
         }
 

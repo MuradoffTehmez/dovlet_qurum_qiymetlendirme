@@ -117,3 +117,8 @@ drf-spectacular==0.28.0
 django-cors-headers==4.6.0
 scikit-learn==1.5.1
 scipy==1.14.1
+django-otp==1.5.4
+qrcode[pil]==8.0.1
+django-axes==6.5.1
+django-ratelimit==4.1.0
+django-modeltranslation==0.19.8

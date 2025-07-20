@@ -11,6 +11,28 @@
         content="{% block keywords %}{% trans 'qiymətləndirmə, performans, işçi, HR, insan resursları' %}{% endblock %}">
     <meta name="author" content="{% trans 'Qiymətləndirmə Sistemi' %}">
 
+    <!-- PWA Meta Tags -->
+    <meta name="application-name" content="Q360">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Q360">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-TileColor" content="#667eea">
+    <meta name="msapplication-tap-highlight" content="no">
+    <meta name="theme-color" content="#667eea">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="152x152" href="{% static 'icons/icon-152x152.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'icons/icon-180x180.png' %}">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'icons/icon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'icons/icon-16x16.png' %}">
+    <link rel="shortcut icon" href="{% static 'icons/favicon.ico' %}">
+
     <!-- Preload critical resources -->
     <link rel="preload" href="{% static 'css/main.css' %}" as="style">
     <link rel="preload" href="{% static 'js/main.js' %}" as="script">
@@ -291,6 +313,111 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/main.js' %}"></script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        // Service Worker registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('{% static 'sw.js' %}')
+                    .then(registration => {
+                        console.log('Service Worker registered successfully:', registration.scope);
+
+                        // Check for updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New update available
+                                    showUpdateAvailable(registration);
+                                }
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+
+        // PWA install prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallButton();
+        });
+
+        function showInstallButton() {
+            const installBtn = document.createElement('button');
+            installBtn.className = 'btn btn-primary btn-sm position-fixed';
+            installBtn.style.cssText = 'bottom: 20px; right: 20px; z-index: 1000;';
+            installBtn.innerHTML = '<i class="bi bi-download me-1"></i>Tətbiqi Yüklə';
+            installBtn.onclick = installApp;
+            document.body.appendChild(installBtn);
+        }
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    }
+                    deferredPrompt = null;
+                    // Remove install button
+                    const installBtn = document.querySelector('button[onclick="installApp()"]');
+                    if (installBtn) installBtn.remove();
+                });
+            }
+        }
+
+        function showUpdateAvailable(registration) {
+            const updateDiv = document.createElement('div');
+            updateDiv.className = 'alert alert-info alert-dismissible position-fixed';
+            updateDiv.style.cssText = 'top: 20px; right: 20px; z-index: 1050; max-width: 300px;';
+            updateDiv.innerHTML = `
+                <strong>Yenilik mövcuddur!</strong>
+                <p class="mb-2">Yeni versiya hazırdır.</p>
+                <button type="button" class="btn btn-sm btn-primary me-2" onclick="updateApp('${registration.waiting}')">
+                    Yenilə
+                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(updateDiv);
+        }
+
+        function updateApp(worker) {
+            if (worker) {
+                worker.postMessage({ type: 'SKIP_WAITING' });
+                worker.addEventListener('statechange', () => {
+                    if (worker.state === 'activated') {
+                        window.location.reload();
+                    }
+                });
+            }
+        }
+
+        // Handle offline/online status
+        window.addEventListener('online', () => {
+            console.log('Back online');
+            // Hide offline indicator if any
+            const offlineIndicator = document.getElementById('offline-indicator');
+            if (offlineIndicator) offlineIndicator.style.display = 'none';
+        });
+
+        window.addEventListener('offline', () => {
+            console.log('Gone offline');
+            // Show offline indicator
+            const offlineIndicator = document.createElement('div');
+            offlineIndicator.id = 'offline-indicator';
+            offlineIndicator.className = 'alert alert-warning position-fixed';
+            offlineIndicator.style.cssText = 'top: 20px; left: 20px; z-index: 1050;';
+            offlineIndicator.innerHTML = '<i class="bi bi-wifi-off me-2"></i>Offline rejimində';
+            document.body.appendChild(offlineIndicator);
+        });
+    </script>
+
     {% block extra_js %}{% endblock %}
 </body>
 
