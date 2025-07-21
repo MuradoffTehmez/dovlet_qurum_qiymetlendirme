@@ -7,205 +7,225 @@
 <li class="breadcrumb-item active">{% trans "Dashboard" %}</li>
 {% endblock %}
 
+{% block extra_css %}
+<style>
+    .modern-card {
+        background: white;
+        border-radius: 18px;
+        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+        padding: 2rem 1.5rem;
+        margin-bottom: 2rem;
+        transition: box-shadow 0.2s;
+    }
+
+    .modern-card:hover {
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    }
+
+    .modern-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 18px 18px 0 0;
+        padding: 1.5rem 1.5rem 1rem 1.5rem;
+        margin-bottom: 0;
+    }
+
+    .modern-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        object-fit: cover;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        margin-right: 1rem;
+    }
+
+    .modern-badge {
+        font-size: 0.85rem;
+        padding: 0.4em 0.8em;
+        border-radius: 12px;
+        background: linear-gradient(90deg, #20c997 0%, #007bff 100%);
+        color: white;
+        margin-left: 0.5rem;
+    }
+
+    .modern-progress {
+        height: 8px;
+        border-radius: 4px;
+        background: #f1f3f6;
+        margin-top: 0.5rem;
+    }
+
+    .modern-progress-bar {
+        background: linear-gradient(90deg, #667eea 0%, #20c997 100%);
+        border-radius: 4px;
+        height: 100%;
+        transition: width 0.8s cubic-bezier(.4, 0, .2, 1);
+    }
+
+    .modern-list-group .list-group-item {
+        border: none;
+        border-radius: 12px;
+        margin-bottom: 0.5rem;
+        background: #f8f9fa;
+        transition: background 0.2s;
+    }
+
+    .modern-list-group .list-group-item:hover {
+        background: #e9ecef;
+    }
+
+    .modern-action-btn {
+        border-radius: 12px;
+        font-weight: 500;
+        padding: 0.6em 1.2em;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+        transition: background 0.2s;
+    }
+
+    .modern-action-btn:hover {
+        background: linear-gradient(90deg, #764ba2 0%, #20c997 100%);
+        color: white;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="row">
-    <div class="col-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="h3 mb-0 text-gradient">{% trans "Xoş gəldiniz" %}, {{
-                    user.get_full_name|default:user.username }}</h1>
-                <p class="text-muted">{% trans "Performans idarəetmə sisteminə xoş gəldiniz" %}</p>
-            </div>
-            <div class="text-end">
-                <small class="text-muted">
-                    {% trans "Son giriş" %}: {{ user.last_login|date:"d M Y, H:i" }}
-                </small>
-            </div>
-        </div>
+<div
+    class="modern-card modern-header d-flex justify-content-between align-items-center mb-4 animate__animated animate__fadeInDown">
+    <div>
+        <h1 class="h3 mb-1">{% trans "Xoş gəldiniz" %}, {{ user.get_full_name|default:user.username }}</h1>
+        <p class="mb-0 opacity-75">{% trans "Performans idarəetmə sisteminə xoş gəldiniz" %}</p>
+    </div>
+    <div class="text-end">
+        <small class="opacity-75">
+            {% trans "Son giriş" %}: {{ user.last_login|date:"d M Y, H:i" }}
+        </small>
     </div>
 </div>
-
-<!-- Quick Navigation -->
-{% include 'components/quick_navigation.html' %}
 
 <!-- Statistics Cards -->
 <div class="row g-4 mb-4">
     <div class="col-md-3 col-sm-6">
-        {% include 'components/stats_card.html' with title="Gözləməkdə" value=pending_evaluations_count icon="bi-clock"
-        color="warning" subtitle="qiymətləndirmə" %}
+        <div class="modern-card text-center animate__animated animate__fadeInUp">
+            <div class="mb-2"><i class="bi bi-clock text-warning fs-2"></i></div>
+            <div class="stat-number fs-2 fw-bold">{{ pending_evaluations_count|default:0 }}</div>
+            <div class="stat-label">{% trans "Gözləməkdə" %}</div>
+        </div>
     </div>
     <div class="col-md-3 col-sm-6">
-        {% include 'components/stats_card.html' with title="Tamamlanmış" value=completed_evaluations_count
-        icon="bi-check-circle" color="success" subtitle="qiymətləndirmə" %}
+        <div class="modern-card text-center animate__animated animate__fadeInUp">
+            <div class="mb-2"><i class="bi bi-check-circle text-success fs-2"></i></div>
+            <div class="stat-number fs-2 fw-bold">{{ completed_evaluations_count|default:0 }}</div>
+            <div class="stat-label">{% trans "Tamamlanmış" %}</div>
+        </div>
     </div>
     <div class="col-md-3 col-sm-6">
-        {% include 'components/stats_card.html' with title="Ümumi" value=total_evaluations_count
-        icon="bi-clipboard-data" color="primary" subtitle="qiymətləndirmə" %}
+        <div class="modern-card text-center animate__animated animate__fadeInUp">
+            <div class="mb-2"><i class="bi bi-clipboard-data text-primary fs-2"></i></div>
+            <div class="stat-number fs-2 fw-bold">{{ total_evaluations_count|default:0 }}</div>
+            <div class="stat-label">{% trans "Ümumi" %}</div>
+        </div>
     </div>
     {% if is_manager %}
     <div class="col-md-3 col-sm-6">
-        {% include 'components/stats_card.html' with title="Komanda" value=team_members_count icon="bi-people"
-        color="info" subtitle="üzv" %}
+        <div class="modern-card text-center animate__animated animate__fadeInUp">
+            <div class="mb-2"><i class="bi bi-people text-info fs-2"></i></div>
+            <div class="stat-number fs-2 fw-bold">{{ team_members_count|default:0 }}</div>
+            <div class="stat-label">{% trans "Komanda Üzvləri" %}</div>
+        </div>
     </div>
     {% endif %}
 </div>
 
 <!-- Active Development Plan -->
 {% if aktiv_plan %}
-<div class="row mb-4">
-    <div class="col-12">
-        <div class="card shadow-custom border-0">
-            <div class="card-header bg-gradient-primary text-white">
-                <h5 class="mb-0">
-                    <i class="bi bi-star me-2"></i>
-                    {% trans "Aktiv İnkişaf Planınız" %}
-                </h5>
-            </div>
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h6 class="card-title">{{ aktiv_plan.dovr.ad }}</h6>
-                        <p class="card-text text-muted">
-                            {% trans "Sizin üçün aktiv inkişaf planı mövcuddur. Hədəflərinizi izləyin və inkişaf edin."
-                            %}
-                        </p>
-                    </div>
-                    <div class="col-md-4 text-end">
-                        <a href="{% url 'plan_bax' aktiv_plan.id %}" class="btn btn-primary">
-                            <i class="bi bi-arrow-right me-1"></i>{% trans "Plana Bax" %}
-                        </a>
-                    </div>
-                </div>
-            </div>
+<div class="modern-card animate__animated animate__fadeInUp">
+    <div class="d-flex align-items-center mb-3">
+        <i class="bi bi-star text-warning fs-3 me-2"></i>
+        <h5 class="mb-0">{% trans "Aktiv İnkişaf Planınız" %}</h5>
+        <span class="modern-badge ms-2">{{ aktiv_plan.dovr.ad }}</span>
+    </div>
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <p class="mb-0 text-muted">{% trans "Sizin üçün aktiv inkişaf planı mövcuddur. Hədəflərinizi izləyin və
+                inkişaf edin." %}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'plan_bax' aktiv_plan.id %}" class="modern-action-btn btn btn-primary">
+                <i class="bi bi-arrow-right me-1"></i>{% trans "Plana Bax" %}
+            </a>
         </div>
     </div>
 </div>
 {% endif %}
 
 <!-- Evaluation Tasks -->
-<div class="row">
-    <div class="col-12">
-        <div class="card shadow-custom border-0">
-            <div class="card-header border-bottom">
-                <h5 class="mb-0">
-                    <i class="bi bi-list-task me-2"></i>
-                    {% trans "Qiymətləndirmə Tapşırıqlarınız" %}
-                </h5>
-            </div>
-            <div class="card-body">
-                {% if qiymetlendirmeler %}
-                <p class="text-muted mb-3">
-                    {% trans "Aşağıdakı şəxslər üçün qiymətləndirməni tamamlamalısınız" %}:
-                </p>
-                <div class="list-group list-group-flush">
-                    {% for q in qiymetlendirmeler %}
-                    <a href="{% url 'qiymetlendirme_etmek' q.id %}"
-                        class="list-group-item list-group-item-action border-0 py-3">
-                        <div class="d-flex w-100 justify-content-between align-items-start">
-                            <div class="flex-grow-1">
-                                <div class="d-flex align-items-center mb-2">
-                                    {% if q.qiymetlendirilen.profil_sekli %}
-                                    <img src="{{ q.qiymetlendirilen.profil_sekli.url }}" alt="Avatar" width="40"
-                                        height="40" class="rounded-circle me-3">
-                                    {% else %}
-                                    <div class="bg-secondary text-white rounded-circle me-3 d-flex align-items-center justify-content-center"
-                                        style="width: 40px; height: 40px;">
-                                        <i class="bi bi-person-fill"></i>
-                                    </div>
-                                    {% endif %}
-                                    <div>
-                                        <h6 class="mb-0">{{ q.qiymetlendirilen.get_full_name }}</h6>
-                                        <small class="text-muted">{{ q.qiymetlendirilen.vezife }}</small>
-                                    </div>
-                                </div>
-                                <small class="text-muted">
-                                    <i class="bi bi-calendar me-1"></i>
-                                    {% trans "Dövr" %}: {{ q.dovr.ad }}
-                                </small>
-                            </div>
-                            <div class="text-end">
-                                <span class="badge bg-warning">
-                                    {% trans "Gözləyir" %}
-                                </span>
-                                <div class="mt-1">
-                                    <small class="text-muted">
-                                        <i class="bi bi-clock me-1"></i>
-                                        {% trans "Son tarix" %}: {{ q.dovr.bitme_tarixi|date:"d M Y" }}
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    {% endfor %}
-                </div>
-                {% else %}
-                <div class="text-center py-5">
-                    <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
-                    <h4 class="mt-3">{% trans "Əla!" %}</h4>
-                    <p class="text-muted">
-                        {% trans "Hal-hazırda tamamlanmalı qiymətləndirmə tapşırığınız yoxdur." %}
-                    </p>
-                </div>
-                {% endif %}
-            </div>
-        </div>
+<div class="modern-card animate__animated animate__fadeInUp">
+    <div class="d-flex align-items-center mb-3">
+        <i class="bi bi-list-task text-primary fs-3 me-2"></i>
+        <h5 class="mb-0">{% trans "Qiymətləndirmə Tapşırıqlarınız" %}</h5>
     </div>
+    {% if qiymetlendirmeler %}
+    <p class="text-muted mb-3">{% trans "Aşağıdakı şəxslər üçün qiymətləndirməni tamamlamalısınız" %}:</p>
+    <div class="modern-list-group">
+        {% for q in qiymetlendirmeler %}
+        <a href="{% url 'qiymetlendirme_etmek' q.id %}" class="list-group-item d-flex align-items-center">
+            {% if q.qiymetlendirilen.profil_sekli %}
+            <img src="{{ q.qiymetlendirilen.profil_sekli.url }}" alt="Avatar" class="modern-avatar">
+            {% else %}
+            <div class="modern-avatar bg-primary text-white d-flex align-items-center justify-content-center">
+                <i class="bi bi-person-fill"></i>
+            </div>
+            {% endif %}
+            <div>
+                <strong>{{ q.qiymetlendirilen.get_full_name }}</strong>
+                <div class="text-muted small">{{ q.dovr.ad }}</div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">{% trans "Qiymətləndirmə tapşırığınız yoxdur." %}</div>
+    {% endif %}
 </div>
 
 <!-- Quick Actions -->
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card shadow-custom border-0">
-            <div class="card-header border-bottom">
-                <h6 class="mb-0">
-                    <i class="bi bi-lightning me-2"></i>
-                    {% trans "Tez Əməliyyatlar" %}
-                </h6>
-            </div>
-            <div class="card-body">
-                <div class="row g-3">
-                    <div class="col-md-4">
-                        <a href="{% url 'hesabatim' %}" class="btn btn-outline-primary w-100">
-                            <i class="bi bi-file-earmark-text me-2"></i>
-                            {% trans "Hesabatım" %}
-                        </a>
-                    </div>
-                    <div class="col-md-4">
-                        <a href="{% url 'profil' %}" class="btn btn-outline-secondary w-100">
-                            <i class="bi bi-person me-2"></i>
-                            {% trans "Profil Yeniləmə" %}
-                        </a>
-                    </div>
-                    {% if user.rol == 'REHBER' or user.is_superuser %}
-                    <div class="col-md-4">
-                        <a href="{% url 'rehber_paneli' %}" class="btn btn-outline-success w-100">
-                            <i class="bi bi-people me-2"></i>
-                            {% trans "Komanda İdarəsi" %}
-                        </a>
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+<div class="modern-card animate__animated animate__fadeInUp">
+    <div class="d-flex align-items-center mb-3">
+        <i class="bi bi-lightning-charge text-warning fs-3 me-2"></i>
+        <h5 class="mb-0">{% trans "Tez Əməliyyatlar" %}</h5>
+    </div>
+    <div class="d-flex gap-3 flex-wrap">
+        <a href="{% url 'interactive_dashboard' %}" class="modern-action-btn btn btn-outline-primary">
+            <i class="bi bi-graph-up"></i> {% trans "İnteraktiv Panel" %}
+        </a>
+        <a href="{% url 'calendar_view' %}" class="modern-action-btn btn btn-outline-info">
+            <i class="bi bi-calendar-check"></i> {% trans "Təqvim" %}
+        </a>
+        <a href="{% url 'notification_center' %}" class="modern-action-btn btn btn-outline-warning">
+            <i class="bi bi-bell"></i> {% trans "Bildirişlər" %}
+        </a>
+        <a href="{% url 'report_center' %}" class="modern-action-btn btn btn-outline-success">
+            <i class="bi bi-file-bar-graph"></i> {% trans "Hesabatlar" %}
+        </a>
+        {% if user.rol == 'REHBER' or user.is_superuser %}
+        <a href="{% url 'rehber_paneli' %}" class="modern-action-btn btn btn-outline-secondary">
+            <i class="bi bi-people"></i> {% trans "Rəhbər Paneli" %}
+        </a>
+        {% endif %}
     </div>
 </div>
-
 {% endblock %}
 
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Animate statistics cards on page load
-        const statCards = document.querySelectorAll('.stats-card');
-        statCards.forEach((card, index) => {
-            setTimeout(() => {
-                card.classList.add('animate__animated', 'animate__fadeInUp');
-            }, index * 100);
+        document.querySelectorAll('.modern-card').forEach((card, idx) => {
+            setTimeout(() => card.classList.add('animate__animated', 'animate__fadeInUp'), idx * 120);
         });
-
-        // Add progress animation to completion stats
-        const progressBars = document.querySelectorAll('.progress-bar');
-        progressBars.forEach(bar => {
+        // Animate progress bars if any
+        document.querySelectorAll('.modern-progress-bar').forEach(bar => {
             setTimeout(() => {
                 bar.style.width = bar.getAttribute('aria-valuenow') + '%';
             }, 500);
