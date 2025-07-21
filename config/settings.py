@@ -152,7 +152,7 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # ===================================================================
@@ -302,51 +302,75 @@ LOGS_DIR = BASE_DIR / "logs"
 LOGS_DIR.mkdir(exist_ok=True)  # Əgər qovluq yoxdursa, onu yaradır
 
 LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    # Logların formatını təyin edirik
-    "formatters": {
-        "verbose": {
-            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
-            "style": "{",
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
         },
-        "simple": {
-            "format": "{levelname} {message}",
-            "style": "{",
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
         },
-    },
-    # Logları hara yazacağımızı təyin edirik (handlerlər)
-    "handlers": {
-        # Konsola (terminala) çıxan loglar
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "simple",
-        },
-        # Fayla yazılan loglar
-        "file": {
-            "level": "INFO",
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": LOGS_DIR / "debug.log",  # Log faylının adı və yeri
-            "maxBytes": 1024 * 1024 * 5,  # 5 MB
-            "backupCount": 5,
-            "formatter": "verbose",
+        'audit': {
+            'format': '{asctime} - AUDIT - {message}',
+            'style': '{',
         },
     },
-    # Hansı logları harada göstərəcəyimizi təyin edirik
-    "loggers": {
-        # Django-nun öz logları
-        "django": {
-            "handlers": ["console", "file"],
-            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
-            "propagate": True,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
         },
-        # Bizim tətbiqin (və ya digərlərinin) logları
-        "": {
-            "handlers": ["console", "file"],
-            "level": "INFO",
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / "debug.log",
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+        'audit_file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / "audit.log",
+            'maxBytes': 1024*1024*15,
+            'backupCount': 10,
+            'formatter': 'audit',
+        },
+        'general_file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': LOGS_DIR / "general.log",
+            'maxBytes': 1024*1024*15,
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'audit': {
+            'handlers': ['audit_file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django': {
+            'handlers': ['general_file', 'console', 'file'],
+            'level': os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            'propagate': True,
+        },
+        'core': {
+            'handlers': ['general_file', 'console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        '': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
         },
     },
 }
+
 # ===================================================================
 # CELERY KONFİQURASİYASI
 # ===================================================================
