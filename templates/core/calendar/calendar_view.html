@@ -242,17 +242,17 @@
                     <h6>Xatırlatma Yarat</h6>
                     <form id="createReminderForm">
                         <div class="mb-3">
-                            <label class="form-label small">Başlıq</label>
+                            <label class="form-label small" for="reminderTitle">Başlıq</label>
                             <input type="text" class="form-control form-control-sm" id="reminderTitle" required>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label small">Tarix</label>
+                            <label class="form-label small" for="reminderDate">Tarix</label>
                             <input type="date" class="form-control form-control-sm" id="reminderDate" required>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label small">Təsvir</label>
+                            <label class="form-label small" for="reminderDescription">Təsvir</label>
                             <textarea class="form-control form-control-sm" id="reminderDescription" rows="2"></textarea>
                         </div>
 
@@ -430,8 +430,8 @@
 
         // Tooltips-ləri aktivləşdir
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
         });
 
         // Real-time yenilənmə (30 saniyədə bir)

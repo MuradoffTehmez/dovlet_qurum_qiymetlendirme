@@ -93,8 +93,8 @@
                 <div class="card-body">
                     <form method="get" class="row g-3">
                         <div class="col-md-4">
-                            <label class="form-label small">Kateqoriya</label>
-                            <select name="category" class="form-select">
+                            <label for="id_category" class="form-label small">Kateqoriya</label>
+                            <select id="id_category" name="category" class="form-select">
                                 <option value="">Bütün Kateqoriyalar</option>
                                 {% for category in categories %}
                                 <option value="{{ category.id }}" {% if current_category == category.id %}selected{% endif %}>
@@ -104,8 +104,8 @@
                             </select>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label small">Növ</label>
-                            <select name="type" class="form-select">
+                            <label for="id_type" class="form-label small">Növ</label>
+                            <select id="id_type" name="type" class="form-select">
                                 <option value="">Bütün Növlər</option>
                                 <option value="POSITIVE" {% if current_type == 'POSITIVE' %}selected{% endif %}>Müsbət</option>
                                 <option value="CONSTRUCTIVE" {% if current_type == 'CONSTRUCTIVE' %}selected{% endif %}>Konstruktiv</option>

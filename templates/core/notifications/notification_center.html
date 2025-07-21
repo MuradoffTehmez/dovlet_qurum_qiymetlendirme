@@ -124,8 +124,8 @@
                     <form method="get" id="filter-form">
                         <!-- Növ Filtri -->
                         <div class="mb-3">
-                            <label class="form-label">Bildiriş Növü</label>
-                            <select name="type" class="form-select" onchange="submitFilter()">
+                            <label class="form-label" for="type-select">Bildiriş Növü</label>
+                            <select id="type-select" name="type" class="form-select" onchange="submitFilter()">
                                 <option value="all" {% if current_filter_type=='all' %}selected{% endif %}>Hamısı
                                 </option>
                                 {% for type_code, type_name in notification_types %}
@@ -139,8 +139,8 @@
 
                         <!-- Oxunma Statusu -->
                         <div class="mb-3">
-                            <label class="form-label">Status</label>
-                            <select name="read" class="form-select" onchange="submitFilter()">
+                            <label class="form-label" for="read-select">Status</label>
+                            <select id="read-select" name="read" class="form-select" onchange="submitFilter()">
                                 <option value="all" {% if current_filter_read=='all' %}selected{% endif %}>Hamısı
                                 </option>
                                 <option value="unread" {% if current_filter_read=='unread' %}selected{% endif %}>
@@ -152,10 +152,10 @@
 
                         <!-- Axtarış -->
                         <div class="mb-3">
-                            <label class="form-label">Axtarış</label>
+                            <label class="form-label" for="search-input">Axtarış</label>
                             <div class="input-group">
-                                <input type="text" name="search" class="form-control" placeholder="Bildiriş axtar..."
-                                    value="{{ search_query }}">
+                                <input id="search-input" type="text" name="search" class="form-control"
+                                    placeholder="Bildiriş axtar..." value="{{ search_query }}">
                                 <button class="btn btn-outline-secondary" type="submit">
                                     <i class="fas fa-search"></i>
                                 </button>

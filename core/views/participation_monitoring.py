@@ -175,7 +175,7 @@ def send_participation_reminders(request, cycle_id):
             
             sent_count += 1
             
-        except Exception as e:
+        except:
             continue
     
     messages.success(request, f"{sent_count} işçiyə xatırlatma göndərildi.")
@@ -188,7 +188,7 @@ def send_participation_reminders(request, cycle_id):
 
 
 @login_required
-@require_role(['ADMIN', 'SUPERADMIN', 'REHBER'])
+@require_role(['ADMIN', 'SUPERADMIN'])
 def participation_analytics_api(request, cycle_id):
     """İştirak analitikası üçün API"""
     

@@ -15,6 +15,11 @@ from django.db.models import Q, Count, Case, When, IntegerField
 from ..models import Ishchi, Idea, IdeaCategory, IdeaVote, IdeaComment, Notification
 from ..permissions import require_role
 
+IDEA_BANK_CREATE = 'idea_bank:create'
+IDEA_BANK_DETAIL = 'idea_bank:detail'
+IDEA_VIEW_TEXT = "İdeyanı Görüntülə"
+APPLICATION_JSON = 'application/json'
+
 
 @login_required
 def idea_bank_dashboard(request):
@@ -155,7 +160,7 @@ def create_idea(request):
                 # Validasiya
                 if not title or not description:
                     messages.error(request, 'Başlıq və təsvir sahələri mütləqdir.')
-                    return redirect('idea_bank:create')
+                    return redirect(IDEA_BANK_CREATE)
                 
                 category = None
                 if category_id:
@@ -168,7 +173,7 @@ def create_idea(request):
                         budget_value = float(budget_estimate)
                     except ValueError:
                         messages.error(request, 'Büdcə təxmini düzgün rəqəm deyil.')
-                        return redirect('idea_bank:create')
+                        return redirect(IDEA_BANK_CREATE)
                 
                 # İdeya yaratmaq
                 idea = Idea.objects.create(
@@ -197,7 +202,7 @@ def create_idea(request):
                             notification_type=Notification.NotificationType.IDEA_SUBMITTED,
                             priority=Notification.Priority.MEDIUM,
                             action_url=f"/idea-bank/{idea.id}/",
-                            action_text="İdeyanı Görüntülə"
+                            action_text=IDEA_VIEW_TEXT
                         )
                 
                 if save_as_draft:
@@ -205,11 +210,11 @@ def create_idea(request):
                     return redirect('idea_bank:my_ideas')
                 else:
                     messages.success(request, 'İdeya uğurla təqdim edildi!')
-                    return redirect('idea_bank:detail', idea_id=idea.id)
+                    return redirect(IDEA_BANK_DETAIL, idea_id=idea.id)
                 
         except Exception as e:
             messages.error(request, f'İdeya yaradılarkən xəta: {str(e)}')
-            return redirect('idea_bank:create')
+            return redirect(IDEA_BANK_CREATE)
     
     # GET request
     categories = IdeaCategory.objects.filter(is_active=True).order_by('name')
@@ -232,12 +237,12 @@ def edit_idea(request, idea_id):
     # İcazə yoxlanışı
     if idea.author != request.user and request.user.rol not in ['ADMIN', 'SUPERADMIN']:
         messages.error(request, 'Bu ideyanı redaktə etmək icazəniz yoxdur.')
-        return redirect('idea_bank:detail', idea_id=idea.id)
+        return redirect(IDEA_BANK_DETAIL, idea_id=idea.id)
     
     # Yalnız layihə və ya təqdim edilmiş ideyalar redaktə oluna bilər
     if idea.status not in [Idea.Status.DRAFT, Idea.Status.SUBMITTED]:
         messages.error(request, 'Bu ideya artıq redaktə edilə bilməz.')
-        return redirect('idea_bank:detail', idea_id=idea.id)
+        return redirect(IDEA_BANK_DETAIL, idea_id=idea.id)
     
     if request.method == 'POST':
         try:
@@ -283,7 +288,7 @@ def edit_idea(request, idea_id):
                 idea.save()
                 
                 messages.success(request, 'İdeya uğurla yeniləndi.')
-                return redirect('idea_bank:detail', idea_id=idea.id)
+                return redirect(IDEA_BANK_DETAIL, idea_id=idea.id)
                 
         except Exception as e:
             messages.error(request, f'İdeya yenilənərkən xəta: {str(e)}')
@@ -408,10 +413,10 @@ def add_comment(request, idea_id):
     is_anonymous = request.POST.get('is_anonymous') == 'on'
     
     if not content:
-        if request.headers.get('Accept') == 'application/json':
+        if request.headers.get('Accept') == APPLICATION_JSON:
             return JsonResponse({'success': False, 'error': 'Şərh boş ola bilməz'})
         messages.error(request, 'Şərh boş ola bilməz.')
-        return redirect('idea_bank:detail', idea_id=idea.id)
+        return redirect(IDEA_BANK_DETAIL, idea_id=idea.id)
     
     try:
         parent = None
@@ -435,10 +440,10 @@ def add_comment(request, idea_id):
                 notification_type=Notification.NotificationType.IDEA_COMMENTED,
                 priority=Notification.Priority.LOW,
                 action_url=f"/idea-bank/{idea.id}/",
-                action_text="İdeyanı Görüntülə"
+                action_text=IDEA_VIEW_TEXT
             )
         
-        if request.headers.get('Accept') == 'application/json':
+        if request.headers.get('Accept') == APPLICATION_JSON:
             return JsonResponse({
                 'success': True,
                 'comment': {
@@ -450,13 +455,13 @@ def add_comment(request, idea_id):
             })
         
         messages.success(request, 'Şərh əlavə edildi.')
-        return redirect('idea_bank:detail', idea_id=idea.id)
+        return redirect(IDEA_BANK_DETAIL, idea_id=idea.id)
         
     except Exception as e:
-        if request.headers.get('Accept') == 'application/json':
+        if request.headers.get('Accept') == APPLICATION_JSON:
             return JsonResponse({'success': False, 'error': str(e)})
         messages.error(request, f'Şərh əlavə edilərkən xəta: {str(e)}')
-        return redirect('idea_bank:detail', idea_id=idea.id)
+        return redirect(IDEA_BANK_DETAIL, idea_id=idea.id)
 
 
 @login_required
@@ -532,7 +537,7 @@ def review_idea(request, idea_id):
         notification_type=Notification.NotificationType.IDEA_STATUS_CHANGED,
         priority=Notification.Priority.MEDIUM,
         action_url=f"/idea-bank/{idea.id}/",
-        action_text="İdeyanı Görüntülə"
+        action_text=IDEA_VIEW_TEXT
     )
     
     return redirect('idea_bank:admin_review')

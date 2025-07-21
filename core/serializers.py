@@ -15,6 +15,10 @@ from .models import (
 
 User = get_user_model()
 
+CATEGORY_NAME = 'category.name'
+EMPLOYEE_FULL_NAME = 'employee.get_full_name'
+CREATED_BY_FULL_NAME = 'created_by.get_full_name'
+
 
 # --- Təşkilati Struktur Serializers ---
 class OrganizationUnitSerializer(serializers.ModelSerializer):

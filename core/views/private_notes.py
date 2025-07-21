@@ -15,6 +15,8 @@ from django.db.models import Q, Count
 from ..models import Ishchi, PrivateNote, QiymetlendirmeDovru, Notification
 from ..permissions import require_role
 
+PRIVATE_NOTES_EMPLOYEE = 'private_notes:employee_notes'
+
 
 @login_required
 @require_role(['REHBER', 'ADMIN', 'SUPERADMIN'])
@@ -193,7 +195,7 @@ def create_note(request, employee_id=None):
                     pass  # Bu hissə sonra həyata keçiriləcək
                 
                 messages.success(request, f'{employee.get_full_name()} haqqında qeyd uğurla yaradıldı.')
-                return redirect('private_notes:employee_notes', employee_id=employee.id)
+                return redirect(PRIVATE_NOTES_EMPLOYEE, employee_id=employee.id)
                 
         except Exception as e:
             messages.error(request, f'Qeyd yaradılarkən xəta: {str(e)}')
@@ -271,7 +273,7 @@ def edit_note(request, note_id):
                 note.save()
                 
                 messages.success(request, 'Qeyd uğurla yeniləndi.')
-                return redirect('private_notes:employee_notes', employee_id=note.employee.id)
+                return redirect(PRIVATE_NOTES_EMPLOYEE, employee_id=note.employee.id)
                 
         except Exception as e:
             messages.error(request, f'Qeyd yenilənərkən xəta: {str(e)}')
@@ -329,7 +331,7 @@ def delete_note(request, note_id):
         return JsonResponse({'success': True})
     
     messages.success(request, 'Qeyd arxivləşdirildi.')
-    return redirect('private_notes:employee_notes', employee_id=note.employee.id)
+    return redirect(PRIVATE_NOTES_EMPLOYEE, employee_id=note.employee.id)
 
 
 @login_required

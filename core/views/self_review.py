@@ -16,6 +16,8 @@ from core.models import (
 )
 from core.permissions import require_role
 
+SELF_REVIEW_EDIT = 'self_review:edit'
+
 
 @login_required
 @require_role(['ISHCHI', 'REHBER', 'ADMIN', 'SUPERADMIN'])
@@ -33,7 +35,7 @@ def self_review_dashboard(request):
     self_reviews = Qiymetlendirme.objects.filter(
         qiymetlendirilen=request.user,
         qiymetlendiren=request.user,
-        qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW,
+        qiymetlendirme_novu=Qiymetlendime.QiymetlendirmeNovu.SELF_REVIEW,
         dovr__in=active_cycles
     ).select_related('dovr').order_by('-yaradilma_tarixi')
     
@@ -41,8 +43,8 @@ def self_review_dashboard(request):
     past_self_reviews = Qiymetlendirme.objects.filter(
         qiymetlendirilen=request.user,
         qiymetlendiren=request.user,
-        qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW,
-        status=Qiymetlendirme.Status.TAMAMLANDI
+        qiymetlendirme_novu=Qiymetlendime.QiymetlendirmeNovu.SELF_REVIEW,
+        status=Qiymetlendime.Status.TAMAMLANDI
     ).select_related('dovr').order_by('-tamamlanma_tarixi')[:5]
     
     # Aktiv dövrlərdə self-review yaratılmamış olanları tap
@@ -75,12 +77,12 @@ def create_self_review(request, cycle_id):
         dovr=cycle,
         qiymetlendirilen=request.user,
         qiymetlendiren=request.user,
-        qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW
+        qiymetlendirme_novu=Qiymetlendime.QiymetlendirmeNovu.SELF_REVIEW
     ).first()
     
     if existing_review:
         messages.warning(request, f"{cycle.ad} dövrü üçün self-review artıq mövcuddur.")
-        return redirect('self_review:edit', review_id=existing_review.id)
+        return redirect(SELF_REVIEW_EDIT, review_id=existing_review.id)
     
     # Yeni self-review yarat
     try:
@@ -89,8 +91,8 @@ def create_self_review(request, cycle_id):
                 dovr=cycle,
                 qiymetlendirilen=request.user,
                 qiymetlendiren=request.user,
-                qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW,
-                status=Qiymetlendirme.Status.GOZLEMEDE
+                qiymetlendirme_novu=Qiymetlendime.QiymetlendirmeNovu.SELF_REVIEW,
+                status=Qiymetlendime.Status.GOZLEMEDE
             )
             
             # Bildiriş yarat
@@ -105,7 +107,7 @@ def create_self_review(request, cycle_id):
             )
             
             messages.success(request, f"{cycle.ad} dövrü üçün self-review uğurla yaradıldı.")
-            return redirect('self_review:edit', review_id=new_review.id)
+            return redirect(SELF_REVIEW_EDIT, review_id=new_review.id)
             
     except Exception as e:
         messages.error(request, f"Self-review yaradılarkən xəta baş verdi: {str(e)}")
@@ -122,7 +124,7 @@ def edit_self_review(request, review_id):
         id=review_id,
         qiymetlendirilen=request.user,
         qiymetlendiren=request.user,
-        qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW
+        qiymetlendirme_novu=Qiymetlendime.QiymetlendirmeNovu.SELF_REVIEW
     )
     
     # Sualları kategoriyalara görə qrupla
@@ -174,8 +176,8 @@ def save_answer(request, review_id):
         id=review_id,
         qiymetlendirilen=request.user,
         qiymetlendiren=request.user,
-        qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW,
-        status=Qiymetlendirme.Status.GOZLEMEDE
+        qiymetlendirme_novu=Qiymetlendime.QiymetlendirmeNovu.SELF_REVIEW,
+        status=Qiymetlendime.Status.GOZLEMEDE
     )
     
     question_id = request.POST.get('question_id')
@@ -194,7 +196,7 @@ def save_answer(request, review_id):
             })
         
         # Cavabı yarat və ya yenilə
-        answer, created = Cavab.objects.update_or_create(
+        _, created = Cavab.objects.update_or_create(
             qiymetlendirme=review,
             sual=question,
             defaults={
@@ -234,8 +236,8 @@ def complete_self_review(request, review_id):
         id=review_id,
         qiymetlendirilen=request.user,
         qiymetlendiren=request.user,
-        qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW,
-        status=Qiymetlendirme.Status.GOZLEMEDE
+        qiymetlendirme_novu=Qiymetlendime.QiymetlendirmeNovu.SELF_REVIEW,
+        status=Qiymetlendime.Status.GOZLEMEDE
     )
     
     # Bütün sualların cavablandığını yoxla
@@ -305,7 +307,7 @@ def view_self_review(request, review_id):
         id=review_id,
         qiymetlendirilen=request.user,
         qiymetlendiren=request.user,
-        qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW
+        qiymetlendirme_novu=Qiymetlendime.QiymetlendirmeNovu.SELF_REVIEW
     )
     
     # Cavabları kategoriyalara görə qrupla
@@ -347,8 +349,8 @@ def self_review_analytics(request):
     completed_reviews = Qiymetlendirme.objects.filter(
         qiymetlendirilen=request.user,
         qiymetlendiren=request.user,
-        qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW,
-        status=Qiymetlendirme.Status.TAMAMLANDI
+        qiymetlendirme_novu=Qiymetlendime.QiymetlendirmeNovu.SELF_REVIEW,
+        status=Qiymetlendime.Status.TAMAMLANDI
     ).select_related('dovr').order_by('dovr__bashlama_tarixi')
     
     # Zaman üzrə trend
