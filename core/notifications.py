@@ -293,16 +293,17 @@ def notify_system_update(title, message, importance="medium"):
 def notify_new_employee_joined(new_employee, hr_managers):
     """Yeni işçi qoşulduğunda HR-a bildiriş"""
     message = f"Yeni işçi qeydiyyatdan keçdi: {new_employee.get_full_name()} ({new_employee.username})"
-    
-    return NotificationManager.bulk_notify(
-        recipients=hr_managers,
-        title="👋 Yeni İşçi Qoşuldu",
-        message=message,
-        notification_type=Notification.NotificationType.INFO,
-        priority=Notification.Priority.MEDIUM,
-        action_url=f"/admin/core/ishchi/{new_employee.id}/change/",
-        action_text="Profilə Bax"
-    )
+    if hr_managers:
+        return NotificationManager.bulk_notify(
+            recipients=hr_managers,
+            title="👋 Yeni İşçi Qoşuldu",
+            message=message,
+            notification_type=Notification.NotificationType.INFO,
+            priority=Notification.Priority.MEDIUM,
+            action_url=f"/admin/core/ishchi/{new_employee.id}/change/",
+            action_text="Profilə Bax"
+        )
+    return []
 
 
 # === AVTOMATİK XATİRLATMA SİSTEMİ ===
@@ -326,7 +327,7 @@ def send_weekly_reminders():
     
     for goal in upcoming_goals:
         days_remaining = (goal.son_tarix - today).days
-        if days_remaining <= 7:
+        if days_remaining <= 7 and hasattr(goal, 'plan') and getattr(goal.plan, 'ishchi', None):
             notify_goal_deadline(
                 employee=goal.plan.ishchi,
                 goal_title=goal.tesvir[:50],
@@ -354,7 +355,9 @@ def cleanup_old_notifications():
     ).update(is_archived=True)
     
     # Müddəti bitmiş bildirişləri arxivləşdir
-    expired_count = Notification.cleanup_expired()
+    expired_count = 0
+    if hasattr(Notification, 'cleanup_expired'):
+        expired_count = Notification.cleanup_expired()
     
     logger.info(f"Bildiriş təmizliyi: {archived_count} köhnə, {expired_count} müddəti bitmiş")
     

@@ -6,14 +6,13 @@ Django-nun Group və Permission sistemi ilə modern RBAC (Role-Based Access Cont
 
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from django.core.management.base import BaseCommand
-from functools import wraps
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
+from functools import wraps
 
 # Sistem rolları və onların icazələri
 ROLE_PERMISSIONS = {
@@ -23,7 +22,7 @@ ROLE_PERMISSIONS = {
         'add_ishchi', 'change_ishchi', 'delete_ishchi', 'view_ishchi',
         'add_qiymetlendirme', 'change_qiymetlendirme', 'delete_qiymetlendirme', 'view_qiymetlendirme',
         'add_organizationunit', 'change_organizationunit', 'delete_organizationunit', 'view_organizationunit',
-        'add_inki shafplani', 'change_inkishafplani', 'delete_inkishafplani', 'view_inkishafplani',
+        'add_inkishafplani', 'change_inkishafplani', 'delete_inkishafplani', 'view_inkishafplani',
         'view_all_reports', 'generate_reports', 'manage_system_settings',
         'view_audit_logs', 'manage_users', 'manage_roles'
     ],
@@ -108,7 +107,7 @@ def has_permission(user, permission_code):
     """
     if user.is_superuser:
         return True
-    
+    # Django permission check and group permission check
     return user.has_perm(f'core.{permission_code}') or \
            user.groups.filter(permissions__codename=permission_code).exists()
 

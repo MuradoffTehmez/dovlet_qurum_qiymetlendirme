@@ -10,10 +10,8 @@ from django.views.decorators.http import require_http_methods
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.utils import timezone
-from django.views.decorators.csrf import csrf_exempt
-import json
 
-from .models import Notification
+from .models import Notification, Ishchi
 from .notifications import NotificationManager
 from .permissions import permission_required
 
@@ -313,7 +311,7 @@ def send_bulk_notification(request):
             notification_type=notification_type,
             priority=priority,
             sender=request.user
-        )
+        ) or []
         
         return JsonResponse({
             'success': True,

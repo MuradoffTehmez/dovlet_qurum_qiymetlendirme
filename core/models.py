@@ -1836,6 +1836,7 @@ class Skill(models.Model):
         DOMAIN = 'DOMAIN', 'Sahə Bilikləri'
     
     name = models.CharField(max_length=100, verbose_name="Bacarıq Adı")
+   
     description = models.TextField(blank=True, verbose_name="Təsvir")
     skill_type = models.CharField(
         max_length=15, choices=SkillType.choices,

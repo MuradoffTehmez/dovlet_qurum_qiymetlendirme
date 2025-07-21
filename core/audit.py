@@ -43,7 +43,7 @@ class AuditLogManager:
         audit_logger.info(json.dumps(log_data, ensure_ascii=False))
         
         # Redis-də son aktivlikləri saxla (real-time monitoring üçün)
-        cache_key = f"recent_activity:{user.id if user and hasattr(user, 'id') else 'anonymous'}"
+        cache_key = f"recent_activity:{getattr(user, 'id', 'anonymous') if user and hasattr(user, 'id') else 'anonymous'}"
         recent_activities = cache.get(cache_key, [])
         recent_activities.insert(0, log_data)
         recent_activities = recent_activities[:10]  # Son 10 aktivlik

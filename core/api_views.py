@@ -106,7 +106,7 @@ class IshchiViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['post'])
     def change_password(self, request):
-        """Şifrə dəyişdirmə"""
+        """Şifrə dəyişdirmə"""s
         serializer = ChangePasswordSerializer(data=request.data)
         if serializer.is_valid():
             if not request.user.check_password(serializer.validated_data['old_password']):

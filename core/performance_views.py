@@ -20,7 +20,7 @@ from .decorators import user_passes_test_with_message
 
 def is_hr_or_manager(user):
     """HR və ya rəhbər olub-olmadığını yoxlayır"""
-    return user.rol in ['hr', 'manager', 'superadmin']
+    return user.rol in ['HR', 'MANAGER', 'SUPERADMIN']
 
 
 @login_required
@@ -84,7 +84,7 @@ def performance_api_stats(request):
         # Basic statistics
         stats = {}
         
-        if user.rol in ['hr', 'manager', 'superadmin']:
+        if user.rol in ['HR', 'MANAGER', 'SUPERADMIN']:
             # Manager/HR view
             stats = {
                 'total_evaluations': Qiymetlendirme.objects.count(),
@@ -119,7 +119,7 @@ def performance_api_stats(request):
                 ).aggregate(avg_score=Avg('cavablar__xal'))['avg_score'] or 0,
                 'active_goals': user_plans.filter(status='ACTIVE').count(),
                 'completed_goals': user_plans.filter(status='COMPLETED').count(),
-                'feedback_received': user.received_quick_feedbacks.count(),
+                'feedback_received': getattr(user, 'received_quick_feedbacks', []).count() if hasattr(user, 'received_quick_feedbacks') else 0,
                 'development_activities': 0,  # Placeholder
                 'career_progress': 75  # Placeholder percentage
             }
@@ -216,22 +216,22 @@ def goals_api(request):
         if request.method == 'GET':
             # Get user's goals
             goals = []
-            if user.rol in ['hr', 'manager', 'superadmin']:
-                # Get all goals for managers
+            if user.rol in ['HR', 'MANAGER', 'SUPERADMIN']:
                 plans = InkishafPlani.objects.all()[:20]
             else:
-                # Get user's own goals
                 plans = InkishafPlani.objects.filter(ishchi=user)
             
             for plan in plans:
+                owner_name = plan.ishchi.get_full_name() if getattr(plan, 'ishchi', None) and hasattr(plan.ishchi, 'get_full_name') else ''
+                deadline = (plan.yaradilma_tarixi.date() + timedelta(days=365)) if getattr(plan, 'yaradilma_tarixi', None) else None
                 goals.append({
                     'id': plan.id,
-                    'title': f"{plan.ishchi.get_full_name()} - İnkişaf Planı",
+                    'title': f"{owner_name} - İnkişaf Planı",
                     'description': getattr(plan, 'description', 'İnkişaf planı'),
                     'progress': 75,  # Placeholder
-                    'deadline': plan.yaradilma_tarixi.date() + timedelta(days=365),
+                    'deadline': deadline,
                     'status': plan.status,
-                    'owner': plan.ishchi.get_full_name(),
+                    'owner': owner_name,
                     'priority': 'high'  # Placeholder
                 })
             
