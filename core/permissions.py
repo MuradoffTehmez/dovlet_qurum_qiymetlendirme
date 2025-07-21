@@ -107,7 +107,7 @@ def has_permission(user, permission_code):
     """
     if user.is_superuser:
         return True
-    # Django permission check and group permission check
+    # Defensive: check both Django permission and group permission
     return user.has_perm(f'core.{permission_code}') or \
            user.groups.filter(permissions__codename=permission_code).exists()
 
@@ -192,27 +192,20 @@ def assign_user_to_role(user, role_name):
     İstifadəçini müəyyən rola təyin edir
     """
     try:
-        # Köhnə qrupları sil
         user.groups.clear()
-        
-        # Yeni qrupu əlavə et
         group = Group.objects.get(name=role_name)
         user.groups.add(group)
-        
-        # Köhnə rol sahəsini yenilə
         if hasattr(user, 'rol'):
             role_mapping = {
                 'Super Admin': 'SUPERADMIN',
-                'HR Manager': 'ADMIN',
+                'HR Manager': 'ADMIN',  # Change to 'HR' if needed
                 'Department Manager': 'REHBER',
                 'Team Lead': 'REHBER',
                 'Employee': 'ISHCHI'
             }
             user.rol = role_mapping.get(role_name, 'ISHCHI')
             user.save()
-        
         return True
-        
     except Group.DoesNotExist:
         return False
 

@@ -11,6 +11,7 @@ from django.utils import timezone
 from datetime import timedelta, date
 from typing import Dict, List, Tuple, Optional
 import logging
+import statistics
 
 from .models import (
     Ishchi, Qiymetlendirme, Cavab, QiymetlendirmeDovru,
@@ -123,7 +124,7 @@ class StatisticalAnomalyDetector:
                 created_at__range=[start_date, end_date]
             ).count()
             
-            # Login aktivliği
+            # Login aktivliyi
             days_since_login = 0
             if employee.last_login:
                 days_since_login = (timezone.now().date() - employee.last_login.date()).days
@@ -191,22 +192,17 @@ class StatisticalAnomalyDetector:
                 dovr=cycle,
                 status='COMPLETED'
             )
-            
             if evaluations.exists():
                 scores = []
                 for evaluation in evaluations:
-                    cavablar = evaluation.cavablar.all()
-                    if cavablar:
-                        avg_score = cavablar.aggregate(avg=Avg('xal'))['avg']
-                        if avg_score:
-                            scores.append(avg_score)
-                
+                    avg_score = evaluation.cavablar.aggregate(avg=Avg('xal'))['avg']
+                    if avg_score is not None:
+                        scores.append(avg_score)
                 if scores:
                     temporal_data.append({
                         'cycle': cycle.ad,
-                        'cycle_start': cycle.bashlama_tarixi,
-                        'avg_score': np.mean(scores),
-                        'score_count': len(scores)
+                        'avg_score': float(statistics.mean(scores)),
+                        'score_variance': float(statistics.stdev(scores)) if len(scores) > 1 else 0.0
                     })
         
         if len(temporal_data) < 3:

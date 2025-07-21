@@ -485,7 +485,7 @@ def export_departments_excel(request):
         )
         ortalama_bal = Cavab.objects.filter(
             qiymetlendirme__dovr=dovr,
-            qiymetlendirme__qiymetlendirilen__organization_unit__in=alt_vahidler,
+            qiymetlendirme__qiymetlendirilen__organization_unit__in=alt_vahidləri,
         ).aggregate(ortalama=Avg("xal"))["ortalama"]
         departament_stat.append(
             {
@@ -556,7 +556,7 @@ def export_departments_pdf(request):
         )
         ortalama_bal = Cavab.objects.filter(
             qiymetlendirme__dovr=dovr,
-            qiymetlendirme__qiymetlendirilen__organization_unit__in=alt_vahidler,
+            qiymetlendirme__qiymetlendirilen__organization_unit__in=alt_vahidləri,
         ).aggregate(ortalama=Avg("xal"))["ortalama"]
         departament_stat.append(
             {
@@ -590,8 +590,7 @@ def export_departments_pdf(request):
 
 # --- FƏRDİ İNKİŞAF PLANI YARATMA VƏ REDAKTE ETMƏ ---
 # # Rəhbərin və ya superuser-in işçi üçün İnkişaf Planı yaratması və ya redaktə etməsi üçün görünüş.
-# Bu funksiya, rəhbərin və ya superuser-in işçi üçün İnkişaf Plan
-# ı yaratmasına və ya mövcud planı redaktə etməsinə imkan verir.
+# Bu funksiya, rəhbərin və ya superuser-in işçi üçün İnkişaf Planı yaratmasına və ya mövcud planı redaktə etməsinə imkan verir.
 # Rəhbər yalnız öz komandasına plan yaza bilər.
 # # Əgər işçi və dövr üçün plan artıq varsa, onu tapırıq. Yoxdursa, yenisini yaradırıq.
 # # HedefFormSet istifadə edərək hədəfləri əlavə və redaktə edirik.
@@ -785,4 +784,5 @@ class ProfileView(LoginRequiredMixin, TemplateView):
             else:
                 context["password_form"] = password_form
 
+        return self.render_to_response(self.get_context_data(**context))
         return self.render_to_response(self.get_context_data(**context))

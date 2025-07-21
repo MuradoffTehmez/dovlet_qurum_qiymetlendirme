@@ -680,8 +680,6 @@ class PsychologicalSurveyManager:
             return {'error': 'Cavab tapılmadı'}
         
         total_responses = responses.count()
-        if total_responses == 0:
-            return {'error': 'Cavab tapılmadı'}
         
         # Risk səviyyəsi paylanması
         risk_distribution = {}
@@ -690,11 +688,11 @@ class PsychologicalSurveyManager:
             count = responses.filter(risk_level=risk_level).count()
             risk_distribution[risk_level] = {
                 'count': count,
-                'percentage': round((count / total_responses) * 100, 1) if total_responses else 0
+                'percentage': round((count / total_responses) * 100, 1)
             }
         
         # Ortalama xal
-        avg_score = sum(r.total_score for r in responses) / total_responses if total_responses else 0
+        avg_score = sum(r.total_score for r in responses) / total_responses
         
         # Diqqət tələb edən cavablar
         attention_required = responses.filter(requires_attention=True).count()
@@ -705,5 +703,5 @@ class PsychologicalSurveyManager:
             'average_score': round(avg_score, 2),
             'risk_distribution': risk_distribution,
             'attention_required': attention_required,
-            'completion_rate': round((total_responses / Ishchi.objects.filter(is_active=True, rol='ISHCHI').count()) * 100, 1) if Ishchi.objects.filter(is_active=True, rol='ISHCHI').count() else 0
+            'completion_rate': round((total_responses / Ishchi.objects.filter(is_active=True, rol='ISHCHI').count()) * 100, 1)
         }

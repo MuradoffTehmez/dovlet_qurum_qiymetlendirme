@@ -207,7 +207,6 @@ def quick_feedback_inbox(request):
     
     # Kateqoriyalar filtri üçün
     categories = QuickFeedbackCategory.objects.filter(is_active=True).order_by('name')
-    
     context = {
         'page_obj': page_obj,
         'categories': categories,

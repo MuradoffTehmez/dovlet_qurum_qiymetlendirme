@@ -261,18 +261,13 @@ class FeedbackViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         queryset = Feedback.objects.all()
-        
-        # Yalnız göndərdiyi və aldığı rəylər
         user = self.request.user
         if not user.rol in ['ADMIN', 'SUPERADMIN']:
-            queryset = queryset.filter(
-                Q(gonderici=user) | Q(alici=user)
-            )
-        
-        return queryset.select_related('gonderici', 'alici')
+            queryset = queryset.filter(user=user)
+        return queryset.select_related('user')
     
     def perform_create(self, serializer):
-        serializer.save(gonderici=self.request.user)
+        serializer.save(user=self.request.user)
 
 
 # --- Notifications Views ---
@@ -401,15 +396,15 @@ class IdeaViewSet(viewsets.ModelViewSet):
         vote, created = IdeaVote.objects.get_or_create(
             idea=idea,
             user=request.user,
-            defaults={'vote_type': 'LIKE'}
+            defaults={'vote_type': 'UPVOTE'}
         )
         
         if not created:
-            if vote.vote_type == 'LIKE':
+            if vote.vote_type == 'UPVOTE':
                 vote.delete()
                 return Response({'message': 'Bəyənmə geri alındı.'})
             else:
-                vote.vote_type = 'LIKE'
+                vote.vote_type = 'UPVOTE'
                 vote.save()
         
         return Response({'message': 'İdeya bəyənildi.'})
@@ -423,15 +418,15 @@ class IdeaViewSet(viewsets.ModelViewSet):
         vote, created = IdeaVote.objects.get_or_create(
             idea=idea,
             user=request.user,
-            defaults={'vote_type': 'DISLIKE'}
+            defaults={'vote_type': 'DOWNVOTE'}
         )
         
         if not created:
-            if vote.vote_type == 'DISLIKE':
+            if vote.vote_type == 'DOWNVOTE':
                 vote.delete()
                 return Response({'message': 'Bəyənməmə geri alındı.'})
             else:
-                vote.vote_type = 'DISLIKE'
+                vote.vote_type = 'DOWNVOTE'
                 vote.save()
         
         return Response({'message': 'İdeya bəyənilmədi.'})
@@ -502,7 +497,7 @@ class DashboardViewSet(viewsets.GenericViewSet):
                 'type': 'feedback',
                 'title': f'Sürətli rəy: {feedback.category.name}',
                 'date': feedback.created_at,
-                'is_sender': feedback.sender == request.user
+                'is_sender': feedback.from_user == request.user
             })
         
         # Tarixə görə sırala
