@@ -302,7 +302,10 @@ class EmployeeRiskAnalysisAdmin(SimpleHistoryAdmin):
     )
     
     def get_flag_count(self, obj):
-        return obj.employee.risk_flags.filter(cycle=obj.cycle, status='ACTIVE').count()
+        # Defensive: check if employee and risk_flags exist
+        if obj.employee and hasattr(obj.employee, 'risk_flags'):
+            return obj.employee.risk_flags.filter(cycle=obj.cycle, status='ACTIVE').count()
+        return 0
     get_flag_count.short_description = "Aktiv Bayraklar"
 
 
