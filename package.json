@@ -1,0 +1,12 @@
+{
+  "name": "q360-performance-management",
+  "version": "1.0.0",
+  "description": "Q360 - 360 Degree Performance Management System",
+  "scripts": {
+    "build": "echo 'No build process needed for Django static files' && exit 0",
+    "start": "echo 'This is a Django application. Use Python to run the server.' && exit 0"
+  },
+  "keywords": ["django", "performance-management", "360-degree-appraisal"],
+  "author": "Q360 Team",
+  "license": "MIT"
+}
