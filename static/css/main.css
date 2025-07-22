@@ -64,6 +64,12 @@
     --transition-base: all var(--transition-speed) ease;
     --transition-fade: opacity var(--transition-speed) ease;
     --transition-slide: transform var(--transition-speed) ease;
+
+ /* Enhanced theme transition */
+ --theme-transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                     color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                     border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                     box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 html.dark-mode {
@@ -93,6 +99,16 @@ html.dark-mode {
     --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.5);
 }
 
+/* Smooth theme transitions for all elements */
+* {
+  transition: var(--theme-transition);
+}
+
+/* Prevent transition on page load */
+.no-transition * {
+  transition: none !important;
+}
+
 /* Base styles */
 * {
     box-sizing: border-box;
@@ -104,7 +120,7 @@ body {
     font-family: var(--font-family-base);
     font-size: var(--font-size-base);
     line-height: var(--line-height-base);
-    transition: var(--transition-base);
+transition: var(--theme-transition);
     padding-top: 76px;
     /* Adjust for fixed navbar */
 }

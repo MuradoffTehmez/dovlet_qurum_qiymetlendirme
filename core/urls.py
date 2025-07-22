@@ -49,6 +49,7 @@ urlpatterns = [
     ),
     path("plan/bax/<int:plan_id>/", views.plan_bax, name="plan_bax"),
     path("activate/<uidb64>/<token>/", views.activate, name="activate"),
+    path("set-theme/", views.set_theme_preference, name="set_theme_preference"),
     
     # === BİLDİRİŞ SİSTEMİ URL-LƏRİ ===
     path("bildirisler/", 

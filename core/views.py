@@ -31,6 +31,15 @@ from .models import (
 from .forms import ProfileUpdateForm, QeydiyyatFormu
 from .decorators import user_passes_test_with_message
 
+@require_POST
+def set_theme_preference(request):
+    """Set user theme preference (fallback for non-JS users)"""
+    theme = request.POST.get('theme', 'auto')
+    if theme in ['light', 'dark', 'auto']:
+        # Store in session for non-JS users
+        request.session['theme_preference'] = theme
+        messages.success(request, f'Theme set to {theme}')
+    return redirect(request.META.get('HTTP_REFERER', 'dashboard'))
 
 class CustomLoginView(LoginView):
     """Custom login view with additional functionality"""

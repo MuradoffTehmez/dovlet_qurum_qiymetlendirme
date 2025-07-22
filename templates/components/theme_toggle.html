@@ -1,0 +1,130 @@
+{% load i18n %}
+
+<!-- Accessible Theme Toggle Component -->
+<div class="theme-toggle-wrapper" id="theme-toggle-wrapper">
+    <!-- The toggle button will be created by JavaScript for better accessibility -->
+    <noscript>
+        <!-- Fallback for users without JavaScript -->
+        <div class="alert alert-info small">
+            <i class="bi bi-info-circle me-1"></i>
+            {% trans "JavaScript is required for the dark mode toggle. Please enable JavaScript for the best experience." %}
+        </div>
+    </noscript>
+</div>
+
+<!-- Theme preference form for users without JavaScript -->
+<noscript>
+    <form method="post" action="{% url 'set_theme_preference' %}" class="d-inline">
+        {% csrf_token %}
+        <div class="btn-group btn-group-sm" role="group" aria-label="{% trans 'Theme selection' %}">
+            <input type="radio" class="btn-check" name="theme" id="theme-light" value="light" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="theme-light">
+                <i class="bi bi-sun me-1"></i>{% trans "Light" %}
+            </label>
+            
+            <input type="radio" class="btn-check" name="theme" id="theme-dark" value="dark" autocomplete="off">
+            <label class="btn btn-outline-secondary" for="theme-dark">
+                <i class="bi bi-moon me-1"></i>{% trans "Dark" %}
+            </label>
+            
+            <input type="radio" class="btn-check" name="theme" id="theme-auto" value="auto" autocomplete="off" checked>
+            <label class="btn btn-outline-secondary" for="theme-auto">
+                <i class="bi bi-circle-half me-1"></i>{% trans "Auto" %}
+            </label>
+        </div>
+        <button type="submit" class="btn btn-sm btn-primary ms-2">
+            {% trans "Apply" %}
+        </button>
+    </form>
+</noscript>
+
+<style>
+/* Component-specific styles */
+.theme-toggle-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Enhanced focus styles for better accessibility */
+.theme-toggle:focus-visible {
+    outline: 2px solid var(--accent-primary);
+    outline-offset: 2px;
+    border-radius: 50px;
+}
+
+/* High contrast mode adjustments */
+@media (prefers-contrast: high) {
+    .theme-toggle {
+        border-width: 3px;
+    }
+    
+    .theme-toggle-slider {
+        border: 2px solid var(--bg-primary);
+    }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .theme-toggle,
+    .theme-toggle-slider {
+        transition: none;
+    }
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .theme-toggle {
+        width: 52px;
+        height: 28px;
+    }
+    
+    .theme-toggle-slider {
+        width: 20px;
+        height: 20px;
+    }
+    
+    html.dark-mode .theme-toggle-slider {
+        transform: translateX(22px);
+    }
+}
+
+/* Print styles */
+@media print {
+    .theme-toggle-wrapper {
+        display: none;
+    }
+}
+</style>
+
+<script>
+// Ensure theme toggle is properly initialized
+document.addEventListener('DOMContentLoaded', function() {
+    // Add keyboard navigation hints
+    const toggleButton = document.getElementById('theme-toggle-btn');
+    if (toggleButton) {
+        // Add tooltip for keyboard users
+        toggleButton.addEventListener('focus', function() {
+            this.title = 'Press Enter or Space to toggle theme';
+        });
+        
+        // Remove tooltip on blur
+        toggleButton.addEventListener('blur', function() {
+            this.title = this.getAttribute('aria-label');
+        });
+    }
+    
+    // Announce theme capabilities to screen readers on page load
+    const announcement = document.createElement('div');
+    announcement.setAttribute('aria-live', 'polite');
+    announcement.setAttribute('aria-atomic', 'true');
+    announcement.className = 'sr-only';
+    announcement.id = 'theme-announcement';
+    document.body.appendChild(announcement);
+    
+    setTimeout(() => {
+        announcement.textContent = 'Dark mode toggle available. Current theme: ' + 
+            (document.documentElement.classList.contains('dark-mode') ? 'dark' : 'light');
+    }, 1000);
+});
+</script>
