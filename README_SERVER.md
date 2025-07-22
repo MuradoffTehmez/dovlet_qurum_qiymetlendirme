@@ -138,6 +138,8 @@ Production üçün aşağıdakı settings-ləri dəyişin:
 - HTTPS konfiqurə edin
 - Static files nginx ilə serve edin
 
+## License
+
 ---
 
 **🎉 Q360 Performance Management System - Ready to Use! 🎉**

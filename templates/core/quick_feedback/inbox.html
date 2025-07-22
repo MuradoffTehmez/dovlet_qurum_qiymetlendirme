@@ -68,8 +68,8 @@
                 <div class="card-body">
                     <form method="get" class="row g-3">
                         <div class="col-md-3">
-                            <label class="form-label small">Kateqoriya</label>
-                            <select name="category" class="form-select">
+                            <label class="form-label small" for="category">Kateqoriya</label>
+                            <select id="category" name="category" class="form-select">
                                 <option value="">Bütün Kateqoriyalar</option>
                                 {% for category in categories %}
                                 <option value="{{ category.id }}" {% if current_category == category.id %}selected{% endif %}>
@@ -79,8 +79,8 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label small">Növ</label>
-                            <select name="type" class="form-select">
+                            <label class="form-label small" for="type">Növ</label>
+                            <select id="type" name="type" class="form-select">
                                 <option value="">Bütün Növlər</option>
                                 <option value="POSITIVE" {% if current_type == 'POSITIVE' %}selected{% endif %}>Müsbət</option>
                                 <option value="CONSTRUCTIVE" {% if current_type == 'CONSTRUCTIVE' %}selected{% endif %}>Konstruktiv</option>
@@ -88,8 +88,8 @@
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label small">Status</label>
-                            <select name="is_read" class="form-select">
+                            <label class="form-label small" for="status">Status</label>
+                            <select id="status" name="is_read" class="form-select">
                                 <option value="">Hamısı</option>
                                 <option value="unread" {% if current_is_read == 'unread' %}selected{% endif %}>Oxunmamış</option>
                                 <option value="read" {% if current_is_read == 'read' %}selected{% endif %}>Oxunmuş</option>
@@ -129,7 +129,7 @@
                     {% if page_obj.object_list %}
                         {% for feedback in page_obj.object_list %}
                         <div class="feedback-item p-3 border-bottom {{ feedback.feedback_type.lower }} {% if not feedback.is_read %}unread{% endif %}"
-                             onclick="viewFeedback({{ feedback.id }})">
+                             onclick="viewFeedback({{ feedback.id }})" tabindex="0" role="button" onkeydown="if(event.key === 'Enter'){ viewFeedback({{ feedback.id }}); }">
                             <div class="row align-items-center">
                                 <div class="col-md-8">
                                     <div class="d-flex align-items-start">

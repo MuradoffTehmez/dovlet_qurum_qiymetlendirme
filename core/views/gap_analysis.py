@@ -376,7 +376,7 @@ def get_department_average(department, cycle):
     # Kateqoriyalar üzrə ortalama
     dept_categories = []
     
-    for category in SualKateqoriyasi.objects.all():
+    for category in SualKateqoriyası.objects.all():
         answers = Cavab.objects.filter(
             qiymetlendirme__in=dept_evaluations,
             sual__kateqoriya=category
@@ -409,7 +409,7 @@ def get_company_average(cycle):
     # Kateqoriyalar üzrə ortalama
     company_categories = []
     
-    for category in SualKateqoriyasi.objects.all():
+    for category in SualKateqoriyası.objects.all():
         answers = Cavab.objects.filter(
             qiymetlendirme__in=all_evaluations,
             sual__kateqoriya=category

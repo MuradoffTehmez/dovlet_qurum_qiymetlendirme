@@ -522,3 +522,19 @@ def calculate_cycle_progress(cycle):
     
     progress = (elapsed_days / total_days) * 100
     return min(max(progress, 0), 100)
+
+
+def main_function(...):
+    # ...existing code...
+    # Extract complex logic into helper functions to reduce cognitive complexity
+    def helper1(...):
+        # ...logic...
+    def helper2(...):
+        # ...logic...
+    # Use helpers in main function
+    # ...existing code...
+
+    try:
+        # ...existing code...
+    except Exception as ex:  # Specify Exception class if possible
+        # ...existing code...
