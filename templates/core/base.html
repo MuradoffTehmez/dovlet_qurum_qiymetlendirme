@@ -54,14 +54,31 @@
     <script>
         (function () {
             'use strict';
-            const theme = localStorage.getItem('theme') ||
+            // Prevent flash of unstyled content
+            document.documentElement.classList.add('no-transition');
+            
+            const theme = localStorage.getItem('theme-preference') ||
                 (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            if (theme === 'dark') {
+            
+            const effectiveTheme = theme === 'auto' 
+                ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+                : theme;
+                
+            if (effectiveTheme === 'dark') {
                 document.documentElement.classList.add('dark-mode');
+            } else {
+                document.documentElement.classList.add('light-mode');
             }
-            localStorage.setItem('theme', theme);
+            
+            // Re-enable transitions after initial load
+            setTimeout(() => {
+                document.documentElement.classList.remove('no-transition');
+            }, 100);
         })();
     </script>
+
+    <!-- Dark mode CSS -->
+    <link rel="stylesheet" href="{% static 'css/dark-mode.css' %}">
 
     {% block extra_head %}{% endblock %}
 </head>
@@ -99,11 +116,7 @@
                 <ul class="navbar-nav ms-auto align-items-center gap-2">
                     <!-- Theme toggle -->
                     <li class="nav-item">
-                        <button id="theme-toggle-btn"
-                            class="btn btn-sm btn-outline-secondary btn-toggle-mode animate__animated animate__fadeIn rounded-pill"
-                            aria-label="{% trans 'Tema dəyişdir' %}">
-                            <i class="bi bi-moon-stars-fill"></i>
-                        </button>
+                        {% include 'components/theme_toggle.html' %}
                     </li>
 
                     <!-- Language switcher -->
@@ -313,6 +326,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/dark-mode.js' %}"></script>
 
     <!-- PWA Service Worker Registration -->
     <script>

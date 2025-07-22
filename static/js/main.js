@@ -74,40 +74,9 @@
   // Theme management
   const themeManager = {
     init() {
-      this.themeToggleBtn = document.getElementById('theme-toggle-btn');
-      this.htmlElement = document.documentElement;
-      
-      if (this.themeToggleBtn) {
-        this.themeToggleBtn.addEventListener('click', () => this.toggleTheme());
-        this.updateIcon();
-      }
-    },
-
-    toggleTheme() {
-      this.htmlElement.classList.toggle('dark-mode');
-      const mode = this.htmlElement.classList.contains('dark-mode') ? 'dark' : 'light';
-      localStorage.setItem('theme', mode);
-      this.updateIcon();
-      
-      // Announce theme change to screen readers
-      utils.showToast(
-        mode === 'dark' ? 'Qaranlıq tema aktivləşdirildi' : 'İşıq tema aktivləşdirildi',
-        'info'
-      );
-    },
-
-    updateIcon() {
-      if (!this.themeToggleBtn) return;
-
-      const isDarkMode = this.htmlElement.classList.contains('dark-mode');
-      this.themeToggleBtn.innerHTML = isDarkMode ? 
-        '<i class="bi bi-sun-fill"></i>' : 
-        '<i class="bi bi-moon-stars-fill"></i>';
-      
-      this.themeToggleBtn.setAttribute(
-        'aria-label',
-        isDarkMode ? 'İşıq temaya keç' : 'Qaranlıq temaya keç'
-      );
+      // Theme management is now handled by dark-mode.js
+      // This is kept for backward compatibility
+      console.log('Theme management initialized by DarkModeManager');
     }
   };
 
