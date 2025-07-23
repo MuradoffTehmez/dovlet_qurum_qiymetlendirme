@@ -1,0 +1,130 @@
+# Russian translations for Q360
+# Copyright (C) 2025
+# This file is distributed under the same license as the Q360 package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Q360 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-15 12:00+0400\n"
+"PO-Revision-Date: 2025-01-15 12:00+0400\n"
+"Last-Translator: Q360 Team\n"
+"Language-Team: Russian\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14) ? 2 : 3);\n"
+
+#: config/settings.py:111
+msgid "Azərbaycan"
+msgstr "Азербайджанский"
+
+#: config/settings.py:112
+msgid "English"
+msgstr "Английский"
+
+#: config/settings.py:113
+msgid "Türkçe"
+msgstr "Турецкий"
+
+#: config/settings.py:114
+msgid "Русский"
+msgstr "Русский"
+
+msgid "Qiymətləndirmə Sistemi"
+msgstr "Система Оценки"
+
+msgid "Ana Səhifə"
+msgstr "Главная"
+
+msgid "Profilim"
+msgstr "Мой Профиль"
+
+msgid "Hesabatım"
+msgstr "Мои Отчеты"
+
+msgid "Çıxış"
+msgstr "Выход"
+
+msgid "Daxil Ol"
+msgstr "Войти"
+
+msgid "Yüklənir..."
+msgstr "Загрузка..."
+
+msgid "Əsas məzmuna keç"
+msgstr "Перейти к основному содержанию"
+
+msgid "Navigasiyanı aç/bağla"
+msgstr "Открыть/закрыть навигацию"
+
+msgid "Dil seçimi"
+msgstr "Выбор языка"
+
+msgid "İstifadəçi menyusu"
+msgstr "Меню пользователя"
+
+msgid "Salam"
+msgstr "Привет"
+
+msgid "Rəhbər Paneli"
+msgstr "Панель Руководителя"
+
+msgid "Superadmin Paneli"
+msgstr "Панель Супер-Администратора"
+
+msgid "Bağla"
+msgstr "Закрыть"
+
+msgid "Keçidlər"
+msgstr "Ссылки"
+
+msgid "Dəstək"
+msgstr "Поддержка"
+
+msgid "Yardım"
+msgstr "Помощь"
+
+msgid "Əlaqə"
+msgstr "Контакты"
+
+msgid "Gizlilik"
+msgstr "Конфиденциальность"
+
+msgid "Bakı, Azərbaycan"
+msgstr "Баку, Азербайджан"
+
+msgid "Bütün hüquqlar qorunur"
+msgstr "Все права защищены"
+
+msgid "Versiya"
+msgstr "Версия"
+
+msgid "Son yenilik"
+msgstr "Последнее обновление"
+
+# Time-related translations with Russian pluralization
+msgid "time.just_now"
+msgstr "только что"
+
+msgid "time.minutes_ago"
+msgid_plural "time.minutes_ago"
+msgstr[0] "{count} минуту назад"
+msgstr[1] "{count} минуты назад"
+msgstr[2] "{count} минут назад"
+msgstr[3] "{count} минут назад"
+
+msgid "time.hours_ago"
+msgid_plural "time.hours_ago"
+msgstr[0] "{count} час назад"
+msgstr[1] "{count} часа назад"
+msgstr[2] "{count} часов назад"
+msgstr[3] "{count} часов назад"
+
+msgid "time.days_ago"
+msgid_plural "time.days_ago"
+msgstr[0] "{count} день назад"
+msgstr[1] "{count} дня назад"
+msgstr[2] "{count} дней назад"
+msgstr[3] "{count} дней назад"

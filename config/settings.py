@@ -74,6 +74,7 @@ MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "core.middleware.LanguageMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -83,6 +84,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
+    "core.middleware.LocaleMiddleware",
+    "core.middleware.RTLMiddleware",
 ]
 
 # ===================================================================
@@ -131,14 +134,38 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = "az"
 TIME_ZONE = "Asia/Baku"
 USE_I18N = True
+USE_L10N = True
 USE_TZ = True
 
 LANGUAGES = [
     ("az", _("Azərbaycan")),
     ("en", _("English")),
+    ("tr", _("Türkçe")),
+    ("ru", _("Русский")),
 ]
 
 LOCALE_PATHS = [BASE_DIR / "locale"]
+
+# Number and date formatting
+USE_THOUSAND_SEPARATOR = True
+THOUSAND_SEPARATOR = ','
+DECIMAL_SEPARATOR = '.'
+
+# Date and time formats
+DATE_FORMAT = 'd.m.Y'
+TIME_FORMAT = 'H:i'
+DATETIME_FORMAT = 'd.m.Y H:i'
+SHORT_DATE_FORMAT = 'd.m.y'
+SHORT_DATETIME_FORMAT = 'd.m.y H:i'
+
+# First day of week (Monday = 1, Sunday = 0)
+FIRST_DAY_OF_WEEK = 1
+
+# RTL language support
+RTL_LANGUAGES = ['ar', 'he', 'fa', 'ur']
+
+# Translation file formats
+TRANSLATION_FILE_FORMATS = ['po', 'json', 'yaml']
 
 # ===================================================================
 # STATİK FAYLLAR (STATIC FILES)

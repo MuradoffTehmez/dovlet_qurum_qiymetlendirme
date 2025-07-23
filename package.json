@@ -3,10 +3,18 @@
   "version": "1.0.0",
   "description": "Q360 - 360 Degree Performance Management System",
   "scripts": {
-    "build": "echo 'No build process needed for Django static files' && exit 0",
+    "build": "echo 'Building i18n assets...' && npm run build:i18n",
+    "build:i18n": "node scripts/build-i18n.js",
+    "extract-messages": "python manage.py makemessages --all --ignore=node_modules --ignore=venv",
+    "compile-messages": "python manage.py compilemessages",
+    "update-translations": "python manage.py update_translations --compile",
     "start": "echo 'This is a Django application. Use Python to run the server.' && exit 0"
   },
   "keywords": ["django", "performance-management", "360-degree-appraisal"],
   "author": "Q360 Team",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "glob": "^8.1.0",
+    "js-yaml": "^4.1.0"
+  }
 }

@@ -13,7 +13,7 @@ from .api_views import (
     PrivateNoteViewSet, IdeaCategoryViewSet, IdeaViewSet, DashboardViewSet,
     RiskFlagViewSet, EmployeeRiskAnalysisViewSet, PsychologicalRiskSurveyViewSet,
     PsychologicalRiskResponseViewSet, AIRiskDetectionViewSet, StatisticalAnomalyViewSet,
-    StrategicHRPlanningViewSet
+    StrategicHRPlanningViewSet, TranslationAPIView
 )
 
 # Router yaradılması
@@ -44,6 +44,7 @@ router.register(r'psych-responses', PsychologicalRiskResponseViewSet)
 router.register(r'ai-risk', AIRiskDetectionViewSet, basename='ai-risk')
 router.register(r'anomaly-detection', StatisticalAnomalyViewSet, basename='anomaly-detection')
 router.register(r'strategic-hr', StrategicHRPlanningViewSet, basename='strategic-hr')
+router.register(r'translations', TranslationAPIView, basename='translations')
 
 urlpatterns = [
     # Authentication endpoints
@@ -54,6 +55,11 @@ urlpatterns = [
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    
+    # Translation endpoints
+    path('translations/<str:language>/', TranslationAPIView.as_view({'get': 'get_translations'}), name='translations-by-language'),
+    path('language-info/', TranslationAPIView.as_view({'get': 'get_language_info'}), name='language-info'),
+    path('switch-language/', TranslationAPIView.as_view({'post': 'switch_language'}), name='switch-language'),
     
     # API routes
     path('', include(router.urls)),

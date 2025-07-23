@@ -1,0 +1,159 @@
+{% load i18n %}
+
+<!-- RTL Layout Support -->
+{% if is_rtl %}
+<style>
+/* RTL Layout Adjustments */
+html[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+
+html[dir="rtl"] .navbar-brand {
+    margin-right: 0;
+    margin-left: auto;
+}
+
+html[dir="rtl"] .navbar-nav {
+    flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .dropdown-menu {
+    right: auto;
+    left: 0;
+}
+
+html[dir="rtl"] .text-start {
+    text-align: right !important;
+}
+
+html[dir="rtl"] .text-end {
+    text-align: left !important;
+}
+
+html[dir="rtl"] .me-1, html[dir="rtl"] .me-2, html[dir="rtl"] .me-3 {
+    margin-right: 0;
+    margin-left: var(--bs-spacer);
+}
+
+html[dir="rtl"] .ms-1, html[dir="rtl"] .ms-2, html[dir="rtl"] .ms-3 {
+    margin-left: 0;
+    margin-right: var(--bs-spacer);
+}
+
+html[dir="rtl"] .float-start {
+    float: right !important;
+}
+
+html[dir="rtl"] .float-end {
+    float: left !important;
+}
+
+/* Form adjustments */
+html[dir="rtl"] .form-check {
+    padding-left: 0;
+    padding-right: 1.25em;
+}
+
+html[dir="rtl"] .form-check-input {
+    margin-left: 0;
+    margin-right: -1.25em;
+}
+
+/* Table adjustments */
+html[dir="rtl"] .table th,
+html[dir="rtl"] .table td {
+    text-align: right;
+}
+
+/* Breadcrumb adjustments */
+html[dir="rtl"] .breadcrumb-item + .breadcrumb-item::before {
+    content: "\\";
+    transform: scaleX(-1);
+}
+
+/* Card adjustments */
+html[dir="rtl"] .card-header {
+    text-align: right;
+}
+
+/* Button group adjustments */
+html[dir="rtl"] .btn-group > .btn:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: var(--bs-border-radius);
+    border-bottom-left-radius: var(--bs-border-radius);
+}
+
+html[dir="rtl"] .btn-group > .btn:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: var(--bs-border-radius);
+    border-bottom-right-radius: var(--bs-border-radius);
+}
+
+/* Animation adjustments */
+html[dir="rtl"] .animate__fadeInLeft {
+    animation-name: fadeInRight;
+}
+
+html[dir="rtl"] .animate__fadeInRight {
+    animation-name: fadeInLeft;
+}
+
+/* Custom component adjustments */
+html[dir="rtl"] .notification-item {
+    border-left: none;
+    border-right: 4px solid var(--border-color);
+}
+
+html[dir="rtl"] .timeline-item::before {
+    left: auto;
+    right: 0;
+}
+
+html[dir="rtl"] .timeline-item {
+    padding-left: 0;
+    padding-right: 2rem;
+}
+</style>
+
+<script>
+// RTL-specific JavaScript adjustments
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.documentElement.dir === 'rtl') {
+        // Adjust chart.js RTL support
+        if (typeof Chart !== 'undefined') {
+            Chart.defaults.plugins.legend.rtl = true;
+            Chart.defaults.plugins.tooltip.rtl = true;
+        }
+        
+        // Adjust FullCalendar RTL support
+        if (typeof FullCalendar !== 'undefined') {
+            FullCalendar.globalDefaults.direction = 'rtl';
+        }
+        
+        // Adjust any carousel or slider components
+        const carousels = document.querySelectorAll('.carousel');
+        carousels.forEach(carousel => {
+            // Reverse carousel direction for RTL
+            const prevBtn = carousel.querySelector('.carousel-control-prev');
+            const nextBtn = carousel.querySelector('.carousel-control-next');
+            
+            if (prevBtn && nextBtn) {
+                // Swap the functionality
+                prevBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    bootstrap.Carousel.getInstance(carousel).next();
+                });
+                
+                nextBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    bootstrap.Carousel.getInstance(carousel).prev();
+                });
+            }
+        });
+    }
+});
+</script>
+{% endif %}

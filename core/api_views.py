@@ -31,9 +31,64 @@ from .serializers import (
     DashboardStatsSerializer, AIRiskAnalysisSerializer, StatisticalAnomalySerializer
 )
 from .api_permissions import IsOwnerOrReadOnly, IsManagerOrAdmin
+from .i18n_utils import translation_manager
 
 User = get_user_model()
 
+
+# === INTERNATIONALIZATION API VIEWS ===
+
+class TranslationAPIView(viewsets.ViewSet):
+    """API for frontend translations"""
+    permission_classes = [IsAuthenticated]
+    
+    @action(detail=False, methods=['get'])
+    def get_translations(self, request, language=None):
+        """Get translations for specific language"""
+        lang_code = language or request.LANGUAGE_CODE
+        translations = translation_manager.export_translations_json(lang_code)
+        
+        return Response({
+            'language': lang_code,
+            'translations': translations
+        })
+    
+    @action(detail=False, methods=['get'])
+    def get_language_info(self, request):
+        """Get current language information"""
+        from .i18n_utils import i18n_manager
+        
+        info = i18n_manager.get_language_info()
+        return Response(info)
+    
+    @action(detail=False, methods=['post'])
+    def switch_language(self, request):
+        """Switch user language preference"""
+        lang_code = request.data.get('language')
+        
+        if not lang_code:
+            return Response({'error': 'Language code required'}, status=400)
+        
+        # Validate language
+        from .i18n_utils import i18n_manager
+        if not i18n_manager.is_valid_language(lang_code):
+            return Response({'error': 'Invalid language code'}, status=400)
+        
+        # Update user preference if authenticated
+        if request.user.is_authenticated:
+            # You can add a preferred_language field to your User model
+            # request.user.preferred_language = lang_code
+            # request.user.save()
+            pass
+        
+        # Update session
+        request.session['django_language'] = lang_code
+        
+        return Response({
+            'success': True,
+            'language': lang_code,
+            'redirect_url': f'/{lang_code}/'
+        })
 
 # --- Authentication Views ---
 class CustomTokenObtainPairView(TokenObtainPairView):

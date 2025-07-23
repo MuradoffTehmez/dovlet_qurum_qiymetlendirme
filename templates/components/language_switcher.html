@@ -1,0 +1,64 @@
+{% load i18n %}
+
+<!-- Advanced Language Switcher Component -->
+<div class="language-switcher dropdown">
+    <button class="btn btn-outline-light dropdown-toggle" type="button" 
+            id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+            aria-label="{% trans 'Select language' %}">
+        <i class="fas fa-globe me-1"></i>
+        <span class="d-none d-md-inline">{{ current_language|upper }}</span>
+    </button>
+    
+    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+        {% for language in languages %}
+        <li>
+            <a class="dropdown-item {% if language.is_current %}active{% endif %}" 
+               href="{{ language.url }}"
+               hreflang="{{ language.code }}"
+               {% if language.is_current %}aria-current="true"{% endif %}>
+                <i class="flag-icon flag-icon-{{ language.code }} me-2"></i>
+                {{ language.name }}
+                {% if language.is_current %}
+                    <i class="fas fa-check ms-auto text-success"></i>
+                {% endif %}
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<style>
+.language-switcher .dropdown-menu {
+    min-width: 180px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.language-switcher .dropdown-item {
+    padding: 8px 16px;
+    transition: all 0.2s ease;
+}
+
+.language-switcher .dropdown-item:hover {
+    background-color: var(--hover-bg);
+}
+
+.language-switcher .dropdown-item.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.flag-icon {
+    width: 20px;
+    height: 15px;
+    background-size: cover;
+    display: inline-block;
+    border-radius: 2px;
+}
+
+/* Flag icons - you can replace with actual flag images */
+.flag-icon-az { background-color: #0099cc; }
+.flag-icon-en { background-color: #ff0000; }
+.flag-icon-tr { background-color: #ff0000; }
+.flag-icon-ru { background-color: #0033cc; }
+</style>

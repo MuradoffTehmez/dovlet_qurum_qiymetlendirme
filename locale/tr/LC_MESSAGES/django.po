@@ -1,0 +1,127 @@
+# Turkish translations for Q360
+# Copyright (C) 2025
+# This file is distributed under the same license as the Q360 package.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Q360 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-01-15 12:00+0400\n"
+"PO-Revision-Date: 2025-01-15 12:00+0400\n"
+"Last-Translator: Q360 Team\n"
+"Language-Team: Turkish\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: config/settings.py:111
+msgid "Azərbaycan"
+msgstr "Azerbaycan"
+
+#: config/settings.py:112
+msgid "English"
+msgstr "İngilizce"
+
+#: config/settings.py:113
+msgid "Türkçe"
+msgstr "Türkçe"
+
+#: config/settings.py:114
+msgid "Русский"
+msgstr "Rusça"
+
+msgid "Qiymətləndirmə Sistemi"
+msgstr "Değerlendirme Sistemi"
+
+msgid "Ana Səhifə"
+msgstr "Ana Sayfa"
+
+msgid "Profilim"
+msgstr "Profilim"
+
+msgid "Hesabatım"
+msgstr "Raporlarım"
+
+msgid "Çıxış"
+msgstr "Çıkış"
+
+msgid "Daxil Ol"
+msgstr "Giriş Yap"
+
+msgid "Yüklənir..."
+msgstr "Yükleniyor..."
+
+msgid "Əsas məzmuna keç"
+msgstr "Ana içeriğe geç"
+
+msgid "Navigasiyanı aç/bağla"
+msgstr "Navigasyonu aç/kapat"
+
+msgid "Dil seçimi"
+msgstr "Dil seçimi"
+
+msgid "İstifadəçi menyusu"
+msgstr "Kullanıcı menüsü"
+
+msgid "Salam"
+msgstr "Merhaba"
+
+msgid "Rəhbər Paneli"
+msgstr "Yönetici Paneli"
+
+msgid "Superadmin Paneli"
+msgstr "Süper Yönetici Paneli"
+
+msgid "Bağla"
+msgstr "Kapat"
+
+msgid "Keçidlər"
+msgstr "Bağlantılar"
+
+msgid "Dəstək"
+msgstr "Destek"
+
+msgid "Yardım"
+msgstr "Yardım"
+
+msgid "Əlaqə"
+msgstr "İletişim"
+
+msgid "Gizlilik"
+msgstr "Gizlilik"
+
+msgid "Bakı, Azərbaycan"
+msgstr "Bakü, Azerbaycan"
+
+msgid "Bütün hüquqlar qorunur"
+msgstr "Tüm hakları saklıdır"
+
+msgid "Versiya"
+msgstr "Sürüm"
+
+msgid "Son yenilik"
+msgstr "Son güncelleme"
+
+# Time-related translations
+msgid "time.just_now"
+msgstr "şimdi"
+
+msgid "time.minutes_ago"
+msgstr "{count} dakika önce"
+
+msgid "time.hours_ago"
+msgstr "{count} saat önce"
+
+msgid "time.days_ago"
+msgstr "{count} gün önce"
+
+msgid "time.weeks_ago"
+msgstr "{count} hafta önce"
+
+msgid "time.months_ago"
+msgstr "{count} ay önce"
+
+msgid "time.years_ago"
+msgstr "{count} yıl önce"
