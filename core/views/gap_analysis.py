@@ -304,50 +304,58 @@ def get_user_gap_analysis(user, cycle):
         qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW
     )
     
-    # Kateqoriyalar üzrə analiz
+    # Kateqoriyalar üzrə analiz - Optimized to avoid N+1 queries
     categories_data = []
     total_gap = 0
     
-    for category in SualKateqoriyasi.objects.all():
-        # Self-review cavabları
-        self_answers = Cavab.objects.filter(
-            qiymetlendirme=self_review,
-            sual__kateqoriya=category
-        )
-        
-        if not self_answers.exists():
-            continue
-        
-        self_avg = self_answers.aggregate(Avg('xal'))['xal__avg']
-        
-        # Başqalarının cavabları
-        others_answers = Cavab.objects.filter(
-            qiymetlendirme__in=others_reviews,
-            sual__kateqoriya=category
-        )
-        
-        if not others_answers.exists():
-            continue
-        
-        others_avg = others_answers.aggregate(Avg('xal'))['xal__avg']
-        
-        # Gap hesabla
-        gap = self_avg - others_avg
-        gap_percentage = (gap / 10) * 100  # 10 maksimum bal
-        
-        # Tövsiyələr
-        recommendations = generate_gap_recommendations(category, gap)
-        
-        categories_data.append({
-            'category': category,
-            'self_score': round(self_avg, 2),
-            'others_score': round(others_avg, 2),
-            'gap': round(gap, 2),
-            'gap_percentage': round(gap_percentage, 1),
-            'recommendations': recommendations
-        })
-        
-        total_gap += abs(gap)
+    # Get all category averages in one query for self-review
+    self_category_averages = Cavab.objects.filter(
+        qiymetlendirme=self_review
+    ).values('sual__kateqoriya__id', 'sual__kateqoriya__ad').annotate(
+        avg_score=Avg('xal')
+    ).order_by('sual__kateqoriya__id')
+    
+    # Get all category averages in one query for others' reviews
+    others_category_averages = Cavab.objects.filter(
+        qiymetlendirme__in=others_reviews
+    ).values('sual__kateqoriya__id', 'sual__kateqoriya__ad').annotate(
+        avg_score=Avg('xal')
+    ).order_by('sual__kateqoriya__id')
+    
+    # Create dictionaries for quick lookup
+    self_averages_dict = {item['sual__kateqoriya__id']: item['avg_score'] for item in self_category_averages}
+    others_averages_dict = {item['sual__kateqoriya__id']: item['avg_score'] for item in others_category_averages}
+    
+    # Process categories that have data in both self and others reviews
+    processed_categories = set()
+    for item in self_category_averages:
+        category_id = item['sual__kateqoriya__id']
+        if category_id in others_averages_dict:
+            self_avg = self_averages_dict[category_id]
+            others_avg = others_averages_dict[category_id]
+            
+            # Gap hesabla
+            gap = self_avg - others_avg
+            gap_percentage = (gap / 10) * 100  # 10 maksimum bal
+            
+            # Create category object for backward compatibility
+            from ..models import SualKateqoriyasi
+            category = SualKateqoriyasi(id=category_id, ad=item['sual__kateqoriya__ad'])
+            
+            # Tövsiyələr
+            recommendations = generate_gap_recommendations(category, gap)
+            
+            categories_data.append({
+                'category': category,
+                'self_score': round(self_avg, 2),
+                'others_score': round(others_avg, 2),
+                'gap': round(gap, 2),
+                'gap_percentage': round(gap_percentage, 1),
+                'recommendations': recommendations
+            })
+            
+            total_gap += abs(gap)
+            processed_categories.add(category_id)
     
     overall_gap = total_gap / len(categories_data) if categories_data else 0
     

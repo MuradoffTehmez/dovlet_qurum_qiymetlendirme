@@ -1,66 +1,220 @@
-{% extends 'core/base.html' %}
-{% load i18n %}
-
-{% block title %}{% trans "Qiymətləndirmə Formu" %}{% endblock %}
-
-{% block content %}
-<div class="container py-4 animate__animated animate__fadeIn">
-    <div class="text-center mb-5">
-        <h2 class="fw-bold text-primary display-5">{% trans "Qiymətləndirmə Formu" %}</h2>
-        <p class="text-muted fs-5">{% trans "Qiymətləndirilən şəxs:" %} <strong>{{
-                qiymetlendirme.qiymetlendirilen.get_full_name }}</strong></p>
-        <p class="text-muted fs-5">{% trans "Dövr:" %} <strong>{{ qiymetlendirme.dovr.ad }}</strong></p>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Departament Statistikası Hesabatı</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: #333;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 20px;
+        }
+        
+        .header h1 {
+            color: #007bff;
+            margin: 0;
+        }
+        
+        .header p {
+            margin: 5px 0;
+            color: #666;
+        }
+        
+        .stats-summary {
+            display: flex;
+            justify-content: space-around;
+            margin: 30px 0;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .departments-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .departments-table th,
+        .departments-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .departments-table th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .departments-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .score-bar {
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .score-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #dc3545 0%, #ffc107 50%, #28a745 100%);
+            border-radius: 10px;
+        }
+        
+        .score-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+        }
+        
+        .chart-container {
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        
+        @media print {
+            body { margin: 0; }
+            .header { page-break-after: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Departament Statistikası Hesabatı</h1>
+        <p><strong>Qiymətləndirmə Dövrü:</strong> {{ dovr.ad }}</p>
+        <p><strong>Hesabat Tarixi:</strong> {{ hazirlanma_tarixi|date:"d.m.Y" }}</p>
     </div>
 
-    <form method="post" class="needs-validation" novalidate>
-        {% csrf_token %}
+    <div class="stats-summary">
+        <div class="stat-item">
+            <div class="stat-value">{{ umumiyy_ortalama|floatformat:2 }}</div>
+            <div class="stat-label">Ümumi Ortalama Bal</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">{{ departament_sayi }}</div>
+            <div class="stat-label">Departament Sayı</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">{{ ishchi_sayi }}</div>
+            <div class="stat-label">Qiymətləndirilən İşçi</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-value">{{ qiymetlendirme_sayi }}</div>
+            <div class="stat-label">Tamamlanmış Qiymətləndirmə</div>
+        </div>
+    </div>
 
-        {% for sual in suallar %}
-        <div class="card border-0 shadow-lg mb-4 animate__animated animate__fadeInUp animate__faster">
-            <div class="card-header bg-gradient-primary text-white">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0">{{ forloop.counter }}. {{ sual.metn }}</h5>
-                    {% if sual.kateqoriya %}<span class="badge bg-dark">{{ sual.kateqoriya.ad }}</span>{% endif %}
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <label class="form-label fw-semibold">{% trans "Xal (1-dən 10-a qədər):" %}</label>
-                    <div class="d-flex flex-wrap gap-2">
-                        {% for i in "12345678910"|make_list %}
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="xal_{{ sual.id }}"
-                                id="xal_{{ sual.id }}_{{ forloop.counter }}" value="{{ forloop.counter }}" required>
-                            <label class="form-check-label" for="xal_{{ sual.id }}_{{ forloop.counter }}">{{
-                                forloop.counter }}</label>
-                        </div>
-                        {% endfor %}
+    <h3>Departamentlər üzrə Nəticələr</h3>
+    <table class="departments-table">
+        <thead>
+            <tr>
+                <th>Departament Adı</th>
+                <th>Ortalama Bal</th>
+                <th>Vizual Nəticə</th>
+                <th>İşçi Sayı</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dept in departament_stat %}
+            <tr>
+                <td>{{ dept.ad }}</td>
+                <td><strong>{{ dept.ortalama_bal }}</strong></td>
+                <td>
+                    <div class="score-bar">
+                        <div class="score-fill" style="width: {{ dept.ortalama_bal|mul:10 }}%"></div>
+                        <div class="score-text">{{ dept.ortalama_bal }}/10</div>
                     </div>
-                </div>
-                <div class="mb-3">
-                    <label for="rey_{{ sual.id }}" class="form-label fw-semibold">{% trans "Əlavə Rəy (istəyə
-                        bağlı):" %}</label>
-                    <textarea class="form-control" id="rey_{{ sual.id }}" name="rey_{{ sual.id }}" rows="3"
-                        placeholder="{% trans 'Əlavə fikirlərinizi yaza bilərsiniz...' %}"></textarea>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
+                </td>
+                <td>{{ dept.ishci_sayi|default:"-" }}</td>
+                <td>
+                    {% if dept.ortalama_bal >= 8 %}
+                        <span style="color: #28a745;">Əla</span>
+                    {% elif dept.ortalama_bal >= 7 %}
+                        <span style="color: #17a2b8;">Yaxşı</span>
+                    {% elif dept.ortalama_bal >= 6 %}
+                        <span style="color: #ffc107;">Orta</span>
+                    {% else %}
+                        <span style="color: #dc3545;">Təkmilləşdirilməli</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-        <div class="d-grid mt-4">
-            <button type="submit" class="btn btn-success btn-lg animate__animated animate__fadeInUp animate__fast">
-                {% trans "Qiymətləndirməni Təsdiqlə" %}
-            </button>
-        </div>
-    </form>
-</div>
-{% endblock %}
+    {% if kateqoriya_neticeleri %}
+    <h3>Kompetensiya Sahələri üzrə Ümumi Nəticələr</h3>
+    <table class="departments-table">
+        <thead>
+            <tr>
+                <th>Kompetensiya Sahəsi</th>
+                <th>Ortalama Bal</th>
+                <th>Vizual Nəticə</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cat in kateqoriya_neticeleri %}
+            <tr>
+                <td>{{ cat.ad }}</td>
+                <td><strong>{{ cat.ortalama_bal }}</strong></td>
+                <td>
+                    <div class="score-bar">
+                        <div class="score-fill" style="width: {{ cat.ortalama_bal|mul:10 }}%"></div>
+                        <div class="score-text">{{ cat.ortalama_bal }}/10</div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-<style>
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #007bff, #6610f2);
-    }
-</style>
-{% endblock %}
+    <div class="footer">
+        <p>Bu hesabat avtomatik olaraq {{ hazirlanma_tarixi|date:"d.m.Y H:i" }} tarixində yaradılmışdır.</p>
+        <p>Performans İdarəetmə Sistemi</p>
+    </div>
+</body>
+</html>

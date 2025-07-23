@@ -57,6 +57,9 @@ class Ishchi(AbstractUser):
         REHBER = 'REHBER', 'Rəhbər'
         ISHCHI = 'ISHCHI', 'İşçi'
 
+    # Override email field to make it unique
+    email = models.EmailField('email address', unique=True)
+    
     rol = models.CharField(max_length=10, choices=Rol.choices, default=Rol.ISHCHI, verbose_name="İstifadəçi Rolu")
     vezife = models.CharField(max_length=255, verbose_name="Vəzifəsi", blank=True)
     organization_unit = models.ForeignKey(
