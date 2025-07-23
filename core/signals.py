@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import gettext_lazy as _
+from django.contrib.sites.models import Site
 
 from .models import Ishchi, Qiymetlendirme, Feedback
 from .tokens import account_activation_token
@@ -31,6 +32,17 @@ def send_notification_on_new_assignment(sender, instance, created, **kwargs):
 
         subject = "Yeni Qiymətləndirmə Tapşırığı"
 
+        # Get current site domain
+        try:
+            current_site = Site.objects.get_current()
+            domain = current_site.domain
+        except:
+            # Fallback to ALLOWED_HOSTS if Sites framework not configured
+            domain = settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS and settings.ALLOWED_HOSTS[0] != '*' else 'localhost:8000'
+        
+        protocol = 'https' if getattr(settings, 'SECURE_SSL_REDIRECT', False) else 'http'
+        site_url = f"{protocol}://{domain}"
+
         message = f"""
 Salam, {qiymetlendiren.get_full_name()},
 
@@ -41,7 +53,7 @@ Son tarix: {instance.dovr.bitme_tarixi.strftime('%d-%m-%Y')}
 
 Xahiş edirik sistemə daxil olub tapşırığı vaxtında yerinə yetirəsiniz.
 
-URL: http://127.0.0.1:8000/
+URL: {site_url}/
 
 Hörmətlə,
 Qiymətləndirmə Sistemi
@@ -70,11 +82,22 @@ def send_activation_email(sender, instance, created, **kwargs):
         token = account_activation_token.make_token(instance)
         activation_link = reverse('activate', kwargs={'uidb64': uid, 'token': token})
         
+        # Get current site domain
+        try:
+            current_site = Site.objects.get_current()
+            domain = current_site.domain
+        except:
+            # Fallback to ALLOWED_HOSTS if Sites framework not configured
+            domain = settings.ALLOWED_HOSTS[0] if settings.ALLOWED_HOSTS and settings.ALLOWED_HOSTS[0] != '*' else 'localhost:8000'
+        
+        protocol = 'https' if getattr(settings, 'SECURE_SSL_REDIRECT', False) else 'http'
+        full_activation_url = f"{protocol}://{domain}{activation_link}"
+        
         # E-poçt məzmununu hazırlayırıq
         subject = _('Activate Your Account')
         message = _(
-            'Hi {user_name},\n\nPlease click the link below to activate your account:\n\nhttp://127.0.0.1:8000{activation_link}'
-        ).format(user_name=instance.get_full_name(), activation_link=activation_link)
+            'Hi {user_name},\n\nPlease click the link below to activate your account:\n\n{activation_url}'
+        ).format(user_name=instance.get_full_name(), activation_url=full_activation_url)
         
         # Tapşırığı arxa planda işə salırıq (Redis mövcud olduqda)
         # Əgər Redis mövcud deyilsə, birbaşa e-poçt göndəririk

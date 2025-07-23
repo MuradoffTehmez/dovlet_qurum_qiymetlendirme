@@ -21,7 +21,19 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = (
     os.getenv("DEBUG", "False").lower() == "true"
 )  # .env faylından DEBUG dəyərini oxuyuruq
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "*"]
+ALLOWED_HOSTS = [
+    "127.0.0.1", 
+    "localhost",
+    # Add your production domain names here
+    # Example: "www.yoursite.az", "api.yoursite.az", "yoursite.az"
+]
+
+# In production, remove the wildcard (*) and specify only your actual domain names
+# For example:
+# ALLOWED_HOSTS = ["www.yoursite.az", "api.yoursite.az", "yoursite.az"]
+
+# Sites framework configuration
+SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = [
     "core.backends.EmailOrUsernameBackend",
@@ -61,6 +73,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',  # Required for dynamic site URL generation
 
     # Bizim lokal tətbiqimiz
     'core.apps.CoreConfig',

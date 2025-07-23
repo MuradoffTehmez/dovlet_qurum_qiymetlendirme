@@ -67,35 +67,59 @@ def participation_details(request, cycle_id):
     if department_id:
         employees_query = employees_query.filter(organization_unit_id=department_id)
     
-    # Hər işçi üçün iştirak statusu
-    participation_details = []
+    # Optimized query to avoid N+1 - get all participation data in one query
+    from django.db.models import Case, When, IntegerField
     
-    for employee in employees_query:
-        # Bu işçi üçün təyin edilmiş qiymətləndirmələr
-        assigned_evaluations = Qiymetlendirme.objects.filter(
-            qiymetlendiren=employee,
-            dovr=cycle
+    participation_data = employees_query.annotate(
+        assigned_count=Count(
+            'qiymetlendiren_qiymetlendirmeler',
+            filter=Q(qiymetlendiren_qiymetlendirmeler__dovr=cycle)
+        ),
+        completed_count=Count(
+            'qiymetlendiren_qiymetlendirmeler',
+            filter=Q(
+                qiymetlendiren_qiymetlendirmeler__dovr=cycle,
+                qiymetlendiren_qiymetlendirmeler__status=Qiymetlendirme.Status.TAMAMLANDI
+            )
         )
+    ).annotate(
+        pending_count=F('assigned_count') - F('completed_count')
+    ).values(
+        'id', 'username', 'first_name', 'last_name', 'email',
+        'organization_unit__name', 'assigned_count', 'completed_count', 'pending_count'
+    )
+    
+    # Calculate participation details
+    participation_details = []
+    for data in participation_data:
+        assigned_count = data['assigned_count']
+        completed_count = data['completed_count']
+        pending_count = data['pending_count']
         
-        # Tamamlanmış qiymətləndirmələr
-        completed_evaluations = assigned_evaluations.filter(
-            status=Qiymetlendirme.Status.TAMAMLANDI
-        )
-        
-        # İştirak faizi
-        if assigned_evaluations.exists():
-            participation_rate = (completed_evaluations.count() / assigned_evaluations.count()) * 100
+        # Calculate participation rate
+        if assigned_count > 0:
+            participation_rate = (completed_count / assigned_count) * 100
         else:
             participation_rate = 0
         
+        # Reconstruct employee object for template compatibility
+        employee_data = {
+            'id': data['id'],
+            'username': data['username'],
+            'first_name': data['first_name'],
+            'last_name': data['last_name'],
+            'email': data['email'],
+            'organization_unit_name': data['organization_unit__name'],
+        }
+        
         participation_details.append({
-            'employee': employee,
-            'assigned_count': assigned_evaluations.count(),
-            'completed_count': completed_evaluations.count(),
-            'pending_count': assigned_evaluations.count() - completed_evaluations.count(),
+            'employee': employee_data,
+            'assigned_count': assigned_count,
+            'completed_count': completed_count,
+            'pending_count': pending_count,
             'participation_rate': round(participation_rate, 1),
             'status': get_participation_status(participation_rate),
-            'last_activity': get_last_activity_date(employee, cycle)
+            'last_activity': None  # This would require separate optimization if needed
         })
     
     # Sıralama

@@ -405,28 +405,31 @@ def get_department_performance_trend(department_id, cycles):
     except OrganizationUnit.DoesNotExist:
         return None
     
-    department_trend = []
+    # Optimized query to avoid N+1 - get all department trend data in one query
+    department_trend_data = Cavab.objects.filter(
+        qiymetlendirme__qiymetlendirilen__organization_unit=department,
+        qiymetlendirme__dovr__in=cycles,
+        qiymetlendirme__status=Qiymetlendirme.Status.TAMAMLANDI
+    ).exclude(
+        qiymetlendirme__qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW
+    ).values(
+        'qiymetlendirme__dovr__id',
+        'qiymetlendirme__dovr__ad',
+        'qiymetlendirme__dovr__bashlama_tarixi'
+    ).annotate(
+        avg_score=Avg('xal'),
+        employees_count=Count('qiymetlendirme__qiymetlendirilen', distinct=True)
+    ).order_by('qiymetlendirme__dovr__bashlama_tarixi')
     
-    for cycle in cycles:
-        # Şöbədəki işçilərin qiymətləndirmələri
-        evaluations = Qiymetlendirme.objects.filter(
-            qiymetlendirilen__organization_unit=department,
-            dovr=cycle,
-            status=Qiymetlendirme.Status.TAMAMLANDI
-        ).exclude(
-            qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW
-        )
-        
-        if evaluations.exists():
-            all_answers = Cavab.objects.filter(qiymetlendirme__in=evaluations)
-            if all_answers.exists():
-                avg_score = all_answers.aggregate(Avg('xal'))['xal__avg']
-                department_trend.append({
-                    'cycle_name': cycle.ad,
-                    'cycle_date': cycle.bashlama_tarixi,
-                    'average_score': round(avg_score, 2),
-                    'employees_count': evaluations.values('qiymetlendirilen').distinct().count()
-                })
+    department_trend = []
+    for data in department_trend_data:
+        if data['avg_score'] is not None:
+            department_trend.append({
+                'cycle_name': data['qiymetlendirme__dovr__ad'],
+                'cycle_date': data['qiymetlendirme__dovr__bashlama_tarixi'],
+                'average_score': round(data['avg_score'], 2),
+                'employees_count': data['employees_count']
+            })
     
     return {
         'department_name': department.name,
@@ -436,42 +439,63 @@ def get_department_performance_trend(department_id, cycles):
 
 def get_category_detailed_trend(user, category, cycles):
     """
-    Müəyyən kateqoriya üçün detallı trend analizi
+    Müəyyən kateqoriya üçün detallı trend analizi - Optimized to avoid N+1 queries
     """
-    detailed_trend = []
+    # Get all category trend data in one optimized query
+    category_trend_data = Cavab.objects.filter(
+        qiymetlendirme__qiymetlendirilen=user,
+        qiymetlendirme__dovr__in=cycles,
+        qiymetlendirme__status=Qiymetlendirme.Status.TAMAMLANDI,
+        sual__kateqoriya=category
+    ).exclude(
+        qiymetlendirme__qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW
+    ).values(
+        'qiymetlendirme__dovr__id',
+        'qiymetlendirme__dovr__ad',
+        'qiymetlendirme__dovr__bashlama_tarixi'
+    ).annotate(
+        avg_score=Avg('xal'),
+        answers_count=Count('id'),
+        evaluators_count=Count('qiymetlendirme__qiymetlendiren', distinct=True)
+    ).order_by('qiymetlendirme__dovr__bashlama_tarixi')
     
-    for cycle in cycles:
-        # Bu dövr və kateqoriya üçün qiymətləndirmələr
-        evaluations = Qiymetlendirme.objects.filter(
+    # Get evaluators info separately for each cycle that has data
+    cycle_ids_with_data = [item['qiymetlendirme__dovr__id'] for item in category_trend_data]
+    evaluators_by_cycle = {}
+    
+    if cycle_ids_with_data:
+        evaluator_data = Qiymetlendirme.objects.filter(
             qiymetlendirilen=user,
-            dovr=cycle,
+            dovr__id__in=cycle_ids_with_data,
             status=Qiymetlendirme.Status.TAMAMLANDI
         ).exclude(
             qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW
+        ).values(
+            'dovr__id',
+            'qiymetlendiren__first_name',
+            'qiymetlendiren__last_name'
         )
         
-        if not evaluations.exists():
-            continue
-        
-        category_answers = Cavab.objects.filter(
-            qiymetlendirme__in=evaluations,
-            sual__kateqoriya=category
-        )
-        
-        if category_answers.exists():
-            # Ortalama bal
-            avg_score = category_answers.aggregate(Avg('xal'))['xal__avg']
-            
-            # Bu dövrün qiymətləndirənləri
-            evaluators = evaluations.values_list('qiymetlendiren__first_name', 'qiymetlendiren__last_name')
-            
+        for item in evaluator_data:
+            cycle_id = item['dovr__id']
+            if cycle_id not in evaluators_by_cycle:
+                evaluators_by_cycle[cycle_id] = []
+            evaluators_by_cycle[cycle_id].append(
+                f"{item['qiymetlendiren__first_name']} {item['qiymetlendiren__last_name']}"
+            )
+    
+    # Build the detailed trend data
+    detailed_trend = []
+    for data in category_trend_data:
+        cycle_id = data['qiymetlendirme__dovr__id']
+        if data['avg_score'] is not None:
             detailed_trend.append({
-                'cycle_name': cycle.ad,
-                'cycle_date': cycle.bashlama_tarixi,
-                'average_score': round(avg_score, 2),
-                'answers_count': category_answers.count(),
-                'evaluators_count': evaluations.count(),
-                'evaluators': [f"{first} {last}" for first, last in evaluators]
+                'cycle_name': data['qiymetlendirme__dovr__ad'],
+                'cycle_date': data['qiymetlendirme__dovr__bashlama_tarixi'],
+                'average_score': round(data['avg_score'], 2),
+                'answers_count': data['answers_count'],
+                'evaluators_count': data['evaluators_count'],
+                'evaluators': evaluators_by_cycle.get(cycle_id, [])
             })
     
     return detailed_trend
