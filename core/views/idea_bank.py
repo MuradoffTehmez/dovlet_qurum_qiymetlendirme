@@ -593,29 +593,11 @@ def idea_analytics(request):
     return render(request, 'idea_bank/analytics.html', context)
 
 def complex_function_1(request):
-    """Karmaşık funksiyanın birinci hissəsi"""
-    
-    # ...existing code...
-    
-    def subtask1(...):
-        # ...logic...
-    
-    def subtask2(...):
-        # ...logic...
-    
-    # Use subtasks in main function
-    # ...existing code...
+    """Karmaşık funksiyanın birinci hissəsi (hələ implementasiya olunmayıb)"""
+    # TODO: Implement functionality or remove if unused
+    raise NotImplementedError("complex_function_1 is not implemented yet")
 
 def complex_function_2(request):
-    """Karmaşık funksiyanın ikinci hissəsi"""
-    
-    # ...existing code...
-    
-    def subtaskA(...):
-        # ...logic...
-    
-    def subtaskB(...):
-        # ...logic...
-    
-    # Use subtasks in main function
-    # ...existing code...
+    """Karmaşık funksiyanın ikinci hissəsi (hələ implementasiya olunmayıb)"""
+    # TODO: Implement functionality or remove if unused
+    raise NotImplementedError("complex_function_2 is not implemented yet")
