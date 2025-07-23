@@ -370,12 +370,14 @@ def get_user_performance_trend(user, cycles):
         category_averages = Cavab.objects.filter(
             qiymetlendirme__in=evaluations
         ).values('sual__kateqoriya__id', 'sual__kateqoriya__ad').annotate(
-            avg_score=Avg('xal')
+            avg_score=Avg('xal'),
+            answers_count=Count('id')
         ).order_by('sual__kateqoriya__id')
         
         for category_data in category_averages:
             category_name = category_data['sual__kateqoriya__ad']
             category_avg = category_data['avg_score']
+            answers_count = category_data['answers_count']
             
             if category_name and category_avg is not None:
                 if category_name not in categories_trend:
@@ -385,7 +387,7 @@ def get_user_performance_trend(user, cycles):
                     'cycle_name': cycle.ad,
                     'cycle_date': cycle.bashlama_tarixi,
                     'average_score': round(category_avg, 2),
-                    'answers_count': category_answers.count()
+                    'answers_count': answers_count
                 })
     
     return {
@@ -479,49 +481,51 @@ def get_category_detailed_trend(user, category, cycles):
 
 def get_benchmark_data(user, cycles):
     """
-    İstifadəçi üçün benchmark məlumatları
+    İstifadəçi üçün benchmark məlumatları - Optimized
     """
     benchmark = {
         'department_average': [],
         'company_average': []
     }
     
-    for cycle in cycles:
-        # Şöbə ortalaması
-        if user.organization_unit:
-            dept_evaluations = Qiymetlendirme.objects.filter(
-                qiymetlendirilen__organization_unit=user.organization_unit,
-                dovr=cycle,
-                status=Qiymetlendirme.Status.TAMAMLANDI
-            ).exclude(
-                qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW
-            )
-            
-            if dept_evaluations.exists():
-                dept_answers = Cavab.objects.filter(qiymetlendirme__in=dept_evaluations)
-                if dept_answers.exists():
-                    dept_avg = dept_answers.aggregate(Avg('xal'))['xal__avg']
-                    benchmark['department_average'].append({
-                        'cycle_name': cycle.ad,
-                        'average_score': round(dept_avg, 2)
-                    })
-        
-        # Şirkət ortalaması
-        company_evaluations = Qiymetlendirme.objects.filter(
-            dovr=cycle,
-            status=Qiymetlendirme.Status.TAMAMLANDI
+    # Optimize by collecting all cycle IDs and doing bulk queries
+    cycle_ids = [cycle.id for cycle in cycles]
+    
+    # Department averages in bulk
+    if user.organization_unit:
+        dept_averages = Cavab.objects.filter(
+            qiymetlendirme__qiymetlendirilen__organization_unit=user.organization_unit,
+            qiymetlendirme__dovr__in=cycle_ids,
+            qiymetlendirme__status=Qiymetlendirme.Status.TAMAMLANDI
         ).exclude(
-            qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW
-        )
+            qiymetlendirme__qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW
+        ).values('qiymetlendirme__dovr__id', 'qiymetlendirme__dovr__ad').annotate(
+            avg_score=Avg('xal')
+        ).order_by('qiymetlendirme__dovr__bashlama_tarixi')
         
-        if company_evaluations.exists():
-            company_answers = Cavab.objects.filter(qiymetlendirme__in=company_evaluations)
-            if company_answers.exists():
-                company_avg = company_answers.aggregate(Avg('xal'))['xal__avg']
-                benchmark['company_average'].append({
-                    'cycle_name': cycle.ad,
-                    'average_score': round(company_avg, 2)
+        for dept_avg in dept_averages:
+            if dept_avg['avg_score'] is not None:
+                benchmark['department_average'].append({
+                    'cycle_name': dept_avg['qiymetlendirme__dovr__ad'],
+                    'average_score': round(dept_avg['avg_score'], 2)
                 })
+    
+    # Company averages in bulk
+    company_averages = Cavab.objects.filter(
+        qiymetlendirme__dovr__in=cycle_ids,
+        qiymetlendirme__status=Qiymetlendirme.Status.TAMAMLANDI
+    ).exclude(
+        qiymetlendirme__qiymetlendirme_novu=Qiymetlendirme.QiymetlendirmeNovu.SELF_REVIEW
+    ).values('qiymetlendirme__dovr__id', 'qiymetlendirme__dovr__ad').annotate(
+        avg_score=Avg('xal')
+    ).order_by('qiymetlendirme__dovr__bashlama_tarixi')
+    
+    for company_avg in company_averages:
+        if company_avg['avg_score'] is not None:
+            benchmark['company_average'].append({
+                'cycle_name': company_avg['qiymetlendirme__dovr__ad'],
+                'average_score': round(company_avg['avg_score'], 2)
+            })
     
     return benchmark
 

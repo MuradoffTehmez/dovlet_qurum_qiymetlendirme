@@ -21,7 +21,13 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = (
     os.getenv("DEBUG", "False").lower() == "true"
 )  # .env faylından DEBUG dəyərini oxuyuruq
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "*"]
+ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+
+# Production üçün domain adlarını ALLOWED_HOSTS-a əlavə edin
+# Məsələn: ALLOWED_HOSTS = ["yourdomain.com", "www.yourdomain.com", "api.yourdomain.com"]
+
+# Sites Framework
+SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = [
     "core.backends.EmailOrUsernameBackend",
@@ -61,6 +67,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     # Bizim lokal tətbiqimiz
     'core.apps.CoreConfig',
@@ -645,3 +652,9 @@ MODELTRANSLATION_FALLBACK_LANGUAGES = {
     'az': ('en',),
     'en': ('az',),
 }
+
+# ===================================================================
+# DJANGO SITES FRAMEWORK KONFİQURASİYASI
+# ===================================================================
+
+SITE_ID = 1

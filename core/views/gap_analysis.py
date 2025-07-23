@@ -367,7 +367,7 @@ def get_user_gap_analysis(user, cycle):
 
 
 def get_department_average(department, cycle):
-    """Şöbənin ortalama performansını hesablayır"""
+    """Şöbənin ortalama performansını hesablayır - Optimized"""
     
     # Şöbədəki bütün tamamlanmış qiymətləndirmələr
     dept_evaluations = Qiymetlendirme.objects.filter(
@@ -381,27 +381,32 @@ def get_department_average(department, cycle):
     if not dept_evaluations.exists():
         return None
     
-    # Kateqoriyalar üzrə ortalama
+    # Kateqoriyalar üzrə ortalama - Single query with annotate
     dept_categories = []
+    category_averages = Cavab.objects.filter(
+        qiymetlendirme__in=dept_evaluations
+    ).values('sual__kateqoriya__id', 'sual__kateqoriya__ad').annotate(
+        avg_score=Avg('xal')
+    ).order_by('sual__kateqoriya__id')
     
-    for category in SualKateqoriyası.objects.all():
-        answers = Cavab.objects.filter(
-            qiymetlendirme__in=dept_evaluations,
-            sual__kateqoriya=category
-        )
-        
-        if answers.exists():
-            avg_score = answers.aggregate(Avg('xal'))['xal__avg']
+    # Create category objects for backward compatibility
+    for category_data in category_averages:
+        if category_data['avg_score'] is not None:
+            from ..models import SualKateqoriyasi
+            category = SualKateqoriyasi(
+                id=category_data['sual__kateqoriya__id'], 
+                ad=category_data['sual__kateqoriya__ad']
+            )
             dept_categories.append({
                 'category': category,
-                'average_score': round(avg_score, 2)
+                'average_score': round(category_data['avg_score'], 2)
             })
     
     return dept_categories
 
 
 def get_company_average(cycle):
-    """Şirkətin ümumi ortalamasını hesablayır"""
+    """Şirkətin ümumi ortalamasını hesablayır - Optimized"""
     
     # Bütün tamamlanmış qiymətləndirmələr
     all_evaluations = Qiymetlendirme.objects.filter(
@@ -414,20 +419,25 @@ def get_company_average(cycle):
     if not all_evaluations.exists():
         return None
     
-    # Kateqoriyalar üzrə ortalama
+    # Kateqoriyalar üzrə ortalama - Single query with annotate
     company_categories = []
+    category_averages = Cavab.objects.filter(
+        qiymetlendirme__in=all_evaluations
+    ).values('sual__kateqoriya__id', 'sual__kateqoriya__ad').annotate(
+        avg_score=Avg('xal')
+    ).order_by('sual__kateqoriya__id')
     
-    for category in SualKateqoriyası.objects.all():
-        answers = Cavab.objects.filter(
-            qiymetlendirme__in=all_evaluations,
-            sual__kateqoriya=category
-        )
-        
-        if answers.exists():
-            avg_score = answers.aggregate(Avg('xal'))['xal__avg']
+    # Create category objects for backward compatibility
+    for category_data in category_averages:
+        if category_data['avg_score'] is not None:
+            from ..models import SualKateqoriyasi
+            category = SualKateqoriyasi(
+                id=category_data['sual__kateqoriya__id'], 
+                ad=category_data['sual__kateqoriya__ad']
+            )
             company_categories.append({
                 'category': category,
-                'average_score': round(avg_score, 2)
+                'average_score': round(category_data['avg_score'], 2)
             })
     
     return company_categories

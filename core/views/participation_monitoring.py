@@ -4,7 +4,8 @@ Qiymətləndirmə prosesində iştirak faizini izləyir və xatırlatmalar gönd
 """
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, Q, F
+from django.db.models import Count, Q, F, Max
+from django.db import models
 from django.http import JsonResponse
 from django.contrib import messages
 from django.utils import timezone
@@ -67,35 +68,63 @@ def participation_details(request, cycle_id):
     if department_id:
         employees_query = employees_query.filter(organization_unit_id=department_id)
     
-    # Hər işçi üçün iştirak statusu
+    # Hər işçi üçün iştirak statusu - Optimized single query approach
     participation_details = []
     
-    for employee in employees_query:
-        # Bu işçi üçün təyin edilmiş qiymətləndirmələr
-        assigned_evaluations = Qiymetlendirme.objects.filter(
-            qiymetlendiren=employee,
-            dovr=cycle
+    # Single query to get all employee statistics at once
+    employee_stats = employees_query.annotate(
+        assigned_count=Count(
+            'etdiyi_qiymetler',
+            filter=Q(etdiyi_qiymetler__dovr=cycle),
+            distinct=True
+        ),
+        completed_count=Count(
+            'etdiyi_qiymetler',
+            filter=Q(
+                etdiyi_qiymetler__dovr=cycle,
+                etdiyi_qiymetler__status=Qiymetlendirme.Status.TAMAMLANDI
+            ),
+            distinct=True
         )
-        
-        # Tamamlanmış qiymətləndirmələr
-        completed_evaluations = assigned_evaluations.filter(
-            status=Qiymetlendirme.Status.TAMAMLANDI
-        )
+    ).prefetch_related('etdiyi_qiymetler')
+    
+    # Get last activity dates in a single query
+    last_activities = {}
+    last_activity_data = Qiymetlendirme.objects.filter(
+        qiymetlendiren__in=employees_query,
+        dovr=cycle,
+        status=Qiymetlendirme.Status.TAMAMLANDI
+    ).values('qiymetlendiren_id').annotate(
+        last_activity=Max('tamamlanma_tarixi')
+    )
+    
+    for activity in last_activity_data:
+        last_activities[activity['qiymetlendiren_id']] = activity['last_activity']
+    
+    for employee in employee_stats:
+        assigned_count = employee.assigned_count
+        completed_count = employee.completed_count
+        pending_count = assigned_count - completed_count
         
         # İştirak faizi
-        if assigned_evaluations.exists():
-            participation_rate = (completed_evaluations.count() / assigned_evaluations.count()) * 100
+        if assigned_count > 0:
+            participation_rate = (completed_count / assigned_count) * 100
         else:
             participation_rate = 0
         
+        # Last activity date
+        last_activity = last_activities.get(employee.id)
+        if last_activity:
+            last_activity = last_activity.date()
+        
         participation_details.append({
             'employee': employee,
-            'assigned_count': assigned_evaluations.count(),
-            'completed_count': completed_evaluations.count(),
-            'pending_count': assigned_evaluations.count() - completed_evaluations.count(),
+            'assigned_count': assigned_count,
+            'completed_count': completed_count,
+            'pending_count': pending_count,
             'participation_rate': round(participation_rate, 1),
             'status': get_participation_status(participation_rate),
-            'last_activity': get_last_activity_date(employee, cycle)
+            'last_activity': last_activity
         })
     
     # Sıralama

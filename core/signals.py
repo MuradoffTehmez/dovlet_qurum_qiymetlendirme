@@ -1,6 +1,7 @@
 # core/signals.py
 
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.core.mail import send_mail
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -30,6 +31,11 @@ def send_notification_on_new_assignment(sender, instance, created, **kwargs):
         qiymetlendirilen = instance.qiymetlendirilen
 
         subject = "Yeni Qiymətləndirmə Tapşırığı"
+        
+        # Django Sites Framework ilə dinamik domain əldə edirik
+        current_site = Site.objects.get_current()
+        protocol = 'https' if not settings.DEBUG else 'http'
+        site_url = f"{protocol}://{current_site.domain}"
 
         message = f"""
 Salam, {qiymetlendiren.get_full_name()},
@@ -41,7 +47,7 @@ Son tarix: {instance.dovr.bitme_tarixi.strftime('%d-%m-%Y')}
 
 Xahiş edirik sistemə daxil olub tapşırığı vaxtında yerinə yetirəsiniz.
 
-URL: http://127.0.0.1:8000/
+URL: {site_url}/
 
 Hörmətlə,
 Qiymətləndirmə Sistemi
@@ -70,11 +76,16 @@ def send_activation_email(sender, instance, created, **kwargs):
         token = account_activation_token.make_token(instance)
         activation_link = reverse('activate', kwargs={'uidb64': uid, 'token': token})
         
+        # Django Sites Framework ilə dinamik domain əldə edirik
+        current_site = Site.objects.get_current()
+        protocol = 'https' if not settings.DEBUG else 'http'
+        site_url = f"{protocol}://{current_site.domain}"
+        
         # E-poçt məzmununu hazırlayırıq
         subject = _('Activate Your Account')
         message = _(
-            'Hi {user_name},\n\nPlease click the link below to activate your account:\n\nhttp://127.0.0.1:8000{activation_link}'
-        ).format(user_name=instance.get_full_name(), activation_link=activation_link)
+            'Hi {user_name},\n\nPlease click the link below to activate your account:\n\n{site_url}{activation_link}'
+        ).format(user_name=instance.get_full_name(), site_url=site_url, activation_link=activation_link)
         
         # Tapşırığı arxa planda işə salırıq (Redis mövcud olduqda)
         # Əgər Redis mövcud deyilsə, birbaşa e-poçt göndəririk
