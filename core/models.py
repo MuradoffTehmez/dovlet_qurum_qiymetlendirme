@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
 from simple_history.models import HistoricalRecords
 
 # AI Risk Detection Models will be added directly to avoid circular imports
@@ -190,12 +191,9 @@ class Qiymetlendirme(models.Model):
 
     def calculate_average_score(self):
         """Bu qiymətləndirmənin ortalama balını hesablayır"""
-        cavablar = self.cavablar.all()
-        if not cavablar.exists():
-            return 0
-        
-        total_score = sum(cavab.xal for cavab in cavablar)
-        return round(total_score / cavablar.count(), 2)
+        from django.db.models import Avg
+        result = self.cavablar.aggregate(avg_score=Avg('xal'))
+        return round(result['avg_score'] or 0, 2)
 
     def get_completion_percentage(self):
         """Qiymətləndirmənin tamamlanma faizini hesablayır"""
@@ -203,7 +201,7 @@ class Qiymetlendirme(models.Model):
         answered_questions = self.cavablar.count()
         
         if total_questions == 0:
-            return 0
+            return 100.0 if answered_questions == 0 else 0.0
         
         return round((answered_questions / total_questions) * 100, 1)
 

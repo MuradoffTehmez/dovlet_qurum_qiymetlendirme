@@ -249,10 +249,13 @@ def admin_notification_dashboard(request):
     start_date = end_date - timedelta(days=30)
     
     # Günlük bildiriş sayları
+    from django.db.models import DateTimeField
+    from django.db.models.functions import TruncDate
+    
     daily_stats = Notification.objects.filter(
         created_at__range=[start_date, end_date]
-    ).extra(
-        select={'day': 'date(created_at)'}
+    ).annotate(
+        day=TruncDate('created_at')
     ).values('day').annotate(
         count=Count('id'),
         unread=Count('id', filter=Q(is_read=False))

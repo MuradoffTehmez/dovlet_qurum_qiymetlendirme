@@ -23,6 +23,7 @@ if __name__ == "__main__":
 
 
 import os
+import shutil
 import subprocess
 from django.core.management.base import BaseCommand
 

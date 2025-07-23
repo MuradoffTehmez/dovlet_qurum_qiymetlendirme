@@ -18,10 +18,18 @@ BASE_DIR = Path(__file__).resolve().parent.parent  # Layihənin əsas direktoriy
 # ===================================================================
 
 SECRET_KEY = os.getenv("SECRET_KEY")
+if not SECRET_KEY:
+    raise ValueError("SECRET_KEY environment variable must be set")
+
 DEBUG = (
     os.getenv("DEBUG", "False").lower() == "true"
 )  # .env faylından DEBUG dəyərini oxuyuruq
-ALLOWED_HOSTS = ["127.0.0.1", "localhost", "*"]
+
+# Security improvement: Don't allow wildcard in production
+if DEBUG:
+    ALLOWED_HOSTS = ["127.0.0.1", "localhost", "*"]
+else:
+    ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
 
 AUTHENTICATION_BACKENDS = [
     "core.backends.EmailOrUsernameBackend",

@@ -26,10 +26,9 @@ class I18nManager:
     def get_user_language(self, request) -> str:
         """Get user's preferred language"""
         # 1. Check URL parameter
-        if 'lang' in request.GET:
-            lang = request.GET['lang']
-            if self.is_valid_language(lang):
-                return lang
+        lang = request.GET.get('lang')
+        if lang and self.is_valid_language(lang):
+            return lang
         
         # 2. Check session
         if hasattr(request, 'session') and 'django_language' in request.session:
