@@ -366,20 +366,22 @@ def get_user_performance_trend(user, cycles):
                 'evaluations_count': evaluations.count()
             })
         
-        # Kateqoriyalar üzrə ortalama
-        for category in SualKateqoriyasi.objects.all():
-            category_answers = Cavab.objects.filter(
-                qiymetlendirme__in=evaluations,
-                sual__kateqoriya=category
-            )
+        # Kateqoriyalar üzrə ortalama - Optimized to avoid N+1 queries
+        category_averages = Cavab.objects.filter(
+            qiymetlendirme__in=evaluations
+        ).values('sual__kateqoriya__id', 'sual__kateqoriya__ad').annotate(
+            avg_score=Avg('xal')
+        ).order_by('sual__kateqoriya__id')
+        
+        for category_data in category_averages:
+            category_name = category_data['sual__kateqoriya__ad']
+            category_avg = category_data['avg_score']
             
-            if category_answers.exists():
-                category_avg = category_answers.aggregate(Avg('xal'))['xal__avg']
+            if category_name and category_avg is not None:
+                if category_name not in categories_trend:
+                    categories_trend[category_name] = []
                 
-                if category.ad not in categories_trend:
-                    categories_trend[category.ad] = []
-                
-                categories_trend[category.ad].append({
+                categories_trend[category_name].append({
                     'cycle_name': cycle.ad,
                     'cycle_date': cycle.bashlama_tarixi,
                     'average_score': round(category_avg, 2),

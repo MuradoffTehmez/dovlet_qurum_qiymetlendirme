@@ -485,7 +485,7 @@ def export_departments_excel(request):
         )
         ortalama_bal = Cavab.objects.filter(
             qiymetlendirme__dovr=dovr,
-            qiymetlendirme__qiymetlendirilen__organization_unit__in=alt_vahidləri,
+            qiymetlendirme__qiymetlendirilen__organization_unit__in=alt_vahidler,
         ).aggregate(ortalama=Avg("xal"))["ortalama"]
         departament_stat.append(
             {
@@ -556,7 +556,7 @@ def export_departments_pdf(request):
         )
         ortalama_bal = Cavab.objects.filter(
             qiymetlendirme__dovr=dovr,
-            qiymetlendirme__qiymetlendirilen__organization_unit__in=alt_vahidləri,
+            qiymetlendirme__qiymetlendirilen__organization_unit__in=alt_vahidler,
         ).aggregate(ortalama=Avg("xal"))["ortalama"]
         departament_stat.append(
             {
