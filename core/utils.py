@@ -4,7 +4,7 @@ import json
 
 from django.db.models import Avg
 
-from .models import Cavab, QiymetlendirmeDovru, SualKateqoriyasi
+from .models import Cavab, QiymetlendirmeDovru, SualKateqoriyasi, Qiymetlendirme
 
 
 def generate_recommendations(yazili_reyler):
@@ -123,7 +123,6 @@ def get_user_performance_trend(user, months=6):
     """İstifadəçinin son N ayının performans trendini qaytarır"""
     from django.utils import timezone
     from datetime import timedelta
-    from .models import Qiymetlendirme
     
     trends = []
     for i in range(months):
