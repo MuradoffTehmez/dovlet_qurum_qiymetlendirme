@@ -128,7 +128,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # ===================================================================
-# DİL VƏ SAAT ZONU (INTERNATIONALIZATION)
+# DİL VƏ SAAT (INTERNATIONALIZATION)
 # ===================================================================
 
 LANGUAGE_CODE = "az"
