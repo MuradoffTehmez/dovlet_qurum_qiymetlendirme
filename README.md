@@ -135,8 +135,7 @@ python manage.py runserver
 * `weasyprint` – PDF hesabat generasiyası
 * `openpyxl` – Excel ixrac funksiyası
 * `python-dotenv` – mühit dəyişənlərinin idarə olunması
-
-
+* 
 ---
 
 ## 🚀 Gələcək Genişləndirilmələr (Roadmap)
