@@ -2,24 +2,26 @@
 
 <!-- Advanced Language Switcher Component -->
 <div class="language-switcher dropdown">
-    <button class="btn btn-outline-light dropdown-toggle" type="button" 
-            id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false"
-            aria-label="{% trans 'Select language' %}">
+    <button class="btn btn-outline-light dropdown-toggle" type="button"
+        id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+        aria-label="{% trans 'Select language' %}">
         <i class="fas fa-globe me-1"></i>
         <span class="d-none d-md-inline">{{ current_language|upper }}</span>
     </button>
-    
-    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+
+    <ul class="dropdown-menu dropdown-menu-end"
+        aria-labelledby="languageDropdown">
         {% for language in languages %}
         <li>
-            <a class="dropdown-item {% if language.is_current %}active{% endif %}" 
-               href="{{ language.url }}"
-               hreflang="{{ language.code }}"
-               {% if language.is_current %}aria-current="true"{% endif %}>
+            <a
+                class="dropdown-item {% if language.is_current %}active{% endif %}"
+                href="{{ language.url }}"
+                hreflang="{{ language.code }}"
+                {% if language.is_current %}aria-current="true" {% endif %}>
                 <i class="flag-icon flag-icon-{{ language.code }} me-2"></i>
                 {{ language.name }}
                 {% if language.is_current %}
-                    <i class="fas fa-check ms-auto text-success"></i>
+                <i class="fas fa-check ms-auto text-success"></i>
                 {% endif %}
             </a>
         </li>

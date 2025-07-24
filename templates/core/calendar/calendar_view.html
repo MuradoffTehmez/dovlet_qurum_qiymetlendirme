@@ -6,7 +6,9 @@
 
 {% block extra_css %}
 <!-- FullCalendar CSS -->
-<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css' rel='stylesheet' />
+<link
+    href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css'
+    rel='stylesheet' />
 <style>
     .calendar-container {
         background: white;
@@ -133,7 +135,8 @@
         <div class="row align-items-center">
             <div class="col-md-6">
                 <h2><i class="fas fa-calendar-alt me-2"></i>{{ title }}</h2>
-                <p class="mb-0">Qiymətləndirmə dövrləri, hədəflər və hadisələr</p>
+                <p class="mb-0">Qiymətləndirmə dövrləri, hədəflər və
+                    hadisələr</p>
             </div>
             <div class="col-md-6">
                 <div class="calendar-stats" id="calendarStats">
@@ -170,42 +173,50 @@
                 <hr>
 
                 <div class="legend-item">
-                    <div class="legend-color" style="background-color: #667eea;"></div>
+                    <div class="legend-color"
+                        style="background-color: #667eea;"></div>
                     <span>Qiymətləndirmə Dövrləri</span>
                 </div>
 
                 <div class="legend-item">
-                    <div class="legend-color" style="background-color: #28a745;"></div>
+                    <div class="legend-color"
+                        style="background-color: #28a745;"></div>
                     <span>Hədəflər (Vaxt var)</span>
                 </div>
 
                 <div class="legend-item">
-                    <div class="legend-color" style="background-color: #ffc107;"></div>
+                    <div class="legend-color"
+                        style="background-color: #ffc107;"></div>
                     <span>Yaxın Hədəflər (1 həftə)</span>
                 </div>
 
                 <div class="legend-item">
-                    <div class="legend-color" style="background-color: #fd7e14;"></div>
+                    <div class="legend-color"
+                        style="background-color: #fd7e14;"></div>
                     <span>Təcili Hədəflər (3 gün)</span>
                 </div>
 
                 <div class="legend-item">
-                    <div class="legend-color" style="background-color: #dc3545;"></div>
+                    <div class="legend-color"
+                        style="background-color: #dc3545;"></div>
                     <span>Gecikmiş Hədəflər</span>
                 </div>
 
                 <div class="legend-item">
-                    <div class="legend-color" style="background-color: #6f42c1;"></div>
+                    <div class="legend-color"
+                        style="background-color: #6f42c1;"></div>
                     <span>Komanda Hədəfləri</span>
                 </div>
 
                 <div class="legend-item">
-                    <div class="legend-color" style="background-color: #17a2b8;"></div>
+                    <div class="legend-color"
+                        style="background-color: #17a2b8;"></div>
                     <span>Vacib Bildirişlər</span>
                 </div>
 
                 <div class="legend-item">
-                    <div class="legend-color" style="background-color: #20c997;"></div>
+                    <div class="legend-color"
+                        style="background-color: #20c997;"></div>
                     <span>Performans Qiymətləndirmələri</span>
                 </div>
             </div>
@@ -216,51 +227,68 @@
                 <hr>
 
                 <div class="d-grid gap-2">
-                    <button class="btn btn-primary btn-sm" onclick="showReminderForm()">
+                    <button class="btn btn-primary btn-sm"
+                        onclick="showReminderForm()">
                         <i class="fas fa-bell me-2"></i>Xatırlatma Əlavə Et
                     </button>
 
-                    <button class="btn btn-success btn-sm" onclick="showEventForm()">
+                    <button class="btn btn-success btn-sm"
+                        onclick="showEventForm()">
                         <i class="fas fa-plus me-2"></i>Yeni Hadisə
                     </button>
 
-                    <a href="{% url 'plan_yarat' user.id 1 %}" class="btn btn-outline-primary btn-sm">
+                    <a href="{% url 'plan_yarat' user.id 1 %}"
+                        class="btn btn-outline-primary btn-sm">
                         <i class="fas fa-target me-2"></i>Yeni Hədəf
                     </a>
 
-                    <a href="{% url 'notification_center' %}" class="btn btn-outline-info btn-sm">
+                    <a href="{% url 'notification_center' %}"
+                        class="btn btn-outline-info btn-sm">
                         <i class="fas fa-envelope me-2"></i>Bildirişlər
                     </a>
 
-                    <a href="{% url 'report_center' %}" class="btn btn-outline-success btn-sm">
+                    <a href="{% url 'report_center' %}"
+                        class="btn btn-outline-success btn-sm">
                         <i class="fas fa-chart-bar me-2"></i>Hesabatlar
                     </a>
                 </div>
 
                 <!-- Xatırlatma Formu -->
-                <div class="reminder-form" id="reminderForm" style="display: none;">
+                <div class="reminder-form" id="reminderForm"
+                    style="display: none;">
                     <h6>Xatırlatma Yarat</h6>
                     <form id="createReminderForm">
                         <div class="mb-3">
-                            <label class="form-label small" for="reminderTitle">Başlıq</label>
-                            <input type="text" class="form-control form-control-sm" id="reminderTitle" required>
+                            <label class="form-label small"
+                                for="reminderTitle">Başlıq</label>
+                            <input type="text"
+                                class="form-control form-control-sm"
+                                id="reminderTitle" required>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label small" for="reminderDate">Tarix</label>
-                            <input type="date" class="form-control form-control-sm" id="reminderDate" required>
+                            <label class="form-label small"
+                                for="reminderDate">Tarix</label>
+                            <input type="date"
+                                class="form-control form-control-sm"
+                                id="reminderDate" required>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label small" for="reminderDescription">Təsvir</label>
-                            <textarea class="form-control form-control-sm" id="reminderDescription" rows="2"></textarea>
+                            <label class="form-label small"
+                                for="reminderDescription">Təsvir</label>
+                            <textarea class="form-control form-control-sm"
+                                id="reminderDescription" rows="2"></textarea>
                         </div>
 
                         <div class="btn-group w-100">
-                            <button type="submit" class="btn btn-primary btn-sm">
+                            <button type="submit"
+                                class="btn btn-primary btn-sm">
                                 <i class="fas fa-save me-1"></i>Saxla
                             </button>
-                            <button type="button" class="btn btn-secondary btn-sm" onclick="hideReminderForm()">
+                            <button type="button"
+                                class="btn btn-secondary btn-sm"
+                                onclick="hideReminderForm()">
                                 İmtina
                             </button>
                         </div>
@@ -275,9 +303,12 @@
                 </div>
                 <div class="card-body">
                     <div class="small">
-                        <p><strong>Hədəf rəngləri:</strong> Son tarixə qədər qalan vaxtı göstərir</p>
-                        <p><strong>Sürüşdürün:</strong> Təqvimdə sürüşdürərək ay dəyişə bilərsiniz</p>
-                        <p><strong>Klik edin:</strong> Hadisə detallarını görmək üçün klik edin</p>
+                        <p><strong>Hədəf rəngləri:</strong> Son tarixə qədər
+                            qalan vaxtı göstərir</p>
+                        <p><strong>Sürüşdürün:</strong> Təqvimdə sürüşdürərək ay
+                            dəyişə bilərsiniz</p>
+                        <p><strong>Klik edin:</strong> Hadisə detallarını görmək
+                            üçün klik edin</p>
                         <p class="text-primary mb-0">
                             <i class="fas fa-info-circle me-1"></i>
                             Avtomatik yenilənir və real-time məlumatlar göstərir
@@ -305,13 +336,15 @@
                 <h5 class="modal-title" id="eventModalTitle">
                     <i class="fas fa-info-circle me-2"></i>Hadisə Detalları
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white"
+                    data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="eventModalBody">
                 <!-- Hadisə detalları buraya yüklənəcək -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bağla</button>
+                <button type="button" class="btn btn-secondary"
+                    data-bs-dismiss="modal">Bağla</button>
                 <div id="eventModalActions">
                     <!-- Əlavə düymələr buraya yüklənəcək -->
                 </div>
@@ -328,7 +361,8 @@
                 <h5 class="modal-title" id="eventFormModalTitle">
                     <i class="fas fa-calendar-plus me-2"></i>Yeni Hadisə
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close"
+                    data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="eventFormModalBody">
                 <div class="text-center">
@@ -337,11 +371,14 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İmtina</button>
-                <button type="button" class="btn btn-primary" id="saveEventBtn" onclick="saveEvent()">
+                <button type="button" class="btn btn-secondary"
+                    data-bs-dismiss="modal">İmtina</button>
+                <button type="button" class="btn btn-primary" id="saveEventBtn"
+                    onclick="saveEvent()">
                     <i class="fas fa-save me-2"></i>Saxla
                 </button>
-                <button type="button" class="btn btn-danger" id="deleteEventBtn" onclick="deleteEvent()"
+                <button type="button" class="btn btn-danger" id="deleteEventBtn"
+                    onclick="deleteEvent()"
                     style="display: none;">
                     <i class="fas fa-trash me-2"></i>Sil
                 </button>
@@ -353,7 +390,8 @@
 
 {% block extra_js %}
 <!-- FullCalendar JS -->
-<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
+<script
+    src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js'></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

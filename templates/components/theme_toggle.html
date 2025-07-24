@@ -7,27 +7,34 @@
         <!-- Fallback for users without JavaScript -->
         <div class="alert alert-info small">
             <i class="bi bi-info-circle me-1"></i>
-            {% trans "JavaScript is required for the dark mode toggle. Please enable JavaScript for the best experience." %}
+            {% trans
+            "JavaScript is required for the dark mode toggle. Please enable JavaScript for the best experience."
+            %}
         </div>
     </noscript>
 </div>
 
 <!-- Theme preference form for users without JavaScript -->
 <noscript>
-    <form method="post" action="{% url 'set_theme_preference' %}" class="d-inline">
+    <form method="post" action="{% url 'set_theme_preference' %}"
+        class="d-inline">
         {% csrf_token %}
-        <div class="btn-group btn-group-sm" role="group" aria-label="{% trans 'Theme selection' %}">
-            <input type="radio" class="btn-check" name="theme" id="theme-light" value="light" autocomplete="off">
+        <div class="btn-group btn-group-sm" role="group"
+            aria-label="{% trans 'Theme selection' %}">
+            <input type="radio" class="btn-check" name="theme" id="theme-light"
+                value="light" autocomplete="off">
             <label class="btn btn-outline-secondary" for="theme-light">
                 <i class="bi bi-sun me-1"></i>{% trans "Light" %}
             </label>
-            
-            <input type="radio" class="btn-check" name="theme" id="theme-dark" value="dark" autocomplete="off">
+
+            <input type="radio" class="btn-check" name="theme" id="theme-dark"
+                value="dark" autocomplete="off">
             <label class="btn btn-outline-secondary" for="theme-dark">
                 <i class="bi bi-moon me-1"></i>{% trans "Dark" %}
             </label>
-            
-            <input type="radio" class="btn-check" name="theme" id="theme-auto" value="auto" autocomplete="off" checked>
+
+            <input type="radio" class="btn-check" name="theme" id="theme-auto"
+                value="auto" autocomplete="off" checked>
             <label class="btn btn-outline-secondary" for="theme-auto">
                 <i class="bi bi-circle-half me-1"></i>{% trans "Auto" %}
             </label>

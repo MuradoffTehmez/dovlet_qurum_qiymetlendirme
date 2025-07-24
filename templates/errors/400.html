@@ -6,6 +6,7 @@
 {% block content %}
 {% trans "Səhv Sorğu" as error_title %}
 {% trans "Sorğunuz düzgün deyil və emal edilə bilmədi." as error_message %}
-{% include 'errors/components/generic_error.html' with code="400" color="danger" title=error_title message=error_message
+{% include 'errors/components/generic_error.html' with code="400" color="danger"
+title=error_title message=error_message
 icon="x-circle-fill" %}
 {% endblock %}

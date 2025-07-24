@@ -1,11 +1,13 @@
 {% autoescape off %}
 Salam, {{ user.get_full_name }}!
 
-360° Qiymətləndirmə Sistemində hesabınızı aktivləşdirmək üçün aşağıdakı linkə daxil olun:
+360° Qiymətləndirmə Sistemində hesabınızı aktivləşdirmək üçün aşağıdakı linkə
+daxil olun:
 
 http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
 
-Əgər bu linkə klikləmək olmursa, onu kopyalayıb brauzerinizin ünvan sətrinə yapışdırın.
+Əgər bu linkə klikləmək olmursa, onu kopyalayıb brauzerinizin ünvan sətrinə
+yapışdırın.
 
 Hörmətlə,
 Qiymətləndirmə Sistemi Komandası

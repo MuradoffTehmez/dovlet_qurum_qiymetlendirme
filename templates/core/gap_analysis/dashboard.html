@@ -7,36 +7,50 @@
 <style>
     .gap-analysis-card {
         border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         border: none;
         overflow: hidden;
         transition: all 0.3s ease;
     }
+
     .gap-analysis-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
     }
+
     .gap-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         padding: 2rem;
     }
+
     .gap-metric {
         background: white;
         border-radius: 10px;
         padding: 1.5rem;
         text-align: center;
-        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
         margin-bottom: 1.5rem;
     }
+
     .metric-number {
         font-size: 2.5rem;
         font-weight: 700;
         margin-bottom: 0.5rem;
     }
-    .gap-positive { color: #28a745; }
-    .gap-negative { color: #dc3545; }
-    .gap-neutral { color: #6c757d; }
+
+    .gap-positive {
+        color: #28a745;
+    }
+
+    .gap-negative {
+        color: #dc3545;
+    }
+
+    .gap-neutral {
+        color: #6c757d;
+    }
+
     .comparison-bar {
         height: 20px;
         background: #f8f9fa;
@@ -45,11 +59,13 @@
         position: relative;
         margin: 1rem 0;
     }
+
     .self-score {
         background: linear-gradient(90deg, #007bff, #0056b3);
         height: 100%;
         border-radius: 10px 0 0 10px;
     }
+
     .others-score {
         background: linear-gradient(90deg, #28a745, #1e7e34);
         height: 100%;
@@ -58,6 +74,7 @@
         opacity: 0.7;
         border-radius: 0 10px 10px 0;
     }
+
     .category-gap-item {
         background: #f8f9fa;
         border-radius: 10px;
@@ -66,18 +83,22 @@
         border-left: 4px solid #e9ecef;
         transition: all 0.3s ease;
     }
+
     .category-gap-item.positive {
         border-left-color: #28a745;
         background: #f8fff9;
     }
+
     .category-gap-item.negative {
         border-left-color: #dc3545;
         background: #fff8f8;
     }
+
     .category-gap-item.neutral {
         border-left-color: #6c757d;
         background: #f8f9fa;
     }
+
     .insights-card {
         background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
         border-radius: 15px;
@@ -85,6 +106,7 @@
         color: #495057;
         margin-bottom: 1.5rem;
     }
+
     .action-card {
         background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
         border-radius: 15px;
@@ -106,7 +128,8 @@
                 <h1 class="h3 mb-0">
                     <i class="fas fa-balance-scale me-2"></i>{{ page_title }}
                 </h1>
-                <p class="text-muted mt-1">Özünü qiymətləndirmə ilə başqalarının qiymətləndirməsi arasındakı fərqlərin analizi</p>
+                <p class="text-muted mt-1">Özünü qiymətləndirmə ilə başqalarının qiymətləndirməsi arasındakı fərqlərin
+                    analizi</p>
             </div>
         </div>
     </div>
@@ -121,13 +144,9 @@
                 <h6 class="text-muted">Ümumi Fərq</h6>
                 <small class="text-muted">
                     {% if overall_gap > 0 %}
-                        Özünü yüksək qiymətləndirmə
-                    {% elif overall_gap < 0 %}
-                        Özünü aşağı qiymətləndirmə
-                    {% else %}
-                        Balanslaşdırılmış qiymətləndirmə
-                    {% endif %}
-                </small>
+                    Özünü yüksək qiymətləndirmə
+                    {% elif overall_gap < 0 %} Özünü aşağı qiymətləndirmə {% else %} Balanslaşdırılmış qiymətləndirmə {%
+                        endif %} </small>
             </div>
         </div>
         <div class="col-lg-3 col-md-6">
@@ -184,13 +203,16 @@
                     <div class="category-gap-item {{ gap.direction }}">
                         <div class="d-flex justify-content-between align-items-center">
                             <h6 class="mb-1">{{ gap.category }}</h6>
-                            <span class="badge bg-{% if gap.direction == 'positive' %}success{% elif gap.direction == 'negative' %}danger{% else %}secondary{% endif %}">
+                            <span
+                                class="badge bg-{% if gap.direction == 'positive' %}success{% elif gap.direction == 'negative' %}danger{% else %}secondary{% endif %}">
                                 {% if gap.gap >= 0 %}+{% endif %}{{ gap.gap|floatformat:1 }}
                             </span>
                         </div>
                         <div class="comparison-bar">
                             <div class="self-score" style="width: {{ gap.self_score|floatformat:0|add:'0' }}%"></div>
-                            <div class="others-score" style="width: {{ gap.others_score|floatformat:0|add:'0' }}%; left: {{ gap.self_score|floatformat:0|add:'0' }}%"></div>
+                            <div class="others-score"
+                                style="width: {{ gap.others_score|floatformat:0|add:'0' }}%; left: {{ gap.self_score|floatformat:0|add:'0' }}%">
+                            </div>
                         </div>
                         <div class="d-flex justify-content-between">
                             <small class="text-primary">Siz: {{ gap.self_score|floatformat:1 }}</small>
@@ -266,31 +288,31 @@
                     {% if overall_gap > 1 %}
                     <li class="mb-2">
                         <i class="fas fa-exclamation-triangle text-warning me-2"></i>
-                        <strong>Özünə inamla bağlı işləmək:</strong> Özünüzü həddindən artıq yüksək qiymətləndirmə meylindəsiniz.
+                        <strong>Özünə inamla bağlı işləmək:</strong> Özünüzü həddindən artıq yüksək qiymətləndirmə
+                        meylindəsiniz.
                     </li>
-                    {% elif overall_gap < -1 %}
-                    <li class="mb-2">
+                    {% elif overall_gap < -1 %} <li class="mb-2">
                         <i class="fas fa-heart text-danger me-2"></i>
                         <strong>Özgüvəni artırmaq:</strong> Güclü tərəflərinizi daha çox qiymətləndirin.
-                    </li>
-                    {% else %}
-                    <li class="mb-2">
-                        <i class="fas fa-check-circle text-success me-2"></i>
-                        <strong>Balanslaşdırılmış perspektiv:</strong> Realistik öz-qiymətləndirmə.
-                    </li>
-                    {% endif %}
+                        </li>
+                        {% else %}
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Balanslaşdırılmış perspektiv:</strong> Realistik öz-qiymətləndirmə.
+                        </li>
+                        {% endif %}
 
-                    {% if significant_gaps_count > 3 %}
-                    <li class="mb-2">
-                        <i class="fas fa-search me-2"></i>
-                        <strong>Diqqət:</strong> Çoxlu sahələrdə böyük fərqlər var.
-                    </li>
-                    {% endif %}
+                        {% if significant_gaps_count > 3 %}
+                        <li class="mb-2">
+                            <i class="fas fa-search me-2"></i>
+                            <strong>Diqqət:</strong> Çoxlu sahələrdə böyük fərqlər var.
+                        </li>
+                        {% endif %}
 
-                    <li class="mb-2">
-                        <i class="fas fa-users me-2"></i>
-                        <strong>360° perspektiv:</strong> Müntəzəm geri bildirim almaq faydalı olacaq.
-                    </li>
+                        <li class="mb-2">
+                            <i class="fas fa-users me-2"></i>
+                            <strong>360° perspektiv:</strong> Müntəzəm geri bildirim almaq faydalı olacaq.
+                        </li>
                 </ul>
             </div>
 
@@ -341,11 +363,12 @@
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Gap Comparison Chart
-    const comparisonCtx = document.getElementById('gapComparisonChart').getContext('2d');
-    const comparisonData = {{ comparison_chart_data|safe }};
-    
+    document.addEventListener('DOMContentLoaded', function () {
+        // Gap Comparison Chart
+        const comparisonCtx = document.getElementById('gapComparisonChart').getContext('2d');
+        const comparisonData = {{ comparison_chart_data| safe
+    }};
+
     new Chart(comparisonCtx, {
         type: 'bar',
         data: {
@@ -390,8 +413,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Gap Trend Chart (if historical data exists)
     {% if historical_data %}
     const trendCtx = document.getElementById('gapTrendChart').getContext('2d');
-    const trendData = {{ historical_chart_data|safe }};
-    
+    const trendData = {{ historical_chart_data| safe }};
+
     new Chart(trendCtx, {
         type: 'line',
         data: {
@@ -418,8 +441,8 @@ document.addEventListener('DOMContentLoaded', function() {
     {% endif %}
 });
 
-function downloadReport() {
-    alert('Gap Analysis hesabatı tezliklə əlçatan olacaq');
-}
+    function downloadReport() {
+        alert('Gap Analysis hesabatı tezliklə əlçatan olacaq');
+    }
 </script>
 {% endblock %}

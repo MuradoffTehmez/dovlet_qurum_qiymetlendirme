@@ -7,29 +7,34 @@
 <style>
     .detail-card {
         border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         border: none;
         margin-bottom: 1.5rem;
     }
+
     .detail-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         padding: 1.5rem;
         border-radius: 15px 15px 0 0;
     }
+
     .question-analysis {
         padding: 1.5rem;
         border-bottom: 1px solid #e9ecef;
     }
+
     .question-analysis:last-child {
         border-bottom: none;
     }
+
     .score-comparison {
         background: #f8f9fa;
         border-radius: 10px;
         padding: 1rem;
         margin: 1rem 0;
     }
+
     .score-bar-container {
         position: relative;
         height: 30px;
@@ -38,6 +43,7 @@
         overflow: hidden;
         margin: 0.5rem 0;
     }
+
     .score-bar-self {
         position: absolute;
         height: 100%;
@@ -45,6 +51,7 @@
         border-radius: 15px 0 0 15px;
         transition: width 0.8s ease;
     }
+
     .score-bar-others {
         position: absolute;
         height: 100%;
@@ -53,6 +60,7 @@
         opacity: 0.8;
         transition: width 0.8s ease;
     }
+
     .gap-indicator {
         font-size: 1.2rem;
         font-weight: 700;
@@ -60,18 +68,22 @@
         border-radius: 20px;
         display: inline-block;
     }
+
     .gap-positive {
         background: rgba(220, 53, 69, 0.1);
         color: #dc3545;
     }
+
     .gap-negative {
         background: rgba(40, 167, 69, 0.1);
         color: #28a745;
     }
+
     .gap-neutral {
         background: rgba(108, 117, 125, 0.1);
         color: #6c757d;
     }
+
     .insight-box {
         background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
         border-radius: 10px;
@@ -79,6 +91,7 @@
         margin: 1rem 0;
         color: #495057;
     }
+
     .evaluator-breakdown {
         background: white;
         border: 1px solid #e9ecef;
@@ -86,6 +99,7 @@
         padding: 1rem;
         margin: 0.5rem 0;
     }
+
     .filter-controls {
         background: #f8f9fa;
         border-radius: 10px;
@@ -120,7 +134,8 @@
                         <select name="category" class="form-select">
                             <option value="">Bütün Kateqoriyalar</option>
                             {% for category in categories %}
-                            <option value="{{ category.id }}" {% if selected_category == category.id %}selected{% endif %}>
+                            <option value="{{ category.id }}" {% if selected_category==category.id %}selected{% endif
+                                %}>
                                 {{ category.ad }}
                             </option>
                             {% endfor %}
@@ -130,17 +145,20 @@
                         <label class="form-label">Fərq Növü</label>
                         <select name="gap_type" class="form-select">
                             <option value="">Hamısı</option>
-                            <option value="positive" {% if gap_type == 'positive' %}selected{% endif %}>Özünü Yüksək Qiymətləndirmə</option>
-                            <option value="negative" {% if gap_type == 'negative' %}selected{% endif %}>Özünü Aşağı Qiymətləndirmə</option>
-                            <option value="significant" {% if gap_type == 'significant' %}selected{% endif %}>Böyük Fərqlər (1.5+)</option>
+                            <option value="positive" {% if gap_type=='positive' %}selected{% endif %}>Özünü Yüksək
+                                Qiymətləndirmə</option>
+                            <option value="negative" {% if gap_type=='negative' %}selected{% endif %}>Özünü Aşağı
+                                Qiymətləndirmə</option>
+                            <option value="significant" {% if gap_type=='significant' %}selected{% endif %}>Böyük
+                                Fərqlər (1.5+)</option>
                         </select>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label">Sıralama</label>
                         <select name="sort" class="form-select">
-                            <option value="gap_desc" {% if sort == 'gap_desc' %}selected{% endif %}>Ən Böyük Fərq</option>
-                            <option value="gap_asc" {% if sort == 'gap_asc' %}selected{% endif %}>Ən Kiçik Fərq</option>
-                            <option value="category" {% if sort == 'category' %}selected{% endif %}>Kateqoriya</option>
+                            <option value="gap_desc" {% if sort=='gap_desc' %}selected{% endif %}>Ən Böyük Fərq</option>
+                            <option value="gap_asc" {% if sort=='gap_asc' %}selected{% endif %}>Ən Kiçik Fərq</option>
+                            <option value="category" {% if sort=='category' %}selected{% endif %}>Kateqoriya</option>
                         </select>
                     </div>
                     <div class="col-md-3 d-flex align-items-end">
@@ -181,24 +199,27 @@
                             <!-- Score Comparison -->
                             <div class="score-comparison">
                                 <h6 class="mb-3">Bal Müqayisəsi</h6>
-                                
+
                                 <div class="mb-3">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <span class="text-primary fw-bold">Öz Qiymətiniz</span>
                                         <span class="badge bg-primary">{{ analysis.self_score|floatformat:1 }}/10</span>
                                     </div>
                                     <div class="score-bar-container">
-                                        <div class="score-bar-self" style="width: {{ analysis.self_score|floatformat:0|add:'0' }}%"></div>
+                                        <div class="score-bar-self"
+                                            style="width: {{ analysis.self_score|floatformat:0|add:'0' }}%"></div>
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <span class="text-success fw-bold">Başqalarının Qiyməti</span>
-                                        <span class="badge bg-success">{{ analysis.others_average|floatformat:1 }}/10</span>
+                                        <span class="badge bg-success">{{ analysis.others_average|floatformat:1
+                                            }}/10</span>
                                     </div>
                                     <div class="score-bar-container">
-                                        <div class="score-bar-others" style="width: {{ analysis.others_average|floatformat:0|add:'0' }}%"></div>
+                                        <div class="score-bar-others"
+                                            style="width: {{ analysis.others_average|floatformat:0|add:'0' }}%"></div>
                                     </div>
                                 </div>
 
@@ -229,15 +250,16 @@
                                         </div>
                                         <div class="col-md-3 text-center">
                                             <small class="text-muted">
-                                                {% with diff=evaluator.score|floatformat:1|sub:analysis.self_score|floatformat:1 %}
-                                                    {% if diff > 0 %}
-                                                        <span class="text-success">+{{ diff }}</span>
-                                                    {% elif diff < 0 %}
-                                                        <span class="text-danger">{{ diff }}</span>
+                                                {% with
+                                                diff=evaluator.score|floatformat:1|sub:analysis.self_score|floatformat:1
+                                                %}
+                                                {% if diff > 0 %}
+                                                <span class="text-success">+{{ diff }}</span>
+                                                {% elif diff < 0 %} <span class="text-danger">{{ diff }}</span>
                                                     {% else %}
-                                                        <span class="text-muted">0</span>
+                                                    <span class="text-muted">0</span>
                                                     {% endif %}
-                                                {% endwith %}
+                                                    {% endwith %}
                                             </small>
                                         </div>
                                     </div>
@@ -252,147 +274,149 @@
                                 <h6 class="mb-3">
                                     <i class="fas fa-lightbulb me-2"></i>Təhlil
                                 </h6>
-                                
+
                                 {% if analysis.gap > 1.5 %}
                                 <div class="mb-3">
                                     <i class="fas fa-exclamation-triangle text-warning me-2"></i>
-                                    <strong>Böyük fərq:</strong> Bu sahədə özünüzü həddindən artıq yüksək qiymətləndirirsiniz.
+                                    <strong>Böyük fərq:</strong> Bu sahədə özünüzü həddindən artıq yüksək
+                                    qiymətləndirirsiniz.
                                 </div>
                                 <div class="mb-3">
                                     <i class="fas fa-search text-info me-2"></i>
-                                    <strong>Tövsiyə:</strong> Bu sahədə daha çox geri bildirim almaq və öz performansınızı yenidən qiymətləndirmək.
+                                    <strong>Tövsiyə:</strong> Bu sahədə daha çox geri bildirim almaq və öz
+                                    performansınızı yenidən qiymətləndirmək.
                                 </div>
-                                {% elif analysis.gap < -1.5 %}
-                                <div class="mb-3">
+                                {% elif analysis.gap < -1.5 %} <div class="mb-3">
                                     <i class="fas fa-heart text-success me-2"></i>
-                                    <strong>Təvazökar yanaşma:</strong> Bu sahədə özünüzü həddindən artıq aşağı qiymətləndirirsiniz.
-                                </div>
-                                <div class="mb-3">
-                                    <i class="fas fa-arrow-up text-primary me-2"></i>
-                                    <strong>Tövsiyə:</strong> Bu sahədəki güclü tərəflərinizi daha çox qiymətləndirin.
-                                </div>
-                                {% elif analysis.gap > 0.5 %}
-                                <div class="mb-3">
-                                    <i class="fas fa-balance-scale text-warning me-2"></i>
-                                    <strong>Yüngül fərq:</strong> Bu sahədə özgüvəniniz bir az yüksəkdir.
-                                </div>
-                                {% elif analysis.gap < -0.5 %}
-                                <div class="mb-3">
-                                    <i class="fas fa-plus-circle text-info me-2"></i>
-                                    <strong>Potensial:</strong> Bu sahədə özünüzə daha çox güvənə bilərsiniz.
-                                </div>
-                                {% else %}
-                                <div class="mb-3">
-                                    <i class="fas fa-check-circle text-success me-2"></i>
-                                    <strong>Balanslaşdırılmış:</strong> Bu sahədə realistik öz-qiymətləndirmə.
-                                </div>
-                                {% endif %}
-
-                                <!-- Variance Analysis -->
-                                {% if analysis.score_variance > 2 %}
-                                <div class="mb-3">
-                                    <i class="fas fa-exclamation-circle text-danger me-2"></i>
-                                    <strong>Yüksək variasiya:</strong> Qiymətləndiricilər arasında böyük fərqlər var.
-                                </div>
-                                {% elif analysis.score_variance > 1 %}
-                                <div class="mb-3">
-                                    <i class="fas fa-info-circle text-warning me-2"></i>
-                                    <strong>Orta variasiya:</strong> Qiymətləndiricilər fərqli fikirlərdədir.
-                                </div>
-                                {% else %}
-                                <div class="mb-3">
-                                    <i class="fas fa-handshake text-success me-2"></i>
-                                    <strong>Konsensus:</strong> Qiymətləndiricilər oxşar fikirlərdədir.
-                                </div>
-                                {% endif %}
+                                    <strong>Təvazökar yanaşma:</strong> Bu sahədə özünüzü həddindən artıq aşağı
+                                    qiymətləndirirsiniz.
                             </div>
-
-                            <!-- Action Items -->
-                            <div class="mt-3">
-                                <h6 class="mb-3">Əməliyyat Planı</h6>
-                                <div class="d-grid gap-2">
-                                    {% if analysis.gap > 1 %}
-                                    <button class="btn btn-outline-warning btn-sm">
-                                        <i class="fas fa-comments me-1"></i>360° Geri Bildirim Al
-                                    </button>
-                                    <button class="btn btn-outline-info btn-sm">
-                                        <i class="fas fa-search me-1"></i>Özünü Təhlil Et
-                                    </button>
-                                    {% elif analysis.gap < -1 %}
-                                    <button class="btn btn-outline-success btn-sm">
-                                        <i class="fas fa-trophy me-1"></i>Nailiyyətləri Qeyd Et
-                                    </button>
-                                    <button class="btn btn-outline-primary btn-sm">
-                                        <i class="fas fa-chart-line me-1"></i>Performans İzlə
-                                    </button>
-                                    {% else %}
-                                    <button class="btn btn-outline-primary btn-sm">
-                                        <i class="fas fa-check me-1"></i>Performansı Saxla
-                                    </button>
-                                    {% endif %}
-                                </div>
+                            <div class="mb-3">
+                                <i class="fas fa-arrow-up text-primary me-2"></i>
+                                <strong>Tövsiyə:</strong> Bu sahədəki güclü tərəflərinizi daha çox qiymətləndirin.
                             </div>
+                            {% elif analysis.gap > 0.5 %}
+                            <div class="mb-3">
+                                <i class="fas fa-balance-scale text-warning me-2"></i>
+                                <strong>Yüngül fərq:</strong> Bu sahədə özgüvəniniz bir az yüksəkdir.
+                            </div>
+                            {% elif analysis.gap < -0.5 %} <div class="mb-3">
+                                <i class="fas fa-plus-circle text-info me-2"></i>
+                                <strong>Potensial:</strong> Bu sahədə özünüzə daha çox güvənə bilərsiniz.
+                        </div>
+                        {% else %}
+                        <div class="mb-3">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Balanslaşdırılmış:</strong> Bu sahədə realistik öz-qiymətləndirmə.
+                        </div>
+                        {% endif %}
+
+                        <!-- Variance Analysis -->
+                        {% if analysis.score_variance > 2 %}
+                        <div class="mb-3">
+                            <i class="fas fa-exclamation-circle text-danger me-2"></i>
+                            <strong>Yüksək variasiya:</strong> Qiymətləndiricilər arasında böyük fərqlər var.
+                        </div>
+                        {% elif analysis.score_variance > 1 %}
+                        <div class="mb-3">
+                            <i class="fas fa-info-circle text-warning me-2"></i>
+                            <strong>Orta variasiya:</strong> Qiymətləndiricilər fərqli fikirlərdədir.
+                        </div>
+                        {% else %}
+                        <div class="mb-3">
+                            <i class="fas fa-handshake text-success me-2"></i>
+                            <strong>Konsensus:</strong> Qiymətləndiricilər oxşar fikirlərdədir.
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Action Items -->
+                    <div class="mt-3">
+                        <h6 class="mb-3">Əməliyyat Planı</h6>
+                        <div class="d-grid gap-2">
+                            {% if analysis.gap > 1 %}
+                            <button class="btn btn-outline-warning btn-sm">
+                                <i class="fas fa-comments me-1"></i>360° Geri Bildirim Al
+                            </button>
+                            <button class="btn btn-outline-info btn-sm">
+                                <i class="fas fa-search me-1"></i>Özünü Təhlil Et
+                            </button>
+                            {% elif analysis.gap < -1 %} <button class="btn btn-outline-success btn-sm">
+                                <i class="fas fa-trophy me-1"></i>Nailiyyətləri Qeyd Et
+                                </button>
+                                <button class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-chart-line me-1"></i>Performans İzlə
+                                </button>
+                                {% else %}
+                                <button class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-check me-1"></i>Performansı Saxla
+                                </button>
+                                {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
-            {% empty %}
-            <div class="detail-card">
-                <div class="text-center py-5">
-                    <i class="fas fa-search fa-4x text-muted mb-3"></i>
-                    <h5 class="text-muted">Nəticə Tapılmadı</h5>
-                    <p class="text-muted">Seçilmiş filtrlərə uyğun məlumat yoxdur.</p>
-                    <a href="{% url 'gap_analysis:detail' %}" class="btn btn-outline-primary">
-                        Bütün Nəticələr
-                    </a>
-                </div>
-            </div>
-            {% endfor %}
         </div>
     </div>
-
-    <!-- Pagination -->
-    {% if is_paginated %}
-    <div class="row">
-        <div class="col-12">
-            <nav aria-label="Səhifələmə">
-                <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.gap_type %}&gap_type={{ request.GET.gap_type }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Əvvəlki</a>
-                    </li>
-                    {% endif %}
-
-                    <li class="page-item active">
-                        <span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
-                    </li>
-
-                    {% if page_obj.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.gap_type %}&gap_type={{ request.GET.gap_type }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Sonrakı</a>
-                    </li>
-                    {% endif %}
-                </ul>
-            </nav>
+    {% empty %}
+    <div class="detail-card">
+        <div class="text-center py-5">
+            <i class="fas fa-search fa-4x text-muted mb-3"></i>
+            <h5 class="text-muted">Nəticə Tapılmadı</h5>
+            <p class="text-muted">Seçilmiş filtrlərə uyğun məlumat yoxdur.</p>
+            <a href="{% url 'gap_analysis:detail' %}" class="btn btn-outline-primary">
+                Bütün Nəticələr
+            </a>
         </div>
     </div>
-    {% endif %}
+    {% endfor %}
+</div>
+</div>
+
+<!-- Pagination -->
+{% if is_paginated %}
+<div class="row">
+    <div class="col-12">
+        <nav aria-label="Səhifələmə">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="?page={{ page_obj.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.gap_type %}&gap_type={{ request.GET.gap_type }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Əvvəlki</a>
+                </li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+                </li>
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link"
+                        href="?page={{ page_obj.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.gap_type %}&gap_type={{ request.GET.gap_type }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">Sonrakı</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endif %}
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-// Animate score bars on page load
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(() => {
-        document.querySelectorAll('.score-bar-self, .score-bar-others').forEach(bar => {
-            const width = bar.style.width;
-            bar.style.width = '0%';
-            setTimeout(() => {
-                bar.style.width = width;
-            }, 100);
-        });
-    }, 500);
-});
+    // Animate score bars on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(() => {
+            document.querySelectorAll('.score-bar-self, .score-bar-others').forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 100);
+            });
+        }, 500);
+    });
 </script>
 {% endblock %}

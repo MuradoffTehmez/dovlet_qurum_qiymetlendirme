@@ -7,37 +7,52 @@
 <style>
     .self-review-card {
         border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         border: none;
         overflow: hidden;
         transition: all 0.3s ease;
     }
+
     .self-review-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
     }
+
     .review-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         padding: 2rem;
     }
+
     .review-status {
         padding: 1.5rem;
     }
-    .status-pending { border-left: 5px solid #ffc107; }
-    .status-in-progress { border-left: 5px solid #007bff; }
-    .status-completed { border-left: 5px solid #28a745; }
+
+    .status-pending {
+        border-left: 5px solid #ffc107;
+    }
+
+    .status-in-progress {
+        border-left: 5px solid #007bff;
+    }
+
+    .status-completed {
+        border-left: 5px solid #28a745;
+    }
+
     .progress-ring {
         width: 80px;
         height: 80px;
         transform: rotate(-90deg);
     }
+
     .progress-ring-circle {
         stroke-dasharray: 251.2;
         stroke-dashoffset: 251.2;
         transition: stroke-dashoffset 0.35s;
         transform-origin: 50% 50%;
     }
+
     .stats-card {
         background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         color: white;
@@ -45,15 +60,18 @@
         padding: 1.5rem;
         text-align: center;
     }
+
     .review-item {
         border-radius: 10px;
         transition: all 0.3s ease;
         border: 1px solid #e9ecef;
     }
+
     .review-item:hover {
         border-color: #007bff;
         background-color: #f8f9fa;
     }
+
     .action-buttons .btn {
         border-radius: 25px;
         padding: 10px 25px;
@@ -104,7 +122,8 @@
         </div>
         <div class="col-md-3">
             <div class="stats-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-                <h4 class="mb-0">{% if stats.average_score %}{{ stats.average_score|floatformat:1 }}{% else %}-{% endif %}</h4>
+                <h4 class="mb-0">{% if stats.average_score %}{{ stats.average_score|floatformat:1 }}{% else %}-{% endif
+                    %}</h4>
                 <small>Orta Bal</small>
             </div>
         </div>
@@ -122,59 +141,63 @@
                 </div>
                 <div class="review-status">
                     {% if current_review %}
-                        <div class="row align-items-center">
-                            <div class="col-md-8">
-                                <h6 class="mb-2">{{ current_review.qiymetlendirme_dovru.basliq }}</h6>
-                                <p class="text-muted mb-3">
-                                    <i class="fas fa-calendar me-1"></i>
-                                    {{ current_review.qiymetlendirme_dovru.baslama_tarixi|date:"d.m.Y" }} - 
-                                    {{ current_review.qiymetlendirme_dovru.bitis_tarixi|date:"d.m.Y" }}
-                                </p>
-                                <div class="progress mb-2" style="height: 8px;">
-                                    <div class="progress-bar bg-primary" style="width: {{ current_review.completion_percentage }}%"></div>
-                                </div>
-                                <small class="text-muted">{{ current_review.completion_percentage }}% tamamlandı</small>
-                                
-                                <div class="mt-3">
-                                    {% if current_review.status == 'PENDING' %}
-                                        <span class="badge bg-warning">Gözləyir</span>
-                                    {% elif current_review.status == 'IN_PROGRESS' %}
-                                        <span class="badge bg-info">Davam edir</span>
-                                    {% elif current_review.status == 'COMPLETED' %}
-                                        <span class="badge bg-success">Tamamlandı</span>
-                                    {% endif %}
-                                    
-                                    {% if current_review.status != 'COMPLETED' %}
-                                        <a href="{% url 'self_review:edit' current_review.id %}" class="btn btn-sm btn-primary ms-2">
-                                            <i class="fas fa-edit me-1"></i>Davam Et
-                                        </a>
-                                    {% else %}
-                                        <a href="{% url 'self_review:view' current_review.id %}" class="btn btn-sm btn-outline-primary ms-2">
-                                            <i class="fas fa-eye me-1"></i>Görüntülə
-                                        </a>
-                                    {% endif %}
-                                </div>
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h6 class="mb-2">{{ current_review.qiymetlendirme_dovru.basliq }}</h6>
+                            <p class="text-muted mb-3">
+                                <i class="fas fa-calendar me-1"></i>
+                                {{ current_review.qiymetlendirme_dovru.baslama_tarixi|date:"d.m.Y" }} -
+                                {{ current_review.qiymetlendirme_dovru.bitis_tarixi|date:"d.m.Y" }}
+                            </p>
+                            <div class="progress mb-2" style="height: 8px;">
+                                <div class="progress-bar bg-primary"
+                                    style="width: {{ current_review.completion_percentage }}%"></div>
                             </div>
-                            <div class="col-md-4 text-center">
-                                <svg class="progress-ring" width="80" height="80">
-                                    <circle class="progress-ring-circle" stroke="#007bff" stroke-width="4" 
-                                            fill="transparent" r="40" cx="40" cy="40"
-                                            style="stroke-dashoffset: calc(251.2 - (251.2 * {{ current_review.completion_percentage }}) / 100);"></circle>
-                                </svg>
-                                <div class="mt-2">
-                                    <small class="text-muted">Tamamlanma</small>
-                                </div>
+                            <small class="text-muted">{{ current_review.completion_percentage }}% tamamlandı</small>
+
+                            <div class="mt-3">
+                                {% if current_review.status == 'PENDING' %}
+                                <span class="badge bg-warning">Gözləyir</span>
+                                {% elif current_review.status == 'IN_PROGRESS' %}
+                                <span class="badge bg-info">Davam edir</span>
+                                {% elif current_review.status == 'COMPLETED' %}
+                                <span class="badge bg-success">Tamamlandı</span>
+                                {% endif %}
+
+                                {% if current_review.status != 'COMPLETED' %}
+                                <a href="{% url 'self_review:edit' current_review.id %}"
+                                    class="btn btn-sm btn-primary ms-2">
+                                    <i class="fas fa-edit me-1"></i>Davam Et
+                                </a>
+                                {% else %}
+                                <a href="{% url 'self_review:view' current_review.id %}"
+                                    class="btn btn-sm btn-outline-primary ms-2">
+                                    <i class="fas fa-eye me-1"></i>Görüntülə
+                                </a>
+                                {% endif %}
                             </div>
                         </div>
+                        <div class="col-md-4 text-center">
+                            <svg class="progress-ring" width="80" height="80">
+                                <circle class="progress-ring-circle" stroke="#007bff" stroke-width="4"
+                                    fill="transparent" r="40" cx="40" cy="40"
+                                    style="stroke-dashoffset: calc(251.2 - (251.2 * {{ current_review.completion_percentage }}) / 100);">
+                                </circle>
+                            </svg>
+                            <div class="mt-2">
+                                <small class="text-muted">Tamamlanma</small>
+                            </div>
+                        </div>
+                    </div>
                     {% else %}
-                        <div class="text-center py-4">
-                            <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
-                            <h6>Aktiv Self-Review Yoxdur</h6>
-                            <p class="text-muted mb-3">Hal-hazırda heç bir aktiv qiymətləndirmə dövründə deyilsiniz.</p>
-                            <a href="{% url 'self_review:create' %}" class="btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>Yeni Self-Review Başlat
-                            </a>
-                        </div>
+                    <div class="text-center py-4">
+                        <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                        <h6>Aktiv Self-Review Yoxdur</h6>
+                        <p class="text-muted mb-3">Hal-hazırda heç bir aktiv qiymətləndirmə dövründə deyilsiniz.</p>
+                        <a href="{% url 'self_review:create' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Yeni Self-Review Başlat
+                        </a>
+                    </div>
                     {% endif %}
                 </div>
             </div>
@@ -229,57 +252,59 @@
                 </div>
                 <div class="card-body p-0">
                     {% if recent_reviews %}
-                        {% for review in recent_reviews %}
-                        <div class="review-item p-3 border-bottom status-{{ review.status.lower }}">
-                            <div class="row align-items-center">
-                                <div class="col-md-8">
-                                    <h6 class="mb-1">{{ review.qiymetlendirme_dovru.basliq }}</h6>
-                                    <p class="text-muted small mb-1">
-                                        <i class="fas fa-calendar me-1"></i>
-                                        {{ review.qiymetlendirme_dovru.baslama_tarixi|date:"d.m.Y" }} - 
-                                        {{ review.qiymetlendirme_dovru.bitis_tarixi|date:"d.m.Y" }}
-                                    </p>
-                                    {% if review.final_score %}
-                                    <div class="d-flex align-items-center">
-                                        <small class="text-muted me-2">Ümumi Bal:</small>
-                                        <span class="badge bg-primary">{{ review.final_score|floatformat:1 }}/10</span>
-                                    </div>
+                    {% for review in recent_reviews %}
+                    <div class="review-item p-3 border-bottom status-{{ review.status.lower }}">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h6 class="mb-1">{{ review.qiymetlendirme_dovru.basliq }}</h6>
+                                <p class="text-muted small mb-1">
+                                    <i class="fas fa-calendar me-1"></i>
+                                    {{ review.qiymetlendirme_dovru.baslama_tarixi|date:"d.m.Y" }} -
+                                    {{ review.qiymetlendirme_dovru.bitis_tarixi|date:"d.m.Y" }}
+                                </p>
+                                {% if review.final_score %}
+                                <div class="d-flex align-items-center">
+                                    <small class="text-muted me-2">Ümumi Bal:</small>
+                                    <span class="badge bg-primary">{{ review.final_score|floatformat:1 }}/10</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <div class="mb-2">
+                                    {% if review.status == 'PENDING' %}
+                                    <span class="badge bg-warning">Gözləyir</span>
+                                    {% elif review.status == 'IN_PROGRESS' %}
+                                    <span class="badge bg-info">Davam edir</span>
+                                    {% elif review.status == 'COMPLETED' %}
+                                    <span class="badge bg-success">Tamamlandı</span>
                                     {% endif %}
                                 </div>
-                                <div class="col-md-4 text-end">
-                                    <div class="mb-2">
-                                        {% if review.status == 'PENDING' %}
-                                            <span class="badge bg-warning">Gözləyir</span>
-                                        {% elif review.status == 'IN_PROGRESS' %}
-                                            <span class="badge bg-info">Davam edir</span>
-                                        {% elif review.status == 'COMPLETED' %}
-                                            <span class="badge bg-success">Tamamlandı</span>
-                                        {% endif %}
-                                    </div>
-                                    <div>
-                                        {% if review.status == 'COMPLETED' %}
-                                            <a href="{% url 'self_review:view' review.id %}" class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-eye me-1"></i>Görüntülə
-                                            </a>
-                                        {% else %}
-                                            <a href="{% url 'self_review:edit' review.id %}" class="btn btn-sm btn-outline-success">
-                                                <i class="fas fa-edit me-1"></i>Davam Et
-                                            </a>
-                                        {% endif %}
-                                    </div>
+                                <div>
+                                    {% if review.status == 'COMPLETED' %}
+                                    <a href="{% url 'self_review:view' review.id %}"
+                                        class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye me-1"></i>Görüntülə
+                                    </a>
+                                    {% else %}
+                                    <a href="{% url 'self_review:edit' review.id %}"
+                                        class="btn btn-sm btn-outline-success">
+                                        <i class="fas fa-edit me-1"></i>Davam Et
+                                    </a>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
-                        {% endfor %}
+                    </div>
+                    {% endfor %}
                     {% else %}
-                        <div class="text-center py-5">
-                            <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
-                            <h6 class="text-muted">Hələ Self-Review etməmişsiniz</h6>
-                            <p class="text-muted">İlk özünü qiymətləndirməni başladın və inkişafını izlə.</p>
-                            <a href="{% url 'self_review:create' %}" class="btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>İlk Self-Review-i Başlat
-                            </a>
-                        </div>
+                    <div class="text-center py-5">
+                        <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
+                        <h6 class="text-muted">Hələ Self-Review etməmişsiniz</h6>
+                        <p class="text-muted">İlk özünü qiymətləndirməni başladın və inkişafını izlə.</p>
+                        <a href="{% url 'self_review:create' %}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>İlk Self-Review-i Başlat
+                        </a>
+                    </div>
                     {% endif %}
                 </div>
             </div>
@@ -323,14 +348,14 @@
 
 {% block extra_js %}
 <script>
-function downloadReport() {
-    // This would implement a report download functionality
-    alert('Hesabat yükləmə funksiyası tezliklə əlçatan olacaq');
-}
+    function downloadReport() {
+        // This would implement a report download functionality
+        alert('Hesabat yükləmə funksiyası tezliklə əlçatan olacaq');
+    }
 
-// Auto-refresh current review status every 5 minutes
-setInterval(function() {
-    // Could add AJAX call to refresh current review status
-}, 300000);
+    // Auto-refresh current review status every 5 minutes
+    setInterval(function () {
+        // Could add AJAX call to refresh current review status
+    }, 300000);
 </script>
 {% endblock %}

@@ -4,9 +4,11 @@
 <div class="row g-4 mb-4">
     <!-- Dashboard -->
     <div class="col-lg-2 col-md-4 col-sm-6">
-        <a href="{% url 'dashboard' %}" class="card h-100 text-decoration-none quick-nav-card">
+        <a href="{% url 'dashboard' %}"
+            class="card h-100 text-decoration-none quick-nav-card">
             <div class="card-body text-center p-3">
-                <div class="quick-nav-icon bg-primary text-white rounded-circle mx-auto mb-2">
+                <div
+                    class="quick-nav-icon bg-primary text-white rounded-circle mx-auto mb-2">
                     <i class="fas fa-tachometer-alt"></i>
                 </div>
                 <h6 class="card-title mb-1">{% trans "Ana Səhifə" %}</h6>
@@ -17,9 +19,11 @@
 
     <!-- Interactive Dashboard -->
     <div class="col-lg-2 col-md-4 col-sm-6">
-        <a href="{% url 'interactive_dashboard' %}" class="card h-100 text-decoration-none quick-nav-card">
+        <a href="{% url 'interactive_dashboard' %}"
+            class="card h-100 text-decoration-none quick-nav-card">
             <div class="card-body text-center p-3">
-                <div class="quick-nav-icon bg-gradient text-white rounded-circle mx-auto mb-2"
+                <div
+                    class="quick-nav-icon bg-gradient text-white rounded-circle mx-auto mb-2"
                     style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                     <i class="fas fa-chart-line"></i>
                 </div>
@@ -31,9 +35,11 @@
 
     <!-- Calendar -->
     <div class="col-lg-2 col-md-4 col-sm-6">
-        <a href="{% url 'calendar_view' %}" class="card h-100 text-decoration-none quick-nav-card">
+        <a href="{% url 'calendar_view' %}"
+            class="card h-100 text-decoration-none quick-nav-card">
             <div class="card-body text-center p-3">
-                <div class="quick-nav-icon bg-info text-white rounded-circle mx-auto mb-2">
+                <div
+                    class="quick-nav-icon bg-info text-white rounded-circle mx-auto mb-2">
                     <i class="fas fa-calendar-alt"></i>
                 </div>
                 <h6 class="card-title mb-1">{% trans "Təqvim" %}</h6>
@@ -44,9 +50,11 @@
 
     <!-- Notifications -->
     <div class="col-lg-2 col-md-4 col-sm-6">
-        <a href="{% url 'notification_center' %}" class="card h-100 text-decoration-none quick-nav-card">
+        <a href="{% url 'notification_center' %}"
+            class="card h-100 text-decoration-none quick-nav-card">
             <div class="card-body text-center p-3">
-                <div class="quick-nav-icon bg-warning text-white rounded-circle mx-auto mb-2">
+                <div
+                    class="quick-nav-icon bg-warning text-white rounded-circle mx-auto mb-2">
                     <i class="fas fa-bell"></i>
                 </div>
                 <h6 class="card-title mb-1">{% trans "Bildirişlər" %}</h6>
@@ -57,9 +65,11 @@
 
     <!-- Reports -->
     <div class="col-lg-2 col-md-4 col-sm-6">
-        <a href="{% url 'report_center' %}" class="card h-100 text-decoration-none quick-nav-card">
+        <a href="{% url 'report_center' %}"
+            class="card h-100 text-decoration-none quick-nav-card">
             <div class="card-body text-center p-3">
-                <div class="quick-nav-icon bg-success text-white rounded-circle mx-auto mb-2">
+                <div
+                    class="quick-nav-icon bg-success text-white rounded-circle mx-auto mb-2">
                     <i class="fas fa-chart-bar"></i>
                 </div>
                 <h6 class="card-title mb-1">{% trans "Hesabatlar" %}</h6>
@@ -70,9 +80,11 @@
 
     <!-- Profile -->
     <div class="col-lg-2 col-md-4 col-sm-6">
-        <a href="{% url 'profil' %}" class="card h-100 text-decoration-none quick-nav-card">
+        <a href="{% url 'profil' %}"
+            class="card h-100 text-decoration-none quick-nav-card">
             <div class="card-body text-center p-3">
-                <div class="quick-nav-icon bg-secondary text-white rounded-circle mx-auto mb-2">
+                <div
+                    class="quick-nav-icon bg-secondary text-white rounded-circle mx-auto mb-2">
                     <i class="fas fa-user"></i>
                 </div>
                 <h6 class="card-title mb-1">{% trans "Profilim" %}</h6>
@@ -84,9 +96,11 @@
     <!-- AI Risk Detection -->
     {% if user.rol == 'hr' or user.rol == 'manager' or user.is_superuser %}
     <div class="col-lg-2 col-md-4 col-sm-6">
-        <a href="{% url 'ai_risk_dashboard' %}" class="card h-100 text-decoration-none quick-nav-card">
+        <a href="{% url 'ai_risk_dashboard' %}"
+            class="card h-100 text-decoration-none quick-nav-card">
             <div class="card-body text-center p-3">
-                <div class="quick-nav-icon bg-danger text-white rounded-circle mx-auto mb-2">
+                <div
+                    class="quick-nav-icon bg-danger text-white rounded-circle mx-auto mb-2">
                     <i class="fas fa-shield-alt"></i>
                 </div>
                 <h6 class="card-title mb-1">{% trans "AI Risk Analizi" %}</h6>
@@ -98,9 +112,11 @@
 
     <!-- Training & Development -->
     <div class="col-lg-2 col-md-4 col-sm-6">
-        <a href="{% url 'training_dashboard' %}" class="card h-100 text-decoration-none quick-nav-card">
+        <a href="{% url 'training_dashboard' %}"
+            class="card h-100 text-decoration-none quick-nav-card">
             <div class="card-body text-center p-3">
-                <div class="quick-nav-icon bg-gradient text-white rounded-circle mx-auto mb-2"
+                <div
+                    class="quick-nav-icon bg-gradient text-white rounded-circle mx-auto mb-2"
                     style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                     <i class="fas fa-graduation-cap"></i>
                 </div>
@@ -112,13 +128,16 @@
 
     <!-- Performance Management -->
     <div class="col-lg-2 col-md-4 col-sm-6">
-        <a href="{% url 'performance_dashboard' %}" class="card h-100 text-decoration-none quick-nav-card">
+        <a href="{% url 'performance_dashboard' %}"
+            class="card h-100 text-decoration-none quick-nav-card">
             <div class="card-body text-center p-3">
-                <div class="quick-nav-icon bg-gradient text-white rounded-circle mx-auto mb-2"
+                <div
+                    class="quick-nav-icon bg-gradient text-white rounded-circle mx-auto mb-2"
                     style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                     <i class="fas fa-chart-line"></i>
                 </div>
-                <h6 class="card-title mb-1">{% trans "Performans İdarəetmə" %}</h6>
+                <h6 class="card-title mb-1">{% trans "Performans İdarəetmə"
+                    %}</h6>
                 <small class="text-muted">Performance</small>
             </div>
         </a>
@@ -127,9 +146,11 @@
     <!-- API Documentation -->
     {% if user.rol == 'hr' or user.rol == 'manager' or user.is_superuser %}
     <div class="col-lg-2 col-md-4 col-sm-6">
-        <a href="/api/docs/" target="_blank" class="card h-100 text-decoration-none quick-nav-card">
+        <a href="/api/docs/" target="_blank"
+            class="card h-100 text-decoration-none quick-nav-card">
             <div class="card-body text-center p-3">
-                <div class="quick-nav-icon bg-dark text-white rounded-circle mx-auto mb-2">
+                <div
+                    class="quick-nav-icon bg-dark text-white rounded-circle mx-auto mb-2">
                     <i class="fas fa-code"></i>
                 </div>
                 <h6 class="card-title mb-1">{% trans "API Sənədlər" %}</h6>
@@ -142,9 +163,11 @@
     <!-- Manager Panel (if applicable) -->
     {% if user.rol == 'REHBER' or user.is_superuser %}
     <div class="col-lg-2 col-md-4 col-sm-6">
-        <a href="{% url 'rehber_paneli' %}" class="card h-100 text-decoration-none quick-nav-card">
+        <a href="{% url 'rehber_paneli' %}"
+            class="card h-100 text-decoration-none quick-nav-card">
             <div class="card-body text-center p-3">
-                <div class="quick-nav-icon bg-purple text-white rounded-circle mx-auto mb-2">
+                <div
+                    class="quick-nav-icon bg-purple text-white rounded-circle mx-auto mb-2">
                     <i class="fas fa-users-cog"></i>
                 </div>
                 <h6 class="card-title mb-1">{% trans "Rəhbər Paneli" %}</h6>

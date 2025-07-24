@@ -5,8 +5,11 @@
 
 {% block content %}
 {% trans "Keçid Xətası" as error_title %}
-{% trans "Server, sorğunuzu tamamlamaq üçün arxa planda başqa bir serverdən düzgün cavab ala bilmədi." as error_message
+{% trans
+"Server, sorğunuzu tamamlamaq üçün arxa planda başqa bir serverdən düzgün cavab ala bilmədi."
+as error_message
 %}
-{% include 'errors/components/generic_error.html' with code="502" color="danger" title=error_title message=error_message
+{% include 'errors/components/generic_error.html' with code="502" color="danger"
+title=error_title message=error_message
 icon="diagram-3-fill" %}
 {% endblock %}

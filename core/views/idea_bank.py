@@ -98,8 +98,8 @@ def idea_bank_dashboard(request):
         },
         'page_title': 'İdeya Bankı'
     }
-    
-    return render(request, 'idea_bank/dashboard.html', context)
+    return render(request, 'core/dashboard.html', context)
+    # return render(request, 'idea_bank/dashboard.html', context)
 
 
 @login_required

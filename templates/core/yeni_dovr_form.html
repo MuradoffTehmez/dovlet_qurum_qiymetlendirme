@@ -7,11 +7,13 @@
 {% block content %}
 <div class="animate__animated animate__fadeIn">
     <h2 class="fw-bold mb-3">{% trans "Yeni Qiymətləndirmə Dövrü Yarat" %}</h2>
-    <p class="text-muted mb-4">{% trans "Bu forma vasitəsilə yeni bir qiymətləndirmə dövrü yaradıb, prosesə daxil
+    <p class="text-muted mb-4">{% trans "Bu forma vasitəsilə yeni bir
+        qiymətləndirmə dövrü yaradıb, prosesə daxil
         ediləcək departamentləri seçə bilərsiniz." %}</p>
     <hr class="mb-4">
 
-    <div class="card shadow-sm animate__animated animate__fadeInUp animate__faster">
+    <div
+        class="card shadow-sm animate__animated animate__fadeInUp animate__faster">
         <div class="card-body">
             {% crispy form %}
         </div>
@@ -20,5 +22,6 @@
 {% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+<link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 {% endblock %}

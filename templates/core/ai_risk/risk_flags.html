@@ -4,8 +4,10 @@
 {% block title %}{% trans "Risk Flags Management" %}{% endblock %}
 
 {% block breadcrumb_items %}
-<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans "Ana Səhifə" %}</a></li>
-<li class="breadcrumb-item"><a href="{% url 'ai_risk_dashboard' %}">{% trans "AI Risk Dashboard" %}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans
+        "Ana Səhifə" %}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'ai_risk_dashboard' %}">{% trans
+        "AI Risk Dashboard" %}</a></li>
 <li class="breadcrumb-item active">{% trans "Risk Flags" %}</li>
 {% endblock %}
 
@@ -74,13 +76,16 @@
                     <i class="bi bi-flag-fill me-2"></i>
                     {% trans "Risk Flags Management" %}
                 </h1>
-                <p class="text-muted">{% trans "Monitor and manage employee risk indicators" %}</p>
+                <p class="text-muted">{% trans
+                    "Monitor and manage employee risk indicators" %}</p>
             </div>
             <div class="btn-group" role="group">
-                <button type="button" class="btn btn-outline-primary" id="exportBtn">
+                <button type="button" class="btn btn-outline-primary"
+                    id="exportBtn">
                     <i class="bi bi-download me-1"></i>{% trans "Export" %}
                 </button>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createFlagModal">
+                <button type="button" class="btn btn-primary"
+                    data-bs-toggle="modal" data-bs-target="#createFlagModal">
                     <i class="bi bi-plus-lg me-1"></i>{% trans "Create Flag" %}
                 </button>
             </div>
@@ -96,45 +101,59 @@
                 <form id="filterForm" class="row g-3">
                     <div class="col-md-3">
                         <label class="form-label">{% trans "Employee" %}</label>
-                        <select class="form-select" id="employeeFilter" name="employee">
-                            <option value="">{% trans "All Employees" %}</option>
+                        <select class="form-select" id="employeeFilter"
+                            name="employee">
+                            <option value>{% trans "All Employees" %}</option>
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label">{% trans "Risk Type" %}</label>
-                        <select class="form-select" id="riskTypeFilter" name="risk_type">
-                            <option value="">{% trans "All Types" %}</option>
-                            <option value="LOW_PERFORMANCE">{% trans "Low Performance" %}</option>
-                            <option value="HIGH_SCORE_VARIANCE">{% trans "Score Variance" %}</option>
-                            <option value="HIGH_NEGATIVE_FEEDBACK">{% trans "Negative Feedback" %}</option>
-                            <option value="STATISTICAL_ANOMALY">{% trans "Statistical Anomaly" %}</option>
-                            <option value="BEHAVIORAL_ANOMALY">{% trans "Behavioral Anomaly" %}</option>
+                        <label class="form-label">{% trans "Risk Type"
+                            %}</label>
+                        <select class="form-select" id="riskTypeFilter"
+                            name="risk_type">
+                            <option value>{% trans "All Types" %}</option>
+                            <option value="LOW_PERFORMANCE">{% trans
+                                "Low Performance" %}</option>
+                            <option value="HIGH_SCORE_VARIANCE">{% trans
+                                "Score Variance" %}</option>
+                            <option value="HIGH_NEGATIVE_FEEDBACK">{% trans
+                                "Negative Feedback" %}</option>
+                            <option value="STATISTICAL_ANOMALY">{% trans
+                                "Statistical Anomaly" %}</option>
+                            <option value="BEHAVIORAL_ANOMALY">{% trans
+                                "Behavioral Anomaly" %}</option>
                         </select>
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">{% trans "Severity" %}</label>
-                        <select class="form-select" id="severityFilter" name="severity">
-                            <option value="">{% trans "All Levels" %}</option>
+                        <select class="form-select" id="severityFilter"
+                            name="severity">
+                            <option value>{% trans "All Levels" %}</option>
                             <option value="LOW">{% trans "Low" %}</option>
                             <option value="MEDIUM">{% trans "Medium" %}</option>
                             <option value="HIGH">{% trans "High" %}</option>
-                            <option value="CRITICAL">{% trans "Critical" %}</option>
+                            <option value="CRITICAL">{% trans "Critical"
+                                %}</option>
                         </select>
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">{% trans "Status" %}</label>
-                        <select class="form-select" id="statusFilter" name="status">
-                            <option value="">{% trans "All Status" %}</option>
+                        <select class="form-select" id="statusFilter"
+                            name="status">
+                            <option value>{% trans "All Status" %}</option>
                             <option value="ACTIVE">{% trans "Active" %}</option>
-                            <option value="RESOLVED">{% trans "Resolved" %}</option>
-                            <option value="REVIEWING">{% trans "Under Review" %}</option>
+                            <option value="RESOLVED">{% trans "Resolved"
+                                %}</option>
+                            <option value="REVIEWING">{% trans "Under Review"
+                                %}</option>
                         </select>
                     </div>
                     <div class="col-md-2">
                         <label class="form-label">&nbsp;</label>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-search me-1"></i>{% trans "Filter" %}
+                                <i class="bi bi-search me-1"></i>{% trans
+                                "Filter" %}
                             </button>
                         </div>
                     </div>
@@ -151,14 +170,19 @@
             <div class="card-header bg-transparent border-0">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i class="bi bi-thermometer-half me-2"></i>{% trans "Risk Distribution Heatmap" %}
+                        <i class="bi bi-thermometer-half me-2"></i>{% trans
+                        "Risk Distribution Heatmap" %}
                     </h5>
                     <div class="btn-group btn-group-sm" role="group">
-                        <button type="button" class="btn btn-outline-secondary" id="toggleHeatmap">
-                            <i class="bi bi-eye me-1"></i>{% trans "Toggle View" %}
+                        <button type="button" class="btn btn-outline-secondary"
+                            id="toggleHeatmap">
+                            <i class="bi bi-eye me-1"></i>{% trans "Toggle View"
+                            %}
                         </button>
-                        <button type="button" class="btn btn-outline-primary" id="refreshHeatmap">
-                            <i class="bi bi-arrow-clockwise me-1"></i>{% trans "Refresh" %}
+                        <button type="button" class="btn btn-outline-primary"
+                            id="refreshHeatmap">
+                            <i class="bi bi-arrow-clockwise me-1"></i>{% trans
+                            "Refresh" %}
                         </button>
                     </div>
                 </div>
@@ -168,19 +192,23 @@
                     <div id="heatmapVisualization"></div>
                     <div class="risk-legend">
                         <div class="legend-item">
-                            <div class="legend-color" style="background-color: #28a745;"></div>
+                            <div class="legend-color"
+                                style="background-color: #28a745;"></div>
                             <span>{% trans "Low Risk" %} (0-2)</span>
                         </div>
                         <div class="legend-item">
-                            <div class="legend-color" style="background-color: #ffc107;"></div>
+                            <div class="legend-color"
+                                style="background-color: #ffc107;"></div>
                             <span>{% trans "Medium Risk" %} (3-5)</span>
                         </div>
                         <div class="legend-item">
-                            <div class="legend-color" style="background-color: #fd7e14;"></div>
+                            <div class="legend-color"
+                                style="background-color: #fd7e14;"></div>
                             <span>{% trans "High Risk" %} (6-8)</span>
                         </div>
                         <div class="legend-item">
-                            <div class="legend-color" style="background-color: #dc3545;"></div>
+                            <div class="legend-color"
+                                style="background-color: #dc3545;"></div>
                             <span>{% trans "Critical Risk" %} (9-10)</span>
                         </div>
                     </div>
@@ -200,11 +228,15 @@
                         <i class="bi bi-table me-2"></i>{% trans "Risk Flags" %}
                     </h5>
                     <div class="btn-group btn-group-sm" role="group">
-                        <button type="button" class="btn btn-outline-secondary" id="bulkResolve">
-                            <i class="bi bi-check-all me-1"></i>{% trans "Bulk Resolve" %}
+                        <button type="button" class="btn btn-outline-secondary"
+                            id="bulkResolve">
+                            <i class="bi bi-check-all me-1"></i>{% trans
+                            "Bulk Resolve" %}
                         </button>
-                        <button type="button" class="btn btn-outline-danger" id="bulkDelete">
-                            <i class="bi bi-trash me-1"></i>{% trans "Bulk Delete" %}
+                        <button type="button" class="btn btn-outline-danger"
+                            id="bulkDelete">
+                            <i class="bi bi-trash me-1"></i>{% trans
+                            "Bulk Delete" %}
                         </button>
                     </div>
                 </div>
@@ -216,7 +248,8 @@
                             <tr>
                                 <th width="30">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="selectAll">
+                                        <input class="form-check-input"
+                                            type="checkbox" id="selectAll">
                                     </div>
                                 </th>
                                 <th>{% trans "Employee" %}</th>
@@ -235,7 +268,8 @@
                 </div>
 
                 <!-- Loading Spinner -->
-                <div class="d-flex justify-content-center mt-3" id="loadingSpinner">
+                <div class="d-flex justify-content-center mt-3"
+                    id="loadingSpinner">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
@@ -243,7 +277,8 @@
 
                 <!-- Pagination -->
                 <nav id="paginationNav" class="mt-3" style="display: none;">
-                    <ul class="pagination justify-content-center" id="pagination">
+                    <ul class="pagination justify-content-center"
+                        id="pagination">
                     </ul>
                 </nav>
             </div>
@@ -257,48 +292,71 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="bi bi-flag me-2"></i>{% trans "Create Risk Flag" %}
+                    <i class="bi bi-flag me-2"></i>{% trans "Create Risk Flag"
+                    %}
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close"
+                    data-bs-dismiss="modal"></button>
             </div>
             <form id="createFlagForm">
                 <div class="modal-body">
                     {% csrf_token %}
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label">{% trans "Employee" %} <span class="text-danger">*</span></label>
-                            <select class="form-select" name="employee" required>
-                                <option value="">{% trans "Select Employee" %}</option>
+                            <label class="form-label">{% trans "Employee" %}
+                                <span class="text-danger">*</span></label>
+                            <select class="form-select" name="employee"
+                                required>
+                                <option value>{% trans "Select Employee"
+                                    %}</option>
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">{% trans "Risk Type" %} <span class="text-danger">*</span></label>
-                            <select class="form-select" name="flag_type" required>
-                                <option value="">{% trans "Select Risk Type" %}</option>
-                                <option value="LOW_PERFORMANCE">{% trans "Low Performance" %}</option>
-                                <option value="HIGH_SCORE_VARIANCE">{% trans "High Score Variance" %}</option>
-                                <option value="HIGH_NEGATIVE_FEEDBACK">{% trans "High Negative Feedback" %}</option>
-                                <option value="LOW_PEER_INTERACTION">{% trans "Low Peer Interaction" %}</option>
-                                <option value="LONG_ABSENCE">{% trans "Long Absence" %}</option>
-                                <option value="NO_DEVELOPMENT_PLAN">{% trans "No Development Plan" %}</option>
-                                <option value="STATISTICAL_ANOMALY">{% trans "Statistical Anomaly" %}</option>
-                                <option value="BEHAVIORAL_ANOMALY">{% trans "Behavioral Anomaly" %}</option>
+                            <label class="form-label">{% trans "Risk Type" %}
+                                <span class="text-danger">*</span></label>
+                            <select class="form-select" name="flag_type"
+                                required>
+                                <option value>{% trans "Select Risk Type"
+                                    %}</option>
+                                <option value="LOW_PERFORMANCE">{% trans
+                                    "Low Performance" %}</option>
+                                <option value="HIGH_SCORE_VARIANCE">{% trans
+                                    "High Score Variance" %}</option>
+                                <option value="HIGH_NEGATIVE_FEEDBACK">{% trans
+                                    "High Negative Feedback" %}</option>
+                                <option value="LOW_PEER_INTERACTION">{% trans
+                                    "Low Peer Interaction" %}</option>
+                                <option value="LONG_ABSENCE">{% trans
+                                    "Long Absence" %}</option>
+                                <option value="NO_DEVELOPMENT_PLAN">{% trans
+                                    "No Development Plan" %}</option>
+                                <option value="STATISTICAL_ANOMALY">{% trans
+                                    "Statistical Anomaly" %}</option>
+                                <option value="BEHAVIORAL_ANOMALY">{% trans
+                                    "Behavioral Anomaly" %}</option>
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">{% trans "Severity" %} <span class="text-danger">*</span></label>
-                            <select class="form-select" name="severity" required>
-                                <option value="">{% trans "Select Severity" %}</option>
+                            <label class="form-label">{% trans "Severity" %}
+                                <span class="text-danger">*</span></label>
+                            <select class="form-select" name="severity"
+                                required>
+                                <option value>{% trans "Select Severity"
+                                    %}</option>
                                 <option value="LOW">{% trans "Low" %}</option>
-                                <option value="MEDIUM">{% trans "Medium" %}</option>
+                                <option value="MEDIUM">{% trans "Medium"
+                                    %}</option>
                                 <option value="HIGH">{% trans "High" %}</option>
-                                <option value="CRITICAL">{% trans "Critical" %}</option>
+                                <option value="CRITICAL">{% trans "Critical"
+                                    %}</option>
                             </select>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">{% trans "Risk Score" %} <span
+                            <label class="form-label">{% trans "Risk Score" %}
+                                <span
                                     class="text-danger">*</span></label>
-                            <input type="range" class="form-range" id="riskScoreRange" name="risk_score" min="0"
+                            <input type="range" class="form-range"
+                                id="riskScoreRange" name="risk_score" min="0"
                                 max="10" value="5">
                             <div class="d-flex justify-content-between">
                                 <small class="text-muted">0</small>
@@ -307,23 +365,29 @@
                             </div>
                         </div>
                         <div class="col-12">
-                            <label class="form-label">{% trans "Description" %}</label>
-                            <textarea class="form-control" name="description" rows="3"
+                            <label class="form-label">{% trans "Description"
+                                %}</label>
+                            <textarea class="form-control" name="description"
+                                rows="3"
                                 placeholder="{% trans 'Enter detailed description of the risk...' %}"></textarea>
                         </div>
                         <div class="col-12">
-                            <label class="form-label">{% trans "HR Notes" %}</label>
-                            <textarea class="form-control" name="hr_notes" rows="2"
+                            <label class="form-label">{% trans "HR Notes"
+                                %}</label>
+                            <textarea class="form-control" name="hr_notes"
+                                rows="2"
                                 placeholder="{% trans 'Internal HR notes and observations...' %}"></textarea>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">
                         {% trans "Cancel" %}
                     </button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-plus-lg me-1"></i>{% trans "Create Flag" %}
+                        <i class="bi bi-plus-lg me-1"></i>{% trans "Create Flag"
+                        %}
                     </button>
                 </div>
             </form>
@@ -337,9 +401,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="bi bi-flag me-2"></i>{% trans "Risk Flag Details" %}
+                    <i class="bi bi-flag me-2"></i>{% trans "Risk Flag Details"
+                    %}
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close"
+                    data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="flagDetailContent">
                 <!-- Dynamic content will be loaded here -->

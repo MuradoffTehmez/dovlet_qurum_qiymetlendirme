@@ -4,7 +4,8 @@
 {% block title %}{% trans "Təlim və İnkişaf" %}{% endblock %}
 
 {% block breadcrumb_items %}
-<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans "Ana Səhifə" %}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans
+        "Ana Səhifə" %}</a></li>
 <li class="breadcrumb-item active">{% trans "Təlim və İnkişaf" %}</li>
 {% endblock %}
 
@@ -22,14 +23,17 @@
                     <i class="bi bi-mortarboard me-2"></i>
                     {% trans "Təlim və İnkişaf" %}
                 </h1>
-                <p class="text-muted">{% trans "Təlim proqramları və bacarıq inkişafı" %}</p>
+                <p class="text-muted">{% trans
+                    "Təlim proqramları və bacarıq inkişafı" %}</p>
             </div>
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-outline-primary" id="refreshBtn">
-                    <i class="bi bi-arrow-clockwise me-1"></i>{% trans "Yenilə" %}
+                    <i class="bi bi-arrow-clockwise me-1"></i>{% trans "Yenilə"
+                    %}
                 </button>
                 <a href="#" class="btn btn-primary">
-                    <i class="bi bi-plus-circle me-1"></i>{% trans "Yeni Təlim" %}
+                    <i class="bi bi-plus-circle me-1"></i>{% trans "Yeni Təlim"
+                    %}
                 </a>
             </div>
         </div>
@@ -48,7 +52,8 @@
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="small text-muted text-uppercase fw-bold">{% trans "Ümumi Kurslar" %}</div>
+                        <div class="small text-muted text-uppercase fw-bold">{%
+                            trans "Ümumi Kurslar" %}</div>
                         <div class="h4 fw-bold mb-0" id="totalCourses">-</div>
                         <div class="small text-primary">
                             <i class="bi bi-arrow-up"></i> <span id="coursesChange">-</span>
@@ -69,7 +74,8 @@
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="small text-muted text-uppercase fw-bold">{% trans "Tamamlanan" %}</div>
+                        <div class="small text-muted text-uppercase fw-bold">{%
+                            trans "Tamamlanan" %}</div>
                         <div class="h4 fw-bold mb-0" id="completedCourses">-</div>
                         <div class="small text-success">
                             <i class="bi bi-trophy"></i> <span id="completionRate">-</span>
@@ -90,7 +96,8 @@
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="small text-muted text-uppercase fw-bold">{% trans "Davam Edənlər" %}</div>
+                        <div class="small text-muted text-uppercase fw-bold">{%
+                            trans "Davam Edənlər" %}</div>
                         <div class="h4 fw-bold mb-0" id="ongoingCourses">-</div>
                         <div class="small text-warning">
                             <i class="bi bi-play-circle"></i> <span id="progressTime">-</span>
@@ -111,7 +118,8 @@
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="small text-muted text-uppercase fw-bold">{% trans "Sertifikatlar" %}</div>
+                        <div class="small text-muted text-uppercase fw-bold">{%
+                            trans "Sertifikatlar" %}</div>
                         <div class="h4 fw-bold mb-0" id="certificates">-</div>
                         <div class="small text-info">
                             <i class="bi bi-award"></i> <span id="certificationLevel">-</span>
@@ -130,7 +138,8 @@
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-transparent border-0">
                 <h5 class="mb-0">
-                    <i class="bi bi-graph-up me-2"></i>{% trans "Öyrənmə İrəliləyişi" %}
+                    <i class="bi bi-graph-up me-2"></i>{% trans
+                    "Öyrənmə İrəliləyişi" %}
                 </h5>
             </div>
             <div class="card-body">
@@ -146,7 +155,8 @@
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-transparent border-0">
                 <h5 class="mb-0">
-                    <i class="bi bi-diagram-3 me-2"></i>{% trans "Bacarıq Matrisi" %}
+                    <i class="bi bi-diagram-3 me-2"></i>{% trans
+                    "Bacarıq Matrisi" %}
                 </h5>
             </div>
             <div class="card-body">
@@ -164,7 +174,8 @@
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-transparent border-0">
                 <h5 class="mb-0">
-                    <i class="bi bi-play-btn me-2"></i>{% trans "Aktiv Təlim Proqramları" %}
+                    <i class="bi bi-play-btn me-2"></i>{% trans
+                    "Aktiv Təlim Proqramları" %}
                 </h5>
             </div>
             <div class="card-body">
@@ -182,7 +193,8 @@
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-transparent border-0">
                 <h5 class="mb-0">
-                    <i class="bi bi-lightbulb me-2"></i>{% trans "Tövsiyə Edilən Öyrənmə Yolları" %}
+                    <i class="bi bi-lightbulb me-2"></i>{% trans
+                    "Tövsiyə Edilən Öyrənmə Yolları" %}
                 </h5>
             </div>
             <div class="card-body">
@@ -210,148 +222,148 @@
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    loadTrainingData();
-    initializeLearningChart();
-    
-    // Refresh button
-    document.getElementById('refreshBtn').addEventListener('click', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         loadTrainingData();
-    });
-});
+        initializeLearningChart();
 
-async function loadTrainingData() {
-    try {
-        const response = await fetch('/api/v1/training/stats/');
-        const data = await response.json();
-        
-        updateStats(data.stats);
-        updateLearningChart(data.learning_progress);
-        updateSkillsMatrix(data.skills_matrix);
-        updateActivePrograms(data.active_programs);
-        updateRecommendations(data.recommendations);
-    } catch (error) {
-        console.error('Error loading training data:', error);
-        // Load placeholder data
-        loadPlaceholderData();
+        // Refresh button
+        document.getElementById('refreshBtn').addEventListener('click', function () {
+            loadTrainingData();
+        });
+    });
+
+    async function loadTrainingData() {
+        try {
+            const response = await fetch('/api/v1/training/stats/');
+            const data = await response.json();
+
+            updateStats(data.stats);
+            updateLearningChart(data.learning_progress);
+            updateSkillsMatrix(data.skills_matrix);
+            updateActivePrograms(data.active_programs);
+            updateRecommendations(data.recommendations);
+        } catch (error) {
+            console.error('Error loading training data:', error);
+            // Load placeholder data
+            loadPlaceholderData();
+        }
     }
-}
 
-function loadPlaceholderData() {
-    // Placeholder stats
-    updateStats({
-        total_courses: 45,
-        completed_courses: 12,
-        ongoing_courses: 3,
-        certificates: 8
-    });
-    
-    // Placeholder chart data
-    updateLearningChart({
-        labels: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyun'],
-        data: [15, 22, 28, 35, 42, 48]
-    });
-    
-    // Placeholder skills
-    updateSkillsMatrix([
-        {name: 'JavaScript', level: 85},
-        {name: 'Python', level: 70},
-        {name: 'React', level: 90},
-        {name: 'Docker', level: 60}
-    ]);
-    
-    // Placeholder programs
-    updateActivePrograms([
-        {
-            title: 'Advanced JavaScript',
-            progress: 75,
-            duration: '6 həftə',
-            instructor: 'Məhəmməd Əliyev'
-        },
-        {
-            title: 'Leadership Development',
-            progress: 40,
-            duration: '8 həftə',
-            instructor: 'Ayşe Məmmədova'
-        }
-    ]);
-    
-    // Placeholder recommendations
-    updateRecommendations([
-        {
-            title: 'Machine Learning Fundamentals',
-            level: 'Orta',
-            duration: '12 həftə',
-            rating: 4.8,
-            enrolled: 156
-        },
-        {
-            title: 'DevOps Best Practices',
-            level: 'İrəli',
-            duration: '8 həftə',
-            rating: 4.9,
-            enrolled: 89
-        }
-    ]);
-}
+    function loadPlaceholderData() {
+        // Placeholder stats
+        updateStats({
+            total_courses: 45,
+            completed_courses: 12,
+            ongoing_courses: 3,
+            certificates: 8
+        });
 
-function updateStats(stats) {
-    document.getElementById('totalCourses').textContent = stats.total_courses || 0;
-    document.getElementById('completedCourses').textContent = stats.completed_courses || 0;
-    document.getElementById('ongoingCourses').textContent = stats.ongoing_courses || 0;
-    document.getElementById('certificates').textContent = stats.certificates || 0;
-    
-    // Update change indicators
-    document.getElementById('coursesChange').textContent = '+5 bu ay';
-    document.getElementById('completionRate').textContent = '78% tamamlama';
-    document.getElementById('progressTime').textContent = '24 saat';
-    document.getElementById('certificationLevel').textContent = 'Professional';
-}
+        // Placeholder chart data
+        updateLearningChart({
+            labels: ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'İyun'],
+            data: [15, 22, 28, 35, 42, 48]
+        });
 
-let learningChart;
+        // Placeholder skills
+        updateSkillsMatrix([
+            { name: 'JavaScript', level: 85 },
+            { name: 'Python', level: 70 },
+            { name: 'React', level: 90 },
+            { name: 'Docker', level: 60 }
+        ]);
 
-function initializeLearningChart() {
-    const ctx = document.getElementById('learningChart').getContext('2d');
-    learningChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [{
-                label: '{% trans "Tamamlanan Kurslar" %}',
-                data: [],
-                borderColor: '#198754',
-                backgroundColor: 'rgba(25, 135, 84, 0.1)',
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true
+        // Placeholder programs
+        updateActivePrograms([
+            {
+                title: 'Advanced JavaScript',
+                progress: 75,
+                duration: '6 həftə',
+                instructor: 'Məhəmməd Əliyev'
+            },
+            {
+                title: 'Leadership Development',
+                progress: 40,
+                duration: '8 həftə',
+                instructor: 'Ayşe Məmmədova'
+            }
+        ]);
+
+        // Placeholder recommendations
+        updateRecommendations([
+            {
+                title: 'Machine Learning Fundamentals',
+                level: 'Orta',
+                duration: '12 həftə',
+                rating: 4.8,
+                enrolled: 156
+            },
+            {
+                title: 'DevOps Best Practices',
+                level: 'İrəli',
+                duration: '8 həftə',
+                rating: 4.9,
+                enrolled: 89
+            }
+        ]);
+    }
+
+    function updateStats(stats) {
+        document.getElementById('totalCourses').textContent = stats.total_courses || 0;
+        document.getElementById('completedCourses').textContent = stats.completed_courses || 0;
+        document.getElementById('ongoingCourses').textContent = stats.ongoing_courses || 0;
+        document.getElementById('certificates').textContent = stats.certificates || 0;
+
+        // Update change indicators
+        document.getElementById('coursesChange').textContent = '+5 bu ay';
+        document.getElementById('completionRate').textContent = '78% tamamlama';
+        document.getElementById('progressTime').textContent = '24 saat';
+        document.getElementById('certificationLevel').textContent = 'Professional';
+    }
+
+    let learningChart;
+
+    function initializeLearningChart() {
+        const ctx = document.getElementById('learningChart').getContext('2d');
+        learningChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: '{% trans "Tamamlanan Kurslar" %}',
+                    data: [],
+                    borderColor: '#198754',
+                    backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
             }
+        });
+    }
+
+    function updateLearningChart(progress) {
+        if (learningChart && progress) {
+            learningChart.data.labels = progress.labels;
+            learningChart.data.datasets[0].data = progress.data;
+            learningChart.update();
         }
-    });
-}
-
-function updateLearningChart(progress) {
-    if (learningChart && progress) {
-        learningChart.data.labels = progress.labels;
-        learningChart.data.datasets[0].data = progress.data;
-        learningChart.update();
     }
-}
 
-function updateSkillsMatrix(skills) {
-    const container = document.getElementById('skillsMatrix');
-    if (!skills || skills.length === 0) {
-        container.innerHTML = '<p class="text-muted text-center">{% trans "Bacarıq məlumatı tapılmadı" %}</p>';
-        return;
-    }
-    
-    container.innerHTML = skills.map(skill => `
+    function updateSkillsMatrix(skills) {
+        const container = document.getElementById('skillsMatrix');
+        if (!skills || skills.length === 0) {
+            container.innerHTML = '<p class="text-muted text-center">{% trans "Bacarıq məlumatı tapılmadı" %}</p>';
+            return;
+        }
+
+        container.innerHTML = skills.map(skill => `
         <div class="mb-3">
             <div class="d-flex justify-content-between mb-1">
                 <small class="fw-semibold">${skill.name}</small>
@@ -362,16 +374,16 @@ function updateSkillsMatrix(skills) {
             </div>
         </div>
     `).join('');
-}
-
-function updateActivePrograms(programs) {
-    const container = document.getElementById('activePrograms');
-    if (!programs || programs.length === 0) {
-        container.innerHTML = '<div class="col-12"><p class="text-muted text-center">{% trans "Aktiv proqram tapılmadı" %}</p></div>';
-        return;
     }
-    
-    container.innerHTML = programs.map(program => `
+
+    function updateActivePrograms(programs) {
+        const container = document.getElementById('activePrograms');
+        if (!programs || programs.length === 0) {
+            container.innerHTML = '<div class="col-12"><p class="text-muted text-center">{% trans "Aktiv proqram tapılmadı" %}</p></div>';
+            return;
+        }
+
+        container.innerHTML = programs.map(program => `
         <div class="col-md-6 mb-3">
             <div class="card border-0 shadow-sm">
                 <div class="card-body">
@@ -388,16 +400,16 @@ function updateActivePrograms(programs) {
             </div>
         </div>
     `).join('');
-}
-
-function updateRecommendations(recommendations) {
-    const tbody = document.getElementById('recommendedLearning');
-    if (!recommendations || recommendations.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">{% trans "Tövsiyə tapılmadı" %}</td></tr>';
-        return;
     }
-    
-    tbody.innerHTML = recommendations.map(rec => `
+
+    function updateRecommendations(recommendations) {
+        const tbody = document.getElementById('recommendedLearning');
+        if (!recommendations || recommendations.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">{% trans "Tövsiyə tapılmadı" %}</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = recommendations.map(rec => `
         <tr>
             <td>
                 <div class="fw-semibold">${rec.title}</div>
@@ -418,6 +430,6 @@ function updateRecommendations(recommendations) {
             </td>
         </tr>
     `).join('');
-}
+    }
 </script>
 {% endblock %}

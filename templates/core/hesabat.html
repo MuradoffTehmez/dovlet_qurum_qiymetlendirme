@@ -13,17 +13,21 @@
             {% if not detailed_context.error %}
             {% if can_manage_idp %}
             {% if movcud_plan %}
-            <a href="{% url 'plan_bax' movcud_plan.id %}" class="btn btn-outline-primary">
+            <a href="{% url 'plan_bax' movcud_plan.id %}"
+                class="btn btn-outline-primary">
                 <i class="bi bi-eye-fill"></i> {% trans "Plana Bax" %}
             </a>
             {% else %}
-            <a href="{% url 'plan_yarat' detailed_context.ishchi.id detailed_context.dovr.id %}"
+            <a
+                href="{% url 'plan_yarat' detailed_context.ishchi.id detailed_context.dovr.id %}"
                 class="btn btn-outline-info">
-                <i class="bi bi-plus-circle-fill"></i> {% trans "İnkişaf Planı Yarat" %}
+                <i class="bi bi-plus-circle-fill"></i> {% trans
+                "İnkişaf Planı Yarat" %}
             </a>
             {% endif %}
             {% endif %}
-            <a href="{% url 'hesabat_pdf_yukle' detailed_context.ishchi.id %}?dovr_id={{ detailed_context.dovr.id }}"
+            <a
+                href="{% url 'hesabat_pdf_yukle' detailed_context.ishchi.id %}?dovr_id={{ detailed_context.dovr.id }}"
                 class="btn btn-outline-danger" target="_blank">
                 <i class="bi bi-file-earmark-pdf"></i> {% trans "PDF Yüklə" %}
             </a>
@@ -33,16 +37,21 @@
 
     <div class="card shadow-sm mb-4 animate__animated animate__fadeInUp">
         <div class="card-body">
-            <form method="get" class="d-flex align-items-center flex-wrap gap-2">
-                <label for="dovr_id" class="form-label mb-0">{% trans "Hesabat Dövrünü Seçin:" %}</label>
-                <select name="dovr_id" id="dovr_id" class="form-select" style="width: auto;">
+            <form method="get"
+                class="d-flex align-items-center flex-wrap gap-2">
+                <label for="dovr_id" class="form-label mb-0">{% trans
+                    "Hesabat Dövrünü Seçin:" %}</label>
+                <select name="dovr_id" id="dovr_id" class="form-select"
+                    style="width: auto;">
                     {% for cycle in cycles_for_template %}
-                    <option value="{{ cycle.id }}" {% if cycle.is_selected %}selected{% endif %}>
+                    <option value="{{ cycle.id }}" {% if cycle.is_selected
+                        %}selected{% endif %}>
                         {{ cycle.ad }}
                     </option>
                     {% endfor %}
                 </select>
-                <button type="submit" class="btn btn-secondary">{% trans "Göstər" %}</button>
+                <button type="submit" class="btn btn-secondary">{% trans
+                    "Göstər" %}</button>
             </form>
         </div>
     </div>
@@ -52,8 +61,10 @@
         {{ detailed_context.error }}
     </div>
     {% else %}
-    <h4 class="mb-3">{{ detailed_context.dovr.ad }} {% trans "Dövrü üçün Detallı Analiz" %}</h4>
-    <p><strong>{% trans "İşçi:" %}</strong> {{ detailed_context.ishchi.get_full_name }}</p>
+    <h4 class="mb-3">{{ detailed_context.dovr.ad }} {% trans
+        "Dövrü üçün Detallı Analiz" %}</h4>
+    <p><strong>{% trans "İşçi:" %}</strong> {{
+        detailed_context.ishchi.get_full_name }}</p>
 
     <div class="row">
         <div class="col-md-6 mb-4">
@@ -75,11 +86,13 @@
                     {% for netice in detailed_context.kateqoriya_neticeleri %}
                     <tr>
                         <td>{{ netice.ad }}</td>
-                        <td><strong>{{ netice.ortalama_xal|floatformat:2 }}</strong></td>
+                        <td><strong>{{ netice.ortalama_xal|floatformat:2
+                                }}</strong></td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="2">{% trans "Bu dövr üçün göstərici tapılmadı." %}</td>
+                        <td colspan="2">{% trans
+                            "Bu dövr üçün göstərici tapılmadı." %}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -88,7 +101,8 @@
     </div>
 
     <hr class="my-4">
-    <h4>{{ detailed_context.dovr.ad }} {% trans "Dövrü üçün Yazılı Rəylər" %}</h4>
+    <h4>{{ detailed_context.dovr.ad }} {% trans "Dövrü üçün Yazılı Rəylər"
+        %}</h4>
     {% if detailed_context.yazili_reyler %}
     <ul class="list-group">
         {% for rey in detailed_context.yazili_reyler %}
@@ -96,7 +110,8 @@
         {% endfor %}
     </ul>
     {% else %}
-    <p class="text-muted fst-italic">{% trans "Bu dövr üçün yazılı rəy qeyd edilməyib." %}</p>
+    <p class="text-muted fst-italic">{% trans
+        "Bu dövr üçün yazılı rəy qeyd edilməyib." %}</p>
     {% endif %}
     {% endif %}
 
@@ -104,7 +119,8 @@
 
     {% if ai_recommendations %}
     <hr class="my-4">
-    <h4><i class="bi bi-robot"></i> {% trans "AI Əsaslı İnkişaf Tövsiyələri" %}</h4>
+    <h4><i class="bi bi-robot"></i> {% trans "AI Əsaslı İnkişaf Tövsiyələri"
+        %}</h4>
     <div class="alert alert-light p-4 shadow-sm">
         {{ ai_recommendations|linebreaks }}
     </div>
@@ -122,7 +138,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"></script>
+<script
+    src="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         {% if not detailed_context.error %}

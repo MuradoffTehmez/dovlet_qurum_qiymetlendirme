@@ -4,7 +4,8 @@
 {% block title %}{% trans "Performans İdarəetmə" %}{% endblock %}
 
 {% block breadcrumb_items %}
-<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans "Ana Səhifə" %}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans
+        "Ana Səhifə" %}</a></li>
 <li class="breadcrumb-item active">{% trans "Performans İdarəetmə" %}</li>
 {% endblock %}
 
@@ -22,11 +23,13 @@
                     <i class="bi bi-graph-up me-2"></i>
                     {% trans "Performans İdarəetmə" %}
                 </h1>
-                <p class="text-muted">{% trans "Performans analitika və hədəf idarəetmə" %}</p>
+                <p class="text-muted">{% trans
+                    "Performans analitika və hədəf idarəetmə" %}</p>
             </div>
             <div class="btn-group" role="group">
                 <button type="button" class="btn btn-outline-primary" id="refreshBtn">
-                    <i class="bi bi-arrow-clockwise me-1"></i>{% trans "Yenilə" %}
+                    <i class="bi bi-arrow-clockwise me-1"></i>{% trans "Yenilə"
+                    %}
                 </button>
                 <a href="{% url 'goal_management' %}" class="btn btn-primary">
                     <i class="bi bi-bullseye me-1"></i>{% trans "Hədəflər" %}
@@ -48,7 +51,8 @@
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="small text-muted text-uppercase fw-bold">{% trans "Ümumi Qiymətləndirmə" %}</div>
+                        <div class="small text-muted text-uppercase fw-bold">{%
+                            trans "Ümumi Qiymətləndirmə" %}</div>
                         <div class="h4 fw-bold mb-0" id="totalEvaluations">-</div>
                         <div class="small text-primary">
                             <i class="bi bi-arrow-up"></i> <span id="evaluationsChange">-</span>
@@ -69,7 +73,8 @@
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="small text-muted text-uppercase fw-bold">{% trans "Orta Performans" %}</div>
+                        <div class="small text-muted text-uppercase fw-bold">{%
+                            trans "Orta Performans" %}</div>
                         <div class="h4 fw-bold mb-0" id="avgPerformance">-</div>
                         <div class="small text-success">
                             <i class="bi bi-arrow-up"></i> <span id="performanceChange">-</span>
@@ -90,7 +95,8 @@
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="small text-muted text-uppercase fw-bold">{% trans "Aktiv Hədəflər" %}</div>
+                        <div class="small text-muted text-uppercase fw-bold">{%
+                            trans "Aktiv Hədəflər" %}</div>
                         <div class="h4 fw-bold mb-0" id="activeGoals">-</div>
                         <div class="small text-warning">
                             <i class="bi bi-clock"></i> <span id="goalsProgress">-</span>
@@ -111,7 +117,8 @@
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="small text-muted text-uppercase fw-bold">{% trans "Komanda Üzvləri" %}</div>
+                        <div class="small text-muted text-uppercase fw-bold">{%
+                            trans "Komanda Üzvləri" %}</div>
                         <div class="h4 fw-bold mb-0" id="teamMembers">-</div>
                         <div class="small text-info">
                             <i class="bi bi-graph-up"></i> <span id="teamProgress">-</span>
@@ -130,7 +137,8 @@
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-transparent border-0">
                 <h5 class="mb-0">
-                    <i class="bi bi-graph-up me-2"></i>{% trans "Performans Trendləri" %}
+                    <i class="bi bi-graph-up me-2"></i>{% trans
+                    "Performans Trendləri" %}
                 </h5>
             </div>
             <div class="card-body">
@@ -146,7 +154,8 @@
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-transparent border-0">
                 <h5 class="mb-0">
-                    <i class="bi bi-bullseye me-2"></i>{% trans "Hədəf İrəliləyişi" %}
+                    <i class="bi bi-bullseye me-2"></i>{% trans
+                    "Hədəf İrəliləyişi" %}
                 </h5>
             </div>
             <div class="card-body">
@@ -164,7 +173,8 @@
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-transparent border-0">
                 <h5 class="mb-0">
-                    <i class="bi bi-clock-history me-2"></i>{% trans "Son Fəaliyyətlər" %}
+                    <i class="bi bi-clock-history me-2"></i>{% trans
+                    "Son Fəaliyyətlər" %}
                 </h5>
             </div>
             <div class="card-body">
@@ -191,82 +201,82 @@
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    loadPerformanceData();
-    initializeChart();
-    
-    // Refresh button
-    document.getElementById('refreshBtn').addEventListener('click', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         loadPerformanceData();
+        initializeChart();
+
+        // Refresh button
+        document.getElementById('refreshBtn').addEventListener('click', function () {
+            loadPerformanceData();
+        });
     });
-});
 
-async function loadPerformanceData() {
-    try {
-        const response = await fetch('{% url "performance_api_stats" %}');
-        const data = await response.json();
-        
-        updateStats(data.stats);
-        updateChart(data.performance_trends);
-        updateGoalProgress(data.goal_progress);
-        updateRecentActivities(data.recent_activities);
-    } catch (error) {
-        console.error('Error loading performance data:', error);
+    async function loadPerformanceData() {
+        try {
+            const response = await fetch('{% url "performance_api_stats" %}');
+            const data = await response.json();
+
+            updateStats(data.stats);
+            updateChart(data.performance_trends);
+            updateGoalProgress(data.goal_progress);
+            updateRecentActivities(data.recent_activities);
+        } catch (error) {
+            console.error('Error loading performance data:', error);
+        }
     }
-}
 
-function updateStats(stats) {
-    document.getElementById('totalEvaluations').textContent = stats.total_evaluations || 0;
-    document.getElementById('avgPerformance').textContent = (stats.my_avg_score || 0).toFixed(1);
-    document.getElementById('activeGoals').textContent = stats.active_goals || 0;
-    document.getElementById('teamMembers').textContent = stats.total_employees || 0;
-}
+    function updateStats(stats) {
+        document.getElementById('totalEvaluations').textContent = stats.total_evaluations || 0;
+        document.getElementById('avgPerformance').textContent = (stats.my_avg_score || 0).toFixed(1);
+        document.getElementById('activeGoals').textContent = stats.active_goals || 0;
+        document.getElementById('teamMembers').textContent = stats.total_employees || 0;
+    }
 
-let performanceChart;
+    let performanceChart;
 
-function initializeChart() {
-    const ctx = document.getElementById('performanceChart').getContext('2d');
-    performanceChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [{
-                label: '{% trans "Performans" %}',
-                data: [],
-                borderColor: '#0d6efd',
-                backgroundColor: 'rgba(13, 110, 253, 0.1)',
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    max: 10
+    function initializeChart() {
+        const ctx = document.getElementById('performanceChart').getContext('2d');
+        performanceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: '{% trans "Performans" %}',
+                    data: [],
+                    borderColor: '#0d6efd',
+                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 10
+                    }
                 }
             }
+        });
+    }
+
+    function updateChart(trends) {
+        if (performanceChart && trends) {
+            performanceChart.data.labels = trends.labels;
+            performanceChart.data.datasets[0].data = trends.data;
+            performanceChart.update();
         }
-    });
-}
-
-function updateChart(trends) {
-    if (performanceChart && trends) {
-        performanceChart.data.labels = trends.labels;
-        performanceChart.data.datasets[0].data = trends.data;
-        performanceChart.update();
     }
-}
 
-function updateGoalProgress(progress) {
-    const container = document.getElementById('goalProgress');
-    if (!progress || progress.length === 0) {
-        container.innerHTML = '<p class="text-muted text-center">{% trans "Hədəf tapılmadı" %}</p>';
-        return;
-    }
-    
-    container.innerHTML = progress.map(goal => `
+    function updateGoalProgress(progress) {
+        const container = document.getElementById('goalProgress');
+        if (!progress || progress.length === 0) {
+            container.innerHTML = '<p class="text-muted text-center">{% trans "Hədəf tapılmadı" %}</p>';
+            return;
+        }
+
+        container.innerHTML = progress.map(goal => `
         <div class="mb-3">
             <div class="d-flex justify-content-between mb-1">
                 <small class="fw-semibold">${goal.category}</small>
@@ -277,16 +287,16 @@ function updateGoalProgress(progress) {
             </div>
         </div>
     `).join('');
-}
-
-function updateRecentActivities(activities) {
-    const tbody = document.getElementById('recentActivities');
-    if (!activities || activities.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">{% trans "Fəaliyyət tapılmadı" %}</td></tr>';
-        return;
     }
-    
-    tbody.innerHTML = activities.map(activity => `
+
+    function updateRecentActivities(activities) {
+        const tbody = document.getElementById('recentActivities');
+        if (!activities || activities.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">{% trans "Fəaliyyət tapılmadı" %}</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = activities.map(activity => `
         <tr>
             <td>${activity.title}</td>
             <td><span class="badge bg-primary">${activity.type}</span></td>
@@ -294,6 +304,6 @@ function updateRecentActivities(activities) {
             <td><span class="badge bg-${activity.status === 'completed' ? 'success' : 'warning'}">${activity.status}</span></td>
         </tr>
     `).join('');
-}
+    }
 </script>
 {% endblock %}

@@ -8,35 +8,42 @@
     .review-container {
         background: white;
         border-radius: 15px;
-        box-shadow: 0 4px 25px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
         overflow: hidden;
     }
+
     .review-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         padding: 2rem;
     }
+
     .review-content {
         padding: 2rem;
     }
+
     .category-section {
         border-left: 4px solid #007bff;
         margin-bottom: 2rem;
         border-radius: 0 8px 8px 0;
         background: #f8f9fa;
     }
+
     .category-header {
         background: #e3f2fd;
         padding: 1rem 1.5rem;
         border-bottom: 1px solid #e9ecef;
     }
+
     .question-item {
         padding: 1.5rem;
         border-bottom: 1px solid #e9ecef;
     }
+
     .question-item:last-child {
         border-bottom: none;
     }
+
     .score-display {
         display: inline-flex;
         align-items: center;
@@ -46,6 +53,7 @@
         border-radius: 20px;
         font-weight: 600;
     }
+
     .score-bar {
         height: 8px;
         background: #e9ecef;
@@ -53,11 +61,13 @@
         overflow: hidden;
         margin: 0.5rem 0;
     }
+
     .score-fill {
         height: 100%;
         background: linear-gradient(90deg, #28a745, #20c997);
         transition: width 0.8s ease;
     }
+
     .summary-card {
         background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         color: white;
@@ -65,12 +75,14 @@
         padding: 2rem;
         margin-bottom: 2rem;
     }
+
     .insights-card {
         background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
         border-radius: 15px;
         padding: 1.5rem;
         border: none;
     }
+
     .text-answer {
         background: white;
         border: 1px solid #e9ecef;
@@ -104,7 +116,8 @@
                             <h4 class="mb-3">{{ evaluation.dovr.basliq }}</h4>
                             <p class="mb-0">
                                 <i class="fas fa-calendar me-2"></i>
-                                {{ evaluation.dovr.bashlama_tarixi|date:"d F Y" }} - {{ evaluation.dovr.bitme_tarixi|date:"d F Y" }}
+                                {{ evaluation.dovr.bashlama_tarixi|date:"d F Y" }} - {{
+                                evaluation.dovr.bitme_tarixi|date:"d F Y" }}
                             </p>
                             {% if evaluation.tamamlanma_tarixi %}
                             <p class="mb-0">
@@ -119,7 +132,8 @@
                                 <div class="display-4 fw-bold mb-2">{{ evaluation.final_score|floatformat:1 }}</div>
                                 <div class="h6">Ümumi Bal (10-dan)</div>
                                 <div class="score-bar">
-                                    <div class="score-fill" style="width: {{ evaluation.final_score|floatformat:0|add:'0' }}%"></div>
+                                    <div class="score-fill"
+                                        style="width: {{ evaluation.final_score|floatformat:0|add:'0' }}%"></div>
                                 </div>
                             </div>
                             {% endif %}
@@ -141,7 +155,8 @@
                                     <h4 class="mb-1">{{ score|floatformat:1 }}</h4>
                                     <p class="mb-0">{{ category }}</p>
                                     <div class="score-bar bg-white bg-opacity-25">
-                                        <div class="score-fill bg-white" style="width: {{ score|floatformat:0|add:'0' }}%"></div>
+                                        <div class="score-fill bg-white"
+                                            style="width: {{ score|floatformat:0|add:'0' }}%"></div>
                                     </div>
                                 </div>
                             </div>
@@ -183,50 +198,51 @@
                                         <span class="badge bg-primary me-2">{{ forloop.counter }}</span>
                                         {{ question_data.question.metn }}
                                     </h6>
-                                    
+
                                     {% if question_data.question.tip == 'RATING' %}
-                                        {% if question_data.answer %}
-                                        <div class="mt-2">
-                                            <div class="d-flex align-items-center">
-                                                <span class="me-3">Cavab:</span>
-                                                <span class="score-display">{{ question_data.answer }}/10</span>
-                                            </div>
-                                            <div class="score-bar mt-2">
-                                                <div class="score-fill" style="width: {{ question_data.answer|add:'0' }}%"></div>
+                                    {% if question_data.answer %}
+                                    <div class="mt-2">
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-3">Cavab:</span>
+                                            <span class="score-display">{{ question_data.answer }}/10</span>
+                                        </div>
+                                        <div class="score-bar mt-2">
+                                            <div class="score-fill" style="width: {{ question_data.answer|add:'0' }}%">
                                             </div>
                                         </div>
-                                        {% else %}
-                                        <div class="text-muted">
-                                            <i class="fas fa-minus-circle me-1"></i>Cavablanmayıb
-                                        </div>
-                                        {% endif %}
+                                    </div>
+                                    {% else %}
+                                    <div class="text-muted">
+                                        <i class="fas fa-minus-circle me-1"></i>Cavablanmayıb
+                                    </div>
+                                    {% endif %}
                                     {% elif question_data.question.tip == 'TEXT' %}
-                                        {% if question_data.answer %}
-                                        <div class="text-answer mt-2">
-                                            "{{ question_data.answer }}"
-                                        </div>
-                                        {% else %}
-                                        <div class="text-muted">
-                                            <i class="fas fa-minus-circle me-1"></i>Cavab verilməyib
-                                        </div>
-                                        {% endif %}
+                                    {% if question_data.answer %}
+                                    <div class="text-answer mt-2">
+                                        "{{ question_data.answer }}"
+                                    </div>
+                                    {% else %}
+                                    <div class="text-muted">
+                                        <i class="fas fa-minus-circle me-1"></i>Cavab verilməyib
+                                    </div>
+                                    {% endif %}
                                     {% endif %}
                                 </div>
                                 <div class="col-md-4 text-end">
                                     {% if question_data.question.tip == 'RATING' and question_data.answer %}
                                     <div class="text-center">
                                         {% if question_data.answer >= 8 %}
-                                            <i class="fas fa-smile-beam fa-2x text-success"></i>
-                                            <br><small class="text-success">Mükəmməl</small>
+                                        <i class="fas fa-smile-beam fa-2x text-success"></i>
+                                        <br><small class="text-success">Mükəmməl</small>
                                         {% elif question_data.answer >= 6 %}
-                                            <i class="fas fa-smile fa-2x text-warning"></i>
-                                            <br><small class="text-warning">Yaxşı</small>
+                                        <i class="fas fa-smile fa-2x text-warning"></i>
+                                        <br><small class="text-warning">Yaxşı</small>
                                         {% elif question_data.answer >= 4 %}
-                                            <i class="fas fa-meh fa-2x text-info"></i>
-                                            <br><small class="text-info">Orta</small>
+                                        <i class="fas fa-meh fa-2x text-info"></i>
+                                        <br><small class="text-info">Orta</small>
                                         {% else %}
-                                            <i class="fas fa-frown fa-2x text-danger"></i>
-                                            <br><small class="text-danger">İnkişaf tələb edir</small>
+                                        <i class="fas fa-frown fa-2x text-danger"></i>
+                                        <br><small class="text-danger">İnkişaf tələb edir</small>
                                         {% endif %}
                                     </div>
                                     {% endif %}
@@ -248,12 +264,12 @@
                                 </h6>
                                 <ul class="list-unstyled text-dark">
                                     {% for category, score in category_scores.items %}
-                                        {% if score >= 7 %}
-                                        <li class="mb-2">
-                                            <i class="fas fa-check-circle text-success me-2"></i>
-                                            {{ category }} - {{ score|floatformat:1 }}/10
-                                        </li>
-                                        {% endif %}
+                                    {% if score >= 7 %}
+                                    <li class="mb-2">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        {{ category }} - {{ score|floatformat:1 }}/10
+                                    </li>
+                                    {% endif %}
                                     {% endfor %}
                                 </ul>
                             </div>
@@ -265,13 +281,12 @@
                                 </h6>
                                 <ul class="list-unstyled text-dark">
                                     {% for category, score in category_scores.items %}
-                                        {% if score < 6 %}
-                                        <li class="mb-2">
-                                            <i class="fas fa-arrow-up text-warning me-2"></i>
-                                            {{ category }} - {{ score|floatformat:1 }}/10
+                                    {% if score < 6 %} <li class="mb-2">
+                                        <i class="fas fa-arrow-up text-warning me-2"></i>
+                                        {{ category }} - {{ score|floatformat:1 }}/10
                                         </li>
                                         {% endif %}
-                                    {% endfor %}
+                                        {% endfor %}
                                 </ul>
                             </div>
                         </div>
@@ -328,23 +343,28 @@
                                             <td>{{ review.dovr.basliq }}</td>
                                             <td>{{ review.tamamlanma_tarixi|date:"d.m.Y" }}</td>
                                             <td>
-                                                <span class="badge bg-primary">{{ review.final_score|floatformat:1 }}/10</span>
+                                                <span class="badge bg-primary">{{ review.final_score|floatformat:1
+                                                    }}/10</span>
                                             </td>
                                             <td>
                                                 {% if forloop.counter > 1 %}
-                                                    {% with prev_score=review.final_score current_score=evaluation.final_score %}
-                                                        {% if current_score > prev_score %}
-                                                            <i class="fas fa-arrow-up text-success"></i>
-                                                            <span class="text-success">+{{ current_score|floatformat:1|sub:prev_score|floatformat:1 }}</span>
-                                                        {% elif current_score < prev_score %}
-                                                            <i class="fas fa-arrow-down text-danger"></i>
-                                                            <span class="text-danger">{{ current_score|floatformat:1|sub:prev_score|floatformat:1 }}</span>
-                                                        {% else %}
-                                                            <i class="fas fa-minus text-muted"></i>
-                                                            <span class="text-muted">Dəyişməz</span>
-                                                        {% endif %}
+                                                {% with prev_score=review.final_score
+                                                current_score=evaluation.final_score %}
+                                                {% if current_score > prev_score %}
+                                                <i class="fas fa-arrow-up text-success"></i>
+                                                <span class="text-success">+{{
+                                                    current_score|floatformat:1|sub:prev_score|floatformat:1 }}</span>
+                                                {% elif current_score < prev_score %} <i
+                                                    class="fas fa-arrow-down text-danger"></i>
+                                                    <span class="text-danger">{{
+                                                        current_score|floatformat:1|sub:prev_score|floatformat:1
+                                                        }}</span>
+                                                    {% else %}
+                                                    <i class="fas fa-minus text-muted"></i>
+                                                    <span class="text-muted">Dəyişməz</span>
+                                                    {% endif %}
                                                     {% endwith %}
-                                                {% endif %}
+                                                    {% endif %}
                                             </td>
                                         </tr>
                                         {% endfor %}
@@ -363,27 +383,27 @@
 
 {% block extra_js %}
 <script>
-function downloadPDF() {
-    // Implement PDF download functionality
-    alert('PDF yükləmə funksiyası tezliklə əlçatan olacaq');
-}
+    function downloadPDF() {
+        // Implement PDF download functionality
+        alert('PDF yükləmə funksiyası tezliklə əlçatan olacaq');
+    }
 
-function createDevelopmentPlan() {
-    // Redirect to development plan creation
-    alert('İnkişaf planı yaratma funksiyası tezliklə əlçatan olacaq');
-}
+    function createDevelopmentPlan() {
+        // Redirect to development plan creation
+        alert('İnkişaf planı yaratma funksiyası tezliklə əlçatan olacaq');
+    }
 
-// Animate score bars on page load
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(() => {
-        document.querySelectorAll('.score-fill').forEach(bar => {
-            const width = bar.style.width;
-            bar.style.width = '0%';
-            setTimeout(() => {
-                bar.style.width = width;
-            }, 100);
-        });
-    }, 500);
-});
+    // Animate score bars on page load
+    document.addEventListener('DOMContentLoaded', function () {
+        setTimeout(() => {
+            document.querySelectorAll('.score-fill').forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 100);
+            });
+        }, 500);
+    });
 </script>
 {% endblock %}

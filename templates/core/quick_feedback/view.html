@@ -7,50 +7,61 @@
 <style>
     .feedback-card {
         border-radius: 15px;
-        box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
         overflow: hidden;
     }
+
     .feedback-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         padding: 2rem;
     }
-    .feedback-type-positive { 
-        background: linear-gradient(135deg, #28a745 0%, #20c997 100%); 
+
+    .feedback-type-positive {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
     }
-    .feedback-type-constructive { 
-        background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%); 
+
+    .feedback-type-constructive {
+        background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
     }
-    .feedback-type-neutral { 
-        background: linear-gradient(135deg, #6c757d 0%, #495057 100%); 
+
+    .feedback-type-neutral {
+        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
     }
+
     .feedback-content {
         padding: 2rem;
         background: white;
     }
+
     .rating-display .star {
         color: #ffc107;
         font-size: 1.2rem;
     }
+
     .rating-display .star.empty {
         color: #e9ecef;
     }
+
     .sender-info {
         background: #f8f9fa;
         border-radius: 10px;
         padding: 1.5rem;
         margin-bottom: 1.5rem;
     }
+
     .message-content {
         font-size: 1.1rem;
         line-height: 1.8;
         color: #495057;
     }
+
     .metadata {
         background: #f8f9fa;
         border-radius: 10px;
         padding: 1rem;
     }
+
     .action-buttons .btn {
         border-radius: 25px;
         padding: 10px 25px;
@@ -82,7 +93,7 @@
                         <div class="col-md-8">
                             <h1 class="h3 mb-2">
                                 {% if feedback.category %}
-                                    <i class="{{ feedback.category.icon }} me-2"></i>
+                                <i class="{{ feedback.category.icon }} me-2"></i>
                                 {% endif %}
                                 {{ feedback.title }}
                             </h1>
@@ -107,7 +118,8 @@
                             {% if feedback.rating %}
                             <div class="rating-display mt-2">
                                 {% for i in "12345" %}
-                                    <span class="star {% if forloop.counter <= feedback.rating %}active{% else %}empty{% endif %}">★</span>
+                                <span
+                                    class="star {% if forloop.counter <= feedback.rating %}active{% else %}empty{% endif %}">★</span>
                                 {% endfor %}
                             </div>
                             {% endif %}
@@ -123,9 +135,9 @@
                             <div class="col-md-8">
                                 <h6 class="mb-1">
                                     {% if feedback.is_anonymous %}
-                                        <i class="fas fa-user-secret text-primary me-2"></i>Anonim İşçi
+                                    <i class="fas fa-user-secret text-primary me-2"></i>Anonim İşçi
                                     {% else %}
-                                        <i class="fas fa-user text-primary me-2"></i>{{ feedback.from_user.get_full_name }}
+                                    <i class="fas fa-user text-primary me-2"></i>{{ feedback.from_user.get_full_name }}
                                     {% endif %}
                                 </h6>
                                 {% if not feedback.is_anonymous and feedback.from_user.organization_unit %}
@@ -136,8 +148,8 @@
                             </div>
                             <div class="col-md-4 text-end">
                                 {% if not feedback.is_anonymous %}
-                                <a href="{% url 'quick_feedback:send' %}?to_user={{ feedback.from_user.id }}" 
-                                   class="btn btn-sm btn-outline-primary">
+                                <a href="{% url 'quick_feedback:send' %}?to_user={{ feedback.from_user.id }}"
+                                    class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-reply me-1"></i>Cavab Ver
                                 </a>
                                 {% endif %}
@@ -162,13 +174,13 @@
                                 <h6 class="small text-muted mb-2">STATUS</h6>
                                 <p class="mb-0">
                                     {% if feedback.is_read %}
-                                        <span class="badge bg-success">
-                                            <i class="fas fa-check me-1"></i>Oxunub
-                                        </span>
+                                    <span class="badge bg-success">
+                                        <i class="fas fa-check me-1"></i>Oxunub
+                                    </span>
                                     {% else %}
-                                        <span class="badge bg-warning">
-                                            <i class="fas fa-clock me-1"></i>Yeni
-                                        </span>
+                                    <span class="badge bg-warning">
+                                        <i class="fas fa-clock me-1"></i>Yeni
+                                    </span>
                                     {% endif %}
                                 </p>
                                 {% if feedback.read_at %}
@@ -187,8 +199,8 @@
                         </div>
                         <div>
                             {% if not feedback.is_anonymous %}
-                            <a href="{% url 'quick_feedback:send' %}?to_user={{ feedback.from_user.id }}" 
-                               class="btn btn-primary me-2 mb-2">
+                            <a href="{% url 'quick_feedback:send' %}?to_user={{ feedback.from_user.id }}"
+                                class="btn btn-primary me-2 mb-2">
                                 <i class="fas fa-reply me-2"></i>Cavab Ver
                             </a>
                             {% endif %}
@@ -234,66 +246,66 @@
 
 {% block extra_js %}
 <script>
-function archiveFeedback() {
-    if (!confirm('Bu geri bildirimi arxivləşdirmək istədiyinizə əminsiniz?')) {
-        return;
-    }
-    
-    fetch(`/quick-feedback/{{ feedback.id }}/archive/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCookie('csrftoken'),
-            'Content-Type': 'application/json',
-        },
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Show success message
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
-            alertDiv.style.top = '20px';
-            alertDiv.style.right = '20px';
-            alertDiv.style.zIndex = '9999';
-            alertDiv.innerHTML = `
+    function archiveFeedback() {
+        if (!confirm('Bu geri bildirimi arxivləşdirmək istədiyinizə əminsiniz?')) {
+            return;
+        }
+
+        fetch(`/quick-feedback/{{ feedback.id }}/archive/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-success alert-dismissible fade show position-fixed';
+                    alertDiv.style.top = '20px';
+                    alertDiv.style.right = '20px';
+                    alertDiv.style.zIndex = '9999';
+                    alertDiv.innerHTML = `
                 <i class="fas fa-check-circle me-2"></i>Geri bildirim arxivləşdirildi
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             `;
-            document.body.appendChild(alertDiv);
-            
-            // Redirect after 2 seconds
-            setTimeout(() => {
-                window.location.href = '{% url "quick_feedback:inbox" %}';
-            }, 2000);
-        } else {
-            alert('Xəta baş verdi: ' + (data.error || 'Bilinməyən xəta'));
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Şəbəkə xətası baş verdi');
-    });
-}
+                    document.body.appendChild(alertDiv);
 
-// Get CSRF token
-function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
+                    // Redirect after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = '{% url "quick_feedback:inbox" %}';
+                    }, 2000);
+                } else {
+                    alert('Xəta baş verdi: ' + (data.error || 'Bilinməyən xəta'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Şəbəkə xətası baş verdi');
+            });
+    }
+
+    // Get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
         }
+        return cookieValue;
     }
-    return cookieValue;
-}
 
-// Auto-scroll to top on page load
-window.addEventListener('load', () => {
-    window.scrollTo(0, 0);
-});
+    // Auto-scroll to top on page load
+    window.addEventListener('load', () => {
+        window.scrollTo(0, 0);
+    });
 </script>
 {% endblock %}

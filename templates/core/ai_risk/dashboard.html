@@ -4,7 +4,8 @@
 {% block title %}{% trans "AI Risk Detection Dashboard" %}{% endblock %}
 
 {% block breadcrumb_items %}
-<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans "Ana Səhifə" %}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans
+        "Ana Səhifə" %}</a></li>
 <li class="breadcrumb-item active">{% trans "AI Risk Dashboard" %}</li>
 {% endblock %}
 
@@ -23,13 +24,17 @@
                     <i class="bi bi-shield-exclamation me-2"></i>
                     {% trans "AI Risk Detection Dashboard" %}
                 </h1>
-                <p class="text-muted">{% trans "Real-time risk monitoring and analysis" %}</p>
+                <p class="text-muted">{% trans
+                    "Real-time risk monitoring and analysis" %}</p>
             </div>
             <div class="btn-group" role="group">
-                <button type="button" class="btn btn-outline-primary" id="refreshBtn">
-                    <i class="bi bi-arrow-clockwise me-1"></i>{% trans "Refresh" %}
+                <button type="button" class="btn btn-outline-primary"
+                    id="refreshBtn">
+                    <i class="bi bi-arrow-clockwise me-1"></i>{% trans "Refresh"
+                    %}
                 </button>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#settingsModal">
+                <button type="button" class="btn btn-primary"
+                    data-bs-toggle="modal" data-bs-target="#settingsModal">
                     <i class="bi bi-gear me-1"></i>{% trans "Settings" %}
                 </button>
             </div>
@@ -40,7 +45,8 @@
 <!-- Risk Statistics Cards -->
 <div class="row g-4 mb-4">
     <div class="col-md-3 col-sm-6">
-        <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp">
+        <div
+            class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
@@ -49,8 +55,10 @@
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="small text-muted text-uppercase fw-bold">{% trans "Active Flags" %}</div>
-                        <div class="h4 fw-bold mb-0" id="activeFlagsCount">-</div>
+                        <div class="small text-muted text-uppercase fw-bold">{%
+                            trans "Active Flags" %}</div>
+                        <div class="h4 fw-bold mb-0"
+                            id="activeFlagsCount">-</div>
                         <div class="small text-danger" id="activeFlagsChange">
                             <i class="bi bi-arrow-up"></i> <span>-</span>
                         </div>
@@ -61,16 +69,21 @@
     </div>
 
     <div class="col-md-3 col-sm-6">
-        <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+        <div
+            class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp"
+            style="animation-delay: 0.1s;">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
-                        <div class="p-3 rounded-circle bg-warning bg-opacity-10">
-                            <i class="bi bi-exclamation-triangle-fill text-warning fs-4"></i>
+                        <div
+                            class="p-3 rounded-circle bg-warning bg-opacity-10">
+                            <i
+                                class="bi bi-exclamation-triangle-fill text-warning fs-4"></i>
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="small text-muted text-uppercase fw-bold">{% trans "High Risk" %}</div>
+                        <div class="small text-muted text-uppercase fw-bold">{%
+                            trans "High Risk" %}</div>
                         <div class="h4 fw-bold mb-0" id="highRiskCount">-</div>
                         <div class="small text-warning" id="highRiskChange">
                             <i class="bi bi-arrow-up"></i> <span>-</span>
@@ -82,16 +95,21 @@
     </div>
 
     <div class="col-md-3 col-sm-6">
-        <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+        <div
+            class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp"
+            style="animation-delay: 0.2s;">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
-                        <div class="p-3 rounded-circle bg-success bg-opacity-10">
-                            <i class="bi bi-check-circle-fill text-success fs-4"></i>
+                        <div
+                            class="p-3 rounded-circle bg-success bg-opacity-10">
+                            <i
+                                class="bi bi-check-circle-fill text-success fs-4"></i>
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="small text-muted text-uppercase fw-bold">{% trans "Resolved" %}</div>
+                        <div class="small text-muted text-uppercase fw-bold">{%
+                            trans "Resolved" %}</div>
                         <div class="h4 fw-bold mb-0" id="resolvedCount">-</div>
                         <div class="small text-success" id="resolvedChange">
                             <i class="bi bi-arrow-up"></i> <span>-</span>
@@ -103,7 +121,9 @@
     </div>
 
     <div class="col-md-3 col-sm-6">
-        <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+        <div
+            class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp"
+            style="animation-delay: 0.3s;">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
@@ -112,7 +132,8 @@
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="small text-muted text-uppercase fw-bold">{% trans "Risk Score" %}</div>
+                        <div class="small text-muted text-uppercase fw-bold">{%
+                            trans "Risk Score" %}</div>
                         <div class="h4 fw-bold mb-0" id="avgRiskScore">-</div>
                         <div class="small text-info" id="riskScoreChange">
                             <i class="bi bi-arrow-down"></i> <span>-</span>
@@ -128,22 +149,30 @@
 <div class="row g-4">
     <!-- Risk Flags Panel -->
     <div class="col-xl-8">
-        <div class="card border-0 shadow-sm animate__animated animate__fadeInLeft">
+        <div
+            class="card border-0 shadow-sm animate__animated animate__fadeInLeft">
             <div class="card-header bg-transparent border-0">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i class="bi bi-flag me-2"></i>{% trans "Active Risk Flags" %}
+                        <i class="bi bi-flag me-2"></i>{% trans
+                        "Active Risk Flags" %}
                     </h5>
                     <div class="btn-group btn-group-sm" role="group">
-                        <input type="radio" class="btn-check" name="flagFilter" id="allFlags" autocomplete="off"
+                        <input type="radio" class="btn-check" name="flagFilter"
+                            id="allFlags" autocomplete="off"
                             checked>
-                        <label class="btn btn-outline-secondary" for="allFlags">{% trans "All" %}</label>
+                        <label class="btn btn-outline-secondary"
+                            for="allFlags">{% trans "All" %}</label>
 
-                        <input type="radio" class="btn-check" name="flagFilter" id="criticalFlags" autocomplete="off">
-                        <label class="btn btn-outline-danger" for="criticalFlags">{% trans "Critical" %}</label>
+                        <input type="radio" class="btn-check" name="flagFilter"
+                            id="criticalFlags" autocomplete="off">
+                        <label class="btn btn-outline-danger"
+                            for="criticalFlags">{% trans "Critical" %}</label>
 
-                        <input type="radio" class="btn-check" name="flagFilter" id="highFlags" autocomplete="off">
-                        <label class="btn btn-outline-warning" for="highFlags">{% trans "High" %}</label>
+                        <input type="radio" class="btn-check" name="flagFilter"
+                            id="highFlags" autocomplete="off">
+                        <label class="btn btn-outline-warning"
+                            for="highFlags">{% trans "High" %}</label>
                     </div>
                 </div>
             </div>
@@ -166,7 +195,8 @@
                     </table>
                 </div>
                 <div class="d-flex justify-content-center mt-3">
-                    <div class="spinner-border text-primary" role="status" id="riskFlagsSpinner">
+                    <div class="spinner-border text-primary" role="status"
+                        id="riskFlagsSpinner">
                         <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>
@@ -176,10 +206,12 @@
 
     <!-- Risk Analytics Panel -->
     <div class="col-xl-4">
-        <div class="card border-0 shadow-sm animate__animated animate__fadeInRight">
+        <div
+            class="card border-0 shadow-sm animate__animated animate__fadeInRight">
             <div class="card-header bg-transparent border-0">
                 <h5 class="mb-0">
-                    <i class="bi bi-pie-chart me-2"></i>{% trans "Risk Distribution" %}
+                    <i class="bi bi-pie-chart me-2"></i>{% trans
+                    "Risk Distribution" %}
                 </h5>
             </div>
             <div class="card-body">
@@ -190,10 +222,13 @@
         </div>
 
         <!-- Recent Activity -->
-        <div class="card border-0 shadow-sm mt-4 animate__animated animate__fadeInRight" style="animation-delay: 0.2s;">
+        <div
+            class="card border-0 shadow-sm mt-4 animate__animated animate__fadeInRight"
+            style="animation-delay: 0.2s;">
             <div class="card-header bg-transparent border-0">
                 <h5 class="mb-0">
-                    <i class="bi bi-clock-history me-2"></i>{% trans "Recent Activity" %}
+                    <i class="bi bi-clock-history me-2"></i>{% trans
+                    "Recent Activity" %}
                 </h5>
             </div>
             <div class="card-body">
@@ -201,7 +236,8 @@
                     <!-- Dynamic content will be loaded here -->
                 </div>
                 <div class="d-flex justify-content-center">
-                    <div class="spinner-border spinner-border-sm text-primary" role="status" id="activitySpinner">
+                    <div class="spinner-border spinner-border-sm text-primary"
+                        role="status" id="activitySpinner">
                         <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>
@@ -213,21 +249,29 @@
 <!-- Risk Trends Chart -->
 <div class="row mt-4">
     <div class="col-12">
-        <div class="card border-0 shadow-sm animate__animated animate__fadeInUp">
+        <div
+            class="card border-0 shadow-sm animate__animated animate__fadeInUp">
             <div class="card-header bg-transparent border-0">
                 <div class="d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">
-                        <i class="bi bi-graph-up-arrow me-2"></i>{% trans "Risk Trends" %}
+                        <i class="bi bi-graph-up-arrow me-2"></i>{% trans
+                        "Risk Trends" %}
                     </h5>
                     <div class="btn-group btn-group-sm" role="group">
-                        <input type="radio" class="btn-check" name="trendPeriod" id="week" autocomplete="off" checked>
-                        <label class="btn btn-outline-secondary" for="week">{% trans "7 Days" %}</label>
+                        <input type="radio" class="btn-check" name="trendPeriod"
+                            id="week" autocomplete="off" checked>
+                        <label class="btn btn-outline-secondary" for="week">{%
+                            trans "7 Days" %}</label>
 
-                        <input type="radio" class="btn-check" name="trendPeriod" id="month" autocomplete="off">
-                        <label class="btn btn-outline-secondary" for="month">{% trans "30 Days" %}</label>
+                        <input type="radio" class="btn-check" name="trendPeriod"
+                            id="month" autocomplete="off">
+                        <label class="btn btn-outline-secondary" for="month">{%
+                            trans "30 Days" %}</label>
 
-                        <input type="radio" class="btn-check" name="trendPeriod" id="quarter" autocomplete="off">
-                        <label class="btn btn-outline-secondary" for="quarter">{% trans "90 Days" %}</label>
+                        <input type="radio" class="btn-check" name="trendPeriod"
+                            id="quarter" autocomplete="off">
+                        <label class="btn btn-outline-secondary"
+                            for="quarter">{% trans "90 Days" %}</label>
                     </div>
                 </div>
             </div>
@@ -246,24 +290,29 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="bi bi-gear me-2"></i>{% trans "Dashboard Settings" %}
+                    <i class="bi bi-gear me-2"></i>{% trans "Dashboard Settings"
+                    %}
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close"
+                    data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="settingsForm">
                     <div class="mb-3">
-                        <label class="form-label">{% trans "Auto Refresh Interval" %}</label>
+                        <label class="form-label">{% trans
+                            "Auto Refresh Interval" %}</label>
                         <select class="form-select" id="refreshInterval">
                             <option value="0">{% trans "Disabled" %}</option>
                             <option value="30">30 {% trans "seconds" %}</option>
-                            <option value="60" selected>1 {% trans "minute" %}</option>
+                            <option value="60" selected>1 {% trans "minute"
+                                %}</option>
                             <option value="300">5 {% trans "minutes" %}</option>
                         </select>
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="soundAlerts" checked>
+                            <input class="form-check-input" type="checkbox"
+                                id="soundAlerts" checked>
                             <label class="form-check-label" for="soundAlerts">
                                 {% trans "Sound Alerts" %}
                             </label>
@@ -271,8 +320,10 @@
                     </div>
                     <div class="mb-3">
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="browserNotifications">
-                            <label class="form-check-label" for="browserNotifications">
+                            <input class="form-check-input" type="checkbox"
+                                id="browserNotifications">
+                            <label class="form-check-label"
+                                for="browserNotifications">
                                 {% trans "Browser Notifications" %}
                             </label>
                         </div>
@@ -280,7 +331,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                <button type="button" class="btn btn-secondary"
+                    data-bs-dismiss="modal">
                     {% trans "Cancel" %}
                 </button>
                 <button type="button" class="btn btn-primary" id="saveSettings">
@@ -297,9 +349,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="bi bi-flag me-2"></i>{% trans "Risk Flag Details" %}
+                    <i class="bi bi-flag me-2"></i>{% trans "Risk Flag Details"
+                    %}
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close"
+                    data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="flagDetailContent">
                 <!-- Dynamic content will be loaded here -->

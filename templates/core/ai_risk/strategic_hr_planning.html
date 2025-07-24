@@ -4,8 +4,10 @@
 {% block title %}{% trans "Strategic HR Planning" %}{% endblock %}
 
 {% block breadcrumb_items %}
-<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans "Ana Səhifə" %}</a></li>
-<li class="breadcrumb-item"><a href="{% url 'ai_risk_dashboard' %}">{% trans "AI Risk Dashboard" %}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans
+        "Ana Səhifə" %}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'ai_risk_dashboard' %}">{% trans
+        "AI Risk Dashboard" %}</a></li>
 <li class="breadcrumb-item active">{% trans "Strategic HR Planning" %}</li>
 {% endblock %}
 
@@ -75,15 +77,21 @@
                     <i class="bi bi-diagram-3 me-2"></i>
                     {% trans "Strategic HR Planning" %}
                 </h1>
-                <p class="text-muted">{% trans "Workforce analysis, talent management and succession planning" %}</p>
+                <p class="text-muted">{% trans
+                    "Workforce analysis, talent management and succession planning"
+                    %}</p>
             </div>
             <div class="btn-group" role="group">
-                <button type="button" class="btn btn-outline-primary" id="refreshAnalysisBtn">
-                    <i class="bi bi-arrow-clockwise me-1"></i>{% trans "Refresh Analysis" %}
+                <button type="button" class="btn btn-outline-primary"
+                    id="refreshAnalysisBtn">
+                    <i class="bi bi-arrow-clockwise me-1"></i>{% trans
+                    "Refresh Analysis" %}
                 </button>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                <button type="button" class="btn btn-primary"
+                    data-bs-toggle="modal"
                     data-bs-target="#generatePlanModal">
-                    <i class="bi bi-plus-lg me-1"></i>{% trans "Generate Plan" %}
+                    <i class="bi bi-plus-lg me-1"></i>{% trans "Generate Plan"
+                    %}
                 </button>
             </div>
         </div>
@@ -97,22 +105,26 @@
             <div class="card-body">
                 <div class="row g-3">
                     <div class="col-md-4">
-                        <label class="form-label">{% trans "Organization Unit" %}</label>
+                        <label class="form-label">{% trans "Organization Unit"
+                            %}</label>
                         <select class="form-select" id="organizationUnitFilter">
-                            <option value="">{% trans "All Units" %}</option>
+                            <option value>{% trans "All Units" %}</option>
                         </select>
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">{% trans "Evaluation Cycle" %}</label>
+                        <label class="form-label">{% trans "Evaluation Cycle"
+                            %}</label>
                         <select class="form-select" id="evaluationCycleFilter">
-                            <option value="">{% trans "Latest Cycle" %}</option>
+                            <option value>{% trans "Latest Cycle" %}</option>
                         </select>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">&nbsp;</label>
                         <div class="d-grid">
-                            <button type="button" class="btn btn-primary" id="runAnalysisBtn">
-                                <i class="bi bi-play-fill me-1"></i>{% trans "Run Analysis" %}
+                            <button type="button" class="btn btn-primary"
+                                id="runAnalysisBtn">
+                                <i class="bi bi-play-fill me-1"></i>{% trans
+                                "Run Analysis" %}
                             </button>
                         </div>
                     </div>
@@ -127,29 +139,41 @@
     <div class="col-12">
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-transparent border-0">
-                <ul class="nav nav-tabs card-header-tabs" id="planningTabs" role="tablist">
+                <ul class="nav nav-tabs card-header-tabs" id="planningTabs"
+                    role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="workforce-tab" data-bs-toggle="tab"
-                            data-bs-target="#workforce-pane" type="button" role="tab">
-                            <i class="bi bi-people me-2"></i>{% trans "Workforce Analysis" %}
+                        <button class="nav-link active" id="workforce-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#workforce-pane" type="button"
+                            role="tab">
+                            <i class="bi bi-people me-2"></i>{% trans
+                            "Workforce Analysis" %}
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="talent-tab" data-bs-toggle="tab" data-bs-target="#talent-pane"
+                        <button class="nav-link" id="talent-tab"
+                            data-bs-toggle="tab" data-bs-target="#talent-pane"
                             type="button" role="tab">
-                            <i class="bi bi-star me-2"></i>{% trans "Talent Management" %}
+                            <i class="bi bi-star me-2"></i>{% trans
+                            "Talent Management" %}
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="succession-tab" data-bs-toggle="tab"
-                            data-bs-target="#succession-pane" type="button" role="tab">
-                            <i class="bi bi-diagram-2 me-2"></i>{% trans "Succession Planning" %}
+                        <button class="nav-link" id="succession-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#succession-pane" type="button"
+                            role="tab">
+                            <i class="bi bi-diagram-2 me-2"></i>{% trans
+                            "Succession Planning" %}
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="recommendations-tab" data-bs-toggle="tab"
-                            data-bs-target="#recommendations-pane" type="button" role="tab">
-                            <i class="bi bi-lightbulb me-2"></i>{% trans "Recommendations" %}
+                        <button class="nav-link" id="recommendations-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#recommendations-pane" type="button"
+                            role="tab">
+                            <i class="bi bi-lightbulb me-2"></i>{% trans
+                            "Recommendations" %}
                         </button>
                     </li>
                 </ul>
@@ -157,16 +181,19 @@
             <div class="card-body">
                 <div class="tab-content" id="planningTabContent">
                     <!-- Workforce Analysis Tab -->
-                    <div class="tab-pane fade show active" id="workforce-pane" role="tabpanel">
+                    <div class="tab-pane fade show active" id="workforce-pane"
+                        role="tabpanel">
                         <div class="row g-4">
                             <!-- Demographics Chart -->
                             <div class="col-md-6">
                                 <div class="card border-0 bg-light">
                                     <div class="card-header bg-transparent">
-                                        <h6 class="mb-0">{% trans "Age Demographics" %}</h6>
+                                        <h6 class="mb-0">{% trans
+                                            "Age Demographics" %}</h6>
                                     </div>
                                     <div class="card-body">
-                                        <canvas id="ageDemographicsChart" height="300"></canvas>
+                                        <canvas id="ageDemographicsChart"
+                                            height="300"></canvas>
                                     </div>
                                 </div>
                             </div>
@@ -175,10 +202,12 @@
                             <div class="col-md-6">
                                 <div class="card border-0 bg-light">
                                     <div class="card-header bg-transparent">
-                                        <h6 class="mb-0">{% trans "Experience Distribution" %}</h6>
+                                        <h6 class="mb-0">{% trans
+                                            "Experience Distribution" %}</h6>
                                     </div>
                                     <div class="card-body">
-                                        <canvas id="experienceChart" height="300"></canvas>
+                                        <canvas id="experienceChart"
+                                            height="300"></canvas>
                                     </div>
                                 </div>
                             </div>
@@ -187,10 +216,12 @@
                             <div class="col-12">
                                 <div class="card border-0 bg-light">
                                     <div class="card-header bg-transparent">
-                                        <h6 class="mb-0">{% trans "Department Distribution" %}</h6>
+                                        <h6 class="mb-0">{% trans
+                                            "Department Distribution" %}</h6>
                                     </div>
                                     <div class="card-body">
-                                        <canvas id="departmentChart" height="200"></canvas>
+                                        <canvas id="departmentChart"
+                                            height="200"></canvas>
                                     </div>
                                 </div>
                             </div>
@@ -199,13 +230,18 @@
                             <div class="col-12">
                                 <div class="card border-0 bg-light">
                                     <div class="card-header bg-transparent">
-                                        <h6 class="mb-0">{% trans "Key Insights" %}</h6>
+                                        <h6 class="mb-0">{% trans "Key Insights"
+                                            %}</h6>
                                     </div>
                                     <div class="card-body">
                                         <div id="workforceInsights">
-                                            <div class="text-center text-muted py-4">
-                                                <i class="bi bi-lightbulb display-1 d-block mb-3"></i>
-                                                {% trans "Run analysis to see insights" %}
+                                            <div
+                                                class="text-center text-muted py-4">
+                                                <i
+                                                    class="bi bi-lightbulb display-1 d-block mb-3"></i>
+                                                {% trans
+                                                "Run analysis to see insights"
+                                                %}
                                             </div>
                                         </div>
                                     </div>
@@ -222,33 +258,54 @@
                                 <div class="card border-0 bg-light">
                                     <div
                                         class="card-header bg-transparent d-flex justify-content-between align-items-center">
-                                        <h6 class="mb-0">{% trans "9-Box Talent Grid" %}</h6>
-                                        <div class="btn-group btn-group-sm" role="group">
-                                            <button type="button" class="btn btn-outline-primary" id="exportGridBtn">
-                                                <i class="bi bi-download me-1"></i>{% trans "Export" %}
+                                        <h6 class="mb-0">{% trans
+                                            "9-Box Talent Grid" %}</h6>
+                                        <div class="btn-group btn-group-sm"
+                                            role="group">
+                                            <button type="button"
+                                                class="btn btn-outline-primary"
+                                                id="exportGridBtn">
+                                                <i
+                                                    class="bi bi-download me-1"></i>{%
+                                                trans "Export" %}
                                             </button>
                                         </div>
                                     </div>
                                     <div class="card-body">
                                         <div class="mb-3">
-                                            <div class="d-flex justify-content-between">
-                                                <small class="text-muted">{% trans "Low Performance" %}</small>
-                                                <small class="text-muted font-weight-bold">{% trans "Performance"
+                                            <div
+                                                class="d-flex justify-content-between">
+                                                <small class="text-muted">{%
+                                                    trans "Low Performance"
                                                     %}</small>
-                                                <small class="text-muted">{% trans "High Performance" %}</small>
+                                                <small
+                                                    class="text-muted font-weight-bold">{%
+                                                    trans "Performance"
+                                                    %}</small>
+                                                <small class="text-muted">{%
+                                                    trans "High Performance"
+                                                    %}</small>
                                             </div>
                                         </div>
 
-                                        <div id="talentGrid" class="talent-grid">
+                                        <div id="talentGrid"
+                                            class="talent-grid">
                                             <!-- Grid will be populated dynamically -->
                                         </div>
 
                                         <div class="mt-3">
-                                            <div class="d-flex justify-content-between">
-                                                <small class="text-muted">{% trans "Low Potential" %}</small>
-                                                <small class="text-muted font-weight-bold">{% trans "Potential"
+                                            <div
+                                                class="d-flex justify-content-between">
+                                                <small class="text-muted">{%
+                                                    trans "Low Potential"
                                                     %}</small>
-                                                <small class="text-muted">{% trans "High Potential" %}</small>
+                                                <small
+                                                    class="text-muted font-weight-bold">{%
+                                                    trans "Potential"
+                                                    %}</small>
+                                                <small class="text-muted">{%
+                                                    trans "High Potential"
+                                                    %}</small>
                                             </div>
                                         </div>
                                     </div>
@@ -259,10 +316,12 @@
                             <div class="col-12">
                                 <div class="card border-0 bg-light">
                                     <div class="card-header bg-transparent">
-                                        <h6 class="mb-0">{% trans "Talent Pipeline Summary" %}</h6>
+                                        <h6 class="mb-0">{% trans
+                                            "Talent Pipeline Summary" %}</h6>
                                     </div>
                                     <div class="card-body">
-                                        <div class="row g-3" id="talentPipelineSummary">
+                                        <div class="row g-3"
+                                            id="talentPipelineSummary">
                                             <!-- Summary cards will be populated dynamically -->
                                         </div>
                                     </div>
@@ -272,13 +331,16 @@
                     </div>
 
                     <!-- Succession Planning Tab -->
-                    <div class="tab-pane fade" id="succession-pane" role="tabpanel">
+                    <div class="tab-pane fade" id="succession-pane"
+                        role="tabpanel">
                         <div class="row g-4">
                             <!-- Key Positions -->
                             <div class="col-md-8">
                                 <div class="card border-0 bg-light">
                                     <div class="card-header bg-transparent">
-                                        <h6 class="mb-0">{% trans "Key Positions & Succession Plans" %}</h6>
+                                        <h6 class="mb-0">{% trans
+                                            "Key Positions & Succession Plans"
+                                            %}</h6>
                                     </div>
                                     <div class="card-body">
                                         <div id="successionPlans">
@@ -292,10 +354,12 @@
                             <div class="col-md-4">
                                 <div class="card border-0 bg-light">
                                     <div class="card-header bg-transparent">
-                                        <h6 class="mb-0">{% trans "Readiness Overview" %}</h6>
+                                        <h6 class="mb-0">{% trans
+                                            "Readiness Overview" %}</h6>
                                     </div>
                                     <div class="card-body">
-                                        <canvas id="successionReadinessChart" height="200"></canvas>
+                                        <canvas id="successionReadinessChart"
+                                            height="200"></canvas>
                                         <div id="readinessStats" class="mt-3">
                                             <!-- Stats will be populated dynamically -->
                                         </div>
@@ -306,13 +370,15 @@
                     </div>
 
                     <!-- Recommendations Tab -->
-                    <div class="tab-pane fade" id="recommendations-pane" role="tabpanel">
+                    <div class="tab-pane fade" id="recommendations-pane"
+                        role="tabpanel">
                         <div class="row g-4">
                             <!-- Priority Matrix -->
                             <div class="col-md-4">
                                 <div class="card border-0 bg-light h-100">
                                     <div class="card-header bg-transparent">
-                                        <h6 class="mb-0 text-danger">{% trans "High Priority" %}</h6>
+                                        <h6 class="mb-0 text-danger">{% trans
+                                            "High Priority" %}</h6>
                                     </div>
                                     <div class="card-body">
                                         <div id="highPriorityRecommendations">
@@ -325,7 +391,8 @@
                             <div class="col-md-4">
                                 <div class="card border-0 bg-light h-100">
                                     <div class="card-header bg-transparent">
-                                        <h6 class="mb-0 text-warning">{% trans "Medium Priority" %}</h6>
+                                        <h6 class="mb-0 text-warning">{% trans
+                                            "Medium Priority" %}</h6>
                                     </div>
                                     <div class="card-body">
                                         <div id="mediumPriorityRecommendations">
@@ -338,7 +405,8 @@
                             <div class="col-md-4">
                                 <div class="card border-0 bg-light h-100">
                                     <div class="card-header bg-transparent">
-                                        <h6 class="mb-0 text-info">{% trans "Low Priority" %}</h6>
+                                        <h6 class="mb-0 text-info">{% trans
+                                            "Low Priority" %}</h6>
                                     </div>
                                     <div class="card-body">
                                         <div id="lowPriorityRecommendations">
@@ -352,7 +420,8 @@
                             <div class="col-12">
                                 <div class="card border-0 bg-light">
                                     <div class="card-header bg-transparent">
-                                        <h6 class="mb-0">{% trans "Key Performance Indicators" %}</h6>
+                                        <h6 class="mb-0">{% trans
+                                            "Key Performance Indicators" %}</h6>
                                     </div>
                                     <div class="card-body">
                                         <div class="row g-3" id="keyMetrics">
@@ -375,41 +444,57 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="bi bi-gear me-2"></i>{% trans "Generate Strategic Plan" %}
+                    <i class="bi bi-gear me-2"></i>{% trans
+                    "Generate Strategic Plan" %}
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close"
+                    data-bs-dismiss="modal"></button>
             </div>
             <form id="generatePlanForm">
                 <div class="modal-body">
                     {% csrf_token %}
                     <div class="row g-3">
                         <div class="col-12">
-                            <label class="form-label">{% trans "Plan Type" %}</label>
-                            <select class="form-select" name="plan_type" required>
-                                <option value="workforce_analysis">{% trans "Workforce Analysis" %}</option>
-                                <option value="talent_pipeline">{% trans "Talent Pipeline Analysis" %}</option>
-                                <option value="succession_planning">{% trans "Succession Planning" %}</option>
-                                <option value="hr_strategy">{% trans "Complete HR Strategy" %}</option>
+                            <label class="form-label">{% trans "Plan Type"
+                                %}</label>
+                            <select class="form-select" name="plan_type"
+                                required>
+                                <option value="workforce_analysis">{% trans
+                                    "Workforce Analysis" %}</option>
+                                <option value="talent_pipeline">{% trans
+                                    "Talent Pipeline Analysis" %}</option>
+                                <option value="succession_planning">{% trans
+                                    "Succession Planning" %}</option>
+                                <option value="hr_strategy">{% trans
+                                    "Complete HR Strategy" %}</option>
                             </select>
                         </div>
                         <div class="col-12">
-                            <label class="form-label">{% trans "Organization Unit" %}</label>
-                            <select class="form-select" name="organization_unit">
-                                <option value="">{% trans "All Units" %}</option>
+                            <label class="form-label">{% trans
+                                "Organization Unit" %}</label>
+                            <select class="form-select"
+                                name="organization_unit">
+                                <option value>{% trans "All Units" %}</option>
                             </select>
                         </div>
                         <div class="col-12">
-                            <label class="form-label">{% trans "Time Frame" %}</label>
+                            <label class="form-label">{% trans "Time Frame"
+                                %}</label>
                             <select class="form-select" name="time_frame">
-                                <option value="current">{% trans "Current State" %}</option>
-                                <option value="6_months">{% trans "6 Months" %}</option>
-                                <option value="1_year">{% trans "1 Year" %}</option>
-                                <option value="3_years">{% trans "3 Years" %}</option>
+                                <option value="current">{% trans "Current State"
+                                    %}</option>
+                                <option value="6_months">{% trans "6 Months"
+                                    %}</option>
+                                <option value="1_year">{% trans "1 Year"
+                                    %}</option>
+                                <option value="3_years">{% trans "3 Years"
+                                    %}</option>
                             </select>
                         </div>
                         <div class="col-12">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="include_recommendations" checked>
+                                <input class="form-check-input" type="checkbox"
+                                    name="include_recommendations" checked>
                                 <label class="form-check-label">
                                     {% trans "Include AI Recommendations" %}
                                 </label>
@@ -417,20 +502,24 @@
                         </div>
                         <div class="col-12">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="include_charts">
+                                <input class="form-check-input" type="checkbox"
+                                    name="include_charts">
                                 <label class="form-check-label">
-                                    {% trans "Include Charts and Visualizations" %}
+                                    {% trans "Include Charts and Visualizations"
+                                    %}
                                 </label>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">
                         {% trans "Cancel" %}
                     </button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-download me-1"></i>{% trans "Generate & Download" %}
+                        <i class="bi bi-download me-1"></i>{% trans
+                        "Generate & Download" %}
                     </button>
                 </div>
             </form>
@@ -444,9 +533,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="bi bi-person-circle me-2"></i>{% trans "Employee Details" %}
+                    <i class="bi bi-person-circle me-2"></i>{% trans
+                    "Employee Details" %}
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close"
+                    data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="employeeDetailContent">
                 <!-- Employee details will be loaded here -->

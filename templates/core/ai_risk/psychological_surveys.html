@@ -4,8 +4,10 @@
 {% block title %}{% trans "Psychological Risk Surveys" %}{% endblock %}
 
 {% block breadcrumb_items %}
-<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans "Ana Səhifə" %}</a></li>
-<li class="breadcrumb-item"><a href="{% url 'ai_risk_dashboard' %}">{% trans "AI Risk Dashboard" %}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'dashboard' %}">{% trans
+        "Ana Səhifə" %}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'ai_risk_dashboard' %}">{% trans
+        "AI Risk Dashboard" %}</a></li>
 <li class="breadcrumb-item active">{% trans "Psychological Surveys" %}</li>
 {% endblock %}
 
@@ -23,15 +25,21 @@
                     <i class="bi bi-clipboard2-pulse me-2"></i>
                     {% trans "Psychological Risk Surveys" %}
                 </h1>
-                <p class="text-muted">{% trans "Create and manage psychological wellbeing assessments" %}</p>
+                <p class="text-muted">{% trans
+                    "Create and manage psychological wellbeing assessments"
+                    %}</p>
             </div>
             <div class="btn-group" role="group">
-                <button type="button" class="btn btn-outline-success" id="generateReportBtn">
-                    <i class="bi bi-file-earmark-text me-1"></i>{% trans "Generate Report" %}
+                <button type="button" class="btn btn-outline-success"
+                    id="generateReportBtn">
+                    <i class="bi bi-file-earmark-text me-1"></i>{% trans
+                    "Generate Report" %}
                 </button>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                <button type="button" class="btn btn-primary"
+                    data-bs-toggle="modal"
                     data-bs-target="#createSurveyModal">
-                    <i class="bi bi-plus-lg me-1"></i>{% trans "Create Survey" %}
+                    <i class="bi bi-plus-lg me-1"></i>{% trans "Create Survey"
+                    %}
                 </button>
             </div>
         </div>
@@ -41,17 +49,22 @@
 <!-- Statistics Cards -->
 <div class="row g-4 mb-4">
     <div class="col-md-3 col-sm-6">
-        <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp">
+        <div
+            class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
-                        <div class="p-3 rounded-circle bg-primary bg-opacity-10">
-                            <i class="bi bi-clipboard2-check text-primary fs-4"></i>
+                        <div
+                            class="p-3 rounded-circle bg-primary bg-opacity-10">
+                            <i
+                                class="bi bi-clipboard2-check text-primary fs-4"></i>
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="small text-muted text-uppercase fw-bold">{% trans "Active Surveys" %}</div>
-                        <div class="h4 fw-bold mb-0" id="activeSurveysCount">-</div>
+                        <div class="small text-muted text-uppercase fw-bold">{%
+                            trans "Active Surveys" %}</div>
+                        <div class="h4 fw-bold mb-0"
+                            id="activeSurveysCount">-</div>
                     </div>
                 </div>
             </div>
@@ -59,17 +72,22 @@
     </div>
 
     <div class="col-md-3 col-sm-6">
-        <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+        <div
+            class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp"
+            style="animation-delay: 0.1s;">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
-                        <div class="p-3 rounded-circle bg-success bg-opacity-10">
+                        <div
+                            class="p-3 rounded-circle bg-success bg-opacity-10">
                             <i class="bi bi-people-fill text-success fs-4"></i>
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="small text-muted text-uppercase fw-bold">{% trans "Total Responses" %}</div>
-                        <div class="h4 fw-bold mb-0" id="totalResponsesCount">-</div>
+                        <div class="small text-muted text-uppercase fw-bold">{%
+                            trans "Total Responses" %}</div>
+                        <div class="h4 fw-bold mb-0"
+                            id="totalResponsesCount">-</div>
                     </div>
                 </div>
             </div>
@@ -77,17 +95,23 @@
     </div>
 
     <div class="col-md-3 col-sm-6">
-        <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+        <div
+            class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp"
+            style="animation-delay: 0.2s;">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
-                        <div class="p-3 rounded-circle bg-warning bg-opacity-10">
-                            <i class="bi bi-exclamation-triangle text-warning fs-4"></i>
+                        <div
+                            class="p-3 rounded-circle bg-warning bg-opacity-10">
+                            <i
+                                class="bi bi-exclamation-triangle text-warning fs-4"></i>
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="small text-muted text-uppercase fw-bold">{% trans "High Risk" %}</div>
-                        <div class="h4 fw-bold mb-0" id="highRiskResponsesCount">-</div>
+                        <div class="small text-muted text-uppercase fw-bold">{%
+                            trans "High Risk" %}</div>
+                        <div class="h4 fw-bold mb-0"
+                            id="highRiskResponsesCount">-</div>
                     </div>
                 </div>
             </div>
@@ -95,7 +119,9 @@
     </div>
 
     <div class="col-md-3 col-sm-6">
-        <div class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+        <div
+            class="card border-0 shadow-sm h-100 animate__animated animate__fadeInUp"
+            style="animation-delay: 0.3s;">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-shrink-0">
@@ -104,7 +130,8 @@
                         </div>
                     </div>
                     <div class="flex-grow-1 ms-3">
-                        <div class="small text-muted text-uppercase fw-bold">{% trans "Completion Rate" %}</div>
+                        <div class="small text-muted text-uppercase fw-bold">{%
+                            trans "Completion Rate" %}</div>
                         <div class="h4 fw-bold mb-0" id="completionRate">-</div>
                     </div>
                 </div>
@@ -118,23 +145,33 @@
     <div class="col-12">
         <div class="card border-0 shadow-sm">
             <div class="card-header bg-transparent border-0">
-                <ul class="nav nav-tabs card-header-tabs" id="mainTabs" role="tablist">
+                <ul class="nav nav-tabs card-header-tabs" id="mainTabs"
+                    role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="surveys-tab" data-bs-toggle="tab"
-                            data-bs-target="#surveys-pane" type="button" role="tab">
-                            <i class="bi bi-clipboard2-check me-2"></i>{% trans "Surveys" %}
+                        <button class="nav-link active" id="surveys-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#surveys-pane" type="button"
+                            role="tab">
+                            <i class="bi bi-clipboard2-check me-2"></i>{% trans
+                            "Surveys" %}
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="responses-tab" data-bs-toggle="tab"
-                            data-bs-target="#responses-pane" type="button" role="tab">
-                            <i class="bi bi-chat-square-text me-2"></i>{% trans "Responses" %}
+                        <button class="nav-link" id="responses-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#responses-pane" type="button"
+                            role="tab">
+                            <i class="bi bi-chat-square-text me-2"></i>{% trans
+                            "Responses" %}
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="analytics-tab" data-bs-toggle="tab"
-                            data-bs-target="#analytics-pane" type="button" role="tab">
-                            <i class="bi bi-bar-chart me-2"></i>{% trans "Analytics" %}
+                        <button class="nav-link" id="analytics-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#analytics-pane" type="button"
+                            role="tab">
+                            <i class="bi bi-bar-chart me-2"></i>{% trans
+                            "Analytics" %}
                         </button>
                     </li>
                 </ul>
@@ -142,21 +179,31 @@
             <div class="card-body">
                 <div class="tab-content" id="mainTabContent">
                     <!-- Surveys Tab -->
-                    <div class="tab-pane fade show active" id="surveys-pane" role="tabpanel">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="mb-0">{% trans "Survey Management" %}</h5>
+                    <div class="tab-pane fade show active" id="surveys-pane"
+                        role="tabpanel">
+                        <div
+                            class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">{% trans "Survey Management"
+                                %}</h5>
                             <div class="btn-group btn-group-sm" role="group">
-                                <input type="radio" class="btn-check" name="surveyFilter" id="allSurveys"
+                                <input type="radio" class="btn-check"
+                                    name="surveyFilter" id="allSurveys"
                                     autocomplete="off" checked>
-                                <label class="btn btn-outline-secondary" for="allSurveys">{% trans "All" %}</label>
+                                <label class="btn btn-outline-secondary"
+                                    for="allSurveys">{% trans "All" %}</label>
 
-                                <input type="radio" class="btn-check" name="surveyFilter" id="activeSurveys"
+                                <input type="radio" class="btn-check"
+                                    name="surveyFilter" id="activeSurveys"
                                     autocomplete="off">
-                                <label class="btn btn-outline-success" for="activeSurveys">{% trans "Active" %}</label>
+                                <label class="btn btn-outline-success"
+                                    for="activeSurveys">{% trans "Active"
+                                    %}</label>
 
-                                <input type="radio" class="btn-check" name="surveyFilter" id="inactiveSurveys"
+                                <input type="radio" class="btn-check"
+                                    name="surveyFilter" id="inactiveSurveys"
                                     autocomplete="off">
-                                <label class="btn btn-outline-secondary" for="inactiveSurveys">{% trans "Inactive"
+                                <label class="btn btn-outline-secondary"
+                                    for="inactiveSurveys">{% trans "Inactive"
                                     %}</label>
                             </div>
                         </div>
@@ -182,34 +229,49 @@
                     </div>
 
                     <!-- Responses Tab -->
-                    <div class="tab-pane fade" id="responses-pane" role="tabpanel">
+                    <div class="tab-pane fade" id="responses-pane"
+                        role="tabpanel">
                         <div class="row mb-3">
                             <div class="col-md-4">
-                                <select class="form-select" id="surveyResponseFilter">
-                                    <option value="">{% trans "All Surveys" %}</option>
+                                <select class="form-select"
+                                    id="surveyResponseFilter">
+                                    <option value>{% trans "All Surveys"
+                                        %}</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <select class="form-select" id="riskLevelFilter">
-                                    <option value="">{% trans "All Risk Levels" %}</option>
-                                    <option value="VERY_LOW">{% trans "Very Low" %}</option>
-                                    <option value="LOW">{% trans "Low" %}</option>
-                                    <option value="MODERATE">{% trans "Moderate" %}</option>
-                                    <option value="HIGH">{% trans "High" %}</option>
-                                    <option value="VERY_HIGH">{% trans "Very High" %}</option>
+                                <select class="form-select"
+                                    id="riskLevelFilter">
+                                    <option value>{% trans "All Risk Levels"
+                                        %}</option>
+                                    <option value="VERY_LOW">{% trans "Very Low"
+                                        %}</option>
+                                    <option value="LOW">{% trans "Low"
+                                        %}</option>
+                                    <option value="MODERATE">{% trans "Moderate"
+                                        %}</option>
+                                    <option value="HIGH">{% trans "High"
+                                        %}</option>
+                                    <option value="VERY_HIGH">{% trans
+                                        "Very High" %}</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-check form-switch mt-2">
-                                    <input class="form-check-input" type="checkbox" id="attentionRequiredFilter">
-                                    <label class="form-check-label" for="attentionRequiredFilter">
+                                    <input class="form-check-input"
+                                        type="checkbox"
+                                        id="attentionRequiredFilter">
+                                    <label class="form-check-label"
+                                        for="attentionRequiredFilter">
                                         {% trans "Requires Attention Only" %}
                                     </label>
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <button class="btn btn-primary w-100" id="filterResponsesBtn">
-                                    <i class="bi bi-funnel me-1"></i>{% trans "Filter" %}
+                                <button class="btn btn-primary w-100"
+                                    id="filterResponsesBtn">
+                                    <i class="bi bi-funnel me-1"></i>{% trans
+                                    "Filter" %}
                                 </button>
                             </div>
                         </div>
@@ -235,35 +297,43 @@
                     </div>
 
                     <!-- Analytics Tab -->
-                    <div class="tab-pane fade" id="analytics-pane" role="tabpanel">
+                    <div class="tab-pane fade" id="analytics-pane"
+                        role="tabpanel">
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <div class="card border-0 bg-light">
                                     <div class="card-header bg-transparent">
-                                        <h6 class="mb-0">{% trans "Risk Level Distribution" %}</h6>
+                                        <h6 class="mb-0">{% trans
+                                            "Risk Level Distribution" %}</h6>
                                     </div>
                                     <div class="card-body">
-                                        <canvas id="riskDistributionChart" height="300"></canvas>
+                                        <canvas id="riskDistributionChart"
+                                            height="300"></canvas>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="card border-0 bg-light">
                                     <div class="card-header bg-transparent">
-                                        <h6 class="mb-0">{% trans "Survey Response Trends" %}</h6>
+                                        <h6 class="mb-0">{% trans
+                                            "Survey Response Trends" %}</h6>
                                     </div>
                                     <div class="card-body">
-                                        <canvas id="responseTrendsChart" height="300"></canvas>
+                                        <canvas id="responseTrendsChart"
+                                            height="300"></canvas>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-12">
                                 <div class="card border-0 bg-light">
                                     <div class="card-header bg-transparent">
-                                        <h6 class="mb-0">{% trans "Department-wise Risk Analysis" %}</h6>
+                                        <h6 class="mb-0">{% trans
+                                            "Department-wise Risk Analysis"
+                                            %}</h6>
                                     </div>
                                     <div class="card-body">
-                                        <canvas id="departmentRiskChart" height="200"></canvas>
+                                        <canvas id="departmentRiskChart"
+                                            height="200"></canvas>
                                     </div>
                                 </div>
                             </div>
@@ -281,59 +351,82 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="bi bi-clipboard2-plus me-2"></i>{% trans "Create Psychological Survey" %}
+                    <i class="bi bi-clipboard2-plus me-2"></i>{% trans
+                    "Create Psychological Survey" %}
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close"
+                    data-bs-dismiss="modal"></button>
             </div>
             <form id="createSurveyForm">
                 <div class="modal-body">
                     {% csrf_token %}
                     <div class="row g-3">
                         <div class="col-md-8">
-                            <label class="form-label">{% trans "Survey Title" %} <span
+                            <label class="form-label">{% trans "Survey Title" %}
+                                <span
                                     class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="title" required
+                            <input type="text" class="form-control" name="title"
+                                required
                                 placeholder="{% trans 'Enter survey title...' %}">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">{% trans "Survey Type" %} <span
+                            <label class="form-label">{% trans "Survey Type" %}
+                                <span
                                     class="text-danger">*</span></label>
-                            <select class="form-select" name="survey_type" required>
-                                <option value="">{% trans "Select Type" %}</option>
-                                <option value="WHO5">{% trans "WHO-5 Wellbeing Index" %}</option>
-                                <option value="BURNOUT">{% trans "Burnout Assessment" %}</option>
-                                <option value="STRESS">{% trans "Stress Level" %}</option>
-                                <option value="ENGAGEMENT">{% trans "Work Engagement" %}</option>
-                                <option value="SATISFACTION">{% trans "Job Satisfaction" %}</option>
-                                <option value="MENTAL_HEALTH">{% trans "Mental Health Check" %}</option>
-                                <option value="CUSTOM">{% trans "Custom Survey" %}</option>
+                            <select class="form-select" name="survey_type"
+                                required>
+                                <option value>{% trans "Select Type" %}</option>
+                                <option value="WHO5">{% trans
+                                    "WHO-5 Wellbeing Index" %}</option>
+                                <option value="BURNOUT">{% trans
+                                    "Burnout Assessment" %}</option>
+                                <option value="STRESS">{% trans "Stress Level"
+                                    %}</option>
+                                <option value="ENGAGEMENT">{% trans
+                                    "Work Engagement" %}</option>
+                                <option value="SATISFACTION">{% trans
+                                    "Job Satisfaction" %}</option>
+                                <option value="MENTAL_HEALTH">{% trans
+                                    "Mental Health Check" %}</option>
+                                <option value="CUSTOM">{% trans "Custom Survey"
+                                    %}</option>
                             </select>
                         </div>
                         <div class="col-12">
-                            <label class="form-label">{% trans "Description" %}</label>
-                            <textarea class="form-control" name="description" rows="3"
+                            <label class="form-label">{% trans "Description"
+                                %}</label>
+                            <textarea class="form-control" name="description"
+                                rows="3"
                                 placeholder="{% trans 'Describe the purpose and scope of this survey...' %}"></textarea>
                         </div>
                         <div class="col-md-6">
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="is_active" checked>
-                                <label class="form-check-label">{% trans "Active Survey" %}</label>
+                                <input class="form-check-input" type="checkbox"
+                                    name="is_active" checked>
+                                <label class="form-check-label">{% trans
+                                    "Active Survey" %}</label>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" name="is_anonymous" checked>
-                                <label class="form-check-label">{% trans "Anonymous Responses" %}</label>
+                                <input class="form-check-input" type="checkbox"
+                                    name="is_anonymous" checked>
+                                <label class="form-check-label">{% trans
+                                    "Anonymous Responses" %}</label>
                             </div>
                         </div>
                     </div>
 
                     <hr class="my-4">
 
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div
+                        class="d-flex justify-content-between align-items-center mb-3">
                         <h6 class="mb-0">{% trans "Survey Questions" %}</h6>
-                        <button type="button" class="btn btn-sm btn-outline-primary" id="addQuestionBtn">
-                            <i class="bi bi-plus-lg me-1"></i>{% trans "Add Question" %}
+                        <button type="button"
+                            class="btn btn-sm btn-outline-primary"
+                            id="addQuestionBtn">
+                            <i class="bi bi-plus-lg me-1"></i>{% trans
+                            "Add Question" %}
                         </button>
                     </div>
 
@@ -343,16 +436,20 @@
 
                     <div class="alert alert-info">
                         <i class="bi bi-info-circle me-2"></i>
-                        <strong>{% trans "Note:" %}</strong> {% trans "For standardized surveys like WHO-5, questions
-                        will be automatically populated. For custom surveys, you can add your own questions." %}
+                        <strong>{% trans "Note:" %}</strong> {% trans "For
+                        standardized surveys like WHO-5, questions
+                        will be automatically populated. For custom surveys, you
+                        can add your own questions." %}
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">
                         {% trans "Cancel" %}
                     </button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-check-lg me-1"></i>{% trans "Create Survey" %}
+                        <i class="bi bi-check-lg me-1"></i>{% trans
+                        "Create Survey" %}
                     </button>
                 </div>
             </form>
@@ -366,9 +463,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="bi bi-clipboard2-check me-2"></i>{% trans "Take Survey" %}
+                    <i class="bi bi-clipboard2-check me-2"></i>{% trans
+                    "Take Survey" %}
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close"
+                    data-bs-dismiss="modal"></button>
             </div>
             <form id="takeSurveyForm">
                 <div class="modal-body">
@@ -378,11 +477,13 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-secondary"
+                        data-bs-dismiss="modal">
                         {% trans "Cancel" %}
                     </button>
                     <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-send me-1"></i>{% trans "Submit Response" %}
+                        <i class="bi bi-send me-1"></i>{% trans
+                        "Submit Response" %}
                     </button>
                 </div>
             </form>
@@ -396,9 +497,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">
-                    <i class="bi bi-clipboard2-data me-2"></i>{% trans "Survey Response Details" %}
+                    <i class="bi bi-clipboard2-data me-2"></i>{% trans
+                    "Survey Response Details" %}
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close"
+                    data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body" id="responseDetailContent">
                 <!-- Response details will be loaded here -->

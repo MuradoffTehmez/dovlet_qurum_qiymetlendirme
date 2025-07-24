@@ -7,21 +7,24 @@
 <style>
     .notes-card {
         border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         border: none;
         margin-bottom: 1.5rem;
         transition: all 0.3s ease;
     }
+
     .notes-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
     }
+
     .notes-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         padding: 1.5rem;
         border-radius: 15px 15px 0 0;
     }
+
     .employee-card {
         border: 1px solid #e9ecef;
         border-radius: 10px;
@@ -30,11 +33,13 @@
         transition: all 0.3s ease;
         cursor: pointer;
     }
+
     .employee-card:hover {
         border-color: #007bff;
         background-color: #f8f9fa;
         transform: translateY(-2px);
     }
+
     .note-item {
         background: #f8f9fa;
         border-radius: 10px;
@@ -43,43 +48,71 @@
         border-left: 4px solid #e9ecef;
         transition: all 0.3s ease;
     }
-    .note-item.performance { border-left-color: #007bff; }
-    .note-item.development { border-left-color: #17a2b8; }
-    .note-item.behavior { border-left-color: #ffc107; }
-    .note-item.achievement { border-left-color: #28a745; }
-    .note-item.concern { border-left-color: #dc3545; }
-    .note-item.feedback { border-left-color: #6c757d; }
-    .note-item.general { border-left-color: #f8f9fa; }
+
+    .note-item.performance {
+        border-left-color: #007bff;
+    }
+
+    .note-item.development {
+        border-left-color: #17a2b8;
+    }
+
+    .note-item.behavior {
+        border-left-color: #ffc107;
+    }
+
+    .note-item.achievement {
+        border-left-color: #28a745;
+    }
+
+    .note-item.concern {
+        border-left-color: #dc3545;
+    }
+
+    .note-item.feedback {
+        border-left-color: #6c757d;
+    }
+
+    .note-item.general {
+        border-left-color: #f8f9fa;
+    }
+
     .stats-card {
         background: white;
         border-radius: 10px;
         padding: 1.5rem;
         text-align: center;
-        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
         margin-bottom: 1.5rem;
         transition: transform 0.3s ease;
     }
+
     .stats-card:hover {
         transform: translateY(-3px);
     }
+
     .stat-number {
         font-size: 2.5rem;
         font-weight: 700;
         margin-bottom: 0.5rem;
     }
-    .priority-urgent { 
+
+    .priority-urgent {
         background: linear-gradient(135deg, #dc3545, #c82333);
         color: white;
     }
-    .priority-high { 
+
+    .priority-high {
         background: linear-gradient(135deg, #ffc107, #e0a800);
         color: #212529;
     }
-    .priority-medium { 
+
+    .priority-medium {
         background: linear-gradient(135deg, #007bff, #0056b3);
         color: white;
     }
-    .priority-low { 
+
+    .priority-low {
         background: linear-gradient(135deg, #28a745, #1e7e34);
         color: white;
     }
@@ -90,15 +123,18 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <div class="page-header d-flex justify-content-between align-items-center mb-4">
+            <div
+                class="page-header d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h1 class="h3 mb-0">
                         <i class="fas fa-file-alt me-2"></i>{{ page_title }}
                     </h1>
-                    <p class="text-muted mt-1">Komanda üzvləri haqqında məxfi qeydləriniz</p>
+                    <p class="text-muted mt-1">Komanda üzvləri haqqında məxfi
+                        qeydləriniz</p>
                 </div>
                 <div>
-                    <a href="{% url 'private_notes:create' %}" class="btn btn-primary">
+                    <a href="{% url 'private_notes:create' %}"
+                        class="btn btn-primary">
                         <i class="fas fa-plus me-2"></i>Yeni Qeyd
                     </a>
                 </div>
@@ -110,28 +146,32 @@
     <div class="row mb-4">
         <div class="col-lg-3 col-md-6">
             <div class="stats-card">
-                <div class="stat-number text-primary">{{ stats.total_notes }}</div>
+                <div class="stat-number text-primary">{{ stats.total_notes
+                    }}</div>
                 <h6 class="text-muted">Ümumi Qeydlər</h6>
                 <small class="text-muted">Bütün vaxtlar</small>
             </div>
         </div>
         <div class="col-lg-3 col-md-6">
             <div class="stats-card">
-                <div class="stat-number text-success">{{ stats.this_month_notes }}</div>
+                <div class="stat-number text-success">{{ stats.this_month_notes
+                    }}</div>
                 <h6 class="text-muted">Bu Ay</h6>
                 <small class="text-muted">Yeni qeydlər</small>
             </div>
         </div>
         <div class="col-lg-3 col-md-6">
             <div class="stats-card">
-                <div class="stat-number text-info">{{ stats.subordinates_count }}</div>
+                <div class="stat-number text-info">{{ stats.subordinates_count
+                    }}</div>
                 <h6 class="text-muted">Alt İşçilər</h6>
                 <small class="text-muted">Sizin komandanız</small>
             </div>
         </div>
         <div class="col-lg-3 col-md-6">
             <div class="stats-card">
-                <div class="stat-number text-warning">{{ stats.urgent_notes }}</div>
+                <div class="stat-number text-warning">{{ stats.urgent_notes
+                    }}</div>
                 <h6 class="text-muted">Təcili Qeydlər</h6>
                 <small class="text-muted">Diqqət tələb edir</small>
             </div>
@@ -143,62 +183,77 @@
         <div class="col-lg-8 mb-4">
             <div class="notes-card">
                 <div class="notes-header">
-                    <div class="d-flex justify-content-between align-items-center">
+                    <div
+                        class="d-flex justify-content-between align-items-center">
                         <div>
                             <h5 class="mb-0">
                                 <i class="fas fa-users me-2"></i>Komanda Üzvləri
                             </h5>
-                            <small>Qeydlərinizi idarə etmək üçün işçi seçin</small>
+                            <small>Qeydlərinizi idarə etmək üçün işçi
+                                seçin</small>
                         </div>
                         <div>
-                            <input type="text" class="form-control form-control-sm" placeholder="İşçi axtarın..." id="employeeSearch" style="width: 200px;">
+                            <input type="text"
+                                class="form-control form-control-sm"
+                                placeholder="İşçi axtarın..."
+                                id="employeeSearch" style="width: 200px;">
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
                     {% if subordinates %}
-                        <div class="row" id="employeeList">
-                            {% for employee in subordinates %}
-                            <div class="col-md-6 employee-item" data-name="{{ employee.get_full_name|lower }}">
-                                <div class="employee-card" onclick="window.location.href='{% url 'private_notes:employee_notes' employee.id %}'">
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-3">
-                                            <i class="fas fa-user-circle fa-2x text-primary"></i>
+                    <div class="row" id="employeeList">
+                        {% for employee in subordinates %}
+                        <div class="col-md-6 employee-item"
+                            data-name="{{ employee.get_full_name|lower }}">
+                            <div class="employee-card"
+                                onclick="window.location.href='{% url 'private_notes:employee_notes' employee.id %}'">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <i
+                                            class="fas fa-user-circle fa-2x text-primary"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1">{{
+                                            employee.get_full_name }}</h6>
+                                        <small class="text-muted">
+                                            {% if employee.organization_unit %}
+                                            {{ employee.organization_unit.name
+                                            }}
+                                            {% endif %}
+                                        </small>
+                                        <div class="mt-1">
+                                            <span class="badge bg-primary">
+                                                {{ employee.private_notes.count
+                                                }} qeyd
+                                            </span>
+                                            {% with
+                                            urgent_count=employee.private_notes.filter.priority:'URGENT'.is_archived:False.count
+                                            %}
+                                            {% if urgent_count > 0 %}
+                                            <span class="badge bg-danger ms-1">
+                                                {{ urgent_count }} təcili
+                                            </span>
+                                            {% endif %}
+                                            {% endwith %}
                                         </div>
-                                        <div class="flex-grow-1">
-                                            <h6 class="mb-1">{{ employee.get_full_name }}</h6>
-                                            <small class="text-muted">
-                                                {% if employee.organization_unit %}
-                                                    {{ employee.organization_unit.name }}
-                                                {% endif %}
-                                            </small>
-                                            <div class="mt-1">
-                                                <span class="badge bg-primary">
-                                                    {{ employee.private_notes.count }} qeyd
-                                                </span>
-                                                {% with urgent_count=employee.private_notes.filter.priority:'URGENT'.is_archived:False.count %}
-                                                {% if urgent_count > 0 %}
-                                                    <span class="badge bg-danger ms-1">
-                                                        {{ urgent_count }} təcili
-                                                    </span>
-                                                {% endif %}
-                                                {% endwith %}
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <i class="fas fa-chevron-right text-muted"></i>
-                                        </div>
+                                    </div>
+                                    <div>
+                                        <i
+                                            class="fas fa-chevron-right text-muted"></i>
                                     </div>
                                 </div>
                             </div>
-                            {% endfor %}
                         </div>
+                        {% endfor %}
+                    </div>
                     {% else %}
-                        <div class="text-center py-4">
-                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
-                            <h6 class="text-muted">Alt işçi yoxdur</h6>
-                            <p class="text-muted">Sizin rəhbərlik etdiyiniz işçi tapılmadı.</p>
-                        </div>
+                    <div class="text-center py-4">
+                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                        <h6 class="text-muted">Alt işçi yoxdur</h6>
+                        <p class="text-muted">Sizin rəhbərlik etdiyiniz işçi
+                            tapılmadı.</p>
+                    </div>
                     {% endif %}
                 </div>
             </div>
@@ -213,41 +268,49 @@
                         <i class="fas fa-clock me-2"></i>Son Qeydlər
                     </h5>
                 </div>
-                <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
+                <div class="card-body p-0"
+                    style="max-height: 400px; overflow-y: auto;">
                     {% if recent_notes %}
-                        {% for note in recent_notes %}
-                        <div class="note-item {{ note.note_type.lower }}" onclick="window.location.href='{% url 'private_notes:view' note.id %}'">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-1">{{ note.title|truncatechars:30 }}</h6>
-                                    <p class="text-muted small mb-1">
-                                        <i class="fas fa-user me-1"></i>{{ note.employee.get_full_name }}
-                                    </p>
-                                    <small class="text-muted">
-                                        <i class="fas fa-calendar me-1"></i>{{ note.created_at|date:"d.m.Y H:i" }}
-                                    </small>
+                    {% for note in recent_notes %}
+                    <div class="note-item {{ note.note_type.lower }}"
+                        onclick="window.location.href='{% url 'private_notes:view' note.id %}'">
+                        <div
+                            class="d-flex justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">{{ note.title|truncatechars:30
+                                    }}</h6>
+                                <p class="text-muted small mb-1">
+                                    <i class="fas fa-user me-1"></i>{{
+                                    note.employee.get_full_name }}
+                                </p>
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>{{
+                                    note.created_at|date:"d.m.Y H:i" }}
+                                </small>
+                            </div>
+                            <div class="text-end">
+                                <span
+                                    class="badge bg-{{ note.get_color_class }}">
+                                    {{ note.get_note_type_display }}
+                                </span>
+                                {% if note.priority == 'URGENT' %}
+                                <div class="mt-1">
+                                    <span class="badge bg-danger">Təcili</span>
                                 </div>
-                                <div class="text-end">
-                                    <span class="badge bg-{{ note.get_color_class }}">
-                                        {{ note.get_note_type_display }}
-                                    </span>
-                                    {% if note.priority == 'URGENT' %}
-                                        <div class="mt-1">
-                                            <span class="badge bg-danger">Təcili</span>
-                                        </div>
-                                    {% endif %}
-                                </div>
+                                {% endif %}
                             </div>
                         </div>
-                        {% endfor %}
+                    </div>
+                    {% endfor %}
                     {% else %}
-                        <div class="text-center py-4">
-                            <i class="fas fa-sticky-note fa-2x text-muted mb-3"></i>
-                            <p class="text-muted">Hələ qeyd yaratmamısınız.</p>
-                            <a href="{% url 'private_notes:create' %}" class="btn btn-sm btn-primary">
-                                İlk Qeydi Yarat
-                            </a>
-                        </div>
+                    <div class="text-center py-4">
+                        <i class="fas fa-sticky-note fa-2x text-muted mb-3"></i>
+                        <p class="text-muted">Hələ qeyd yaratmamısınız.</p>
+                        <a href="{% url 'private_notes:create' %}"
+                            class="btn btn-sm btn-primary">
+                            İlk Qeydi Yarat
+                        </a>
+                    </div>
                     {% endif %}
                 </div>
             </div>
@@ -261,31 +324,36 @@
                 </div>
                 <div class="card-body">
                     {% if note_types_stats %}
-                        {% for stat in note_types_stats %}
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <span class="small">
-                                {% if stat.note_type == 'PERFORMANCE' %}Performans
-                                {% elif stat.note_type == 'DEVELOPMENT' %}İnkişaf
-                                {% elif stat.note_type == 'BEHAVIOR' %}Davranış
-                                {% elif stat.note_type == 'ACHIEVEMENT' %}Nailiyyət
-                                {% elif stat.note_type == 'CONCERN' %}Narahatlıq
-                                {% elif stat.note_type == 'FEEDBACK' %}Geri Bildirim
-                                {% else %}Ümumi{% endif %}
-                            </span>
-                            <span class="badge bg-secondary">{{ stat.count }}</span>
-                        </div>
-                        {% endfor %}
+                    {% for stat in note_types_stats %}
+                    <div
+                        class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small">
+                            {% if stat.note_type == 'PERFORMANCE' %}Performans
+                            {% elif stat.note_type == 'DEVELOPMENT' %}İnkişaf
+                            {% elif stat.note_type == 'BEHAVIOR' %}Davranış
+                            {% elif stat.note_type == 'ACHIEVEMENT' %}Nailiyyət
+                            {% elif stat.note_type == 'CONCERN' %}Narahatlıq
+                            {% elif stat.note_type == 'FEEDBACK' %}Geri Bildirim
+                            {% else %}Ümumi{% endif %}
+                        </span>
+                        <span class="badge bg-secondary">{{ stat.count }}</span>
+                    </div>
+                    {% endfor %}
                     {% else %}
-                        <p class="text-muted small">Statistika üçün məlumat yoxdur.</p>
+                    <p class="text-muted small">Statistika üçün məlumat
+                        yoxdur.</p>
                     {% endif %}
-                    
+
                     <hr>
-                    
+
                     <div class="d-grid gap-2">
-                        <a href="{% url 'private_notes:analytics' %}" class="btn btn-outline-primary btn-sm">
-                            <i class="fas fa-chart-line me-1"></i>Detallı Analitika
+                        <a href="{% url 'private_notes:analytics' %}"
+                            class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-chart-line me-1"></i>Detallı
+                            Analitika
                         </a>
-                        <a href="{% url 'private_notes:create' %}" class="btn btn-primary btn-sm">
+                        <a href="{% url 'private_notes:create' %}"
+                            class="btn btn-primary btn-sm">
                             <i class="fas fa-plus me-1"></i>Yeni Qeyd Yarat
                         </a>
                     </div>
@@ -300,25 +368,31 @@
             <div class="card bg-light">
                 <div class="card-body">
                     <h6 class="card-title">
-                        <i class="fas fa-lightbulb text-warning me-2"></i>Məsləhətlər
+                        <i
+                            class="fas fa-lightbulb text-warning me-2"></i>Məsləhətlər
                     </h6>
                     <div class="row">
                         <div class="col-md-4">
                             <div class="d-flex align-items-start">
-                                <i class="fas fa-shield-alt text-success me-2 mt-1"></i>
+                                <i
+                                    class="fas fa-shield-alt text-success me-2 mt-1"></i>
                                 <small>Məxfi qeydlər yalnız sizə görünür</small>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="d-flex align-items-start">
-                                <i class="fas fa-calendar-check text-info me-2 mt-1"></i>
-                                <small>Müntəzəm qeydlər il sonu qiymətləndirməsində faydalıdır</small>
+                                <i
+                                    class="fas fa-calendar-check text-info me-2 mt-1"></i>
+                                <small>Müntəzəm qeydlər il sonu
+                                    qiymətləndirməsində faydalıdır</small>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="d-flex align-items-start">
-                                <i class="fas fa-tags text-primary me-2 mt-1"></i>
-                                <small>Etiketlər istifadə edərək qeydləri təşkil edin</small>
+                                <i
+                                    class="fas fa-tags text-primary me-2 mt-1"></i>
+                                <small>Etiketlər istifadə edərək qeydləri təşkil
+                                    edin</small>
                             </div>
                         </div>
                     </div>
@@ -331,24 +405,24 @@
 
 {% block extra_js %}
 <script>
-// Employee search functionality
-document.getElementById('employeeSearch').addEventListener('keyup', function() {
-    const searchTerm = this.value.toLowerCase();
-    const employees = document.querySelectorAll('.employee-item');
-    
-    employees.forEach(employee => {
-        const name = employee.getAttribute('data-name');
-        if (name.includes(searchTerm)) {
-            employee.style.display = 'block';
-        } else {
-            employee.style.display = 'none';
-        }
-    });
-});
+    // Employee search functionality
+    document.getElementById('employeeSearch').addEventListener('keyup', function () {
+        const searchTerm = this.value.toLowerCase();
+        const employees = document.querySelectorAll('.employee-item');
 
-// Auto-refresh recent notes every 5 minutes
-setInterval(function() {
-    // Could add AJAX call to refresh recent notes
-}, 300000);
+        employees.forEach(employee => {
+            const name = employee.getAttribute('data-name');
+            if (name.includes(searchTerm)) {
+                employee.style.display = 'block';
+            } else {
+                employee.style.display = 'none';
+            }
+        });
+    });
+
+    // Auto-refresh recent notes every 5 minutes
+    setInterval(function () {
+        // Could add AJAX call to refresh recent notes
+    }, 300000);
 </script>
 {% endblock %}

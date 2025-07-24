@@ -16,13 +16,15 @@
                     {% csrf_token %}
                     {{ form|crispy }}
                     <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-primary">{% trans "Qeydiyyatdan Keç" %}</button>
+                        <button type="submit" class="btn btn-primary">{% trans
+                            "Qeydiyyatdan Keç" %}</button>
                     </div>
                 </form>
             </div>
             <div class="card-footer text-center py-3">
                 <div class="small">
-                    {% trans "Artıq hesabınız var?" %} <a href="{% url 'login' %}">{% trans "Daxil olun" %}</a>
+                    {% trans "Artıq hesabınız var?" %} <a
+                        href="{% url 'login' %}">{% trans "Daxil olun" %}</a>
                 </div>
             </div>
         </div>

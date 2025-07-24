@@ -95,8 +95,10 @@
 <div
     class="modern-card modern-header d-flex justify-content-between align-items-center mb-4 animate__animated animate__fadeInDown">
     <div>
-        <h1 class="h3 mb-1">{% trans "Xoş gəldiniz" %}, {{ user.get_full_name|default:user.username }}</h1>
-        <p class="mb-0 opacity-75">{% trans "Performans idarəetmə sisteminə xoş gəldiniz" %}</p>
+        <h1 class="h3 mb-1">{% trans "Xoş gəldiniz" %}, {{
+            user.get_full_name|default:user.username }}</h1>
+        <p class="mb-0 opacity-75">{% trans
+            "Performans idarəetmə sisteminə xoş gəldiniz" %}</p>
     </div>
     <div class="text-end">
         <small class="opacity-75">
@@ -108,31 +110,42 @@
 <!-- Statistics Cards -->
 <div class="row g-4 mb-4">
     <div class="col-md-3 col-sm-6">
-        <div class="modern-card text-center animate__animated animate__fadeInUp">
-            <div class="mb-2"><i class="bi bi-clock text-warning fs-2"></i></div>
-            <div class="stat-number fs-2 fw-bold">{{ pending_evaluations_count|default:0 }}</div>
+        <div
+            class="modern-card text-center animate__animated animate__fadeInUp">
+            <div class="mb-2"><i
+                    class="bi bi-clock text-warning fs-2"></i></div>
+            <div class="stat-number fs-2 fw-bold">{{
+                pending_evaluations_count|default:0 }}</div>
             <div class="stat-label">{% trans "Gözləməkdə" %}</div>
         </div>
     </div>
     <div class="col-md-3 col-sm-6">
-        <div class="modern-card text-center animate__animated animate__fadeInUp">
-            <div class="mb-2"><i class="bi bi-check-circle text-success fs-2"></i></div>
-            <div class="stat-number fs-2 fw-bold">{{ completed_evaluations_count|default:0 }}</div>
+        <div
+            class="modern-card text-center animate__animated animate__fadeInUp">
+            <div class="mb-2"><i
+                    class="bi bi-check-circle text-success fs-2"></i></div>
+            <div class="stat-number fs-2 fw-bold">{{
+                completed_evaluations_count|default:0 }}</div>
             <div class="stat-label">{% trans "Tamamlanmış" %}</div>
         </div>
     </div>
     <div class="col-md-3 col-sm-6">
-        <div class="modern-card text-center animate__animated animate__fadeInUp">
-            <div class="mb-2"><i class="bi bi-clipboard-data text-primary fs-2"></i></div>
-            <div class="stat-number fs-2 fw-bold">{{ total_evaluations_count|default:0 }}</div>
+        <div
+            class="modern-card text-center animate__animated animate__fadeInUp">
+            <div class="mb-2"><i
+                    class="bi bi-clipboard-data text-primary fs-2"></i></div>
+            <div class="stat-number fs-2 fw-bold">{{
+                total_evaluations_count|default:0 }}</div>
             <div class="stat-label">{% trans "Ümumi" %}</div>
         </div>
     </div>
     {% if is_manager %}
     <div class="col-md-3 col-sm-6">
-        <div class="modern-card text-center animate__animated animate__fadeInUp">
+        <div
+            class="modern-card text-center animate__animated animate__fadeInUp">
             <div class="mb-2"><i class="bi bi-people text-info fs-2"></i></div>
-            <div class="stat-number fs-2 fw-bold">{{ team_members_count|default:0 }}</div>
+            <div class="stat-number fs-2 fw-bold">{{
+                team_members_count|default:0 }}</div>
             <div class="stat-label">{% trans "Komanda Üzvləri" %}</div>
         </div>
     </div>
@@ -149,11 +162,13 @@
     </div>
     <div class="row align-items-center">
         <div class="col-md-8">
-            <p class="mb-0 text-muted">{% trans "Sizin üçün aktiv inkişaf planı mövcuddur. Hədəflərinizi izləyin və
+            <p class="mb-0 text-muted">{% trans "Sizin üçün aktiv inkişaf planı
+                mövcuddur. Hədəflərinizi izləyin və
                 inkişaf edin." %}</p>
         </div>
         <div class="col-md-4 text-end">
-            <a href="{% url 'plan_bax' aktiv_plan.id %}" class="modern-action-btn btn btn-primary">
+            <a href="{% url 'plan_bax' aktiv_plan.id %}"
+                class="modern-action-btn btn btn-primary">
                 <i class="bi bi-arrow-right me-1"></i>{% trans "Plana Bax" %}
             </a>
         </div>
@@ -168,14 +183,18 @@
         <h5 class="mb-0">{% trans "Qiymətləndirmə Tapşırıqlarınız" %}</h5>
     </div>
     {% if qiymetlendirmeler %}
-    <p class="text-muted mb-3">{% trans "Aşağıdakı şəxslər üçün qiymətləndirməni tamamlamalısınız" %}:</p>
+    <p class="text-muted mb-3">{% trans
+        "Aşağıdakı şəxslər üçün qiymətləndirməni tamamlamalısınız" %}:</p>
     <div class="modern-list-group">
         {% for q in qiymetlendirmeler %}
-        <a href="{% url 'qiymetlendirme_etmek' q.id %}" class="list-group-item d-flex align-items-center">
+        <a href="{% url 'qiymetlendirme_etmek' q.id %}"
+            class="list-group-item d-flex align-items-center">
             {% if q.qiymetlendirilen.profil_sekli %}
-            <img src="{{ q.qiymetlendirilen.profil_sekli.url }}" alt="Avatar" class="modern-avatar">
+            <img src="{{ q.qiymetlendirilen.profil_sekli.url }}" alt="Avatar"
+                class="modern-avatar">
             {% else %}
-            <div class="modern-avatar bg-primary text-white d-flex align-items-center justify-content-center">
+            <div
+                class="modern-avatar bg-primary text-white d-flex align-items-center justify-content-center">
                 <i class="bi bi-person-fill"></i>
             </div>
             {% endif %}
@@ -187,7 +206,8 @@
         {% endfor %}
     </div>
     {% else %}
-    <div class="alert alert-info">{% trans "Qiymətləndirmə tapşırığınız yoxdur." %}</div>
+    <div class="alert alert-info">{% trans "Qiymətləndirmə tapşırığınız yoxdur."
+        %}</div>
     {% endif %}
 </div>
 
@@ -198,20 +218,25 @@
         <h5 class="mb-0">{% trans "Tez Əməliyyatlar" %}</h5>
     </div>
     <div class="d-flex gap-3 flex-wrap">
-        <a href="{% url 'interactive_dashboard' %}" class="modern-action-btn btn btn-outline-primary">
+        <a href="{% url 'interactive_dashboard' %}"
+            class="modern-action-btn btn btn-outline-primary">
             <i class="bi bi-graph-up"></i> {% trans "İnteraktiv Panel" %}
         </a>
-        <a href="{% url 'calendar_view' %}" class="modern-action-btn btn btn-outline-info">
+        <a href="{% url 'calendar_view' %}"
+            class="modern-action-btn btn btn-outline-info">
             <i class="bi bi-calendar-check"></i> {% trans "Təqvim" %}
         </a>
-        <a href="{% url 'notification_center' %}" class="modern-action-btn btn btn-outline-warning">
+        <a href="{% url 'notification_center' %}"
+            class="modern-action-btn btn btn-outline-warning">
             <i class="bi bi-bell"></i> {% trans "Bildirişlər" %}
         </a>
-        <a href="{% url 'report_center' %}" class="modern-action-btn btn btn-outline-success">
+        <a href="{% url 'report_center' %}"
+            class="modern-action-btn btn btn-outline-success">
             <i class="bi bi-file-bar-graph"></i> {% trans "Hesabatlar" %}
         </a>
         {% if user.rol == 'REHBER' or user.is_superuser %}
-        <a href="{% url 'rehber_paneli' %}" class="modern-action-btn btn btn-outline-secondary">
+        <a href="{% url 'rehber_paneli' %}"
+            class="modern-action-btn btn btn-outline-secondary">
             <i class="bi bi-people"></i> {% trans "Rəhbər Paneli" %}
         </a>
         {% endif %}

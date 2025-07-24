@@ -9,6 +9,7 @@
 {% trans "Bu səhifəyə daxil olmaq üçün icazəniz yoxdur." as error_message %}
 
 {# İndi dəyişənləri include-a ötürürük #}
-{% include 'errors/components/generic_error.html' with code="403" color="danger" title=error_title message=error_message
+{% include 'errors/components/generic_error.html' with code="403" color="danger"
+title=error_title message=error_message
 icon="lock-fill" %}
 {% endblock %}

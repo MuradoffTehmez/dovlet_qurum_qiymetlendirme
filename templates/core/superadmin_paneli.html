@@ -14,10 +14,13 @@
 {% if not dovr %}
 <div class="alert alert-warning mt-4">
     <i class="bi bi-exclamation-triangle-fill me-2"></i>
-    {% trans "Sistemdə heç bir qiymətləndirmə dövrü tapılmadı. Zəhmət olmasa, yeni bir dövr başladın." %}
+    {% trans
+    "Sistemdə heç bir qiymətləndirmə dövrü tapılmadı. Zəhmət olmasa, yeni bir dövr başladın."
+    %}
 </div>
 {% else %}
-<h5 class="text-muted mb-4">{% trans "Aktiv Dövr:" %} <span class="fw-semibold">{{ dovr.ad }}</span></h5>
+<h5 class="text-muted mb-4">{% trans "Aktiv Dövr:" %} <span
+        class="fw-semibold">{{ dovr.ad }}</span></h5>
 
 <div class="row g-4">
     <div class="col-md-6 col-lg-4">
@@ -25,7 +28,8 @@
             <div class="card-body text-center">
                 <h6 class="card-title">{% trans "Tamamlanma Nisbəti" %}</h6>
                 <p class="display-5 fw-bold">{{ tamamlama_faizi }}%</p>
-                <p class="card-text">{{ total_sayi }} {% trans "tapşırıqdan" %} {{ tamamlanmish_sayi }} {% trans
+                <p class="card-text">{{ total_sayi }} {% trans "tapşırıqdan" %}
+                    {{ tamamlanmish_sayi }} {% trans
                     "tamamlanıb." %}</p>
             </div>
         </div>
@@ -35,7 +39,8 @@
             <div class="card-body text-center">
                 <h6 class="card-title">{% trans "Departament Sayı" %}</h6>
                 <p class="display-5 fw-bold">{{ departament_stat|length }}</p>
-                <p class="card-text">{% trans "Prosesdə iştirak edən departamentlər" %}</p>
+                <p class="card-text">{% trans
+                    "Prosesdə iştirak edən departamentlər" %}</p>
             </div>
         </div>
     </div>
@@ -46,7 +51,8 @@
 <div class="row g-4">
     <div class="col-lg-8">
         <div class="card shadow-sm h-100">
-            <div class="card-header fw-semibold">{% trans "Departamentlər üzrə Ortalama Performans" %}</div>
+            <div class="card-header fw-semibold">{% trans
+                "Departamentlər üzrə Ortalama Performans" %}</div>
             <div class="card-body">
                 <canvas id="departmentChart" style="height: 300px;"></canvas>
             </div>
@@ -54,13 +60,16 @@
     </div>
     <div class="col-lg-4">
         <div class="card shadow-sm h-100">
-            <div class="card-header d-flex justify-content-between align-items-center">
+            <div
+                class="card-header d-flex justify-content-between align-items-center">
                 <span class="fw-semibold">{% trans "Reytinq Cədvəli" %}</span>
                 <div>
-                    <a href="{% url 'export_departments_excel' %}" class="btn btn-sm btn-outline-success">
+                    <a href="{% url 'export_departments_excel' %}"
+                        class="btn btn-sm btn-outline-success">
                         <i class="bi bi-file-earmark-excel"></i>
                     </a>
-                    <a href="{% url 'export_departments_pdf' %}" class="btn btn-sm btn-outline-danger ms-2">
+                    <a href="{% url 'export_departments_pdf' %}"
+                        class="btn btn-sm btn-outline-danger ms-2">
                         <i class="bi bi-file-earmark-pdf"></i>
                     </a>
                 </div>
@@ -77,11 +86,13 @@
                         {% for stat in departament_stat %}
                         <tr>
                             <td>{{ stat.ad }}</td>
-                            <td><span class="badge bg-success fs-6">{{ stat.ortalama_bal }}</span></td>
+                            <td><span class="badge bg-success fs-6">{{
+                                    stat.ortalama_bal }}</span></td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="2" class="text-center">{% trans "Statistika üçün məlumat tapılmadı." %}</td>
+                            <td colspan="2" class="text-center">{% trans
+                                "Statistika üçün məlumat tapılmadı." %}</td>
                         </tr>
                         {% endfor %}
                     </tbody>

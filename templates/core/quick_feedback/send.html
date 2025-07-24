@@ -8,18 +8,22 @@
     .form-container {
         background: white;
         border-radius: 10px;
-        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
     }
+
     .user-select-card {
         border: 2px solid #e9ecef;
         border-radius: 8px;
         transition: all 0.3s ease;
         cursor: pointer;
     }
-    .user-select-card:hover, .user-select-card.selected {
+
+    .user-select-card:hover,
+    .user-select-card.selected {
         border-color: #007bff;
         background-color: #f8f9fa;
     }
+
     .category-card {
         border: 2px solid #e9ecef;
         border-radius: 8px;
@@ -27,25 +31,32 @@
         cursor: pointer;
         text-align: center;
     }
-    .category-card:hover, .category-card.selected {
+
+    .category-card:hover,
+    .category-card.selected {
         border-color: #007bff;
         background-color: #f8f9fa;
     }
+
     .rating-stars {
         font-size: 1.5rem;
         color: #ffc107;
     }
+
     .rating-stars .star {
         cursor: pointer;
         transition: color 0.2s ease;
     }
+
     .rating-stars .star:hover,
     .rating-stars .star.active {
         color: #ffb400;
     }
+
     .feedback-type-radio {
         display: none;
     }
+
     .feedback-type-label {
         border: 2px solid #e9ecef;
         border-radius: 8px;
@@ -54,13 +65,16 @@
         transition: all 0.3s ease;
         text-align: center;
     }
-    .feedback-type-radio:checked + .feedback-type-label {
+
+    .feedback-type-radio:checked+.feedback-type-label {
         border-color: #007bff;
         background-color: #f8f9fa;
     }
+
     .priority-radio {
         display: none;
     }
+
     .priority-label {
         border: 2px solid #e9ecef;
         border-radius: 8px;
@@ -69,7 +83,8 @@
         transition: all 0.3s ease;
         text-align: center;
     }
-    .priority-radio:checked + .priority-label {
+
+    .priority-radio:checked+.priority-label {
         border-color: #007bff;
         background-color: #f8f9fa;
     }
@@ -98,7 +113,7 @@
             <div class="form-container p-4">
                 <form method="post" id="feedbackForm">
                     {% csrf_token %}
-                    
+
                     <!-- İstifadəçi seçimi -->
                     <div class="mb-4">
                         <label class="form-label fw-bold">
@@ -107,7 +122,8 @@
                         <div class="row" id="userSelection">
                             {% for user in users %}
                             <div class="col-md-6 mb-3">
-                                <div class="user-select-card p-3" onclick="selectUser({{ user.id }}, '{{ user.get_full_name }}')">
+                                <div class="user-select-card p-3"
+                                    onclick="selectUser({{ user.id }}, '{{ user.get_full_name }}')">
                                     <div class="d-flex align-items-center">
                                         <div class="me-3">
                                             <i class="fas fa-user-circle fa-2x text-primary"></i>
@@ -116,7 +132,7 @@
                                             <h6 class="mb-0">{{ user.get_full_name }}</h6>
                                             <small class="text-muted">
                                                 {% if user.organization_unit %}
-                                                    {{ user.organization_unit.name }}
+                                                {{ user.organization_unit.name }}
                                                 {% endif %}
                                             </small>
                                         </div>
@@ -127,7 +143,8 @@
                         </div>
                         <input type="hidden" name="to_user" id="selectedUser" required>
                         <div class="mt-2">
-                            <input type="text" class="form-control" placeholder="İstifadəçi axtarın..." id="userSearch" onkeyup="searchUsers()">
+                            <input type="text" class="form-control" placeholder="İstifadəçi axtarın..." id="userSearch"
+                                onkeyup="searchUsers()">
                         </div>
                     </div>
 
@@ -157,7 +174,8 @@
                         </label>
                         <div class="row">
                             <div class="col-md-4">
-                                <input type="radio" name="feedback_type" value="POSITIVE" id="type_positive" class="feedback-type-radio" checked>
+                                <input type="radio" name="feedback_type" value="POSITIVE" id="type_positive"
+                                    class="feedback-type-radio" checked>
                                 <label for="type_positive" class="feedback-type-label w-100">
                                     <i class="fas fa-thumbs-up text-success fa-2x mb-2"></i>
                                     <h6>Müsbət</h6>
@@ -165,7 +183,8 @@
                                 </label>
                             </div>
                             <div class="col-md-4">
-                                <input type="radio" name="feedback_type" value="CONSTRUCTIVE" id="type_constructive" class="feedback-type-radio">
+                                <input type="radio" name="feedback_type" value="CONSTRUCTIVE" id="type_constructive"
+                                    class="feedback-type-radio">
                                 <label for="type_constructive" class="feedback-type-label w-100">
                                     <i class="fas fa-lightbulb text-warning fa-2x mb-2"></i>
                                     <h6>Konstruktiv</h6>
@@ -173,7 +192,8 @@
                                 </label>
                             </div>
                             <div class="col-md-4">
-                                <input type="radio" name="feedback_type" value="NEUTRAL" id="type_neutral" class="feedback-type-radio">
+                                <input type="radio" name="feedback_type" value="NEUTRAL" id="type_neutral"
+                                    class="feedback-type-radio">
                                 <label for="type_neutral" class="feedback-type-label w-100">
                                     <i class="fas fa-info-circle text-info fa-2x mb-2"></i>
                                     <h6>Neytral</h6>
@@ -190,25 +210,29 @@
                         </label>
                         <div class="row">
                             <div class="col-md-3">
-                                <input type="radio" name="priority" value="LOW" id="priority_low" class="priority-radio">
+                                <input type="radio" name="priority" value="LOW" id="priority_low"
+                                    class="priority-radio">
                                 <label for="priority_low" class="priority-label w-100">
                                     <i class="fas fa-arrow-down text-success"></i> Aşağı
                                 </label>
                             </div>
                             <div class="col-md-3">
-                                <input type="radio" name="priority" value="MEDIUM" id="priority_medium" class="priority-radio" checked>
+                                <input type="radio" name="priority" value="MEDIUM" id="priority_medium"
+                                    class="priority-radio" checked>
                                 <label for="priority_medium" class="priority-label w-100">
                                     <i class="fas fa-minus text-warning"></i> Orta
                                 </label>
                             </div>
                             <div class="col-md-3">
-                                <input type="radio" name="priority" value="HIGH" id="priority_high" class="priority-radio">
+                                <input type="radio" name="priority" value="HIGH" id="priority_high"
+                                    class="priority-radio">
                                 <label for="priority_high" class="priority-label w-100">
                                     <i class="fas fa-arrow-up text-danger"></i> Yüksək
                                 </label>
                             </div>
                             <div class="col-md-3">
-                                <input type="radio" name="priority" value="URGENT" id="priority_urgent" class="priority-radio">
+                                <input type="radio" name="priority" value="URGENT" id="priority_urgent"
+                                    class="priority-radio">
                                 <label for="priority_urgent" class="priority-label w-100">
                                     <i class="fas fa-exclamation text-danger"></i> Təcili
                                 </label>
@@ -221,7 +245,8 @@
                         <label for="title" class="form-label fw-bold">
                             <i class="fas fa-heading me-2"></i>Başlıq *
                         </label>
-                        <input type="text" class="form-control" name="title" id="title" required maxlength="200" placeholder="Geri bildirimin başlığını yazın...">
+                        <input type="text" class="form-control" name="title" id="title" required maxlength="200"
+                            placeholder="Geri bildirimin başlığını yazın...">
                     </div>
 
                     <!-- Mesaj -->
@@ -229,7 +254,8 @@
                         <label for="message" class="form-label fw-bold">
                             <i class="fas fa-comment me-2"></i>Mesaj *
                         </label>
-                        <textarea class="form-control" name="message" id="message" rows="5" required placeholder="Detaylı geri bildiriminizi yazın..."></textarea>
+                        <textarea class="form-control" name="message" id="message" rows="5" required
+                            placeholder="Detaylı geri bildiriminizi yazın..."></textarea>
                     </div>
 
                     <!-- Rating (opsional) -->
@@ -277,110 +303,110 @@
 
 {% block extra_js %}
 <script>
-let selectedUserId = null;
-let selectedCategoryId = null;
-let selectedRating = null;
+    let selectedUserId = null;
+    let selectedCategoryId = null;
+    let selectedRating = null;
 
-function selectUser(userId, userName) {
-    selectedUserId = userId;
-    document.getElementById('selectedUser').value = userId;
-    
-    // Remove selection from all cards
-    document.querySelectorAll('.user-select-card').forEach(card => {
-        card.classList.remove('selected');
-    });
-    
-    // Add selection to clicked card
-    event.currentTarget.classList.add('selected');
-}
+    function selectUser(userId, userName) {
+        selectedUserId = userId;
+        document.getElementById('selectedUser').value = userId;
 
-function selectCategory(categoryId) {
-    selectedCategoryId = categoryId;
-    document.getElementById('selectedCategory').value = categoryId;
-    
-    // Remove selection from all cards
-    document.querySelectorAll('.category-card').forEach(card => {
-        card.classList.remove('selected');
-    });
-    
-    // Add selection to clicked card
-    event.currentTarget.classList.add('selected');
-}
+        // Remove selection from all cards
+        document.querySelectorAll('.user-select-card').forEach(card => {
+            card.classList.remove('selected');
+        });
 
-function searchUsers() {
-    const searchTerm = document.getElementById('userSearch').value.toLowerCase();
-    const userCards = document.querySelectorAll('.user-select-card');
-    
-    userCards.forEach(card => {
-        const userName = card.querySelector('h6').textContent.toLowerCase();
-        if (userName.includes(searchTerm)) {
-            card.style.display = 'block';
-        } else {
-            card.style.display = 'none';
-        }
-    });
-}
+        // Add selection to clicked card
+        event.currentTarget.classList.add('selected');
+    }
 
-// Rating system
-document.querySelectorAll('.star').forEach(star => {
-    star.addEventListener('click', function() {
-        const rating = parseInt(this.getAttribute('data-rating'));
-        selectedRating = rating;
-        document.getElementById('selectedRating').value = rating;
-        
-        // Update star display
-        document.querySelectorAll('.star').forEach((s, index) => {
-            if (index < rating) {
-                s.classList.add('active');
+    function selectCategory(categoryId) {
+        selectedCategoryId = categoryId;
+        document.getElementById('selectedCategory').value = categoryId;
+
+        // Remove selection from all cards
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.classList.remove('selected');
+        });
+
+        // Add selection to clicked card
+        event.currentTarget.classList.add('selected');
+    }
+
+    function searchUsers() {
+        const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+        const userCards = document.querySelectorAll('.user-select-card');
+
+        userCards.forEach(card => {
+            const userName = card.querySelector('h6').textContent.toLowerCase();
+            if (userName.includes(searchTerm)) {
+                card.style.display = 'block';
             } else {
-                s.classList.remove('active');
+                card.style.display = 'none';
             }
         });
+    }
+
+    // Rating system
+    document.querySelectorAll('.star').forEach(star => {
+        star.addEventListener('click', function () {
+            const rating = parseInt(this.getAttribute('data-rating'));
+            selectedRating = rating;
+            document.getElementById('selectedRating').value = rating;
+
+            // Update star display
+            document.querySelectorAll('.star').forEach((s, index) => {
+                if (index < rating) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+        });
+
+        star.addEventListener('mouseover', function () {
+            const rating = parseInt(this.getAttribute('data-rating'));
+            document.querySelectorAll('.star').forEach((s, index) => {
+                if (index < rating) {
+                    s.style.color = '#ffb400';
+                } else {
+                    s.style.color = '#ffc107';
+                }
+            });
+        });
     });
-    
-    star.addEventListener('mouseover', function() {
-        const rating = parseInt(this.getAttribute('data-rating'));
+
+    document.getElementById('ratingStars').addEventListener('mouseleave', function () {
         document.querySelectorAll('.star').forEach((s, index) => {
-            if (index < rating) {
+            if (selectedRating && index < selectedRating) {
                 s.style.color = '#ffb400';
             } else {
                 s.style.color = '#ffc107';
             }
         });
     });
-});
 
-document.getElementById('ratingStars').addEventListener('mouseleave', function() {
-    document.querySelectorAll('.star').forEach((s, index) => {
-        if (selectedRating && index < selectedRating) {
-            s.style.color = '#ffb400';
-        } else {
-            s.style.color = '#ffc107';
+    // Form validation
+    document.getElementById('feedbackForm').addEventListener('submit', function (e) {
+        if (!selectedUserId) {
+            e.preventDefault();
+            alert('Zəhmət olmasa geri bildirim göndərəcəyiniz şəxsi seçin.');
+            return;
         }
-    });
-});
 
-// Form validation
-document.getElementById('feedbackForm').addEventListener('submit', function(e) {
-    if (!selectedUserId) {
-        e.preventDefault();
-        alert('Zəhmət olmasa geri bildirim göndərəcəyiniz şəxsi seçin.');
-        return;
-    }
-    
-    const title = document.getElementById('title').value.trim();
-    const message = document.getElementById('message').value.trim();
-    
-    if (!title || !message) {
-        e.preventDefault();
-        alert('Başlıq və mesaj sahələri mütləqdir.');
-        return;
-    }
-    
-    // Show loading state
-    const submitBtn = document.getElementById('submitBtn');
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Göndərilir...';
-    submitBtn.disabled = true;
-});
+        const title = document.getElementById('title').value.trim();
+        const message = document.getElementById('message').value.trim();
+
+        if (!title || !message) {
+            e.preventDefault();
+            alert('Başlıq və mesaj sahələri mütləqdir.');
+            return;
+        }
+
+        // Show loading state
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Göndərilir...';
+        submitBtn.disabled = true;
+    });
 </script>
 {% endblock %}

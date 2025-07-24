@@ -5,8 +5,11 @@
 
 {% block content %}
 {% trans "Xidmət Mövcud Deyil" as error_title %}
-{% trans "Server hazırda sorğuları qəbul edə bilmir. Zəhmət olmasa, bir neçə dəqiqə sonra yenidən cəhd edin." as
+{% trans
+"Server hazırda sorğuları qəbul edə bilmir. Zəhmət olmasa, bir neçə dəqiqə sonra yenidən cəhd edin."
+as
 error_message %}
-{% include 'errors/components/generic_error.html' with code="503" color="warning" title=error_title
+{% include 'errors/components/generic_error.html' with code="503"
+color="warning" title=error_title
 message=error_message icon="exclamation-triangle-fill" %}
 {% endblock %}

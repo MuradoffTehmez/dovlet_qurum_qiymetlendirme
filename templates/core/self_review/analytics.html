@@ -7,50 +7,67 @@
 <style>
     .analytics-card {
         border-radius: 15px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
         border: none;
         overflow: hidden;
         margin-bottom: 1.5rem;
     }
+
     .analytics-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         padding: 1.5rem;
     }
+
     .chart-container {
         position: relative;
         height: 300px;
         padding: 1rem;
     }
+
     .stat-card {
         background: white;
         border-radius: 10px;
         padding: 1.5rem;
         text-align: center;
-        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease;
     }
+
     .stat-card:hover {
         transform: translateY(-5px);
     }
+
     .stat-number {
         font-size: 2.5rem;
         font-weight: 700;
         margin-bottom: 0.5rem;
     }
+
     .trend-indicator {
         font-size: 1.2rem;
         margin-left: 0.5rem;
     }
-    .trend-up { color: #28a745; }
-    .trend-down { color: #dc3545; }
-    .trend-stable { color: #6c757d; }
+
+    .trend-up {
+        color: #28a745;
+    }
+
+    .trend-down {
+        color: #dc3545;
+    }
+
+    .trend-stable {
+        color: #6c757d;
+    }
+
     .category-performance {
         background: #f8f9fa;
         border-radius: 10px;
         padding: 1rem;
         margin-bottom: 1rem;
     }
+
     .performance-bar {
         height: 8px;
         background: #e9ecef;
@@ -58,11 +75,13 @@
         overflow: hidden;
         margin: 0.5rem 0;
     }
+
     .performance-fill {
         height: 100%;
         background: linear-gradient(90deg, #28a745, #20c997);
         transition: width 0.8s ease;
     }
+
     .insights-card {
         background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
         border-radius: 15px;
@@ -106,19 +125,18 @@
                 {% if review_trend %}
                 <small class="text-muted">
                     {% if review_trend > 0 %}
-                        <span class="trend-up">
-                            <i class="fas fa-arrow-up trend-indicator"></i>{{ review_trend }}
+                    <span class="trend-up">
+                        <i class="fas fa-arrow-up trend-indicator"></i>{{ review_trend }}
+                    </span>
+                    {% elif review_trend < 0 %} <span class="trend-down">
+                        <i class="fas fa-arrow-down trend-indicator"></i>{{ review_trend }}
                         </span>
-                    {% elif review_trend < 0 %}
-                        <span class="trend-down">
-                            <i class="fas fa-arrow-down trend-indicator"></i>{{ review_trend }}
-                        </span>
-                    {% else %}
+                        {% else %}
                         <span class="trend-stable">
                             <i class="fas fa-minus trend-indicator"></i>Stabil
                         </span>
-                    {% endif %}
-                    son dövrə nisbətən
+                        {% endif %}
+                        son dövrə nisbətən
                 </small>
                 {% endif %}
             </div>
@@ -130,19 +148,18 @@
                 {% if score_trend %}
                 <small class="text-muted">
                     {% if score_trend > 0 %}
-                        <span class="trend-up">
-                            <i class="fas fa-arrow-up trend-indicator"></i>+{{ score_trend|floatformat:1 }}
+                    <span class="trend-up">
+                        <i class="fas fa-arrow-up trend-indicator"></i>+{{ score_trend|floatformat:1 }}
+                    </span>
+                    {% elif score_trend < 0 %} <span class="trend-down">
+                        <i class="fas fa-arrow-down trend-indicator"></i>{{ score_trend|floatformat:1 }}
                         </span>
-                    {% elif score_trend < 0 %}
-                        <span class="trend-down">
-                            <i class="fas fa-arrow-down trend-indicator"></i>{{ score_trend|floatformat:1 }}
-                        </span>
-                    {% else %}
+                        {% else %}
                         <span class="trend-stable">
                             <i class="fas fa-minus trend-indicator"></i>Stabil
                         </span>
-                    {% endif %}
-                    son dövrə nisbətən
+                        {% endif %}
+                        son dövrə nisbətən
                 </small>
                 {% endif %}
             </div>
@@ -153,11 +170,11 @@
                 <h6 class="text-muted">Tamamlanma Faizi</h6>
                 <small class="text-muted">
                     {% if completion_rate >= 90 %}
-                        <span class="text-success">Mükəmməl</span>
+                    <span class="text-success">Mükəmməl</span>
                     {% elif completion_rate >= 70 %}
-                        <span class="text-warning">Yaxşı</span>
+                    <span class="text-warning">Yaxşı</span>
                     {% else %}
-                        <span class="text-danger">İnkişaf tələb edir</span>
+                    <span class="text-danger">İnkişaf tələb edir</span>
                     {% endif %}
                 </small>
             </div>
@@ -221,18 +238,19 @@
                             <span class="badge bg-primary">{{ category_data.average_score|floatformat:1 }}/10</span>
                         </div>
                         <div class="performance-bar">
-                            <div class="performance-fill" style="width: {{ category_data.average_score|floatformat:0|add:'0' }}%"></div>
+                            <div class="performance-fill"
+                                style="width: {{ category_data.average_score|floatformat:0|add:'0' }}%"></div>
                         </div>
                         <div class="d-flex justify-content-between">
                             <small class="text-muted">{{ category_data.question_count }} sual</small>
                             <small class="text-muted">
                                 {% if category_data.trend > 0 %}
-                                    <i class="fas fa-arrow-up text-success"></i> +{{ category_data.trend|floatformat:1 }}
-                                {% elif category_data.trend < 0 %}
-                                    <i class="fas fa-arrow-down text-danger"></i> {{ category_data.trend|floatformat:1 }}
-                                {% else %}
+                                <i class="fas fa-arrow-up text-success"></i> +{{ category_data.trend|floatformat:1 }}
+                                {% elif category_data.trend < 0 %} <i class="fas fa-arrow-down text-danger"></i> {{
+                                    category_data.trend|floatformat:1 }}
+                                    {% else %}
                                     <i class="fas fa-minus text-muted"></i> Stabil
-                                {% endif %}
+                                    {% endif %}
                             </small>
                         </div>
                     </div>
@@ -332,7 +350,8 @@
                                         <i class="fas fa-arrow-up me-2"></i>{{ area }}
                                     </h6>
                                     <p class="card-text small">
-                                        Bu sahədə performansınızı artırmaq üçün spesifik hədəflər təyin edin və müntəzəm olaraq nəticələri ölçün.
+                                        Bu sahədə performansınızı artırmaq üçün spesifik hədəflər təyin edin və müntəzəm
+                                        olaraq nəticələri ölçün.
                                     </p>
                                     <button class="btn btn-outline-warning btn-sm">
                                         <i class="fas fa-plus me-1"></i>Hədəf Əlavə Et
@@ -350,7 +369,8 @@
                                         <i class="fas fa-star me-2"></i>{{ area }}
                                     </h6>
                                     <p class="card-text small">
-                                        Bu güclü sahənizi mentor rolunda digər komanda üzvlərinə kömək etmək üçün istifadə edin.
+                                        Bu güclü sahənizi mentor rolunda digər komanda üzvlərinə kömək etmək üçün
+                                        istifadə edin.
                                     </p>
                                     <button class="btn btn-outline-success btn-sm">
                                         <i class="fas fa-share me-1"></i>Bilikləri Paylaş
@@ -369,11 +389,12 @@
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Performance Trend Chart
-    const trendCtx = document.getElementById('performanceTrendChart').getContext('2d');
-    const trendData = {{ performance_trend_data|safe }};
-    
+    document.addEventListener('DOMContentLoaded', function () {
+        // Performance Trend Chart
+        const trendCtx = document.getElementById('performanceTrendChart').getContext('2d');
+        const trendData = {{ performance_trend_data| safe
+    }};
+
     new Chart(trendCtx, {
         type: 'line',
         data: {
@@ -418,8 +439,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Category Breakdown Chart  
     const categoryCtx = document.getElementById('categoryBreakdownChart').getContext('2d');
-    const categoryData = {{ category_breakdown_data|safe }};
-    
+    const categoryData = {{ category_breakdown_data| safe }};
+
     new Chart(categoryCtx, {
         type: 'doughnut',
         data: {
@@ -428,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 data: categoryData.scores,
                 backgroundColor: [
                     '#667eea',
-                    '#764ba2', 
+                    '#764ba2',
                     '#f093fb',
                     '#f5576c',
                     '#4facfe',

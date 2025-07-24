@@ -81,7 +81,8 @@
         <div class="row align-items-center">
             <div class="col-md-8">
                 <h2><i class="fas fa-bell me-2"></i>{{ title }}</h2>
-                <p class="text-muted mb-0">Bildirişlərinizi buradan idarə edin</p>
+                <p class="text-muted mb-0">Bildirişlərinizi buradan idarə
+                    edin</p>
             </div>
             <div class="col-md-4 text-end">
                 <button class="btn btn-primary" onclick="markAllAsRead()">
@@ -124,11 +125,13 @@
                     <form method="get" id="filter-form">
                         <!-- Növ Filtri -->
                         <div class="mb-3">
-                            <label class="form-label" for="type-select">Bildiriş Növü</label>
+                            <label class="form-label" for="type-select">Bildiriş
+                                Növü</label>
                             <select id="type-select" name="type" class="form-select" onchange="submitFilter()">
                                 <option value="all" {% if current_filter_type=='all' %}selected{% endif %}>Hamısı
                                 </option>
-                                {% for type_code, type_name in notification_types %}
+                                {% for type_code, type_name in
+                                notification_types %}
                                 <option value="{{ type_code }}" {% if current_filter_type==type_code %}selected{% endif
                                     %}>
                                     {{ type_name }}
@@ -196,21 +199,27 @@
                             <!-- Məzmun -->
                             <div class="notification-content">
                                 <div class="d-flex justify-content-between align-items-start mb-1">
-                                    <h6 class="mb-1 fw-bold">{{ notification.title }}</h6>
-                                    <small class="notification-time">{{ notification.created_at|timesince }}
+                                    <h6 class="mb-1 fw-bold">{{
+                                        notification.title }}</h6>
+                                    <small class="notification-time">{{
+                                        notification.created_at|timesince }}
                                         əvvəl</small>
                                 </div>
 
-                                <p class="mb-2 text-muted">{{ notification.message|truncatechars:150 }}</p>
+                                <p class="mb-2 text-muted">{{
+                                    notification.message|truncatechars:150
+                                    }}</p>
 
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <span class="badge bg-{{ notification.get_priority_badge }} me-2">
-                                            {{ notification.get_priority_display }}
+                                            {{ notification.get_priority_display
+                                            }}
                                         </span>
                                         {% if notification.sender %}
                                         <small class="text-muted">
-                                            <i class="fas fa-user me-1"></i>{{ notification.sender.get_full_name }}
+                                            <i class="fas fa-user me-1"></i>{{
+                                            notification.sender.get_full_name }}
                                         </small>
                                         {% endif %}
                                     </div>
@@ -219,7 +228,9 @@
                                     <div class="notification-actions">
                                         {% if notification.action_url %}
                                         <a href="{{ notification.action_url }}" class="btn btn-sm btn-primary me-2">
-                                            {{ notification.action_text|default:"Ətraflı" }}
+                                            {{
+                                            notification.action_text|default:"Ətraflı"
+                                            }}
                                         </a>
                                         {% endif %}
 
@@ -287,7 +298,8 @@
                     <div class="text-center py-5">
                         <i class="fas fa-bell-slash fa-3x text-muted mb-3"></i>
                         <h5 class="text-muted">Heç bir bildiriş yoxdur</h5>
-                        <p class="text-muted">Yeni bildirişlər aldıqda burada görəcəksiniz.</p>
+                        <p class="text-muted">Yeni bildirişlər aldıqda burada
+                            görəcəksiniz.</p>
                     </div>
                     {% endif %}
                 </div>

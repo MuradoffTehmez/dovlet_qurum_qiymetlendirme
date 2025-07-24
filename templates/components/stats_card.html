@@ -14,7 +14,8 @@
         </div>
         {% if trend %}
         <div class="stats-trend text-end">
-            <i class="bi bi-arrow-{{ trend.direction }} text-{{ trend.color }}"></i>
+            <i
+                class="bi bi-arrow-{{ trend.direction }} text-{{ trend.color }}"></i>
             <span class="text-{{ trend.color }}">{{ trend.value }}%</span>
         </div>
         {% endif %}

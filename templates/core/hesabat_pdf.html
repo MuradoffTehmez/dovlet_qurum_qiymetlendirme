@@ -2,10 +2,11 @@
 <!doctype html>
 <html lang="az">
 
-<head>
-    <meta charset="utf-8">
-    <title>{% trans "Qiymətləndirmə Hesabatı" %} - {{ ishchi.get_full_name }}</title>
-    <style>
+    <head>
+        <meta charset="utf-8">
+        <title>{% trans "Qiymətləndirmə Hesabatı" %} - {{ ishchi.get_full_name
+            }}</title>
+        <style>
         /* CSS stilləri burada yerləşir */
         @font-face {
             font-family: 'Roboto';
@@ -103,70 +104,73 @@
             }
         }
     </style>
-</head>
+    </head>
 
-<body>
-    <div class="header">
-        <img src="{% static 'images/logo.png' %}" alt="Logo">
-    </div>
+    <body>
+        <div class="header">
+            <img src="{% static 'images/logo.png' %}" alt="Logo">
+        </div>
 
-    <h2>{% trans "360° Performans Hesabatı" %}</h2>
-    <table>
-        <tr>
-            <th style="width: 25%;">{% trans "İşçi" %}:</th>
-            <td>{{ ishchi.get_full_name }}</td>
-        </tr>
-        <tr>
-            <th>{% trans "Vəzifə" %}:</th>
-            <td>{{ ishchi.vezife }}</td>
-        </tr>
-        <tr>
-            <th>{% trans "Dövr" %}:</th>
-            <td>{{ dovr.ad }}</td>
-        </tr>
-        <tr>
-            <th>{% trans "Hesabat Tarixi" %}:</th>
-            <td>{% now "d-m-Y" %}</td>
-        </tr>
-    </table>
-
-    <h4>{% trans "Boşluq Analizi (Gap Analysis)" %}</h4>
-    <p style="font-size:12px;">Bu cədvəl, sizin özünüzə verdiyiniz qiymətlərlə, başqalarının (rəhbər, komanda
-        yoldaşları) sizə verdiyi qiymətlərin ortalamasını müqayisə edir.</p>
-    <table>
-        <thead>
+        <h2>{% trans "360° Performans Hesabatı" %}</h2>
+        <table>
             <tr>
-                <th>Kompetensiya</th>
-                <th>Öz Qiymətim</th>
-                <th>Başqalarının Qiyməti</th>
-                <th>Fərq (Boşluq)</th>
+                <th style="width: 25%;">{% trans "İşçi" %}:</th>
+                <td>{{ ishchi.get_full_name }}</td>
             </tr>
-        </thead>
-        <tbody>
-            {% for item in gap_analysis_data %}
             <tr>
-                <td>{{ item.kateqoriya }}</td>
-                <td>{{ item.oz_qiymeti }}</td>
-                <td>{{ item.bashqalarinin_qiymeti }}</td>
-                <td class="{% if item.ferq > 0 %}positive-gap{% elif item.ferq < 0 %}negative-gap{% endif %}">
-                    {{ item.ferq }}
-                </td>
+                <th>{% trans "Vəzifə" %}:</th>
+                <td>{{ ishchi.vezife }}</td>
             </tr>
+            <tr>
+                <th>{% trans "Dövr" %}:</th>
+                <td>{{ dovr.ad }}</td>
+            </tr>
+            <tr>
+                <th>{% trans "Hesabat Tarixi" %}:</th>
+                <td>{% now "d-m-Y" %}</td>
+            </tr>
+        </table>
+
+        <h4>{% trans "Boşluq Analizi (Gap Analysis)" %}</h4>
+        <p style="font-size:12px;">Bu cədvəl, sizin özünüzə verdiyiniz
+            qiymətlərlə, başqalarının (rəhbər, komanda
+            yoldaşları) sizə verdiyi qiymətlərin ortalamasını müqayisə edir.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Kompetensiya</th>
+                    <th>Öz Qiymətim</th>
+                    <th>Başqalarının Qiyməti</th>
+                    <th>Fərq (Boşluq)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in gap_analysis_data %}
+                <tr>
+                    <td>{{ item.kateqoriya }}</td>
+                    <td>{{ item.oz_qiymeti }}</td>
+                    <td>{{ item.bashqalarinin_qiymeti }}</td>
+                    <td
+                        class="{% if item.ferq > 0 %}positive-gap{% elif item.ferq < 0 %}negative-gap{% endif %}">
+                        {{ item.ferq }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h4 style="page-break-before: always;">{% trans "Anonim Yazılı Rəylər"
+            %}</h4>
+        {% if yazili_reyler %}
+        <ul class="rey-list">
+            {% for rey in yazili_reyler %}
+            <li>"{{ rey }}"</li>
             {% endfor %}
-        </tbody>
-    </table>
+        </ul>
+        {% else %}
+        <p>{% trans "Bu dövr üçün yazılı rəy qeyd edilməyib." %}</p>
+        {% endif %}
 
-    <h4 style="page-break-before: always;">{% trans "Anonim Yazılı Rəylər" %}</h4>
-    {% if yazili_reyler %}
-    <ul class="rey-list">
-        {% for rey in yazili_reyler %}
-        <li>"{{ rey }}"</li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <p>{% trans "Bu dövr üçün yazılı rəy qeyd edilməyib." %}</p>
-    {% endif %}
-
-</body>
+    </body>
 
 </html>

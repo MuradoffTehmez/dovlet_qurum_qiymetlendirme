@@ -95,19 +95,22 @@
         <div class="row align-items-center">
             <div class="col-md-6">
                 <h2><i class="fas fa-chart-bar me-2"></i>{{ title }}</h2>
-                <p class="mb-0">Dinamik filtrlər və müxtəlif formatlarla hesabat yaradın</p>
+                <p class="mb-0">Dinamik filtrlər və müxtəlif formatlarla hesabat
+                    yaradın</p>
             </div>
             <div class="col-md-6">
                 <div class="row">
                     <div class="col-4">
                         <div class="stat-item">
-                            <div class="stat-number">{{ available_reports|length }}</div>
+                            <div class="stat-number">{{ available_reports|length
+                                }}</div>
                             <div class="stat-label">Hesabat Növü</div>
                         </div>
                     </div>
                     <div class="col-4">
                         <div class="stat-item">
-                            <div class="stat-number">{{ recent_reports|length }}</div>
+                            <div class="stat-number">{{ recent_reports|length
+                                }}</div>
                             <div class="stat-label">Son Hesabatlar</div>
                         </div>
                     </div>
@@ -150,18 +153,21 @@
                             </div>
                             <div class="flex-1">
                                 <h5 class="mb-2">{{ report_info.name }}</h5>
-                                <p class="text-muted small mb-3">{{ report_info.description }}</p>
+                                <p class="text-muted small mb-3">{{
+                                    report_info.description }}</p>
 
                                 <div class="report-formats">
                                     {% for format in report_info.formats %}
-                                    <span class="format-badge">{{ format|upper }}</span>
+                                    <span class="format-badge">{{ format|upper
+                                        }}</span>
                                     {% endfor %}
                                 </div>
 
                                 <div class="mt-3">
                                     <div class="btn-group w-100" role="group">
                                         <a href="{% url 'generate_report' report_id %}" class="btn btn-primary btn-sm">
-                                            <i class="fas fa-play me-1"></i>Generasiya Et
+                                            <i class="fas fa-play me-1"></i>Generasiya
+                                            Et
                                         </a>
                                         <a href="{% url 'download_sample_report' report_id %}"
                                             class="btn btn-outline-secondary btn-sm">
@@ -189,9 +195,11 @@
                 <div class="recent-report-item">
                     <h6 class="mb-1">{{ report.title }}</h6>
                     <small class="text-muted">
-                        <i class="fas fa-clock me-1"></i>{{ report.generated_at|timesince }} əvvəl
+                        <i class="fas fa-clock me-1"></i>{{
+                        report.generated_at|timesince }} əvvəl
                         <span class="ms-2">
-                            <i class="fas fa-file me-1"></i>{{ report.format|upper }}
+                            <i class="fas fa-file me-1"></i>{{
+                            report.format|upper }}
                         </span>
                     </small>
                 </div>
@@ -199,7 +207,8 @@
                 {% else %}
                 <div class="text-center py-3">
                     <i class="fas fa-file-alt fa-2x text-muted mb-2"></i>
-                    <p class="text-muted">Hələ hesabat generasiya etməmisiniz</p>
+                    <p class="text-muted">Hələ hesabat generasiya
+                        etməmisiniz</p>
                 </div>
                 {% endif %}
             </div>
@@ -225,9 +234,11 @@
                         <div class="mb-3">
                             <label class="form-label small" for="quick-department-filter">Şöbə</label>
                             <select class="form-select form-select-sm" id="quick-department-filter">
-                                <option value="">Hamısı</option>
-                                {% for dept_id, dept_name in filter_options.departments %}
-                                <option value="{{ dept_id }}">{{ dept_name }}</option>
+                                <option value>Hamısı</option>
+                                {% for dept_id, dept_name in
+                                filter_options.departments %}
+                                <option value="{{ dept_id }}">{{ dept_name
+                                    }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -246,8 +257,10 @@
                 </div>
                 <div class="card-body">
                     <div class="small">
-                        <p><strong>PDF:</strong> Çap və prezentasiya üçün ən yaxşısı</p>
-                        <p><strong>Excel:</strong> Məlumat analizi və hesablamalar üçün</p>
+                        <p><strong>PDF:</strong> Çap və prezentasiya üçün ən
+                            yaxşısı</p>
+                        <p><strong>Excel:</strong> Məlumat analizi və
+                            hesablamalar üçün</p>
                         <p><strong>CSV:</strong> Digər sistemlərə ixrac üçün</p>
                         <hr>
                         <p class="text-primary">

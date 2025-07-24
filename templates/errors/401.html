@@ -5,7 +5,10 @@
 
 {% block content %}
 {% trans "İcazə Verilmədi" as error_title %}
-{% trans "Bu səhifəyə baxmaq üçün autentifikasiyadan keçməlisiniz (giriş etməlisiniz)." as error_message %}
-{% include 'errors/components/generic_error.html' with code="401" color="warning" title=error_title
+{% trans
+"Bu səhifəyə baxmaq üçün autentifikasiyadan keçməlisiniz (giriş etməlisiniz)."
+as error_message %}
+{% include 'errors/components/generic_error.html' with code="401"
+color="warning" title=error_title
 message=error_message icon="shield-lock-fill" %}
 {% endblock %}

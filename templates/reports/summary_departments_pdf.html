@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8">
-    <title>Departament Statistikası Hesabatı</title>
-    <style>
+    <head>
+        <meta charset="utf-8">
+        <title>Departament Statistikası Hesabatı</title>
+        <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
@@ -119,102 +119,109 @@
             .header { page-break-after: avoid; }
         }
     </style>
-</head>
-<body>
-    <div class="header">
-        <h1>Departament Statistikası Hesabatı</h1>
-        <p><strong>Qiymətləndirmə Dövrü:</strong> {{ dovr.ad }}</p>
-        <p><strong>Hesabat Tarixi:</strong> {{ hazirlanma_tarixi|date:"d.m.Y" }}</p>
-    </div>
+    </head>
+    <body>
+        <div class="header">
+            <h1>Departament Statistikası Hesabatı</h1>
+            <p><strong>Qiymətləndirmə Dövrü:</strong> {{ dovr.ad }}</p>
+            <p><strong>Hesabat Tarixi:</strong> {{
+                hazirlanma_tarixi|date:"d.m.Y" }}</p>
+        </div>
 
-    <div class="stats-summary">
-        <div class="stat-item">
-            <div class="stat-value">{{ umumiyy_ortalama|floatformat:2 }}</div>
-            <div class="stat-label">Ümumi Ortalama Bal</div>
+        <div class="stats-summary">
+            <div class="stat-item">
+                <div class="stat-value">{{ umumiyy_ortalama|floatformat:2
+                    }}</div>
+                <div class="stat-label">Ümumi Ortalama Bal</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{ departament_sayi }}</div>
+                <div class="stat-label">Departament Sayı</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{ ishchi_sayi }}</div>
+                <div class="stat-label">Qiymətləndirilən İşçi</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">{{ qiymetlendirme_sayi }}</div>
+                <div class="stat-label">Tamamlanmış Qiymətləndirmə</div>
+            </div>
         </div>
-        <div class="stat-item">
-            <div class="stat-value">{{ departament_sayi }}</div>
-            <div class="stat-label">Departament Sayı</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-value">{{ ishchi_sayi }}</div>
-            <div class="stat-label">Qiymətləndirilən İşçi</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-value">{{ qiymetlendirme_sayi }}</div>
-            <div class="stat-label">Tamamlanmış Qiymətləndirmə</div>
-        </div>
-    </div>
 
-    <h3>Departamentlər üzrə Nəticələr</h3>
-    <table class="departments-table">
-        <thead>
-            <tr>
-                <th>Departament Adı</th>
-                <th>Ortalama Bal</th>
-                <th>Vizual Nəticə</th>
-                <th>İşçi Sayı</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for dept in departament_stat %}
-            <tr>
-                <td>{{ dept.ad }}</td>
-                <td><strong>{{ dept.ortalama_bal }}</strong></td>
-                <td>
-                    <div class="score-bar">
-                        <div class="score-fill" style="width: {{ dept.ortalama_bal|mul:10 }}%"></div>
-                        <div class="score-text">{{ dept.ortalama_bal }}/10</div>
-                    </div>
-                </td>
-                <td>{{ dept.ishci_sayi|default:"-" }}</td>
-                <td>
-                    {% if dept.ortalama_bal >= 8 %}
+        <h3>Departamentlər üzrə Nəticələr</h3>
+        <table class="departments-table">
+            <thead>
+                <tr>
+                    <th>Departament Adı</th>
+                    <th>Ortalama Bal</th>
+                    <th>Vizual Nəticə</th>
+                    <th>İşçi Sayı</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dept in departament_stat %}
+                <tr>
+                    <td>{{ dept.ad }}</td>
+                    <td><strong>{{ dept.ortalama_bal }}</strong></td>
+                    <td>
+                        <div class="score-bar">
+                            <div class="score-fill"
+                                style="width: {{ dept.ortalama_bal|mul:10 }}%"></div>
+                            <div class="score-text">{{ dept.ortalama_bal
+                                }}/10</div>
+                        </div>
+                    </td>
+                    <td>{{ dept.ishci_sayi|default:"-" }}</td>
+                    <td>
+                        {% if dept.ortalama_bal >= 8 %}
                         <span style="color: #28a745;">Əla</span>
-                    {% elif dept.ortalama_bal >= 7 %}
+                        {% elif dept.ortalama_bal >= 7 %}
                         <span style="color: #17a2b8;">Yaxşı</span>
-                    {% elif dept.ortalama_bal >= 6 %}
+                        {% elif dept.ortalama_bal >= 6 %}
                         <span style="color: #ffc107;">Orta</span>
-                    {% else %}
+                        {% else %}
                         <span style="color: #dc3545;">Təkmilləşdirilməli</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-    {% if kateqoriya_neticeleri %}
-    <h3>Kompetensiya Sahələri üzrə Ümumi Nəticələr</h3>
-    <table class="departments-table">
-        <thead>
-            <tr>
-                <th>Kompetensiya Sahəsi</th>
-                <th>Ortalama Bal</th>
-                <th>Vizual Nəticə</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for cat in kateqoriya_neticeleri %}
-            <tr>
-                <td>{{ cat.ad }}</td>
-                <td><strong>{{ cat.ortalama_bal }}</strong></td>
-                <td>
-                    <div class="score-bar">
-                        <div class="score-fill" style="width: {{ cat.ortalama_bal|mul:10 }}%"></div>
-                        <div class="score-text">{{ cat.ortalama_bal }}/10</div>
-                    </div>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% endif %}
+        {% if kateqoriya_neticeleri %}
+        <h3>Kompetensiya Sahələri üzrə Ümumi Nəticələr</h3>
+        <table class="departments-table">
+            <thead>
+                <tr>
+                    <th>Kompetensiya Sahəsi</th>
+                    <th>Ortalama Bal</th>
+                    <th>Vizual Nəticə</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cat in kateqoriya_neticeleri %}
+                <tr>
+                    <td>{{ cat.ad }}</td>
+                    <td><strong>{{ cat.ortalama_bal }}</strong></td>
+                    <td>
+                        <div class="score-bar">
+                            <div class="score-fill"
+                                style="width: {{ cat.ortalama_bal|mul:10 }}%"></div>
+                            <div class="score-text">{{ cat.ortalama_bal
+                                }}/10</div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
 
-    <div class="footer">
-        <p>Bu hesabat avtomatik olaraq {{ hazirlanma_tarixi|date:"d.m.Y H:i" }} tarixində yaradılmışdır.</p>
-        <p>Performans İdarəetmə Sistemi</p>
-    </div>
-</body>
+        <div class="footer">
+            <p>Bu hesabat avtomatik olaraq {{ hazirlanma_tarixi|date:"d.m.Y H:i"
+                }} tarixində yaradılmışdır.</p>
+            <p>Performans İdarəetmə Sistemi</p>
+        </div>
+    </body>
 </html>
