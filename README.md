@@ -136,6 +136,7 @@ python manage.py runserver
 * `openpyxl` – Excel ixrac funksiyası
 * `python-dotenv` – mühit dəyişənlərinin idarə olunması
 
+
 ---
 
 ## 🚀 Gələcək Genişləndirilmələr (Roadmap)
